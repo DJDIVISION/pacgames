@@ -7,7 +7,7 @@ const PORT = 8000; // Or any port you like
 app.use(cors());
 
 app.use("/", (req, res) => {
-  res.send("Server is running");
+  res.send("Server is running now");
 })
 
 app.listen(PORT, () => {
