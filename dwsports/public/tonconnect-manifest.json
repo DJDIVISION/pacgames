@@ -1,6 +1,6 @@
 {
     "manifest": {
-      "url": "http://localhost:5173", 
+      "url": "https://pacgames-nu.vercel.app", 
       "name": "PAC Gaming Area",            
       "iconUrl": "/aries.png" 
     }

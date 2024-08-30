@@ -9,7 +9,7 @@ console.log('Manifest URL:', `${window.location.origin}/tonconnect-manifest.json
 
 createRoot(document.getElementById('root')).render(
   <>
-    <TonConnectUIProvider manifestUrl={`${window.location.origin}/tonconnect-manifest.json`}>
+    <TonConnectUIProvider manifestUrl={`https://pacgames-nu.vercel.app/tonconnect-manifest.json`}>
     <BetsContext>
     <App />
     </BetsContext>
