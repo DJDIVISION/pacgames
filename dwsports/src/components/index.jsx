@@ -12,6 +12,51 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { styled as styledTwo } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 
+export const NavIcon = styled.div`
+    width: 100%;
+    height: 80%;
+    display: grid;
+    place-items: center;
+    img{
+        width: 50%;
+        display: block;
+        object-fit: contain;
+    }
+`;
+
+export const NavText = styled.div`
+    width: 100%;
+    height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.text};
+    font-size: 16px;
+`;
+
+export const NavColumn = styled.div`
+    width: 100px;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+`;
+
+export const Nav = styled.nav`
+    width: 100vw;
+    height: 80px;
+    background: #008080;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: sticky;
+    top: ${({ scrollNavDown }) => (scrollNavDown ? "-100px" : "0")};
+    opacity: 0.9;
+    transition: 0.5s all ease;
+    z-index: 1000;
+    padding: 0 30px;
+`;
+
 export const sportsData = [
     {
         id: 1,

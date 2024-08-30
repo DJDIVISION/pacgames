@@ -1,7 +1,7 @@
 import React, {useState,useEffect} from 'react'
 import Sports from '../components/Sports'
 import {BetSection,ArrowUp,SportsButtonRow,item,Match,BetWrapper,MatchColumn,MatchDate,MatchLogo,MatchTime,
-    MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam
+    MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft
 } from './index'
 import Countries from '../components/Countries'
 import { BetState } from '../context/BetsContext'
@@ -12,9 +12,10 @@ import {premierLeague,laLiga, serieA} from '../data/sportsData'
 import {premierMatches,laLigaMatches} from '../data/nextMatches'
 import MatchStats from '../components/MatchStats'
 import SelectedBet from '../components/SelectedBet'
-import TonWalletLogin from '../components/TonConnect'
+import {Link as LinkR} from 'react-router-dom'
+import { animationOne, animationTwo, transition, transitionLong } from '../animations'
 
-const Home = () => {
+const Bets = () => {
 
     const [activeSportMenu, setActiveSportMenu] = useState(true);
     const [activeCountryMenu, setActiveCountryMenu] = useState(false);
@@ -104,8 +105,10 @@ const Home = () => {
     };
 
     return (
+        <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
         <BetSection>
             <SportsButtonRow>
+            { !activeCountryMenu && !activeLeaguesMenu && !selectedBetMenu && <LinkR to="/"><ArrowLeft /></LinkR>}
             {activeSportMenu && (
                 <Sports activeSportMenu={activeSportMenu} setActiveSportMenu={setActiveSportMenu} activeCountryMenu={activeCountryMenu} setActiveCountryMenu={setActiveCountryMenu}/>
             )}
@@ -181,9 +184,10 @@ const Home = () => {
             {matchStatsMenu && (
                 <MatchStats matchStatsMenu={matchStatsMenu} setMatchStatsMenu={setMatchStatsMenu}/>
             )}
-            <TonWalletLogin />
+            
         </BetSection>
+        </motion.div>
     );
 }
 
-export default Home
+export default Bets

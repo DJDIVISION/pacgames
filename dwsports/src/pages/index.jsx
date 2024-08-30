@@ -34,6 +34,18 @@ export const ArrowDown = styled(KeyboardArrowDownIcon)`
     }
 `;
 
+export const ArrowLeft = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 2;
+        position: absolute;
+        top: 30px;
+        left: 20px;
+        z-index: 9000;
+        transform: rotate(90deg);
+    }
+`;
+
 export const ArrowUp = styled(KeyboardArrowDownIcon)`
     &&&{
         color: ${props => props.theme.text};
@@ -184,3 +196,12 @@ export const MatchLogo = styled.div`
         object-fit: contain;
     }
 `;
+
+export const HomeSection = styled.div`
+    width: 100vw;
+    height: 200vh;
+    background: ${props => props.theme.body};
+    display: flex;
+    flex-direction: column;
+`;
+

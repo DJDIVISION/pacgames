@@ -6,6 +6,7 @@ import { ThemeProvider } from "styled-components";
 
 
 import Bets from './pages/Bets';
+import Home from './pages/Home';
 import MatchStats from './components/MatchStats';
 
 function App() {
@@ -16,7 +17,8 @@ function App() {
     <ThemeProvider theme={themes[theme]}>
     <Router>
       <Routes>
-        <Route path="/" element={<Bets />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/bets" element={<Bets />} />
       </Routes>
     </Router>
     </ThemeProvider>
