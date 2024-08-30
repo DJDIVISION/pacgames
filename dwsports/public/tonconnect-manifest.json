@@ -1,7 +1,5 @@
 {
-    "manifest": {
-      "url": "https://pacgames-nu.vercel.app", 
-      "name": "PAC Gaming Area",            
-      "iconUrl": "https://i.postimg.cc/PrXj6bT0/ARIES.png" 
-    }
-  }
+  "url": "https://pacgames-nu.vercel.app",                       
+  "name": "PAC GAMING AREA",                     
+  "iconUrl": "https://i.postimg.cc/PrXj6bT0/ARIES.png"
+}
