@@ -1,0 +1,7 @@
+{
+    "manifest": {
+      "url": "http://localhost:5173", 
+      "name": "PAC Gaming Area",            
+      "iconUrl": "/aries.png" 
+    }
+  }

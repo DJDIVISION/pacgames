@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
+
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  box-sizing: border-box;
+  margin: 0;
+  font-family: 'Dosis';
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+a{
+  text-decoration: none;
+}
+
+.menu-container-four{
+  position:absolute;
+  width:90vw;
+  max-height:15vh;
+  top: 0;
+  display:flex;
+  align-items: center;
+  z-index: 1000;
+  justify-content: center;
+}
+
+.menu-container-five{
+  position:absolute;
+  width:80vw;
+  min-height:85vh;
+  top: 15vh;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1000;
+  justify-content: center;
+}
+
+.menu-container-six{
+  position:fixed;
+  width:100vw;
+  height:100vh;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  color:#fff;
+  display:flex;
+  background-color:orange;
+  flex-direction: column;
+  z-index: 9000;
+  justify-content: center;
+}
+
+.custom-input {
+  border: 1px solid white; /* White border by default */
+  outline: none; /* Remove the default outline */
+  padding: 8px; /* Add some padding */
+  background-color: transparent; /* Transparent background */
+  color: white; /* Text color */
+  box-sizing: border-box; /* Ensures padding is included in the width */
+  margin: 0 20px;
+}
+
+/* Change border color to black on focus */
+.custom-input:focus {
+  border-color: black;
+}
+
+/* Remove the arrows for number input */
+.custom-input::-webkit-outer-spin-button,
+.custom-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.custom-input[type="number"] {
+  -moz-appearance: textfield; /* Removes the arrows in Firefox */
+}
