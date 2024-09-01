@@ -33,6 +33,8 @@ const Bets = () => {
     const [selectedBet, setSelectedBet] = useState(null);
     const {homeTeamLogo, setHomeTeamLogo} = BetState()
     const {awayTeamLogo, setAwayTeamLogo} = BetState()
+    const {homeTeamPlayers, setHomeTeamPlayers} = BetState()
+    const {awayTeamPlayers, setAwayTeamPlayers} = BetState()
 
     useEffect(() => {
         if(activeCountry === 'England'){
@@ -80,8 +82,8 @@ const Bets = () => {
     }
 
     const setStats = (match,homeTeam,awayTeam) => {
-        setHomeTeam(homeTeam)
-        setAwayTeam(awayTeam)
+        setHomeTeam(match.home)
+        setAwayTeam(match.away)
         setMatchToBet(match)
         setMatchStatsMenu(true)
     }
@@ -141,6 +143,10 @@ const Bets = () => {
                         {activeMatches.map((match) => {
                             const homeTeam = activeLeague[match.home];
                             const awayTeam = activeLeague[match.away];
+                            if(homeTeam && awayTeam){
+                                setHomeTeamPlayers(homeTeam.players)
+                                setAwayTeamPlayers(awayTeam.players)
+                            }
                             if (!homeTeam || !awayTeam) {
                                 console.warn(`Team data missing for: ${match.home} or ${match.away}`);
                                 return null;

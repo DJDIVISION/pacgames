@@ -1,5 +1,6 @@
 import ars_bri from '../assets/lineups/ars_bri.png'
 import lei_ast from '../assets/lineups/lei_ast.png'
+import man_liv from '../assets/lineups/man_liv.png'
 
 export const premierMatches = [
     {
@@ -90,6 +91,7 @@ export const premierMatches = [
         time: '15:00',
         home: 'Manchester United',
         away: "Liverpool",
+        lineup: man_liv,
         1: 3.75,
         X: 4.00,
         2: 1.85

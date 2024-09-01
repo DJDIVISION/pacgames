@@ -76,6 +76,3 @@ a{
   margin: 0;
 }
 
-.custom-input[type="number"] {
-  -moz-appearance: textfield; /* Removes the arrows in Firefox */
-}

@@ -364,8 +364,21 @@ export const StatsWrapper = styled.div`
     height: 80%;
     border: 1px solid white;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
+    overflow-y: scroll;
+`;
+
+export const StatsPlayers = styled.div`
+    width: 50%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+export const Wrapper = styled.div`
+    display: flex;
 `;
 
 export const StatsStadium = styled.div`
@@ -386,6 +399,71 @@ export const StatsStadiumCapacity = styled.div`
     display: grid;
     place-items: center;
     background: transparent;
+`;
+
+export const StatPlayer = styled.div`
+    width: 95%;
+    height: 40px;
+    border: 1px solid black;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+`;
+
+export const PlayerPicture = styled.div`
+    width: 7.5%;
+    height: 100%;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const PlayerName = styled.div`
+    width: 25%;
+    height: 100%;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    font-size: 14px;
+`;
+
+export const PlayerPosition = styled.div`
+    width: 15%;
+    height: 100%;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    font-size: 14px;
+`;
+
+export const PlayerNumber = styled.div`
+    width: 10%;
+    height: 100%;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const PlayerDisplay = styled.div`
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #353035;
+    display: grid;
+    place-items: center;
+`;
+
+export const Column = styled.div`
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 export const AntSwitch = styledTwo(Switch)(({ theme }) => ({
@@ -436,14 +514,14 @@ export const AntSwitch = styledTwo(Switch)(({ theme }) => ({
   }));
 
   export const MatchLineUp = styled.div`
-    width: 50%;
-    height: 300px;
+    width: 70%;
+    height: 350px;
     border: 1px solid white;
     display: flex;
     margin: 10px auto;
     img{
         width: 100%;
         display: block;
-        object-fit: cover;
+        object-fit: contain;
     }
   `;

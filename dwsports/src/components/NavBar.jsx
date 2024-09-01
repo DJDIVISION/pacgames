@@ -5,11 +5,34 @@ import TonWalletLogin from './TonConnect';
 import sportsIcon from '../assets/sportsIcon.png'
 import lottery from '../assets/bingo.png'
 import chip from '../assets/chip.png'
+import axios from 'axios'
+import { message } from 'antd';
 
 const NavBar = () => {
 
     const [active, setActive] = useState("menuOne");
     const [scrollNavDown, setScrollNavDown] = useState(false);
+
+    const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/players/squads',
+        params: {team: '34'},
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+    }; 
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.request(options);
+            console.log(response.data);
+            localStorage.setItem("newcastle", JSON.stringify(response.data))
+            message.success("data fetched!")
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     useEffect(() => {
        window.addEventListener('scroll', changeNavDown) 
@@ -45,7 +68,7 @@ const NavBar = () => {
             </NavIcon>
             <NavText>SPORTS</NavText>
         </NavColumn></LinkR>
-        <NavColumn>
+        <NavColumn onClick={fetchData}>
             <NavIcon>
                 <img src={lottery} alt="sports" />
             </NavIcon>
