@@ -1,14 +1,14 @@
-import React from 'react'
+import React, {useState,useEffect} from 'react'
 import { motion } from 'framer-motion'
 import {item,CloseStats,StatsSection,StatsWrapper,StatsStadium,StatsStadiumCapacity,MatchLineUp,
   StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Column,Wrapper,PlayerDisplay
 } from './index'
 import { BetState } from '../context/BetsContext';
-import { premierLeague } from '../data/sportsData';
+import {CircularProgress,IconButton} from '@mui/material';
 
 
 
-const MatchStats = ({matchStatsMenu,setMatchStatsMenu}) => {
+const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
 
   const {homeTeam, setHomeTeam} = BetState([])
   const {awayTeam, setAwayTeam} = BetState([])
@@ -16,7 +16,7 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu}) => {
   const {homeTeamPlayers, setHomeTeamPlayers} = BetState()
   const {awayTeamPlayers, setAwayTeamPlayers} = BetState()
   const {activeLeague, setActiveLeague} = BetState();
-
+  const [dataLoaded, setDataLoaded] = useState(false);
   const home = activeLeague[homeTeam] 
   const away = activeLeague[awayTeam]
 
@@ -24,6 +24,18 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu}) => {
 
   const closeStatsMenu = () => {
     setMatchStatsMenu(false)
+  }
+
+  useEffect(() => {
+    if (matchToBet) {
+        setDataLoaded(true);
+    }
+  }, []);
+
+  if(!dataLoaded){
+      return(
+          <CircularProgress color="secondary" />
+      )
   }
 
   

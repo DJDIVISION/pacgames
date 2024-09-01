@@ -16,7 +16,7 @@ const NavBar = () => {
     const options = {
         method: 'GET',
         url: 'https://api-football-v1.p.rapidapi.com/v3/players/squads',
-        params: {team: '34'},
+        params: {team: '46'},
         headers: {
           'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
           'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
@@ -27,7 +27,7 @@ const NavBar = () => {
         try {
             const response = await axios.request(options);
             console.log(response.data);
-            localStorage.setItem("newcastle", JSON.stringify(response.data))
+            localStorage.setItem("leicester", JSON.stringify(response.data))
             message.success("data fetched!")
         } catch (error) {
             console.error(error);
