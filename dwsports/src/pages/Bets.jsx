@@ -14,6 +14,9 @@ import MatchStats from '../components/MatchStats'
 import SelectedBet from '../components/SelectedBet'
 import {Link as LinkR} from 'react-router-dom'
 import { animationOne, animationTwo, transition, transitionLong } from '../animations'
+import SpeedDial from '@mui/material/SpeedDial';
+import SpeedDialIcon from '@mui/material/SpeedDialIcon';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
 
 const Bets = () => {
 
@@ -143,10 +146,10 @@ const Bets = () => {
                         {activeMatches.map((match) => {
                             const homeTeam = activeLeague[match.home];
                             const awayTeam = activeLeague[match.away];
-                            if(homeTeam && awayTeam){
+                            /* if(homeTeam && awayTeam){
                                 setHomeTeamPlayers(homeTeam.players)
                                 setAwayTeamPlayers(awayTeam.players)
-                            }
+                            } */
                             if (!homeTeam || !awayTeam) {
                                 console.warn(`Team data missing for: ${match.home} or ${match.away}`);
                                 return null;

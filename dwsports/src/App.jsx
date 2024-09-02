@@ -9,6 +9,7 @@ import Bets from './pages/Bets';
 import Home from './pages/Home';
 import PlayerStats from './pages/PlayerStats';
 import TeamStats from './pages/TeamStats';
+import Login from './pages/Login';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/bets" element={<Bets />} />
         <Route path="/player/:id" element={<PlayerStats />} />
         <Route path="/team/:id" element={<TeamStats />} />

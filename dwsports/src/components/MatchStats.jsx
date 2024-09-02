@@ -5,7 +5,7 @@ import {item,CloseStats,StatsSection,StatsWrapper,StatsStadium,StatsStadiumCapac
 } from './index'
 import { BetState } from '../context/BetsContext';
 import {CircularProgress,IconButton} from '@mui/material';
-
+import { supabase } from '../supabase/client';
 
 
 const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
@@ -19,8 +19,26 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
   const [dataLoaded, setDataLoaded] = useState(false);
   const home = activeLeague[homeTeam] 
   const away = activeLeague[awayTeam]
+  const [loading, setLoading] = useState(false)
 
-  console.log(matchToBet)
+  console.log(homeTeam)
+  console.log(awayTeam)
+
+  const fetchData = async () => {
+        setLoading(true)
+        const { data, error } = await supabase.from('teams').select('players').eq("name", homeTeam);
+          if(error){
+            console.log(error)
+          }
+          if(data){
+            console.log(data)
+          }
+          setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [])
 
   const closeStatsMenu = () => {
     setMatchStatsMenu(false)
