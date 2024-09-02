@@ -7,7 +7,8 @@ import { ThemeProvider } from "styled-components";
 
 import Bets from './pages/Bets';
 import Home from './pages/Home';
-import MatchStats from './components/MatchStats';
+import PlayerStats from './pages/PlayerStats';
+import TeamStats from './pages/TeamStats';
 
 function App() {
 
@@ -19,6 +20,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/bets" element={<Bets />} />
+        <Route path="/player/:id" element={<PlayerStats />} />
+        <Route path="/team/:id" element={<TeamStats />} />
       </Routes>
     </Router>
     </ThemeProvider>
