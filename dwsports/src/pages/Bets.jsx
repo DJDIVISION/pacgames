@@ -17,6 +17,7 @@ import { animationOne, animationTwo, transition, transitionLong } from '../anima
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
+import { supabase } from '../supabase/client'
 
 const Bets = () => {
 
@@ -39,7 +40,8 @@ const Bets = () => {
     const {homeTeamPlayers, setHomeTeamPlayers} = BetState()
     const {awayTeamPlayers, setAwayTeamPlayers} = BetState()
 
-    useEffect(() => {
+
+    /* useEffect(() => {
         if(activeCountry === 'England'){
             setActiveLeague(premierLeague)
         }
@@ -49,7 +51,7 @@ const Bets = () => {
         if(activeCountry === 'Italy'){
             setActiveLeague(serieA)
         }
-    }, [activeCountry])
+    }, [activeCountry]) */
 
 
 
@@ -79,19 +81,29 @@ const Bets = () => {
         )
     } */
 
-    const setBet = (match, odd) => {
-        console.log(match)
-        console.log(odd.target.innerText)
+
+
+    const setHomes = async (match) => {
+        const { data, error } = await supabase.from('premierLeague').select(match.home).eq("id", 1);
+        if(error){
+          console.log(error)
+        }
+        if(data){
+          setHomeTeamPlayers(data[0][match.home][0].players)
+        }
     }
 
-    const setStats = (match,homeTeam,awayTeam) => {
-        setHomeTeam(match.home)
-        setAwayTeam(match.away)
+    const setAways = async (match) => {
+        const { data, error } = await supabase.from('premierLeague').select(match.away).eq("id", 1);
+        if(error){
+          console.log(error)
+        }
+        if(data){
+            setAwayTeamPlayers(data[0][match.away][0].players)
+        }
         setMatchToBet(match)
         setMatchStatsMenu(true)
     }
-
-    console.log(selectedBet)
 
     const handleBetClick = (match, betType, oddValue, homeTeam, awayTeam) => {
         if(selectedBet === null){
@@ -143,13 +155,47 @@ const Bets = () => {
                 animate={{height: '100%', opacity:1}}
                 transition={{duration:.5}}
                 exit="exit">
-                        {activeMatches.map((match) => {
+                    {activeMatches.map((match) => {
+                        return(
+                            <MatchWrapper key={match.id}>
+                        <Match >
+                            <MatchColumn>
+                                <MatchLogo>
+                                    <img src={match.homeLogo} alt="homeTeam" />
+                                </MatchLogo>
+                                <MatchTeam>{match.home}</MatchTeam>
+                            </MatchColumn>
+                            <MatchColumn>
+                                <MatchDate>{match.date}</MatchDate>
+                                <MatchTime>{match.time}</MatchTime>
+                                <MatchOdds>
+                                    <OddsColumn isSelected={selectedBet?.match.id === match.id && selectedBet?.betType === '1'}
+                                        onClick={() => handleBetClick(match, '1', match[1], homeTeam, awayTeam)}><span>1 - </span>{(match[1]).toFixed(2)}</OddsColumn>
+                                    <OddsColumn isSelected={selectedBet?.match.id === match.id && selectedBet?.betType === 'X'}
+                                        onClick={() => handleBetClick(match, 'X', match.X, homeTeam, awayTeam)}><span>X - </span>{(match.X).toFixed(2)}</OddsColumn>
+                                    <OddsColumn isSelected={selectedBet?.match.id === match.id && selectedBet?.betType === '2'}
+                                        onClick={() => handleBetClick(match, '2', match[2], homeTeam, awayTeam)}><span>2 - </span>{(match[2]).toFixed(2)}</OddsColumn>
+                                </MatchOdds>
+                            </MatchColumn>
+                            <MatchColumn>
+                                <MatchLogo>
+                                    <img src={match.awayLogo} alt="awayTeam" />
+                                </MatchLogo>
+                                <MatchTeam>{match.away}</MatchTeam>
+                            </MatchColumn>
+                        </Match>
+                        <StatsIcon onClick={() => {setHomes(match); setAways(match);}}/>
+                        </MatchWrapper>
+                        )
+                    })}
+                        {/* {activeMatches.map((match) => {
+                            console.log(match)
                             const homeTeam = activeLeague[match.home];
                             const awayTeam = activeLeague[match.away];
-                            /* if(homeTeam && awayTeam){
+                            if(homeTeam && awayTeam){
                                 setHomeTeamPlayers(homeTeam.players)
                                 setAwayTeamPlayers(awayTeam.players)
-                            } */
+                            }
                             if (!homeTeam || !awayTeam) {
                                 console.warn(`Team data missing for: ${match.home} or ${match.away}`);
                                 return null;
@@ -185,7 +231,7 @@ const Bets = () => {
                         <StatsIcon onClick={() => setStats(match,homeTeam,awayTeam)}/>
                         </MatchWrapper>
                     )
-                })}
+                })} */}
                 </motion.div>
                 </BetWrapper>
                 </>

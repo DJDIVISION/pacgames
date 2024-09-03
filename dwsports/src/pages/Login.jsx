@@ -1,8 +1,11 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
+import { LoginSection,GoogleButton,GoogleLogo,GoogleText } from './index'
+import logo from '../assets/google.png'
 
 const Login = () => {
+
     const navigate = useNavigate()
 
     const handleGoogleSignIn = async () => {
@@ -12,17 +15,19 @@ const Login = () => {
   
       if (error) {
         console.error('Error with Google sign-in:', error.message)
-      } else {
-        // Redirect to the home page on successful login
-        navigate('/')
+      } 
+      if(data){
+        console.log(data)
       }
     }
   
     return (
-      <div>
-        <h1>Login</h1>
-        <button onClick={handleGoogleSignIn}>Sign in with Google</button>
-      </div>
+      <LoginSection>
+        <GoogleButton onClick={handleGoogleSignIn}>
+            <GoogleLogo><img src={logo} alt="" /></GoogleLogo>
+            <GoogleText>SIGN IN WITH GOOGLE</GoogleText>
+        </GoogleButton>
+      </LoginSection>
     )
 }
 

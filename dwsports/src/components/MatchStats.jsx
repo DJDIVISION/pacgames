@@ -17,8 +17,8 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
   const {awayTeamPlayers, setAwayTeamPlayers} = BetState()
   const {activeLeague, setActiveLeague} = BetState();
   const [dataLoaded, setDataLoaded] = useState(false);
-  const home = activeLeague[homeTeam] 
-  const away = activeLeague[awayTeam]
+  /* const home = activeLeague[homeTeam] 
+  const away = activeLeague[awayTeam] */
   const [loading, setLoading] = useState(false)
 
   console.log(homeTeam)
@@ -32,6 +32,15 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
           }
           if(data){
             console.log(data)
+            setHomeTeamPlayers(data[0].players)
+          }
+          const { data2, error2 } = await supabase.from('teams').select('players').eq("name", awayTeam);
+          if(error2){
+            console.log(error2)
+          }
+          if(data2){
+            console.log(data2)
+            setAwayTeamPlayers(data2[0].players)
           }
           setLoading(false)
   }
@@ -40,8 +49,13 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
     fetchData();
   }, [])
 
+  console.log(homeTeamPlayers)
+  console.log(awayTeamPlayers)
+
   const closeStatsMenu = () => {
     setMatchStatsMenu(false)
+    setHomeTeamPlayers([])
+    setAwayTeamPlayers([])
   }
 
   useEffect(() => {
@@ -65,16 +79,15 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
     transition={{duration:.5}}
     exit="exit">
       <CloseStats onClick={closeStatsMenu} />
-      <StatsSection style={{backgroundImage:`url(${home.stadiumURL})`, backgroundPosition: 'center', backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover'}}>
+      <StatsSection >
         <StatsWrapper>
-            <StatsStadium>Stadium: {home.stadium}</StatsStadium>
-            <StatsStadiumCapacity>Capacity: {home.stadiumCapacity} assistants</StatsStadiumCapacity>
+            <StatsStadium>Stadium: </StatsStadium>
+            <StatsStadiumCapacity>Capacity:  assistants</StatsStadiumCapacity>
             <StatsStadium>PLAYERS</StatsStadium>
             <Wrapper>
             <StatsPlayers>
             <div style={{marginBottom: '10px'}}>{homeTeam}</div>
-              {home.players?.map(player => {
+              {homeTeamPlayers?.map(player => {
                 return(
                   <StatPlayer>
                     <PlayerPicture style={{backgroundImage: `url(${player.photo})`, backgroundPosition: 'center',
@@ -94,7 +107,7 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
             </StatsPlayers>
             <StatsPlayers>
             <div style={{marginBottom: '10px'}}>{awayTeam}</div>
-              {away.players?.map(player => {
+              {awayTeamPlayers?.map(player => {
                 return(
                   <StatPlayer>
                     <PlayerPicture style={{backgroundImage: `url(${player.photo})`, backgroundPosition: 'center',

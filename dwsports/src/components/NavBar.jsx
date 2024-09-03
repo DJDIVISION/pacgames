@@ -7,16 +7,36 @@ import lottery from '../assets/bingo.png'
 import chip from '../assets/chip.png'
 import axios from 'axios'
 import { message } from 'antd';
+import { BetState } from '../context/BetsContext';
+import { Avatar } from '@mui/material';
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../supabase/client';
 
 const NavBar = () => {
 
     const [active, setActive] = useState("menuOne");
     const [scrollNavDown, setScrollNavDown] = useState(false);
+    const {user, setUser} = BetState();
+    const navigate = useNavigate()
+
+    const handleLogout = async () => {
+        const { error } = await supabase.auth.signOut()
+    
+        if (error) {
+          console.error('Error logging out:', error.message)
+        } else {
+          console.log('User logged out successfully')
+          // Redirect to the login page or home page
+          navigate('/login')
+        }
+      }
+
+    console.log(user)
 
     const options = {
         method: 'GET',
         url: 'https://api-football-v1.p.rapidapi.com/v3/players/squads',
-        params: {team: '41'},
+        params: {team: '45'},
         headers: {
           'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
           'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
@@ -27,7 +47,7 @@ const NavBar = () => {
         try {
             const response = await axios.request(options);
             console.log(response.data);
-            localStorage.setItem("southhampton", JSON.stringify(response.data))
+            localStorage.setItem("everton", JSON.stringify(response.data))
             message.success("data fetched!")
         } catch (error) {
             console.error(error);
@@ -62,6 +82,11 @@ const NavBar = () => {
 
   return (
     <Nav scrollNavDown={scrollNavDown}>
+        {user ? (
+            <Avatar alt="Image" src={user.user_metadata.avatar_url} sx={{ width: 50, height: 50, marginRight: '5px' }} onClick={handleLogout}/>
+        ): (
+            <div></div>
+        )}
         <LinkR to="/bets"><NavColumn>
             <NavIcon>
                 <img src={sportsIcon} alt="sports" />

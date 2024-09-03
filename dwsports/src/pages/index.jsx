@@ -205,3 +205,43 @@ export const HomeSection = styled.div`
     flex-direction: column;
 `;
 
+export const LoginSection = styled.div`
+    width: 100vw;
+    height: 100vh;
+    background: ${props => props.theme.body};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const GoogleButton = styled(motion.div)`
+    width: 200px;
+    height: 50px;
+    border: 1px solid white;
+    border-radius: 10px;
+    display: flex;
+`;
+
+export const GoogleLogo = styled.div`
+    width: 50px;
+    height: 50px;
+    border-right: 1px solid white;
+    img{
+        width: 100%;
+        object-fit: cover;
+        display: block;
+    }
+`;
+
+export const GoogleText = styled.div`
+    width: 150px;
+    height: 50px;
+    color: white;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+`;
+
+
+

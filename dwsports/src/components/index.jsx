@@ -48,7 +48,7 @@ export const Nav = styled.nav`
     background: #008080;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     position: sticky;
     top: ${({ scrollNavDown }) => (scrollNavDown ? "-100px" : "0")};
     opacity: 0.9;

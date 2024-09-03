@@ -11,6 +11,7 @@ import { motion } from 'framer-motion'
 import { BetState } from '../context/BetsContext'
 import {premierLeague} from '../data/sportsData'
 import {premierMatches,laLigaMatches,serieAMatches} from '../data/nextMatches'
+import { supabase } from '../supabase/client'
 
 const Countries = ({activeSportMenu,setActiveSportMenu,activeCountryMenu,setActiveCountryMenu,activeLeaguesMenu,setActiveLeaguesMenu,
     betsMenu,setBetsMenu
@@ -32,12 +33,21 @@ const Countries = ({activeSportMenu,setActiveSportMenu,activeCountryMenu,setActi
         setBetsMenu(true)
     }
 
-    const setUK = () => {
-        setActiveCountryMenu(false)
+    const setUK = async () => {
+        /* setActiveCountryMenu(false)
         setActiveLeaguesMenu(true)
         setActiveCountry("England")
         setActiveMatches(premierMatches)
-        setBetsMenu(true)
+        setBetsMenu(true) */
+        const { data, error } = await supabase.from('premierLeague').select('nextMatches').eq("id", 1);
+          if(error){
+            console.log(error)
+          }
+          if(data){
+            console.log(data[0])
+            setActiveMatches(data[0].nextMatches)
+          }
+          setBetsMenu(true)
         
     }
 

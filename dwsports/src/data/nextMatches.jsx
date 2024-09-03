@@ -9,7 +9,6 @@ export const premierMatches = [
         time: '11:30',
         home: 'Arsenal',
         away: "Brighton",
-        lineup: ars_bri,
         1: 1.33,
         X: 5.25,
         2: 8.00
@@ -20,7 +19,6 @@ export const premierMatches = [
         time: '14:00',
         home: 'Leicester',
         away: "Aston Villa",
-        lineup: lei_ast,
         1: 4.50,
         X: 3.80,
         2: 1.73
@@ -91,7 +89,6 @@ export const premierMatches = [
         time: '15:00',
         home: 'Manchester United',
         away: "Liverpool",
-        lineup: man_liv,
         1: 3.75,
         X: 4.00,
         2: 1.85

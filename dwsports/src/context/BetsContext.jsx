@@ -21,12 +21,14 @@ const BetsContext = ({children}) => {
     const [awayTeamPlayers, setAwayTeamPlayers] = useState([])
     const [awayTeam, setAwayTeam] = useState([])
     const [matchToBet, setMatchToBet] = useState([])
+    const [user, setUser] = useState(null)
     
     return(
         <Bets.Provider value = {{activeSport,setActiveSport,activeCountry,setActiveCountry,activeLeague,setActiveLeague,
             activeSportMenu,setActiveSportMenu,activeCountryMenu,setActiveCountryMenu,activeLeaguesMenu,setActiveLeaguesMenu,
             setBetsMenu,betsMenu,activeMatches,setActiveMatches,homeTeam,setHomeTeam,awayTeam,setAwayTeam,matchToBet,setMatchToBet,
-            awayTeamLogo,setAwayTeamLogo,homeTeamLogo,setHomeTeamLogo,homeTeamPlayers,setHomeTeamPlayers,awayTeamPlayers,setAwayTeamPlayers
+            awayTeamLogo,setAwayTeamLogo,homeTeamLogo,setHomeTeamLogo,homeTeamPlayers,setHomeTeamPlayers,awayTeamPlayers,setAwayTeamPlayers,
+            user,setUser
         }}>
             {children}
         </Bets.Provider>
