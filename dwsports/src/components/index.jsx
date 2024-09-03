@@ -360,7 +360,7 @@ export const StatsSection = styled.div`
 `;
 
 export const StatsWrapper = styled.div`
-    width: 80%;
+    width: 95%;
     height: 80%;
     border: 1px solid white;
     border-radius: 10px;
@@ -370,7 +370,7 @@ export const StatsWrapper = styled.div`
 `;
 
 export const StatsPlayers = styled.div`
-    width: 50%;
+    width: 80%;
     height: auto;
     display: flex;
     flex-direction: column;
@@ -379,6 +379,7 @@ export const StatsPlayers = styled.div`
 
 export const Wrapper = styled.div`
     display: flex;
+    width: 100%;
 `;
 
 export const StatsStadium = styled.div`
@@ -411,22 +412,24 @@ export const StatPlayer = styled.div`
 `;
 
 export const PlayerPicture = styled.div`
-    width: 7.5%;
+    width: 10%;
     height: 100%;
     border: 1px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: ${props => props.theme.text};
 `;
 
 export const PlayerName = styled.div`
-    width: 25%;
+    width: 20%;
     height: 100%;
     border: 1px solid white;
     display: flex;
     align-items: center;
     padding: 0 5px;
     font-size: 14px;
+    color: ${props => props.theme.text};
 `;
 
 export const PlayerPosition = styled.div`
@@ -438,6 +441,7 @@ export const PlayerPosition = styled.div`
     justify-content: center;
     padding: 0 5px;
     font-size: 14px;
+    color: ${props => props.theme.text};
 `;
 
 export const PlayerNumber = styled.div`
@@ -447,6 +451,7 @@ export const PlayerNumber = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    color: ${props => props.theme.text};
 `;
 
 export const PlayerDisplay = styled.div`
@@ -456,6 +461,7 @@ export const PlayerDisplay = styled.div`
     background: #353035;
     display: grid;
     place-items: center;
+    color: ${props => props.theme.text};
 `;
 
 export const Column = styled.div`

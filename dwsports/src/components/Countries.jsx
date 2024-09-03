@@ -34,11 +34,9 @@ const Countries = ({activeSportMenu,setActiveSportMenu,activeCountryMenu,setActi
     }
 
     const setUK = async () => {
-        /* setActiveCountryMenu(false)
+        setActiveCountryMenu(false)
         setActiveLeaguesMenu(true)
         setActiveCountry("England")
-        setActiveMatches(premierMatches)
-        setBetsMenu(true) */
         const { data, error } = await supabase.from('premierLeague').select('nextMatches').eq("id", 1);
           if(error){
             console.log(error)

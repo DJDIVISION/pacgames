@@ -18,26 +18,7 @@ import alaves from '../assets/alaves.png'
 import rayo from '../assets/rayo.png'
 import villa from '../assets/villa.png'
 import barça from '../assets/barça.png'
-import arsenal from '../assets/arsenal.png'
-import brighton from '../assets/brighton.png'
-import manci from '../assets/manci.png'
-import castle from '../assets/newcastle.png'
-import Liverpool from '../assets/liverpool.png'
-import Tottenham from '../assets/tottenham.png'
-import forest from '../assets/forest.png'
-import chelsea from '../assets/chelsea.png'
-import west from '../assets/west.png'
-import fullham from '../assets/fulham.png'
-import manu from '../assets/manu.png'
-import aston from '../assets/aston.png'
-import brent from '../assets/brentford.png'
-import south from '../assets/south.png'
-import crystal from '../assets/crystal.png'
-import ips from '../assets/ips.png'
-import wolves from '../assets/wolves.png'
-import ever from '../assets/ever.png'
-import bourne from '../assets/bourne.png'
-import leice from '../assets/leice.png'
+
 
 import juve from '../assets/juve.png'
 import inter from '../assets/inter.png'
@@ -129,7 +110,7 @@ export const premierLeague = {
         stadium: "Etihad Stadium",
         stadiumCapacity: "53400",
         city: "Manchester, England",
-        logo: manci,
+        logo: "https://media.api-sports.io/football/teams/50.png",
         coach: 'Pep Guardiola',
         players: [
             {
@@ -562,7 +543,7 @@ export const premierLeague = {
         stadium: "American Express Community's Stadium",
         stadiumCapacity: "31876",
         city: "Falmer, England",
-        logo: brighton,
+        logo: "https://media.api-sports.io/football/teams/51.png",
         coach: 'Fabian Hurzeler',
         players: [
             {
@@ -1075,7 +1056,7 @@ export const premierLeague = {
         stadiumURL: emi,
         stadiumCapacity: "60260",
         city: "London, England",
-        logo: arsenal,
+        logo: "https://media.api-sports.io/football/teams/42.png",
         coach: 'Mikel Arteta',
         players: [
             {
@@ -1497,7 +1478,7 @@ export const premierLeague = {
         stadium: "Anfield",
         stadiumCapacity: "60400",
         city: "Liverpool, England",
-        logo: Liverpool,
+        logo: "https://media.api-sports.io/football/teams/40.png",
         coach: 'Arne Slot',
         players: [
             {
@@ -4679,7 +4660,7 @@ export const premierLeague = {
         stadiumCapacity: "74879",
         stadiumURL: trafford,
         city: "Manchester, England",
-        logo: manu,
+        logo: "https://media.api-sports.io/football/teams/33.png",
         coach: 'Erik ten Hag',
         players: [
             {
@@ -5268,8 +5249,6 @@ export const premierLeague = {
                 age: 24,
                 player_id: 149,
                 number: 44,
-                foot: "Both",
-                value: 46,
                 foot: "Right",
                 value: 37,
                 photo: "https://media.api-sports.io/football/players/1904.png",
@@ -7518,7 +7497,7 @@ export const premierLeague = {
         stadium: "Selhurst Park",
         stadiumCapacity: "25456",
         city: "London, England",
-        logo: crystal,
+        logo: "https://media.api-sports.io/football/teams/52.png",
         coach: 'Oliver Glasner',
         players: [
             {
@@ -8903,7 +8882,7 @@ export const premierLeague = {
         stadium: "Goodison Park",
         stadiumCapacity: "39571",
         city: "Liverpool, England",
-        logo: ever,
+        logo: "https://media.api-sports.io/football/teams/45.png",
         coach: 'Sean Dyche',
         players: [
             {

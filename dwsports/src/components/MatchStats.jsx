@@ -24,7 +24,7 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
   console.log(homeTeam)
   console.log(awayTeam)
 
-  const fetchData = async () => {
+  /* const fetchData = async () => {
         setLoading(true)
         const { data, error } = await supabase.from('teams').select('players').eq("name", homeTeam);
           if(error){
@@ -47,10 +47,9 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
 
   useEffect(() => {
     fetchData();
-  }, [])
+  }, []) */
 
-  console.log(homeTeamPlayers)
-  console.log(awayTeamPlayers)
+  
 
   const closeStatsMenu = () => {
     setMatchStatsMenu(false)
@@ -84,17 +83,20 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
             <StatsStadium>Stadium: </StatsStadium>
             <StatsStadiumCapacity>Capacity:  assistants</StatsStadiumCapacity>
             <StatsStadium>PLAYERS</StatsStadium>
-            <Wrapper>
+            {loading ? (
+              <CircularProgress color="secondary" />
+            ) : (
+              <Wrapper>
             <StatsPlayers>
             <div style={{marginBottom: '10px'}}>{homeTeam}</div>
               {homeTeamPlayers?.map(player => {
                 return(
-                  <StatPlayer>
+                  <StatPlayer key={player.name}>
                     <PlayerPicture style={{backgroundImage: `url(${player.photo})`, backgroundPosition: 'center',
                   backgroundSize: 'cover'}}>
                     </PlayerPicture>
                     <PlayerName>{player.name}</PlayerName>
-                    <PlayerNumber><PlayerDisplay>{player.number}</PlayerDisplay></PlayerNumber>
+                    <PlayerPicture><PlayerDisplay>{player.number}</PlayerDisplay></PlayerPicture>
                     <PlayerPosition>{player.position}</PlayerPosition>
                     <PlayerPicture>{player.yellow}</PlayerPicture>
                     <PlayerPicture>{player.goals}</PlayerPicture>
@@ -109,7 +111,7 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
             <div style={{marginBottom: '10px'}}>{awayTeam}</div>
               {awayTeamPlayers?.map(player => {
                 return(
-                  <StatPlayer>
+                  <StatPlayer key={player.name}>
                     <PlayerPicture style={{backgroundImage: `url(${player.photo})`, backgroundPosition: 'center',
                   backgroundSize: 'cover'}}>
                     </PlayerPicture>
@@ -126,6 +128,7 @@ const MatchStats = ({matchStatsMenu,setMatchStatsMenu,statsLoading}) => {
               })}
             </StatsPlayers>
             </Wrapper>
+            )}
             <StatsStadium>POSSIBLE LINEUP</StatsStadium>
             <MatchLineUp>
               <img src={matchToBet.lineup} alt="lineup" />

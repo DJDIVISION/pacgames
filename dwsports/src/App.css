@@ -54,6 +54,22 @@ a{
   justify-content: center;
 }
 
+.expandable-div {
+  width: 100%;
+  overflow: hidden;
+  
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 40px auto;
+}
+.hidden-content{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 60px 0;
+}
+
 .custom-input {
   border: 1px solid white; /* White border by default */
   outline: none; /* Remove the default outline */

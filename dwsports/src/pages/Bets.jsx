@@ -1,8 +1,11 @@
 import React, {useState,useEffect} from 'react'
 import Sports from '../components/Sports'
 import {BetSection,ArrowUp,SportsButtonRow,item,Match,BetWrapper,MatchColumn,MatchDate,MatchLogo,MatchTime,
-    MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft
+    MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft,MiniArrowDown,MiniArrowup
 } from './index'
+import {CloseStats,StatsSection,StatsWrapper,StatsStadium,StatsStadiumCapacity,MatchLineUp,
+    StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Column,Wrapper,PlayerDisplay
+  } from '../components/index'
 import Countries from '../components/Countries'
 import { BetState } from '../context/BetsContext'
 import Leagues from '../components/Leagues'
@@ -39,6 +42,28 @@ const Bets = () => {
     const {awayTeamLogo, setAwayTeamLogo} = BetState()
     const {homeTeamPlayers, setHomeTeamPlayers} = BetState()
     const {awayTeamPlayers, setAwayTeamPlayers} = BetState()
+    const [expandedId, setExpandedId] = useState(null)
+    const [loading, setLoading] = useState(false)
+
+    const toggleExpand = async (match) => {
+        setLoading(true)
+        setExpandedId(expandedId === match.id ? null : match.id)
+        const home = match.home.replace(/\s+/g, '');
+        const away = match.away.replace(/\s+/g, '');
+        console.log(home,away)
+        const { data, error } = await supabase.from('premierLeague').select(`${home}, ${away}`).eq("id", 1);
+        if(error){
+          console.log(error)
+        }
+        if(data){
+            console.log(data[0])
+          setHomeTeamPlayers(data[0][home][0].players)
+          setHomeTeam(data[0][home][0].name)
+          setAwayTeamPlayers(data[0][away][0].players)
+          setAwayTeam(data[0][away][0].name)
+        }
+        setLoading(false)
+    }
 
 
     /* useEffect(() => {
@@ -67,43 +92,26 @@ const Bets = () => {
         setBetsMenu(false)
     }
 
-    /* const [dataLoaded, setDataLoaded] = useState(false);
-
-    useEffect(() => {
-        if (premierLeague && premierMatches) {
-            setDataLoaded(true);
-        }
-    }, []);
-
-    if(!dataLoaded){
-        return(
-            <CircularProgress color="secondary" />
-        )
-    } */
-
-
+    
 
     const setHomes = async (match) => {
-        const { data, error } = await supabase.from('premierLeague').select(match.home).eq("id", 1);
+        const home = match.home.replace(/\s+/g, '');
+        const away = match.away.replace(/\s+/g, '');
+        console.log(home,away)
+        const { data, error } = await supabase.from('premierLeague').select(`${home}, ${away}`).eq("id", 1);
         if(error){
           console.log(error)
         }
         if(data){
-          setHomeTeamPlayers(data[0][match.home][0].players)
+          setHomeTeamPlayers(data[0][home][0].players)
+          setHomeTeam(data[0][home][0].name)
+          setAwayTeamPlayers(data[0][away][0].players)
+          setAwayTeam(data[0][away][0].name)
         }
-    }
-
-    const setAways = async (match) => {
-        const { data, error } = await supabase.from('premierLeague').select(match.away).eq("id", 1);
-        if(error){
-          console.log(error)
-        }
-        if(data){
-            setAwayTeamPlayers(data[0][match.away][0].players)
-        }
-        setMatchToBet(match)
         setMatchStatsMenu(true)
     }
+
+    
 
     const handleBetClick = (match, betType, oddValue, homeTeam, awayTeam) => {
         if(selectedBet === null){
@@ -157,7 +165,19 @@ const Bets = () => {
                 exit="exit">
                     {activeMatches.map((match) => {
                         return(
-                            <MatchWrapper key={match.id}>
+                            <motion.div
+                            key={match.id}
+                            initial={{ height: 150, width: '70%', border: '1px solid white', borderRadius: '10px' }} // Initial height
+                            animate={{ height: expandedId === match.id ? 'auto' : 150 }} // Conditionally expand based on id
+                            transition={{ duration: 0.5 }} // Duration of the animation
+                            className="expandable-div"
+                            style={{
+                                overflow: 'hidden',
+                                position: 'relative'
+                              }}
+                            >
+                            {!expandedId && <MiniArrowDown onClick={() => toggleExpand(match)}></MiniArrowDown>}
+                            {expandedId && <MiniArrowup onClick={() => toggleExpand(match)}></MiniArrowup>}
                         <Match >
                             <MatchColumn>
                                 <MatchLogo>
@@ -184,8 +204,57 @@ const Bets = () => {
                                 <MatchTeam>{match.away}</MatchTeam>
                             </MatchColumn>
                         </Match>
-                        <StatsIcon onClick={() => {setHomes(match); setAways(match);}}/>
-                        </MatchWrapper>
+                        {expandedId === match.id && (
+                            <div className="hidden-content">
+                            {loading ? (
+                                <CircularProgress color="secondary" />
+                            ) : (
+                                <Wrapper>
+            <StatsPlayers>
+              {homeTeamPlayers?.map(player => {
+                return(
+                  <StatPlayer key={player.name}>
+                    <PlayerPicture style={{backgroundImage: `url(${player.photo})`, backgroundPosition: 'center',
+                  backgroundSize: 'cover'}}>
+                    </PlayerPicture>
+                    <PlayerName>{player.name}</PlayerName>
+                    <PlayerPicture><PlayerDisplay>{player.number}</PlayerDisplay></PlayerPicture>
+                    <PlayerPosition>{player.position}</PlayerPosition>
+                    <PlayerPicture>{player.yellow}</PlayerPicture>
+                    <PlayerPicture>{player.goals}</PlayerPicture>
+                    <PlayerPicture>{player.assists}</PlayerPicture>
+                    <PlayerPicture>{player.rating}</PlayerPicture>
+                    <PlayerPicture>{player.available}</PlayerPicture>
+                  </StatPlayer>
+                )
+              })}
+            </StatsPlayers>
+            <StatsPlayers>
+              {awayTeamPlayers?.map(player => {
+                return(
+                  <StatPlayer key={player.name}>
+                    <PlayerPicture style={{backgroundImage: `url(${player.photo})`, backgroundPosition: 'center',
+                  backgroundSize: 'cover'}}>
+                    </PlayerPicture>
+                    <PlayerName>{player.name}</PlayerName>
+                    <PlayerNumber><PlayerDisplay>{player.number}</PlayerDisplay></PlayerNumber>
+                    <PlayerPosition>{player.position}</PlayerPosition>
+                    <PlayerPicture>{player.yellow}</PlayerPicture>
+                    <PlayerPicture>{player.goals}</PlayerPicture>
+                    <PlayerPicture>{player.assists}</PlayerPicture>
+                    <PlayerPicture>{player.rating}</PlayerPicture>
+                    <PlayerPicture>{player.available}</PlayerPicture>
+                  </StatPlayer>
+                )
+              })}
+            </StatsPlayers>
+            </Wrapper>
+                            )}
+                            
+                            </div>
+                        )}
+                        {/* <StatsIcon onClick={() => setHomes(match)}/> */}
+                        </motion.div>
                         )
                     })}
                         {/* {activeMatches.map((match) => {

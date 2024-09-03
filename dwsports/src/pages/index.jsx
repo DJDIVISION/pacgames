@@ -34,6 +34,27 @@ export const ArrowDown = styled(KeyboardArrowDownIcon)`
     }
 `;
 
+export const MiniArrowDown = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 9000;
+    }
+`;
+
+export const MiniArrowup = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 9000;
+        transform: rotate(180deg);
+    }
+`;
+
 export const ArrowLeft = styled(KeyboardArrowDownIcon)`
     &&&{
         color: ${props => props.theme.text};
@@ -89,12 +110,13 @@ export const MatchWrapper = styled.div`
 
 export const Match = styled.div`
     width: 70%;
-    height: 150px;
-    border: 1px solid ${props => props.theme.text};
+    height: ${({ expandedId }) => (expandedId ? 'auto' : '150px')};
+    
     display: flex;
     border-radius: 10px;
     margin-left: auto;
     margin-right: auto;
+    position: relative;
 `;
 
 export const BetWrapper = styled.div`

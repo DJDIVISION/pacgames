@@ -6,6 +6,7 @@ import { BetState } from '../context/BetsContext'
 import logo1 from '../assets/laliga.png'
 import premier from '../assets/premier.png'
 import serie from '../assets/serieA.png'
+import clubs from '../assets/clubs.png'
 
 const Leagues = () => {
 
