@@ -2,6 +2,73 @@ import styled from 'styled-components'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { motion } from 'framer-motion';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
+import GroupsIcon from '@mui/icons-material/Groups';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import StadiumIcon from '@mui/icons-material/Stadium';
+import ReduceCapacityIcon from '@mui/icons-material/ReduceCapacity';
+import SportsIcon from '@mui/icons-material/Sports';
+import HistoryIcon from '@mui/icons-material/History';
+
+export const Foundation = styled(HistoryIcon)`
+    &&&{
+        color: ${props => props.theme.text}; 
+        display: flex;
+        scale: 1.2;
+    }
+`;
+
+export const Coach = styled(SportsIcon)`
+    &&&{
+        color: ${props => props.theme.text}; 
+        display: flex;
+        scale: 1.2;
+    }
+`;
+
+export const Capacity = styled(ReduceCapacityIcon)`
+    &&&{
+        color: ${props => props.theme.text}; 
+        display: flex;
+        scale: 1.2;
+    }
+`;
+
+export const Stadium = styled(StadiumIcon)`
+    &&&{
+        color: ${props => props.theme.text}; 
+        display: flex;
+        scale: 1.2;
+    }
+`;
+
+
+export const AgeAverage = styled(CalendarTodayIcon)`
+    &&&{
+        color: ${props => props.theme.text}; 
+        display: flex;
+        scale: 1.2;
+    }
+`;
+
+export const TeamMembers = styled(GroupsIcon)`
+    &&&{
+        color: ${props => props.theme.text}; 
+        display: flex;
+        scale: 1.8;
+    }
+`;
+
+export const Row = styled.div`
+    width: 100%;
+    height: 50%;
+    display: flex;
+`;
+
+export const TeamStatsRow = styled.div`
+    width: 100%;
+    height: 200px;
+    display: flex;
+`;
 
 
 export const StatsIcon = styled(AnalyticsIcon)`
@@ -119,6 +186,137 @@ export const Match = styled.div`
     position: relative;
 `;
 
+export const LeftColumn = styled.div`
+    width: 70%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+export const RightColumn = styled.div`
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0;
+`;
+
+export const AccordionTitle = styled.div`
+    width: 100%;
+    height: 50px;
+    color: ${props => props.theme.text};
+    font-size: 18px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+`;
+
+export const RecentForm = styled.div`
+    width: 60%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+`;
+
+export const BorderedMatch = styled.div`
+    width: 90%;
+    height: 150px;
+    border: 1px solid ${props => props.theme.text};
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+`;
+
+export const SmallBorderedMatch = styled.div`
+    width: 40%;
+    height: 180px;
+    border: 1px solid ${props => props.theme.text};
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+`;
+
+export const SmallBorderedMatchRight = styled.div`
+    width: 90%;
+    height: 140px;
+    border: 1px solid ${props => props.theme.text};
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    margin: 10px auto 10px auto;
+`;
+
+export const Column = styled.div`
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+export const ColumnIcon = styled.div`
+    width: 100%;
+    height: 50%;
+    display: grid;
+    place-items: center;
+    
+`;
+
+export const SmallColumnText = styled.div`
+    width: 100%;
+    height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c2c2c2;
+    font-size: 12px;
+`;
+
+export const ArrivalsTitle = styled.div`
+    width: 100%;
+    height: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    color: #c2c2c2;
+    font-size: 16px;
+`;
+
+export const ArrivalsText = styled.div`
+    width: 100%;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    color: ${props => props.theme.text};
+    font-size: 18px;
+`;
+
+export const BigColumnText = styled.div`
+    width: 100%;
+    height: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.text};
+    font-size: 18px;
+`;
+
 export const BetWrapper = styled.div`
     width: 100vw;
     height: auto;
@@ -161,13 +359,13 @@ export const MatchColumn = styled.div`
     flex-direction: column;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     font-size: 18px;
 `;
 
 export const MatchTeam = styled.div`
     width: 100%;
-    height: 20%;
+    height: 30%;
     color: ${props => props.theme.text};
     font-size: 26px;
     display: flex;
@@ -213,10 +411,114 @@ export const MatchLogo = styled.div`
     align-items: center;
     justify-content: center;
     img{
-        width: 25%;
+        width: 35%;
         display: block;
         object-fit: contain;
     }
+`;
+
+export const TeamStatsLogo = styled.div`
+    width: 30%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid white;
+    img{
+        width: 75%;
+        display: block;
+        object-fit: contain;
+    }
+`;
+
+export const TeamStatsWrapper = styled.div`
+    width: 70%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 15px;
+`;
+
+export const TeamStatsName = styled.div`
+    width: 100%;
+    height: 40%;
+    color: white;
+    font-size: 38px;
+    padding: 0 10px; 
+`;
+
+export const TeamStatsRating = styled.div`
+    width: 100%;
+    height: 40%;
+    color: white;
+    font-size: 20px;
+    padding: 0 10px; 
+    display: flex;
+    align-items: center;
+    strong{
+        font-size: 24px;
+        
+    }
+    span{
+        width: 20px;
+        height: 30px;
+        background: green;
+        border: 1px solid black;
+        margin-left: 5px;
+        transform: translateY(-2px);
+    }
+`;
+
+export const TeamRatingTitle = styled.div`
+    width: 120px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+`;
+
+export const TeamRating = styled.div`
+    width: 70px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const TeamRatingCard = styled.div`
+    width: 20%;
+    height: 100%;
+    border: 1px solid red;
+    //padding: 0 10px; 
+    display: flex;
+    align-items: center;
+`;
+
+export const TeamStatCountry = styled.div`
+    width: 100%;
+    height: 25%;
+    color: white;
+    font-size: 38px;
+    //padding: 0 10px;
+    display: flex;
+`;
+
+export const StatsCountryAvatar = styled.div`
+    width: 10%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const StatsCountryLocation = styled.div`
+    width: 60%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    //padding: 0 10px;
+    color: ${props => props.theme.text};
+    font-size: 18px;
 `;
 
 export const HomeSection = styled.div`
@@ -225,6 +527,13 @@ export const HomeSection = styled.div`
     background: ${props => props.theme.body};
     display: flex;
     flex-direction: column;
+`;
+
+export const TeamStatsSection = styled.div`
+    width: 100vw;
+    min-height: 100vh;
+    background: ${props => props.theme.body};
+    display: flex;
 `;
 
 export const LoginSection = styled.div`

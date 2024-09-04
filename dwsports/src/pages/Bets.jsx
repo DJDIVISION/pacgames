@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react'
+import React, {useState,useEffect,useRef} from 'react'
 import Sports from '../components/Sports'
 import {BetSection,ArrowUp,SportsButtonRow,item,Match,BetWrapper,MatchColumn,MatchDate,MatchLogo,MatchTime,
     MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft,MiniArrowDown,MiniArrowup
@@ -21,6 +21,7 @@ import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import { supabase } from '../supabase/client'
+import { useNavigate } from 'react-router-dom'
 
 const Bets = () => {
 
@@ -32,6 +33,7 @@ const Bets = () => {
     const {activeSport, setActiveSport} = BetState();
     const {activeCountry, setActiveCountry} = BetState();
     const {activeLeague, setActiveLeague} = BetState();
+    const {activeTeam, setActiveTeam} = BetState();
     const {activeMatches, setActiveMatches} = BetState();
     const {homeTeam, setHomeTeam} = BetState([])
     const {awayTeam, setAwayTeam} = BetState([])
@@ -44,6 +46,8 @@ const Bets = () => {
     const {awayTeamPlayers, setAwayTeamPlayers} = BetState()
     const [expandedId, setExpandedId] = useState(null)
     const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
+    
 
     const toggleExpand = async (match) => {
         setLoading(true)
@@ -57,10 +61,10 @@ const Bets = () => {
         }
         if(data){
             console.log(data[0])
-          setHomeTeamPlayers(data[0][home][0].players)
-          setHomeTeam(data[0][home][0].name)
-          setAwayTeamPlayers(data[0][away][0].players)
-          setAwayTeam(data[0][away][0].name)
+            setHomeTeamPlayers(data[0][home][0].players)
+            setHomeTeam(data[0][home][0].name)
+            setAwayTeamPlayers(data[0][away][0].players)
+            setAwayTeam(data[0][away][0].name)
         }
         setLoading(false)
     }
@@ -94,21 +98,31 @@ const Bets = () => {
 
     
 
-    const setHomes = async (match) => {
+    const openHomeTeam = async (match) => {
         const home = match.home.replace(/\s+/g, '');
-        const away = match.away.replace(/\s+/g, '');
-        console.log(home,away)
-        const { data, error } = await supabase.from('premierLeague').select(`${home}, ${away}`).eq("id", 1);
+        const { data, error } = await supabase.from('teamStats').select(home).eq("id", 1);
         if(error){
           console.log(error)
         }
         if(data){
-          setHomeTeamPlayers(data[0][home][0].players)
-          setHomeTeam(data[0][home][0].name)
-          setAwayTeamPlayers(data[0][away][0].players)
-          setAwayTeam(data[0][away][0].name)
+            setActiveTeam(data[0][home][0])
+            
         }
-        setMatchStatsMenu(true)
+        navigate(`/team/${match.homeId}`)
+    }
+
+    const openAwayTeam = async (match) => {
+        const away = match.away.replace(/\s+/g, '');
+        console.log(away)
+        const { data, error } = await supabase.from('teamStats').select(away).eq("id", 1);
+        if(error){
+          console.log(error)
+        }
+        if(data){
+            setActiveTeam(data[0][away][0])
+            
+        }
+        navigate(`/team/${match.awayId}`)
     }
 
     
@@ -167,7 +181,7 @@ const Bets = () => {
                         return(
                             <motion.div
                             key={match.id}
-                            initial={{ height: 150, width: '70%', border: '1px solid white', borderRadius: '10px' }} // Initial height
+                            initial={{ height: 150, border: '1px solid white', borderRadius: '10px' }} // Initial height
                             animate={{ height: expandedId === match.id ? 'auto' : 150 }} // Conditionally expand based on id
                             transition={{ duration: 0.5 }} // Duration of the animation
                             className="expandable-div"
@@ -179,7 +193,7 @@ const Bets = () => {
                             {!expandedId && <MiniArrowDown onClick={() => toggleExpand(match)}></MiniArrowDown>}
                             {expandedId && <MiniArrowup onClick={() => toggleExpand(match)}></MiniArrowup>}
                         <Match >
-                            <MatchColumn>
+                            <MatchColumn style={{transform: 'translateX(-50px)', cursor: 'pointer'}} onClick={() => openHomeTeam(match)}>
                                 <MatchLogo>
                                     <img src={match.homeLogo} alt="homeTeam" />
                                 </MatchLogo>
@@ -197,7 +211,7 @@ const Bets = () => {
                                         onClick={() => handleBetClick(match, '2', match[2], homeTeam, awayTeam)}><span>2 - </span>{(match[2]).toFixed(2)}</OddsColumn>
                                 </MatchOdds>
                             </MatchColumn>
-                            <MatchColumn>
+                            <MatchColumn style={{transform: 'translateX(50px)', cursor: 'pointer'}} onClick={() => openAwayTeam(match)}>
                                 <MatchLogo>
                                     <img src={match.awayLogo} alt="awayTeam" />
                                 </MatchLogo>
@@ -257,50 +271,6 @@ const Bets = () => {
                         </motion.div>
                         )
                     })}
-                        {/* {activeMatches.map((match) => {
-                            console.log(match)
-                            const homeTeam = activeLeague[match.home];
-                            const awayTeam = activeLeague[match.away];
-                            if(homeTeam && awayTeam){
-                                setHomeTeamPlayers(homeTeam.players)
-                                setAwayTeamPlayers(awayTeam.players)
-                            }
-                            if (!homeTeam || !awayTeam) {
-                                console.warn(`Team data missing for: ${match.home} or ${match.away}`);
-                                return null;
-                            }
-                    return(
-                        <MatchWrapper key={match.id}>
-                        <Match >
-                            <MatchColumn>
-                                <MatchLogo>
-                                    <img src={homeTeam.logo} alt="homeTeam" />
-                                </MatchLogo>
-                                <MatchTeam>{homeTeam.name}</MatchTeam>
-                            </MatchColumn>
-                            <MatchColumn>
-                                <MatchDate>{match.date}</MatchDate>
-                                <MatchTime>{match.time}</MatchTime>
-                                <MatchOdds>
-                                    <OddsColumn isSelected={selectedBet?.match.id === match.id && selectedBet?.betType === '1'}
-                                        onClick={() => handleBetClick(match, '1', match[1], homeTeam, awayTeam)}><span>1 - </span>{(match[1]).toFixed(2)}</OddsColumn>
-                                    <OddsColumn isSelected={selectedBet?.match.id === match.id && selectedBet?.betType === 'X'}
-                                        onClick={() => handleBetClick(match, 'X', match.X, homeTeam, awayTeam)}><span>X - </span>{(match.X).toFixed(2)}</OddsColumn>
-                                    <OddsColumn isSelected={selectedBet?.match.id === match.id && selectedBet?.betType === '2'}
-                                        onClick={() => handleBetClick(match, '2', match[2], homeTeam, awayTeam)}><span>2 - </span>{(match[2]).toFixed(2)}</OddsColumn>
-                                </MatchOdds>
-                            </MatchColumn>
-                            <MatchColumn>
-                                <MatchLogo>
-                                    <img src={awayTeam.logo} alt="awayTeam" />
-                                </MatchLogo>
-                                <MatchTeam>{awayTeam.name}</MatchTeam>
-                            </MatchColumn>
-                        </Match>
-                        <StatsIcon onClick={() => setStats(match,homeTeam,awayTeam)}/>
-                        </MatchWrapper>
-                    )
-                })} */}
                 </motion.div>
                 </BetWrapper>
                 </>

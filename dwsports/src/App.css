@@ -55,12 +55,20 @@ a{
 }
 
 .expandable-div {
-  width: 100%;
+  width: 70%;
   overflow: hidden;
   
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 40px auto;
 }
+
+.expandable-smalldiv {
+  width: 90%;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 10px 0px;
+}
+
 .hidden-content{
   position: relative;
   display: flex;
@@ -68,6 +76,15 @@ a{
   justify-content: center;
   width: 100%;
   padding: 60px 0;
+}
+
+.hidden-content2{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 15px;
 }
 
 .custom-input {

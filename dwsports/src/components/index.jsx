@@ -411,6 +411,7 @@ export const StatPlayer = styled.div`
     align-items: center;
 `;
 
+
 export const PlayerPicture = styled.div`
     width: 10%;
     height: 100%;
