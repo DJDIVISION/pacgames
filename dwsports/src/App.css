@@ -50,7 +50,7 @@ a{
   display:flex;
   background-color:orange;
   flex-direction: column;
-  z-index: 9000;
+  z-index: 1000;
   justify-content: center;
 }
 
@@ -108,4 +108,30 @@ a{
   -webkit-appearance: none;
   margin: 0;
 }
+
+#dealer-cards img {
+  height: 150px;
+  width: 100px;
+  margin: 0 5px;
+}
+
+#your-cards img {
+  height: 175px;
+  width: 125px;
+  margin: 1px;
+}
+
+#hit {
+  width: 100px;
+  height: 50px;
+  font-size: 20px;
+}
+
+#stay {
+  width: 100px;
+  height: 50px;
+  font-size: 20px;
+}
+
+
 

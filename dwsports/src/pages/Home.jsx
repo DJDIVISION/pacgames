@@ -27,14 +27,14 @@ const Home = () => {
           name: user.user_metadata.full_name,
           avatar: user.user_metadata.avatar_url
         }
-        const { data, error } = await supabase
+        /* const { data, error } = await supabase
           .from('user_logins')
           .insert([updatedData])
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
             console.log('User session data saved:', data)
-          }
+          } */
       } else {
         // If no user is found, redirect to the login page
         navigate('/login')

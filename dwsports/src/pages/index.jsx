@@ -8,6 +8,15 @@ import StadiumIcon from '@mui/icons-material/Stadium';
 import ReduceCapacityIcon from '@mui/icons-material/ReduceCapacity';
 import SportsIcon from '@mui/icons-material/Sports';
 import HistoryIcon from '@mui/icons-material/History';
+import ReadMoreIcon from '@mui/icons-material/ReadMore';
+
+export const ReadMore = styled(ReadMoreIcon)`
+    &&&{
+        color: ${props => props.theme.text}; 
+        display: flex;
+        scale: 0.8;
+    }
+`;
 
 export const Foundation = styled(HistoryIcon)`
     &&&{
@@ -97,7 +106,6 @@ export const ArrowDown = styled(KeyboardArrowDownIcon)`
         position: absolute;
         top: 30px;
         left: 20px;
-        z-index: 9000;
     }
 `;
 
@@ -107,7 +115,6 @@ export const MiniArrowDown = styled(KeyboardArrowDownIcon)`
         position: absolute;
         bottom: 10px;
         right: 10px;
-        z-index: 9000;
     }
 `;
 
@@ -117,7 +124,6 @@ export const MiniArrowup = styled(KeyboardArrowDownIcon)`
         position: absolute;
         bottom: 10px;
         right: 10px;
-        z-index: 9000;
         transform: rotate(180deg);
     }
 `;
@@ -129,7 +135,6 @@ export const ArrowLeft = styled(KeyboardArrowDownIcon)`
         position: absolute;
         top: 30px;
         left: 20px;
-        z-index: 9000;
         transform: rotate(90deg);
     }
 `;
@@ -141,7 +146,6 @@ export const ArrowUp = styled(KeyboardArrowDownIcon)`
         position: absolute;
         top: 30px;
         left: 20px;
-        z-index: 9000;
         transform: rotate(180deg);
     }
 `;
@@ -235,6 +239,17 @@ export const BorderedMatch = styled.div`
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
+`;
+
+export const BorderedPlayer = styled.div`
+    width: 90%;
+    height: 150px;
+    border: 1px solid ${props => props.theme.text};
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-top: 10vh;
 `;
 
 export const SmallBorderedMatch = styled.div`
@@ -331,7 +346,7 @@ export const OddsColumn = styled.div`
     height: 100%;
     display: flex;
     border: 1px solid ${props => props.theme.text};
-    background-color: ${({ isSelected }) => (isSelected ? 'green' : 'initial')};
+    background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -418,7 +433,7 @@ export const MatchLogo = styled.div`
 `;
 
 export const TeamStatsLogo = styled.div`
-    width: 30%;
+    width: 20%;
     height: 100%;
     display: flex;
     align-items: center;
@@ -432,17 +447,18 @@ export const TeamStatsLogo = styled.div`
 `;
 
 export const TeamStatsWrapper = styled.div`
-    width: 70%;
+    width: 40%;
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 0 15px;
+    border: 1px solid red;
 `;
 
 export const TeamStatsName = styled.div`
     width: 100%;
-    height: 40%;
+    height: 33%;
     color: white;
     font-size: 38px;
     padding: 0 10px; 
@@ -450,7 +466,7 @@ export const TeamStatsName = styled.div`
 
 export const TeamStatsRating = styled.div`
     width: 100%;
-    height: 40%;
+    height: 33%;
     color: white;
     font-size: 20px;
     padding: 0 10px; 
@@ -471,7 +487,7 @@ export const TeamStatsRating = styled.div`
 `;
 
 export const TeamRatingTitle = styled.div`
-    width: 120px;
+    width: 150px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -496,10 +512,10 @@ export const TeamRatingCard = styled.div`
 
 export const TeamStatCountry = styled.div`
     width: 100%;
-    height: 25%;
+    height: 33%;
     color: white;
     font-size: 38px;
-    //padding: 0 10px;
+    padding: 0 10px;
     display: flex;
 `;
 
@@ -509,6 +525,7 @@ export const StatsCountryAvatar = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-right: 10px;
 `;
 
 export const StatsCountryLocation = styled.div`
@@ -534,6 +551,49 @@ export const TeamStatsSection = styled.div`
     min-height: 100vh;
     background: ${props => props.theme.body};
     display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const BlackJackTitle = styled.div`
+    width: 100%;
+    height: 30vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.text};
+    font-size: 98px;
+    margin-bottom: 100px;
+`;
+
+export const BlackJackColumn = styled.div`
+    width: 25%;
+    height: 100%;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.text};
+    font-size: 24px;
+    
+`;
+
+export const BlackJackBigColumn = styled.div`
+    width: 50%;
+    height: 100%;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const RouletteSection = styled.div`
+    width: 100vw;
+    height: 100vh;
+    background: ${props => props.theme.body};
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `;
 
 export const LoginSection = styled.div`

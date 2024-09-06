@@ -6,10 +6,10 @@ import {BetSection,ArrowUp,SportsButtonRow,item,BorderedMatch,BetWrapper,MatchCo
   MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft,MiniArrowDown,MiniArrowup,TeamStatsSection,LeftColumn,
   RightColumn,TeamStatsWrapper,TeamStatsName,TeamStatCountry,StatsCountryAvatar,StatsCountryLocation,TeamStatsRating,
   TeamRatingTitle,TeamRating,AccordionTitle,SmallBorderedMatch,TeamMembers,Row,Column,ColumnIcon,SmallColumnText,BigColumnText,
-  Stadium,Capacity,Coach,Foundation,RecentForm,TeamStatsRow,SmallBorderedMatchRight,ArrivalsText,ArrivalsTitle
+  Stadium,Capacity,Coach,Foundation,RecentForm,TeamStatsRow,SmallBorderedMatchRight,ArrivalsText,ArrivalsTitle,ReadMore
 } from './index'
 import {CloseStats,StatsSection,StatsWrapper,StatsStadium,StatsStadiumCapacity,MatchLineUp,
-  StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Wrapper,PlayerDisplay
+  StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Wrapper,PlayerDisplay,PlayerBigPicture
 } from '../components/index'
 import { Avatar } from '@mui/material';
 import england from '../assets/england.png'
@@ -18,6 +18,7 @@ import italy from '../assets/england.png'
 import CountUp from '../animations/CountUp';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom'
+import {Link as LinkR} from 'react-router-dom'
 
 
 const TeamStats = () => {
@@ -38,6 +39,7 @@ const TeamStats = () => {
   const {homeTeamPlayers, setHomeTeamPlayers} = BetState()
   const {awayTeamPlayers, setAwayTeamPlayers} = BetState()
   const {activeLeague, setActiveLeague} = BetState();
+  const {activePlayer, setActivePlayer} = BetState();
   const navigate = useNavigate()
 
   console.log(activeCountry)
@@ -56,18 +58,19 @@ const TeamStats = () => {
     const deff = activeTeam.Defending
     const pass = activeTeam.Passes
     const oth = activeTeam.Other
+    const home = activeTeam.name.replace(/\s+/g, '');
     setSummary(sum[0])
     setAttacking(att[0])
     setDefense(deff[0])
     setPasses(pass[0])
     setOther(oth[0])
-    const { data, error } = await supabase.from('premierLeague').select(activeTeam.name).eq("id", 1);
+    const { data, error } = await supabase.from("premierLeague").select(home).eq("id", 1);
         if(error){
           console.log(error)
         }
         if(data){
-          console.log(data[0][activeTeam.name])
-          setHomeTeamPlayers(data[0][activeTeam.name][0].players)
+          console.log(data[0])
+          setHomeTeamPlayers(data[0][home][0].players)
         }
   }
 
@@ -146,13 +149,33 @@ const TeamStats = () => {
     }
   }
   
-  console.log(activeTeam.recentForm)
+
+  const goBack = () => {
+    setHomeTeamPlayers([])
+    navigate("/bets")
+  }
+
+  const setPlayer = async (player) => {
+    setActivePlayer(player)
+    console.log(player)
+    const id = player.player_id.toString
+    const home = activeTeam.name.replace(/\s+/g, '');
+    const { data, error } = await supabase.from(home).select(id).eq("id", 1);
+        if(error){
+          console.log(error)
+        }
+        if(data){
+          console.log(data[0])
+          //setHomeTeamPlayers(data[0][home][0].players)
+        }
+    /* navigate(`/player/${player.player_id}`) */
+  }
   
 
   return (
     <TeamStatsSection>
       <LeftColumn>
-        <ArrowLeft onClick={() => navigate("/bets")}/>
+        <ArrowLeft onClick={goBack}/>
         <RecentForm>
           {activeTeam.recentForm.map((letter, index) => {
             return(
@@ -239,13 +262,15 @@ const TeamStats = () => {
                   backgroundSize: 'cover'}}>
                     </PlayerPicture>
                     <PlayerName>{player.name}</PlayerName>
-                    <PlayerPicture><PlayerDisplay>{player.number}</PlayerDisplay></PlayerPicture>
+                    <PlayerBigPicture><PlayerDisplay>{player.number}</PlayerDisplay></PlayerBigPicture>
                     <PlayerPosition>{player.position}</PlayerPosition>
-                    <PlayerPicture>{player.yellow}</PlayerPicture>
-                    <PlayerPicture>{player.goals}</PlayerPicture>
-                    <PlayerPicture>{player.assists}</PlayerPicture>
-                    <PlayerPicture>{player.rating}</PlayerPicture>
-                    <PlayerPicture>{player.available}</PlayerPicture>
+                    <PlayerBigPicture>{player.yellow}</PlayerBigPicture>
+                    <PlayerBigPicture>{player.red}</PlayerBigPicture>
+                    <PlayerBigPicture>{player.goals}</PlayerBigPicture>
+                    <PlayerBigPicture>{player.assists}</PlayerBigPicture>
+                    <PlayerBigPicture>{player.rating}</PlayerBigPicture>
+                    <PlayerBigPicture>{player.available}</PlayerBigPicture>
+                    <PlayerBigPicture><ReadMore onClick={() => setPlayer(player)}/></PlayerBigPicture>
                   </StatPlayer>
                 )
               })}
@@ -285,7 +310,7 @@ const TeamStats = () => {
             </motion.div>
             <motion.div
                 initial={{ height: 50, border: '1px solid white', borderRadius: '10px'}} // Initial height
-                animate={{ height: isAttackExpanded ? 800 : 50 }} // Height transitions between 100px and 300px
+                animate={{ height: isAttackExpanded ? 700 : 50 }} // Height transitions between 100px and 300px
                 transition={{ duration: 0.3 }} // Duration of the animation
                 className="expandable-smalldiv"
                 style={{

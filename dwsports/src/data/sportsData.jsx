@@ -7658,7 +7658,6 @@ export const premierLeague = {
                 height: "181cm",
                 available: "✅",
                 shots: 0.5,
-                shots: 0.7
             },
             {
                 name: "Adam Wharton",
@@ -8692,8 +8691,6 @@ export const premierLeague = {
                 number: 39,
                 foot: "Right",
                 value: 16.5,
-                foot: "Right",
-                value: 4.5,
                 photo: "https://media.api-sports.io/football/players/149564.png",
                 nationality: "ENG",
                 birth: "26 Apr 2002",

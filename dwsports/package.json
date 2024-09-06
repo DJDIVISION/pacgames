@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.0.0",
@@ -21,14 +22,22 @@
     "@tonconnect/ui-react": "^2.0.9",
     "antd": "^5.20.3",
     "axios": "^1.7.5",
+    "core-js": "^3.38.1",
     "framer-motion": "^11.3.30",
     "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
+    "raf": "^3.4.1",
     "react": "^18.3.1",
+    "react-compound-slider": "^3.4.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
     "react-scroll": "^1.9.0",
+    "react-transition-group": "^4.4.5",
+    "socket.io-client": "^4.7.5",
     "styled-components": "^6.1.12",
-    "ton": "^13.9.0"
+    "sweetalert2": "^11.13.2",
+    "ton": "^6.13.1",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

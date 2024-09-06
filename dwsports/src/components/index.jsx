@@ -299,6 +299,7 @@ export const Switcher = styled.div`
     width: 100%;
     height: 100px;
     display: flex;
+    margin-top: 50px;
     align-items: center;
     justify-content: center;
 `;
@@ -413,7 +414,17 @@ export const StatPlayer = styled.div`
 
 
 export const PlayerPicture = styled.div`
-    width: 10%;
+    width: 5%;
+    height: 100%;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.text};
+`;
+
+export const PlayerBigPicture = styled.div`
+    width: 7.5%;
     height: 100%;
     border: 1px solid white;
     display: flex;

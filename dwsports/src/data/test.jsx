@@ -1,222 +1,353 @@
 [
     {
-      "id": 18,
-      "city": "Ipswich, England",
-      "logo": "https://media.api-sports.io/football/teams/57.png",
-      "name": "Ipswich",
-      "Other": [
-        {
-          "Red cards": 0,
-          "Fouls per game": 13,
-          "Aerial duels won": "9.7 (45.3%)",
-          "Ground duels won": "33.3 (48.1%)",
-          "Offsides per game": 3.3,
-          "Duels won per game": "43 (47.4%)",
-          "Throw-ins per game": 10.3,
-          "Goal kicks per game": 5.3,
-          "Yellow cards per game": 2.7,
-          "Possession lost per game": 98
-        }
-      ],
-      "coach": "Kieran McKenna",
-      "Passes": [
-        {
-          "Acc. crosses": "2.7 (26.7%)",
-          "Acc. own half": "171 (89.9%)",
-          "Acc. long balls": "11.3 (42.5%)",
-          "Ball possession": "37.3%",
-          "Accurate per game": "272 (82.3%)",
-          "Acc. opposition half": "104 (69%)"
-        }
-      ],
-      "Summary": [
-        {
-          "Assists": 2,
-          "Matches": 3,
-          "Goals scored": 2,
-          "Goals conceded": 7
-        }
-      ],
-      "stadium": "Portman Road Stadium",
-      "Arrivals": [
-        "Chiedozie Ogbene",
-        "Dara O'Shea",
-        "Jack Clarke"
-      ],
-      "Attacking": [
-        {
-          "Headed goals": 0,
-          "Hit woodwork": 0,
-          "Penalty goals": 0,
-          "Goals per game": 0.7,
-          "Counter attacks": 5,
-          "Free kick goals": "0/1",
-          "Left foot goals": 0,
-          "Corners per game": 3.7,
-          "Right foot goals": 2,
-          "Free kicks per game": 11.7,
-          "Big chances per game": 0.7,
-          "Total shots per game": 6.3,
-          "Blocked shots per game": 2.3,
-          "Succ. dribbles per game": 5,
-          "Shots on target per game": 2.3,
-          "Goals from inside the box": "0/11",
-          "Shots off target per game": 1.7,
-          "Big chances missed per game": 0.3,
-          "Goals from outside  the box": "2/8"
-        }
-      ],
-      "Defending": [
-        {
-          "Clean sheets": 0,
-          "Saves per game": 2.3,
-          "Last man tackle": 0,
-          "Tackles per game": 16.7,
-          "Clearance off line": 0,
-          "Clearances per game": 32.7,
-          "Penalties committed": 1,
-          "Errors leading to goal": 2,
-          "Errors leading to shot": 0,
-          "Interceptions per game": 7.7,
-          "Penalty goals conceded": 1,
-          "Goals conceded per game": 2.3,
-          "Balls recovered per game": 40
-        }
-      ],
-      "Departures": [
-        "George Edmundson",
-        "Freddie Ladapo",
-        "Marcus Harness"
-      ],
-      "recentForm": [
-        "W",
-        "W",
-        "W",
-        "L",
-        "W",
-        "W",
-        "L",
-        "L",
-        "E",
-        "E"
-      ],
-      "teamRating": 6.6,
-      "Tournaments": [
-        "Premier League",
-        "FA Cup",
-        "EFL Cup"
-      ],
-      "totalPlayers": 27,
-      "foreignPlayers": 14,
-      "foundationDate": "16 Oct 1878",
-      "stadiumCapacity": "29673",
-      "averagePlayerAge": 25.7,
-      "nationalTeamPlayers": 8
-    }
-  ]
+        "age": 32,
+        "foot": "Right",
+        "name": "Jorginho",
+        "birth": "20 Dec 1991",
+        "photo": "https://media.api-sports.io/football/players/2289.png",
+        "value": 13,
+        "height": "180cm",
+        "number": 20,
+        "rating": 7.20,
+        "position": "Midfielder",
+        "available": "✅",
+        "player_id": 96,
+        "nationality": "ITALY",
+        "Matches": [
+          {
+              "Total played": 1,
+              "Started": 0,
+              "Minutes per game": 13,
+              "Team of the week": 0
+          }
+        ],
+        "Attacking": [
+          {
+              "Goals": 1,
+              "Expected Goals (xG)": 0,
+              "Scoring frequency": 0,
+              "Goals per game": 0,
+              "Shots per game": 0,
+              "Shots on target per game": 0,
+              "Big chances missed": 0,
+              "Goal conversion": 0,
+              "Penalty goals": 0,
+              "Penalty conversion": 0,
+              "Free kick goals": 0,
+              "Free kick conversion": 0,
+              "Goals from inside the box": 0,
+              "Goals from outside the box": 0,
+              "Headed goals": 0,
+              "Left foot goals": 0,
+              "Right foot goals": 0,
+              "Penalty won": 0
+          }
+        ],
+        "Passing": [
+          {
+              "Assists": 0,
+              "Expected Assists (xA)": 0,
+              "Touches": 16,
+              "Big chances created": 1,
+              "Key passes": 0.7,
+              "Accurate per game": "8.0 (89%)",
+              "Acc. own half": "3.0 (75%)",
+              "Acc. opposition half": "5.0 (100%)",
+              "Acc. long balls": "0.0 (0%)",
+              "Acc. chipped passes": "0.0 (0%)",
+              "Acc. crosses": "0.0 (0%)"
+          }
+        ],
+        "Defending": [
+          {
+              "Interceptions per game": 2.0,
+              "Tackles per game": 1.0,
+              "Possession won": 0,
+              "Balls recovered per game": 3.3,
+              "Dribbled past per game": 0.7,
+              "Clearances per game": 1.0,
+              "Error led to shot": 0,
+              "Error led to goal": 0,
+              "Penalties committed": 0
+          }
+        ],
+        "Other": [
+          {
+              "Succ. dribbles": "0.0 (0%)",
+              "Total duels won": "3.0 (100%)",
+              "Ground duels won": "3.0 (100%)",
+              "Aerial duels won": "0.0 (0%)",
+              "Possession lost": 1.0,
+              "Fouls": 0.0,
+              "Was fouled": 2.0,
+              "Offsides": 0.0
+          }
+        ],
+        "Cards": [
+          {
+              "Yellow": 0,
+              "Yellow-Red": 0,
+              "Red cards": 0
+          }
+        ],
+        "Ratings": ["", "", "", 7.2, 6.9]
+      }
+]
 
-[
+  [
     {
-      "id": 6, 
-      "city": "Newcastle upon Tyne, England",
-      "logo": "https://media.api-sports.io/football/teams/34.png",
-      "name": "Newcastle",
-      "coach": "Eddie Howe",
-      "stadium": "St James' Park",
-      "stadiumCapacity": "52409",
-      "recentForm": ["L","W","W","L","W","W","W","E","E","W"],
-      "Other": [
+    
+      "players": [
         {
-            "Duels won per game": "47.7 (49.1%)",
-            "Ground duels won": "38.3 (50.7%)",
-            "Aerial duels won": "9.3 (43.8%)",
-            "Possession lost per game": 129.7,
-            "Throw-ins per game": 17.3,
-            "Goal kicks per game": 9.3,
-            "Offsides per game": 1,
-            "Fouls per game": 13,
-            "Yellow cards per game": 2.7,
-             "Red cards": 1
+          "age": 29,
+          "foot": "Right",
+          "name": "Raheem Sterling",
+          "birth": "8 Dec 1994",
+          "photo": "https://media.api-sports.io/football/players/645.png",
+          "value": 35,
+          "height": "170cm",
+          "number": 7,
+          "rating": 6.93,
+          "position": "Midfielder",
+          "available": "✅",
+          "player_id": 93,
+          "nationality": "ENG"
+        },
+        {
+          "age": 32,
+          "foot": "Right",
+          "name": "Jorginho",
+          "birth": "20 Dec 1991",
+          "photo": "https://media.api-sports.io/football/players/2289.png",
+          "value": 13,
+          "height": "180cm",
+          "number": 20,
+          "rating": 6.99,
+          "position": "Midfielder",
+          "available": "✅",
+          "player_id": 96,
+          "nationality": "ITA"
+        },
+        {
+          "age": 28,
+          "foot": "Left",
+          "name": "Mikel Merino",
+          "birth": "22 Jun 1996",
+          "photo": "",
+          "value": 52,
+          "height": "188cm",
+          "number": 8,
+          "rating": 7.3,
+          "position": "Midfielder",
+          "available": "✅",
+          "player_id": 97,
+          "nationality": "ESP"
+        },
+        {
+          "age": 17,
+          "foot": "Left",
+          "name": "Myles Lewis-Skelly",
+          "birth": "26 Sept 2006",
+          "photo": "",
+          "value": 2.1,
+          "height": "178cm",
+          "number": 49,
+          "rating": 6.96,
+          "position": "Midfielder",
+          "available": "✅",
+          "player_id": 98,
+          "nationality": "ENG"
+        },
+        {
+          "age": 21,
+          "foot": "Right",
+          "name": "Salah Oulad M'Hand",
+          "birth": "20 Aug 2003",
+          "photo": "",
+          "value": 0.45,
+          "height": "183cm",
+          "number": 56,
+          "rating": 6.85,
+          "position": "Midfielder",
+          "available": "✅",
+          "player_id": 99,
+          "nationality": "NED"
+        },
+        {
+          "age": 23,
+          "foot": "Right",
+          "name": "William Saliba",
+          "birth": "24 Mar 2001",
+          "photo": "https://media.api-sports.io/football/players/22090.png",
+          "value": 75,
+          "height": "193cm",
+          "number": 2,
+          "rating": 6.98,
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 100,
+          "nationality": "FRA"
+        },
+        {
+          "age": 27,
+          "foot": "Left",
+          "name": "Oleksandr Zinchenko",
+          "birth": "15 Dec 1996",
+          "photo": "https://media.api-sports.io/football/players/641.png",
+          "value": 39,
+          "height": "175cm",
+          "number": 17,
+          "rating": 7.05,
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 101,
+          "nationality": "UKR"
+        },
+        {
+          "age": 26,
+          "foot": "Left",
+          "name": "Gabriel Magalhães",
+          "birth": "19 Dec 1997",
+          "photo": "https://media.api-sports.io/football/players/22224.png",
+          "shots": 0.7,
+          "value": 65,
+          "height": "190cm",
+          "number": 6,
+          "rating": 7.16,
+          "yellow": "1 🟨",
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 102,
+          "nationality": "BRA"
+        },
+        {
+          "age": 25,
+          "foot": "Right",
+          "name": "Takehiro Tomiyasu",
+          "birth": "5 Nov 1998",
+          "photo": "https://media.api-sports.io/football/players/2597.png",
+          "value": 38,
+          "height": "188cm",
+          "number": 18,
+          "rating": 6.95,
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 103,
+          "nationality": "JPN"
+        },
+        {
+          "age": 24,
+          "foot": "Left",
+          "name": "Jakub Kiwior",
+          "birth": "15 Feb 2000",
+          "photo": "https://media.api-sports.io/football/players/61431.png",
+          "value": 31,
+          "height": "189cm",
+          "number": 15,
+          "rating": 6.9,
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 104,
+          "nationality": "POL"
+        },
+        {
+          "age": 26,
+          "foot": "Right",
+          "name": "Benjamin White",
+          "birth": "8 Oct 1997",
+          "photo": "https://media.api-sports.io/football/players/19959.png",
+          "shots": 1,
+          "value": 50,
+          "height": "186cm",
+          "number": 4,
+          "rating": 7.12,
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 105,
+          "nationality": "ENG",
+          "targetShots": 0.3
+        },
+        {
+          "age": 23,
+          "foot": "Right",
+          "name": "Jurriën Timber",
+          "birth": "17 Jun 2001",
+          "photo": "https://media.api-sports.io/football/players/38746.png",
+          "shots": 0.3,
+          "value": 40,
+          "height": "179cm",
+          "number": 12,
+          "rating": "-",
+          "yellow": "1 🟨",
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 106,
+          "nationality": "NED"
+        },
+        {
+          "age": 22,
+          "foot": "Left",
+          "name": "Riccardo Calafiori",
+          "birth": "19 May 2002",
+          "photo": "https://media.api-sports.io/football/players/157052.png",
+          "value": 44,
+          "height": "188cm",
+          "number": 33,
+          "rating": 7.15,
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 107,
+          "nationality": "ITA"
+        },
+        {
+          "age": 27,
+          "foot": "Left",
+          "name": "Kieran Tierney",
+          "birth": "5 Jun 1997",
+          "photo": "https://media.api-sports.io/football/players/1117.png",
+          "value": 11.5,
+          "height": "178cm",
+          "number": 17,
+          "rating": 6.92,
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 108,
+          "nationality": "SCO"
+        },
+        {
+          "age": 28,
+          "foot": "Right",
+          "name": "David Raya",
+          "birth": "15 Sept 1995",
+          "photo": "https://media.api-sports.io/football/players/19465.png",
+          "value": 38,
+          "height": "183cm",
+          "number": 22,
+          "rating": 6.98,
+          "yellow": "1 🟨",
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 109,
+          "nationality": "ESP"
+        },
+        {
+          "age": 35,
+          "foot": "Right",
+          "name": "Neto",
+          "birth": "19 Jul 1989",
+          "photo": "",
+          "value": 2.4,
+          "height": "190cm",
+          "number": 1,
+          "rating": 7.12,
+          "position": "Defender",
+          "available": "✅",
+          "player_id": 110,
+          "nationality": "BRA"
         }
       ],
-      "Passes": [
-        {
-            "Ball possession": "39%",
-            "Accurate per game": "231 (74%)",
-            "Acc. own half": "123 (83.3%)",
-            "Acc. opposition half": "113 (62.1%)",
-            "Acc. long balls": "9.3 (35.9%)",
-            "Acc. crosses": "4.7 (28%)"
-        }
-      ],
-      "Summary": [
-        {
-          "Matches": 3,
-          "Goals scored": 4,
-          "Goals conceded": 2,
-          "Assists": 4
-        }
-      ],
-      "Departures": [
-        "Jamal Lewis",
-        "Ryan Fraser",
-        "Joe White"
-      ],
-      "Attacking": [
-        {
-        "Goals per game": 1.3,
-        "Penalty goals": 0,
-        "Free kick goals": "0/0",
-        "Goals from inside the box": "4/21",
-        "Goals from outside  the box": "0/5",
-        "Left foot goals": 2,
-        "Right foot goals": 2,
-        "Headed goals": 0,
-        "Big chances per game": 2.3,
-        "Big chances missed per game": 1,
-        "Total shots per game": 8.7,
-        "Shots on target per game": 3,
-        "Shots off target per game": 2.3,
-        "Blocked shots per game": 3.3,
-        "Succ. dribbles per game": 5,
-        "Corners per game": 6.3,
-        "Free kicks per game": 16,
-        "Hit woodwork": 1,
-        "Counter attacks": 4
-        }
-      ],
-      "Defending": [
-        {
-          "Clean sheets": 1,
-          "Goals conceded per game": 0.7,
-          "Tackles per game": 18,
-          "Interceptions per game": 7.3,
-          "Clearances per game": 27.3,
-          "Saves per game": 4,
-          "Balls recovered per game": 49.7,
-          "Errors leading to shot": 1,
-          "Errors leading to goal": 1,
-          "Penalties committed": 0,
-          "Penalty goals conceded": 0,
-          "Clearance off line": 1,
-          "Last man tackle": 0
-        }
-      ],
-      "Arrivals": [
-        "William Osula",
-        "Lloyd Kelly",
-        "Alex Murphy"
-      ],
-      "teamRating": 6.94,
-      "Tournaments": [
-        "Premier League",
-        "FA Cup",
-        "EFL Cup"
-      ],
-      "totalPlayers": 31,
-      "foreignPlayers": 13,
-      "foundationDate": "9 Dec 1892",
-      "averagePlayerAge": 27.1,
-      "nationalTeamPlayers": 10
+      "stadium": "Emirates Stadium",
+      "stadiumURL": "",
+      "stadiumCapacity": "60260"
     }
   ]

@@ -39,7 +39,7 @@ const Bets = () => {
     const {awayTeam, setAwayTeam} = BetState([])
     const {matchToBet, setMatchToBet} = BetState([])
     const [matchStatsMenu, setMatchStatsMenu] = useState(false)
-    const [selectedBet, setSelectedBet] = useState(null);
+    const {selectedBet, setSelectedBet} = BetState()
     const {homeTeamLogo, setHomeTeamLogo} = BetState()
     const {awayTeamLogo, setAwayTeamLogo} = BetState()
     const {homeTeamPlayers, setHomeTeamPlayers} = BetState()
@@ -47,6 +47,7 @@ const Bets = () => {
     const [expandedId, setExpandedId] = useState(null)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const {user, setUser} = BetState();
     
 
     const toggleExpand = async (match) => {
@@ -70,19 +71,6 @@ const Bets = () => {
     }
 
 
-    /* useEffect(() => {
-        if(activeCountry === 'England'){
-            setActiveLeague(premierLeague)
-        }
-        if(activeCountry === 'Spain'){
-            setActiveLeague(laLiga)
-        }
-        if(activeCountry === 'Italy'){
-            setActiveLeague(serieA)
-        }
-    }, [activeCountry]) */
-
-
 
     const Switch = () => {
         if(activeCountryMenu === true){
@@ -96,7 +84,7 @@ const Bets = () => {
         setBetsMenu(false)
     }
 
-    
+    console.log(user)
 
     const openHomeTeam = async (match) => {
         const home = match.home.replace(/\s+/g, '');

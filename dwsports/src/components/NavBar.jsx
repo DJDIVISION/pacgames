@@ -99,12 +99,12 @@ const NavBar = () => {
             </NavIcon>
             <NavText>LOTTERY</NavText>
         </NavColumn>
-        <NavColumn>
+        <LinkR to="/roulette"><NavColumn>
             <NavIcon>
                 <img src={chip} alt="sports" />
             </NavIcon>
             <NavText>CASINO</NavText>
-        </NavColumn>
+        </NavColumn></LinkR>
       <TonWalletLogin />
     </Nav>
   )
