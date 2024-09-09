@@ -8,6 +8,7 @@ import { supabase } from '../supabase/client'
 import { BetState } from '../context/BetsContext'
 
 
+
 const Home = () => {
 
     const {user, setUser} = BetState();

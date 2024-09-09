@@ -54,6 +54,28 @@ a{
   justify-content: center;
 }
 
+.menu-container-seven{
+  position:fixed;
+  width:100vw;
+  height:70vh;
+  top: 30vh;
+  left: 0;
+  overflow: hidden;
+  color:#fff;
+  display:flex;
+  background-color:rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  flex-direction: column;
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.bet-info{
+  color: white;
+  font-size: 24px;
+}
+
 .expandable-div {
   width: 70%;
   overflow: hidden;
@@ -131,6 +153,93 @@ a{
   width: 100px;
   height: 50px;
   font-size: 20px;
+}
+
+.notification-area {
+  border: 1px solid #ccc;
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  margin-top: 20px;
+}
+
+.notification {
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: #eee;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.custom-toast {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid aqua;
+  box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+}
+
+.toast {
+  z-index: 9999;
+  background: transparent; /* Ensure it stays on top of everything */
+}
+
+.swal-ok{
+  align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    cursor: pointer;
+    border: 1px solid #03e9f4;
+    border-radius: 0.58vmin;
+    color:#03e9f4;
+    padding: 10px 20px;
+    font-size: 1.9vmin;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: 0.5s;
+    margin: 0 20px;
+}
+.swal-ok:hover{
+    background:#03e9f4;
+    color: #fff;
+    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4,
+    0 0 50px #03e9f4, 0 0 100px #03e9f4;
+}
+
+.swal-cancel{
+  align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    cursor: pointer;
+    border: 1px solid #eb3f14;
+    border-radius: 0.58vmin;
+    color:#eb3f14;
+    padding: 10px 20px;
+    font-size: 1.9vmin;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: 0.5s;
+    margin: 0 20px;
+}
+.swal-cancel:hover{
+    background:#eb3f14;
+    color: #fff;
+    box-shadow: 0 0 5px #eb3f14, 0 0 25px #eb3f14,
+    0 0 50px #eb3f14, 0 0 100px #eb3f14;
+}
+
+.custom-swal-modal{
+  -webkit-box-shadow: 0px 5px 10px 0px rgba(255,255,255,1);
+  -moz-box-shadow: 0px 5px 10px 0px rgba(255,255,255,1);
+  box-shadow: 0px 5px 10px 0px rgba(255,255,255,1);
 }
 
 

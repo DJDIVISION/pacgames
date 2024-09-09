@@ -5,7 +5,7 @@ export const lightTheme = {
     textRgba: '32,32,32',
   
     grey: '#bebebe',
-  
+    MainAccent: '#03e9f4',
     fontxs: '0.75em',
     fontsm: '0.875em',
     fontmd: '1em', // 1em = 16px
@@ -25,7 +25,7 @@ export const lightTheme = {
     textRgba: '255, 255, 255',
   
     grey: '#bebebe',
-  
+    MainAccent: '#03e9f4',
     fontxs: '0.75em',
     fontsm: '0.875em',
     fontmd: '1em', // 1em = 16px

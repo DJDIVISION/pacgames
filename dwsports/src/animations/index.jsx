@@ -36,6 +36,17 @@ export const animationThree = {
     }
 };
 
+export const animationFour = {
+    in: {
+        opacity: 1,
+        scale: 1,
+    },
+    out: {
+        opacity: 0,
+        scale: 0,
+    }
+};
+
 export const transition = {
     duration: 0.3
 };

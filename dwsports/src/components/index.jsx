@@ -11,6 +11,8 @@ import MMA from '../assets/mma.png'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { styled as styledTwo } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
+import BJBack from '../assets/bjTable.jpg';
+import emptyChip from '../assets/chips/emptyChip.png'
 
 export const NavIcon = styled.div`
     width: 100%;
@@ -293,6 +295,193 @@ export const BetBet = styled.div`
     span{
         margin: 20px;
     }
+`;
+
+export const PlayerGrid = styled.div`
+    width: 100%;
+    height: 70vh;
+    display: grid;
+    grid-template-columns: repeat(2, 40vw);
+    border: 1px solid white;
+    background-image: url(${BJBack});
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 30px;
+    position: relative;
+`;
+
+export const ActionButtons = styled(motion.div)`
+    width: 30%;
+    height: 15vh;
+    border: 1px solid ${props => props.theme.MainAccent};
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 10px;
+`;
+
+export const PlayerWrapper = styled.div`
+    width: auto;
+    height: 20vh;
+    border: 1px solid ${props => props.theme.text};
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+`;
+
+export const ChipContainer = styled.div`
+    width: 50%;
+    height: 15vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border: 1px solid ${props => props.theme.MainAccent};
+    border-radius: 10px;
+`;
+
+export const ChipBalance = styled.div`
+    width: 50%;
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+`;
+
+export const BettingArea = styled.div`
+    width: 30%;
+    height: 30vh;
+    border: 1px solid ${props => props.theme.MainAccent};
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+`;
+
+export const StyledButton = styled(Button)`
+    &&&{
+        align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    cursor: pointer;
+    border: 1px solid ${props => props.theme.MainAccent};
+    border-radius: 0.58vmin;
+    color: ${props => props.theme.MainAccent};
+    padding: 10px 20px;
+    font-size: 1.9vmin;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: 0.5s;
+    &:hover {
+        background: ${props => props.theme.MainAccent};
+        color: #fff;
+        box-shadow: 0 0 5px ${props => props.theme.MainAccent}, 0 0 25px ${props => props.theme.MainAccent},
+        0 0 50px ${props => props.theme.MainAccent}, 0 0 100px ${props => props.theme.MainAccent};
+    }
+    }
+`;
+
+export const BJStartGame = styled.div`
+    width: 30%;
+    height: 15vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const ChipWrapper = styled.div`
+    width: 15%;
+    height: 100%;
+    border: 1px solid ${props => props.theme.text};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const PlayerAvatarWrapper = styled.div`
+    width: 25%;
+    height: 100%;
+    border: 1px solid ${props => props.theme.text};
+    display: flex;
+    flex-direction: column;
+`;
+
+export const PlayerBet = styled.div`
+    width: 20%;
+    height: 100%;
+    border: 1px solid ${props => props.theme.text};
+    display: flex;
+    flex-direction: column;
+`;
+
+export const PlayerCardsHolder = styled.div`
+    width: 55%;
+    height: 100%;
+    border: 1px solid red;
+    display: flex;
+    align-items: center;
+
+    img{
+        width: 70px;
+        height: 100px;
+        margin: 0 10px;
+    }
+`;
+
+export const PlayerCard = styled(motion.div)`
+    width: 60px;
+    height: 100px;
+    margin: 0 10px;
+`;
+
+export const PlayerAvatar = styled.div`
+    width: 100%;
+    height: 80%;
+    display: grid;
+    place-items: center;
+`;
+
+export const PlayerChip = styled.div`
+    width: 100%;
+    height: 50%;
+    display: grid;
+    place-items: center;
+    background-image: url(${emptyChip});
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 60%;
+    color: ${props => props.theme.body};
+    font-weight: bold;
+    font-size: 18px;
+`;
+
+export const PlayerAvatarName = styled.div`
+    width: 100%;
+    height: 20%;
+    color: ${props => props.theme.text};
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    font-weight: bold;
+    transform: translateY(-10px);
+`;
+
+export const CurrentBetText = styled.div`
+    width: 100%;
+    height: 25%;
+    color: ${props => props.theme.text};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
 `;
 
 export const Switcher = styled.div`

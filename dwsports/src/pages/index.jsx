@@ -9,6 +9,40 @@ import ReduceCapacityIcon from '@mui/icons-material/ReduceCapacity';
 import SportsIcon from '@mui/icons-material/Sports';
 import HistoryIcon from '@mui/icons-material/History';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
+import { Button } from '@mui/material';
+
+export const DealerCard = styled(motion.div)`
+    height: 150px;
+    width: 100px;
+    margin: 0 5px;
+`;
+
+export const StyledButton = styled(Button)`
+    &&&{
+        align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    cursor: pointer;
+    border: 1px solid ${props => props.theme.MainAccent};
+    border-radius: 0.58vmin;
+    color: ${props => props.theme.MainAccent};
+    padding: 10px 20px;
+    font-size: 1.9vmin;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: 0.5s;
+    &:hover {
+        background: ${props => props.theme.MainAccent};
+        color: #fff;
+        box-shadow: 0 0 5px ${props => props.theme.MainAccent}, 0 0 25px ${props => props.theme.MainAccent},
+        0 0 50px ${props => props.theme.MainAccent}, 0 0 100px ${props => props.theme.MainAccent};
+    }
+    }
+`;
+
 
 export const ReadMore = styled(ReadMoreIcon)`
     &&&{
@@ -563,7 +597,6 @@ export const BlackJackTitle = styled.div`
     justify-content: center;
     color: ${props => props.theme.text};
     font-size: 98px;
-    margin-bottom: 100px;
 `;
 
 export const BlackJackColumn = styled.div`
@@ -589,7 +622,7 @@ export const BlackJackBigColumn = styled.div`
 
 export const RouletteSection = styled.div`
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     background: ${props => props.theme.body};
     display: flex;
     flex-direction: column;
