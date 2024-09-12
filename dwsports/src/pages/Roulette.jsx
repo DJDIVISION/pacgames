@@ -21,7 +21,6 @@ const Roulette = () => {
   const {socket, setSocket} = SocketState();
   const [isConnected, setIsConnected] = useState(false);
   const {user, setUser} = BetState();
-  const [playerName, setPlayerName] = useState(null)
   const [opponents, setOpponents] = useState([])
   const [playerLeft, setPlayerLeft] = useState(false)
   const [players, setPlayers] = useState([])
@@ -41,7 +40,13 @@ const Roulette = () => {
   const {activeRoom, setActiveRoom} = SocketState();
   const {myId, setMyId} = SocketState();
   const {playOnline, setPlayOnline} = SocketState();
+  const {playerName, setPlayerName} = SocketState();
+  const {playerAvatar, setPlayerAvatar} = SocketState();
   const MAX_NOTIFICATIONS = 4;
+
+  useEffect(() => {
+    console.log(dealerHand)
+  }, [dealerHand])
 
   const notify = (message) => {
     toast(message, {
@@ -60,27 +65,20 @@ const Roulette = () => {
   socket?.on("connect", function () {
     setPlayOnline(true);
   });
-  socket?.on("playerLeft", (data) => {
-    message.error(`${data} has left the room!!!`)
-    setPlayerLeft(true)
-  });
 
-  socket?.on("firstRound", (data) => {
-    const {gameData, player_id, room} = data;
-    setPlayers(gameData.players);
-    setActiveRoom(room)
-    setGameData(gameData)
-    setMyId(player_id.socket)
-    setDealerHidden(gameData.dealerHidden)
-    setDealerHand(gameData.dealerHand)
-    setPlayerHand(gameData.playerHand)
-  });
+  const disconnect = () => {
+    socket.disconnect();
+    setPlayOnline(false)
+}
 
-  socket?.on("welcomeNotification", (data) => {
-    notify(data.message)
-  });
-
-  console.log("gameData",gameData)
+  useEffect(() => {
+    socket?.on("welcomeNotification", (data) => {
+      notify(data.message)
+    });
+    return () => {
+      socket.off('welcomeNotification');
+  };
+  }, [])
 
   const takePlayerName = async () => {
     const result = await Swal.fire({
@@ -103,92 +101,15 @@ const Roulette = () => {
     return result;
   };
 
-function startGame() {
-  if(deck.length > 0){
-    hidden = deck.pop();
-    console.log(deck)
-    dealerSum += getValue(hidden);
-    dealerAceCount += checkAce(hidden);
-    console.log(hidden);
-    console.log(dealerSum);
-    while (dealerSum < 17) {
-        let cardImg = document.createElement("img");
-        let card = deck.pop();
-        cardImg.src = "./assets/cards/" + card + ".png";
-        dealerSum += getValue(card);
-        dealerAceCount += checkAce(card);
-        document.getElementById("dealer-cards").append(cardImg);
-    }
-    console.log(dealerSum);
 
-    for (let i = 0; i < 2; i++) {
-        let cardImg = document.createElement("img");
-        let card = deck.pop();
-        cardImg.src = "./assets/cards/" + card + ".png";
-        yourSum += getValue(card);
-        yourAceCount += checkAce(card);
-        document.getElementById("your-cards").append(cardImg);
-        document.getElementById("hit").addEventListener("click", hit);
-        document.getElementById("stay").addEventListener("click", stay);
-    }
-  }
 
-  }
 
-  function getValue(card) {
-    if(card){
-      let data = card.split("-");
-      let value = data[0];
-    
-      if (isNaN(value)) { 
-          if (value == "A") {
-              return 11;
-          }
-          return 10;
-      }
-      return parseInt(value);
-    }
-  }
-  
-  function checkAce(card) {
-    if(card){
-      if (card[0] == "A") {
-        return 1;
-    }
-    return 0;
-    }
-  }
 
-  function hit() {
-    if (!canHit) {
-        return;
-    }
-
-    let cardImg = document.createElement("img");
-    let card = deck.pop();
-    cardImg.src = "./assets/cards/" + card + ".png";
-    yourSum += getValue(card);
-    yourAceCount += checkAce(card);
-    document.getElementById("your-cards").append(cardImg);
-
-    if (reduceAce(yourSum, yourAceCount) > 21) { //A, J, 8 -> 1 + 10 + 8
-        canHit = false;
-        
-    }
-
-  }
-
-  function reduceAce(playerSum, playerAceCount) {
-    while (playerSum > 21 && playerAceCount > 0) {
-        playerSum -= 10;
-        playerAceCount -= 1;
-    }
-    return playerSum;
-}
-  
 
 
   const askSocket = async () => {
+    //setMyId(user.id)
+    setPlayerAvatar(user.user_metadata.avatar_url)
     const result = await takePlayerName();
     if (!result.isConfirmed) {
       return;
@@ -200,6 +121,8 @@ function startGame() {
     });
     newSocket?.emit("request_to_play", {
       playerName: username,
+      id: user.id,
+      avatar: user.user_metadata.avatar_url
     });
     setSocket(newSocket);
   }
@@ -219,11 +142,12 @@ function startGame() {
     return(
       <RouletteSection>
         <BlackJackTitle>
-          <BlackJackColumn>CHAT</BlackJackColumn>
+          <BlackJackColumn onClick={disconnect}>CHAT {activeRoom}</BlackJackColumn>
           <BlackJackBigColumn>
         <div id="dealer-cards" style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <motion.img id="hidden" src="./assets/cards/BACK.png" initial="out" animate="in" variants={animationFour} transition={transitionLong}/>
-            {dealerHand.map(card => {
+            {dealerHand?.map(card => {
+              console.log(card)
                 return(
                     <DealerCard key={card} initial="out" animate="in" variants={animationFour} transition={transitionLong}><img src={`./assets/cards/${card}.png`} /></DealerCard>
                 )
@@ -243,7 +167,66 @@ function startGame() {
             theme="dark"/>
         </BlackJackColumn>
         </BlackJackTitle>
-        <PlayersUI />
+        <PlayerGrid>
+        {players?.map(player => {
+            return(
+                <>
+                <PlayerWrapper key={player.id}>
+                    <PlayerAvatarWrapper>
+                    <PlayerAvatar>
+                    <Avatar alt="Image" src={player.avatar} sx={{ width: 80, height: 80 }}/>
+                    </PlayerAvatar>
+                    <PlayerAvatarName>{player.name}</PlayerAvatarName>
+                    </PlayerAvatarWrapper>
+                    <PlayerBet>
+                        <CurrentBetText>CURRENT BET</CurrentBetText>
+                        <PlayerChip id="playerChip">{player.bet}</PlayerChip>
+                        <CurrentBetText>POINTS: {player.playerSum}</CurrentBetText>
+                    </PlayerBet>
+                    <PlayerCardsHolder id="player-cards" ref={cardsContainerRef}>
+                        {player.hand.map(card => {
+                            return(
+                                <PlayerCard initial="out" animate="in" variants={animationFour} transition={transitionLong}><img src={`./assets/cards/${card}.png`} /></PlayerCard>
+                            )
+                        })}
+                    </PlayerCardsHolder>
+                </PlayerWrapper>
+                {activePlayer && (
+                    <ActionButtons animate={animate} transition={transition}>
+                        <StyledButton onClick={doubleBet}>DOUBLE</StyledButton>
+                        {player.playerSum <= 21 && <StyledButton onClick={askHit}>HIT</StyledButton>}
+                        {player.playerSum <= 21 ? (
+                            <StyledButton /* onClick={stay} */>STAY</StyledButton>
+                        ) : (
+                            <StyledButton /* onClick={stay} */>FINISH GAME</StyledButton>
+                        )}
+                    </ActionButtons>
+                )}
+                </>
+            )
+        })}
+        
+        {gameFinished && (
+            <ActionButtons animate={animate} transition={transition}>
+                <StyledButton onClick={disconnect}>LEAVE ROOM</StyledButton>
+                <StyledButton onClick={keepPlaying}>PLAY AGAIN</StyledButton>
+            </ActionButtons>
+        )}
+        {chipMenuOpen && (
+            <motion.div className="menu-container-seven" variants={item}
+            initial={{opacity:0, height: 0}}
+            animate={{ opacity:1, height: "70vh"}}
+            transition={{duration:.5}}
+            exit="exit">
+                <DndContext onDragEnd={handleDragEnd}>
+                    <ChipBalance>{placedBet !== 0 ? <div className="bet-info">Bet placed with: ${placedBet} chip</div> : <div className="bet-info">Time remaining: {timeRemaining}</div>}</ChipBalance>
+                    <BetArea droppedChips={droppedChips} droppedChipValue={droppedChipValue}/>
+                    <BJStartGame><StyledButton onClick={startGame} disabled={disabled}>START GAME</StyledButton></BJStartGame>
+                <   Chips />
+                </DndContext>
+            </motion.div>
+        )}
+    </PlayerGrid>
         <p id="results"></p>
       </RouletteSection>
     )

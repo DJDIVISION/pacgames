@@ -12,6 +12,7 @@ import TeamStats from './pages/TeamStats';
 import Login from './pages/Login';
 import Roulette from './pages/Roulette';
 import Poker from './pages/Poker';
+import BlackJack from './pages/BlackJack';
 
 function App() {
 
@@ -24,7 +25,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/bets" element={<Bets />} />
-        <Route path="/roulette" element={<Roulette />} />
+        <Route path="/blackjack" element={<BlackJack />} />
         <Route path="/poker" element={<Poker />} />
         <Route path="/player/:id" element={<PlayerStats />} />
         <Route path="/team/:id" element={<TeamStats />} />

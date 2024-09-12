@@ -1,7 +1,7 @@
 import React, {useState,useEffect} from 'react'
 import {Nav,NavColumn,NavIcon,NavText} from './index'
 import {Link as LinkR} from 'react-router-dom'
-import TonWalletLogin from './TonConnect';
+/* import TonWalletLogin from './TonConnect'; */
 import sportsIcon from '../assets/sportsIcon.png'
 import lottery from '../assets/bingo.png'
 import chip from '../assets/chip.png'
@@ -30,8 +30,6 @@ const NavBar = () => {
           navigate('/login')
         }
       }
-
-    console.log(user)
 
     const options = {
         method: 'GET',
@@ -99,13 +97,13 @@ const NavBar = () => {
             </NavIcon>
             <NavText>LOTTERY</NavText>
         </NavColumn>
-        <LinkR to="/roulette"><NavColumn>
+        <LinkR to="/blackjack"><NavColumn>
             <NavIcon>
                 <img src={chip} alt="sports" />
             </NavIcon>
             <NavText>CASINO</NavText>
         </NavColumn></LinkR>
-      <TonWalletLogin />
+      
     </Nav>
   )
 }

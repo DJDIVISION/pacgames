@@ -300,8 +300,9 @@ export const BetBet = styled.div`
 export const PlayerGrid = styled.div`
     width: 100%;
     height: 70vh;
-    display: grid;
-    grid-template-columns: repeat(2, 40vw);
+    display: flex;
+    flex-direction: column;
+    //grid-template-columns: repeat(2, 40vw);
     border: 1px solid white;
     background-image: url(${BJBack});
     background-repeat: no-repeat;
@@ -323,7 +324,7 @@ export const ActionButtons = styled(motion.div)`
 `;
 
 export const PlayerWrapper = styled.div`
-    width: auto;
+    width: 95%;
     height: 20vh;
     border: 1px solid ${props => props.theme.text};
     display: flex;
@@ -331,6 +332,7 @@ export const PlayerWrapper = styled.div`
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
     border-radius: 10px;
+    margin: 10px 0;
 `;
 
 export const ChipContainer = styled.div`
@@ -427,6 +429,7 @@ export const PlayerCardsHolder = styled.div`
     border: 1px solid red;
     display: flex;
     align-items: center;
+    overflow-x: scroll;
 
     img{
         width: 70px;

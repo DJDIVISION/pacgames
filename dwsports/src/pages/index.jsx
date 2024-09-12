@@ -10,6 +10,18 @@ import SportsIcon from '@mui/icons-material/Sports';
 import HistoryIcon from '@mui/icons-material/History';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import { Button } from '@mui/material';
+import ChatIcon from '@mui/icons-material/Chat';
+
+export const ChatRoomIcon = styled(ChatIcon)`
+    &&&{
+        color: ${props => props.theme.MainAccent};
+        /* position: absolute;
+        top: 50px;
+        left: 50px; */
+        //scale: 1.5;
+    }
+    
+`;
 
 export const DealerCard = styled(motion.div)`
     height: 150px;
@@ -591,13 +603,16 @@ export const TeamStatsSection = styled.div`
 
 export const BlackJackTitle = styled.div`
     width: 100%;
-    height: 30vh;
+    height: 40vh;
     display: flex;
     align-items: center;
     justify-content: center;
     color: ${props => props.theme.text};
     font-size: 98px;
+    border: 1px solid white;
 `;
+
+
 
 export const BlackJackColumn = styled.div`
     width: 25%;

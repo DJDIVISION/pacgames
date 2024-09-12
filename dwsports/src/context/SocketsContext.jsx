@@ -12,19 +12,21 @@ const SocketsContext = ({children}) => {
     const [playerHand, setPlayerHand] = useState([])
     const [dealerSum, setDealerSum] = useState(null);
     const [playerSum, setPlayerSum] = useState(null);
-    const [playerAceAccount, setPlayerAceAccount] = useState(null);
-    const [dealerAceAccount, setDealerAceAccount] = useState(null);
+    const [playerAceCount, setPlayerAceCount] = useState(null);
+    const [dealerAceCount, setDealerAceCount] = useState(null);
     const [gameData, setGameData] = useState([])
     const [activeRoom, setActiveRoom] = useState(null);
     const [activePlayer, setActivePlayer] = useState(false);
     const [myId, setMyId] = useState(null);
     const [playOnline, setPlayOnline] = useState(false);
+    const [playerName, setPlayerName] = useState(null)
+    const [playerAvatar, setPlayerAvatar] = useState(null)
     
     return(
         <Sockets.Provider value = {{socket,setSocket,draggableChipValue,setDraggableChipValue,dealerHidden,setDealerHidden,
             dealerHand,setDealerHand,playerHand,setPlayerHand,gameData,setGameData,activeRoom,setActiveRoom,myId,setMyId,
-            activePlayer,setActivePlayer,playerSum,setPlayerSum,playerAceAccount,setPlayerAceAccount,dealerSum,setDealerSum,
-            dealerAceAccount,setDealerAceAccount,playOnline,setPlayOnline
+            activePlayer,setActivePlayer,playerSum,setPlayerSum,playerAceCount,setPlayerAceCount,dealerSum,setDealerSum,
+            dealerAceCount,setDealerAceCount,playOnline,setPlayOnline,playerName,setPlayerName,playerAvatar,setPlayerAvatar
         }}>
             {children}
         </Sockets.Provider>

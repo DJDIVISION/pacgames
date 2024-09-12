@@ -18,11 +18,9 @@ const Home = () => {
     // Get the current user session
     const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-      console.log(session)
       if (session) {
         setUser(session.user)
         const user = session.user
-        console.log(user)
         const updatedData = {
           email: user.email,
           name: user.user_metadata.full_name,
@@ -46,7 +44,6 @@ const Home = () => {
   }, [navigate])
   
 
-  console.log(user)
 
   return (
     <motion.div initial="out" animate="in" variants={animationTwo} transition={transition}>

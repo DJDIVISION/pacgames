@@ -1,8 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react'
-import {PlayerGrid,PlayerWrapper,PlayerAvatar,PlayerAvatarName,PlayerAvatarWrapper,PlayerBet,CurrentBetText,
-    PlayerChip,PlayerCardsHolder,item,ChipContainer,ChipWrapper,ChipBalance,BJStartGame,StyledButton,PlayerCard,ActionButtons,
-    
-} from '../index'
+import {Disconnect,PlayerGridLoading,LoadingText,LogOutContainer,LogOutText} from './index'
 import { SocketState } from '../../context/SocketsContext'
 import { Avatar } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -14,6 +11,7 @@ import { animationFour,transitionLong } from '../../animations';
 import { ToastContainer, toast } from 'react-toastify';
 import { BetState } from '../../context/BetsContext';
 import { supabase } from '../../supabase/client'
+import {CircularProgress,IconButton } from '@mui/material'
 
 
 
@@ -26,7 +24,8 @@ const PlayersUI = () => {
     const [gameStarted, setGameStarted] = useState([]);
     const [gameFinished, setGameFinished] = useState(false)
     const [chipMenuOpen, setChipMenuOpen] = useState(false)
-    const [placedBet, setPlacedBet] = useState(null);
+    const [gameInProgress, setGameInProgress] = useState(false)
+    const [placedBet, setPlacedBet] = useState(0);
     const [droppedChips, setDroppedChips] = useState([]);
     const [droppedChipValue, setDroppedChipValue] = useState(null);
     const [currentPlayerName, setCurrentPlayerName] = useState(null)
@@ -35,23 +34,47 @@ const PlayersUI = () => {
     const {playerHand, setPlayerHand} = SocketState();
     const {playerSum, setPlayerSum} = SocketState();
     const {gameData, setGameData} = SocketState();
-    const {activeRoom, setActiveRoom} = SocketState();
-    const {playerAceAccount, setPlayerAceAccount} = SocketState();
+    const {playerAceCount, setPlayerAceCount} = SocketState();
     const {myId, setMyId} = SocketState();
     const {activePlayer, setActivePlayer} = SocketState();
     const [active, setActive] = useState("menuTwo");
     const {dealerSum, setDealerSum} = SocketState();
-    const {dealerAceAccount, setDealerAceAccount} = SocketState();
+    const {dealerAceCount, setDealerAceCount} = SocketState();
     const {playOnline, setPlayOnline} = SocketState();
     const {user, setUser} = BetState();
+    const cardsContainerRef = useRef(null);
+    const [counter, setCounter] = useState(0);  // Variable that triggers the timeout
+    const timeoutRef = useRef(null);
+    const [disabled, setDisabled] = useState(false)
+    const {playerName, setPlayerName} = SocketState();
+    const [timeRemaining, setTimeRemaining] = useState(10); // Start with 15 seconds
+    const [betPlaced, setBetPlaced] = useState(false);
+    const timerRef = useRef(null);
+    const [activeRoom, setActiveRoom] = useState({room: null})
+    const activeRoomRef = useRef(activeRoom);
+
+    activeRoomRef.current = activeRoom
 
     const dismissAll = () =>  toast.dismiss();
-    
     const placeBetNotify  = (message) => {
         toast(message, {
           className: "custom-toast",
           position: "top-right",
-          autoClose: 20000,
+          autoClose: 15000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      };
+
+      const waitingtToStarttNotify  = (message) => {
+        toast(message, {
+          className: "custom-toast",
+          position: "top-right",
+          autoClose: 75000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -65,7 +88,7 @@ const PlayersUI = () => {
         toast(message, {
           className: "custom-toast",
           position: "top-right",
-          autoClose: 1500,
+          autoClose: 2500,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -74,84 +97,113 @@ const PlayersUI = () => {
           theme: "dark",
               });
       };
-    /* useEffect(() => {
-        if(dealerHidden.length > 0){
-            let cardImg = document.createElement("img");
-            playerHand.forEach(card => {
-                console.log(card)
-                cardImg.src = "./assets/cards/" + card + ".png";
-                document.getElementById("player-cards").append(cardImg);
-            })
-        }
-    }, [dealerHidden,playerHand]) */
 
-    socket?.on("cardAfterHit", (data) => {
-        console.log(data.cardToHit)
-        setPlayerAceAccount(data.playerAceAccount)
-        const all = playerHand.concat(data.cardToHit)
-        setPlayerHand(all)
-        if(data.playerSum > 21){
-            setPlayerSum(data.playerSum)
-            //welcomeNotify("You have lost the game!!!")
-        }
-        if(data.playerSum === 21){
-            setPlayerSum(data.playerSum)
-            //welcomeNotify("BlackJack!!!")
-        }
-        if(data.playerSum < 21){
-            setPlayerSum(data.playerSum)
-            //welcomeNotify("You can keep playing!")
-        }
-    });
+      const autoCloseOff = (message) => {
+        toast(message, {
+          className: "custom-toast",
+          position: "top-right",
+          autoClose: false,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+              });
+      };
 
-    socket?.on("firstRound", (data) => {
-    const {gameData, player_id, room, playerName} = data;
-    setPlayers(gameData.players);
-    setActiveRoom(room)
-    setGameData(gameData)
-    setMyId(player_id.socket)
-    setActivePlayer(true)
-    setPlayerSum(gameData.playerSum)
-    setPlayerAceAccount(gameData.playerAceAccount)
-    setDealerSum(gameData.dealerSum)
-    setDealerAceAccount(gameData.dealerAceAccount)
-    setDealerHidden(gameData.dealerHidden)
-    setDealerHand(gameData.dealerHand)
-    setPlayerHand(gameData.playerHand)
-  });
 
-    socket?.on("deck", (data) => {
-        console.log(data)
-        localStorage.setItem("gameData", JSON.stringify(data))
-          setPlayers(data.players);
-          setDeck(data.deck);
-          setDealer(data.dealer);
-          setGameStarted(data.gameStarted);
-    });
+    
 
-    socket?.on("onlyPlayerInRoom", (data) => {
-        const {gameData, player_id, room, playerName} = data;
-        welcomeNotify(`${playerName} has joined the Room!`)
-        setTimeout(() => {
-            dismissAll()
-        }, 2000)
-        setPlayers(gameData.players);
-        setActiveRoom(room)
-        setCurrentPlayerName(playerName)
-        setGameData(gameData)
-        setDeck(gameData.deck);
-        setDealer(gameData.dealer);
-        setGameStarted(gameData.gameStarted);
-        setMyId(player_id.socket)
-        setTimeout(() => {
+    useEffect(() => {
+        socket.on('thisIsYourId', (data) => {
+            console.log("dataidididid", data)
+            setMyId(data.playerId)
+            waitingtToStarttNotify('Waiting for other players to join the room... ⌛')
+            //setPlayers(gameData.players)
+            //autoCloseOff("!Waiting for more players to join. The game will start in a few seconds.") 
+        });
+        socket.on('betting-start', (data) => {
+            console.log(data)
+            dismissAll();
+            placeBetNotify("You have 15 seconds to place your bet ⏱️")
+            setPlayers(data.players)
             setChipMenuOpen(true)
-            placeBetNotify("You have 20 seconds to place your bet!")
-        }, 2500)
-        
-        setTimeout(() => {
-            setChipMenuOpen(false)
-        }, 20000)
-    });
+            //setGameInProgress(true)
+        });
+        socket.on('update_players', (data) => {
+            const {gameData, message} = data;
+            console.log("updatePlayers", data)
+            dismissAll();
+            welcomeNotify(message)
+            setTimeout(() => {
+                dismissAll();
+                waitingtToStarttNotify('Waiting for other players to join the room... ⌛')
+            }, 2500)
+            setPlayers(gameData.players)
+            setActiveRoom(gameData.room)
+        });
+        socket.on('new_update_players', (data) => {
+            const {gameData, playerName, bet} = data;
+            console.log("new_update_players", data)
+            setPlayers(gameData.players)
+            setActiveRoom(gameData.room)
+            welcomeNotify(`${playerName} has placed a ${bet}$ bet`)
+
+        }),
+        socket.on('selfDisconnected', (data) => {
+            welcomeNotify("A player has left the room")
+            setPlayers(data.gameData.players)
+        });
+        socket.on('firstRound', (data) => {
+            setGameData(data.gameData)
+            setPlayers(data.gameData.players)
+        });
+        socket.on('dealCards', (data) => {
+            //welcomeNotify("All players have placed their bets.")
+            console.log("this is the data", data)
+            setGameData(data.gameData)
+            setPlayers(data.gameData.players)
+            setPlayerSum(data.gameData.playerSum)
+            setPlayerAceCount(data.gameData.playerAceCount)
+            setDealerSum(data.gameData.dealerSum)
+            setDealerAceCount(data.gameData.dealerAceCount)
+            setDealerHidden(data.gameData.dealerHidden)
+            setDealerHand(data.gameData.dealerHand)
+            setPlayerHand(data.gameData.playerHand)
+        });
+        socket.on("game-started", (data) => {
+            welcomeNotify(`${data.message}`)
+        })
+        socket.on("cardAfterHit", (data) => {
+            const {playerName,playerSum,gameData} = data;
+            setPlayerSum(playerSum)
+            setPlayers(gameData.players)
+        })
+        socket.on("your-turn", (data) => {
+            setActivePlayer(true)
+        })
+        socket.on('all-bets-placed', (data) => {
+            dismissAll();
+            welcomeNotify(`${data.message}`)
+        })
+        return () => {
+            socket.off('thisIsYourId');
+            socket.off('betting-start');
+            socket.off('update_players');
+            socket.off('new_update_players');
+            socket.off('all-bets-placed');
+            socket.off('selfDisconnected');
+            socket.off('firstRound');
+            socket.off('game-started');
+            socket.off('your-turn');
+          };
+    }, [])
+
+    
+
+    
+    console.log(dealerHand)
 
     const handleDragEnd = (event) => {
         const { over, active } = event;
@@ -192,20 +244,20 @@ const PlayersUI = () => {
         type: 'tween',
         duration: 0.2
     };
-
+    console.log(activeRoom)
     const startGame = () => {
-        
         if(placedBet > 0){
-            socket?.emit("startSinglePlayerGame", {
-                totalBetAmount: placedBet,
+            console.log(`Bet of ${placedBet} placed`);
+            setDisabled(true)
+            setChipMenuOpen(false)
+            socket?.emit("place-bet", {
+                bet: placedBet,
                 room: activeRoom,
-                id: myId
-             });
-             setChipMenuOpen(false)
-             dismissAll();
-        } else {
-            message.error("There is no bet placed!")
-        }
+                playerId: myId
+                });
+                dismissAll();
+                //waitingtToStarttNotify("Waiting for players to place their bets.")
+        } 
     }
 
     const doubleBet= () => {
@@ -217,75 +269,13 @@ const PlayersUI = () => {
 
     const askHit = () => {
         console.log(placedBet)
+        console.log(activeRoom)
         socket?.emit("askForHit", {
             placedBet: placedBet,
             room: activeRoom,
             id: myId,
             gameData: gameData
          });
-    }
-
-    function reduceAce(playerSum, playerAceCount) {
-        while (playerSum > 21 && playerAceCount > 0) {
-            playerSum -= 10;
-            playerAceCount -= 1;
-        }
-        return playerSum;
-    }
-      
-    
-    async function stay() {
-        const newdealerSum = reduceAce(dealerSum, dealerAceAccount);
-        const newplayerSum = reduceAce(playerSum, playerAceAccount);
-        console.log(placedBet)
-        document.getElementById("hidden").src = "./assets/cards/" + dealerHidden + ".png";
-        setActivePlayer(false)
-        setGameFinished(true)
-        let status;
-        if (newplayerSum > 21) {
-            welcomeNotify("You Lose!")
-            status = "LOST"
-        }
-        else if (newdealerSum > 21) {
-            welcomeNotify("You Win!")
-            status = "WON"
-        }
-        else if (newplayerSum == newdealerSum) {
-            welcomeNotify("Tie!")
-            status = "TIE"
-        }
-        else if (newplayerSum > newdealerSum) {
-            welcomeNotify("You Win!")
-            status = "WON"
-        }
-        else if (newplayerSum < newdealerSum) {
-            welcomeNotify("You Lose!")
-            status = "LOST"
-        }
-        const updatedData = {
-            email: user.email,
-            playerName: user.user_metadata.name,
-            playerId: user.id,
-            status: status,
-            roomNickname: currentPlayerName,
-            totalBetAmount: placedBet
-        }
-        const { data, error } = await supabase
-            .from('blackJack')
-            .insert([updatedData])
-            if (error) {
-                console.error('Error inserting/updating user session data:', error.message)
-            } else {
-                console.log('User session data saved:', data)
-                welcomeNotify("Data saved!!!")
-        }
-        
-        socket?.emit("finishSinglePlayerGame", {
-            totalBetAmount: placedBet,
-            room: activeRoom,
-            id: myId
-         });
-
     }
 
     const disconnect = () => {
@@ -295,64 +285,33 @@ const PlayersUI = () => {
     }
 
     const keepPlaying = () => {
+        setPlayers([])
+        setPlayerHand([])
+        setDealerHand([])
+        setDealerHidden([])
+        setGameFinished(false)
+        setDroppedChips([])
+        setDroppedChipValue(null)
+        setPlacedBet(0)
+        document.getElementById("hidden").src = "./assets/cards/BACK.png";
+        setAskingNextSingleMatch(true)
+        setChipMenuOpen(true)
+        placeBetNotify("You have 20 seconds to place your bet!")
+    }
 
+    if(gameInProgress){
+        return(
+            <PlayerGridLoading>
+                <LogOutContainer><LogOutText>LEAVE ROOM</LogOutText><IconButton className={"MyCustomIconButton"} onClick={disconnect}><Disconnect /></IconButton></LogOutContainer>
+                <CircularProgress size={80} color="secondary" />
+                <LoadingText>There is a game in process, you will join on the next one</LoadingText>
+            </PlayerGridLoading>
+        )
     }
 
 
   return (
-    <PlayerGrid>
-        {players?.map(player => {
-            return(
-                <PlayerWrapper key={player.socket}>
-                    <PlayerAvatarWrapper>
-                    <PlayerAvatar>
-                    <Avatar alt="Image" src={""} sx={{ width: 80, height: 80 }}/>
-                    </PlayerAvatar>
-                    <PlayerAvatarName>{player.playerName}</PlayerAvatarName>
-                    </PlayerAvatarWrapper>
-                    <PlayerBet>
-                        <CurrentBetText>CURRENT BET</CurrentBetText>
-                        <PlayerChip id="playerChip">{placedBet}</PlayerChip>
-                        <CurrentBetText>POINTS: {playerSum}</CurrentBetText>
-                    </PlayerBet>
-                    <PlayerCardsHolder id="player-cards">
-                        {playerHand.map(card => {
-                            return(
-                                <PlayerCard initial="out" animate="in" variants={animationFour} transition={transitionLong}><img src={`./assets/cards/${card}.png`} /></PlayerCard>
-                            )
-                        })}
-                    </PlayerCardsHolder>
-                </PlayerWrapper>
-            )
-        })}
-        {activePlayer && (
-            <ActionButtons animate={animate} transition={transition}>
-                <StyledButton onClick={doubleBet}>DOUBLE</StyledButton>
-                <StyledButton onClick={askHit}>HIT</StyledButton>
-                <StyledButton onClick={stay}>STAY</StyledButton>
-            </ActionButtons>
-        )}
-        {gameFinished && (
-            <ActionButtons animate={animate} transition={transition}>
-                <StyledButton onClick={disconnect}>LEAVE ROOM</StyledButton>
-                <StyledButton onClick={keepPlaying}>PLAY AGAIN</StyledButton>
-            </ActionButtons>
-        )}
-        {chipMenuOpen && (
-            <motion.div className="menu-container-seven" variants={item}
-            initial={{opacity:0, height: 0}}
-            animate={{ opacity:1, height: "70vh"}}
-            transition={{duration:.5}}
-            exit="exit">
-                <DndContext onDragEnd={handleDragEnd}>
-                    <ChipBalance>{placedBet && <div className="bet-info">Bet placed with: ${placedBet} chip</div>}</ChipBalance>
-                    <BetArea droppedChips={droppedChips} droppedChipValue={droppedChipValue}/>
-                    <BJStartGame><StyledButton onClick={startGame}>START GAME</StyledButton></BJStartGame>
-                <   Chips />
-                </DndContext>
-            </motion.div>
-        )}
-    </PlayerGrid>
+    <div></div>
   )
 }
 
