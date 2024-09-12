@@ -11,6 +11,15 @@ import HistoryIcon from '@mui/icons-material/History';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import { Button } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+
+export const Disconnect = styled(ExitToAppIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 1.5;
+        background: transparent;
+    }
+`;
 
 export const ChatRoomIcon = styled(ChatIcon)`
     &&&{

@@ -81,7 +81,7 @@ const PlayersUI = () => {
           draggable: true,
           progress: undefined,
           theme: "dark",
-              });
+        });
       };
 
       const welcomeNotify = (message) => {
@@ -296,7 +296,7 @@ const PlayersUI = () => {
         document.getElementById("hidden").src = "./assets/cards/BACK.png";
         setAskingNextSingleMatch(true)
         setChipMenuOpen(true)
-        placeBetNotify("You have 20 seconds to place your bet!")
+        placeBetNotify("You have 20 seconds to place your bet!")  
     }
 
     if(gameInProgress){

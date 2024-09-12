@@ -25,8 +25,7 @@ let player3;
 let player4;
 let player5;
 maxPlayersPerRoom = 3;
-console.log(player1)
-console.log(player2)
+
 
 function shuffleDeck() {
   let values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
@@ -44,7 +43,6 @@ function shuffleDeck() {
     deck[i] = deck[j];
     deck[j] = temp;
   }
-  console.log(deck)
   return deck
   
 }
@@ -194,7 +192,7 @@ function startGame(room) {
 }  
 
 function nextTurn(room) {
-  console.log(rooms[room]);
+  rooms[room].currentPlayerIndex++;
 
   if (rooms[room].currentPlayerIndex < rooms[room].players.length) {
     const nextPlayer = rooms[room].players[rooms[room].currentPlayerIndex];
@@ -244,7 +242,6 @@ io.on("connection", (socket) => {
     if (rooms[room].gameStarted) {
       socket.emit('waiting-for-game', 'Game is in progress. You will play in the next round.');
     } else {
-      const roomNumber = room.slice(-1);
       socket.join(room);
       rooms[room].players.push(currentPlayer);
       rooms[room].room = room
@@ -299,9 +296,9 @@ io.on("connection", (socket) => {
     const room = data.room
     //console.log("222222222222222222222222",rooms[room])
     const totalBetAmount = data.placedBet
-    const currentPlayerIndex = rooms[room].currentPlayerIndex;
+    const currentPlayerIndex = data.currentPlayerIndex;
     const currentPlayer = rooms[room].players[currentPlayerIndex];
-    //console.log("currrrrrrrrrrrrrrrent", currentPlayer)
+    console.log("currrrrrrrrrrrrrrrent", currentPlayer)
     rooms[room].dealerHand = data.gameData.dealerHand
     rooms[room].dealerHidden = data.gameData.dealerHidden
     rooms[room].dealerSum = data.gameData.dealerSum
@@ -317,14 +314,38 @@ io.on("connection", (socket) => {
   socket.on('gameStarted', (data) => {
     console.log("game started!!!!")
     const room = data.room
-    console.log("roooooom", room)
+    //console.log("roooooom", room)
     rooms[room].gameStarted = true
     rooms[room].deck = shuffleDeck();
-    console.log(rooms[room].deck)
+    //console.log(rooms[room].deck)
     /* dealCards(room,socket);
     io.to(room).emit('firstRound', {
       gameData: rooms[room]
     }); */
+  });
+  socket.on('manual-disconnect', (data) => {
+    console.log(`User ${socket.id} disconnected`);
+    const currentPlayer = allUsers[socket.id].playerName
+    console.log(currentPlayer)
+    let roomToLeave = null;
+    for (const room in rooms) {
+      const playerIndex = rooms[room].players.findIndex(player => player.socket === socket.id);
+      if (playerIndex !== -1) {
+        roomToLeave = room;
+        // Remove the player from the room's players array
+        rooms[room].players.splice(playerIndex, 1);
+        // If the room is now empty, delete it
+        if (rooms[room].players.length === 0) {
+          delete rooms[room];
+        } else {
+          io.to(room).emit('playerLeft', {
+            playerLeft: currentPlayer,
+            players: rooms[room].players
+          });
+        }
+        break; // Stop searching after finding the room
+      }
+    }
   })
   socket.on('disconnect', () => {
     console.log(`User ${socket.id} disconnected`);

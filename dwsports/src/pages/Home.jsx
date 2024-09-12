@@ -13,6 +13,7 @@ const Home = () => {
 
     const {user, setUser} = BetState();
     const navigate = useNavigate()
+    console.log(user)
 
   useEffect(() => {
     // Get the current user session
@@ -20,6 +21,7 @@ const Home = () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (session) {
         setUser(session.user)
+        localStorage.setItem("user", JSON.stringify(session.user))
         const user = session.user
         const updatedData = {
           email: user.email,
