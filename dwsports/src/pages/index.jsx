@@ -49,7 +49,7 @@ export const StyledButton = styled(Button)`
     border: 1px solid ${props => props.theme.MainAccent};
     border-radius: 0.58vmin;
     color: ${props => props.theme.MainAccent};
-    padding: 10px 20px;
+    padding: 5px 20px;
     font-size: 1.9vmin;
     text-decoration: none;
     text-transform: uppercase;
@@ -616,7 +616,6 @@ export const BlackJackTitle = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    color: ${props => props.theme.text};
     font-size: 98px;
     border: 1px solid white;
 `;
@@ -626,19 +625,53 @@ export const BlackJackTitle = styled.div`
 export const BlackJackColumn = styled.div`
     width: 25%;
     height: 100%;
-    border: 1px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
     color: ${props => props.theme.text};
     font-size: 24px;
-    
+    flex-direction: column;
+    border: 1px solid red;
+    padding: 5px;
+`;
+
+
+export const ColumnTopBig = styled.div`
+    width: 70%;
+    height: 40%;
+    border: 1px solid ${props => props.theme.MainAccent};
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+`;
+export const ColumnTopSmall = styled.div`
+    width: 70%;
+    height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: ${props => props.theme.MainAccent};
+    border: 1px solid ${props => props.theme.MainAccent};
+    border-top: none;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    span{
+        margin-left: 10px;
+        font-weight: bold;
+    }
 `;
 
 export const BlackJackBigColumn = styled.div`
     width: 50%;
     height: 100%;
-    border: 1px solid white;
     display: flex;
     align-items: center;
     justify-content: center;

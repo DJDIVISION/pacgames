@@ -81,7 +81,7 @@ function startJoinTimeout(room) {
       rooms[room].gameInProgress = true;
 
       io.in(room).emit('betting-start', { players: rooms[room].players });  //setChipMenuOpen
-      //startBettingTimeout(room)
+      startBettingTimeout(room)
       console.log("time expired!!!")
     }
   }, JOIN_TIMEOUT_DURATION);
@@ -114,7 +114,11 @@ function startBettingTimeout(room) {
     // Start the game with the remaining players
     const remainingPlayers = rooms[room].players.filter(player => playerBets[room] && playerBets[room][player.id]);
     if (remainingPlayers.length > 0) {
-      io.to(room).emit('allBetsPlaced');
+      io.to(room).emit('allBetsPlaced', {
+        message: 'All bets have been placed!'
+      });
+      startGame(room)
+      //console.log("all bets placed, now what!!!")
     }
   }, BETTING_TIMEOUT_DURATION);
 }
@@ -133,16 +137,17 @@ function setActivePlayer(room){
 
 function startGame(room) {
   console.log(`Starting game for room ${room}`);
-
+  
   // Set currentPlayerIndex to 0 to start with the first player
   rooms[room].currentPlayerIndex = 0;
 
   // Notify the first player to start their turn
   const firstPlayer = rooms[room].players[rooms[room].currentPlayerIndex];
-  console.log("firstttttttttt", firstPlayer)
-  io.to(firstPlayer.id).emit('your-turn', {
-    playerName: firstPlayer.name
-  });
+  //console.log("firstttttttttt", firstPlayer)
+  io.to(firstPlayer.id).emit('your-turn');
+  rooms[room].deck = shuffleDeck()
+  console.log(rooms[room].deck)
+  dealCards(room);
 }
 
 function shuffleDeck() {
@@ -227,9 +232,21 @@ function dealCards(room) {
   //console.log("rooooooomsplayerssss", rooms[room].players)
   rooms[room].players = players
   //setNextTurn(room);
+  console.log("look herererererer",rooms[room].players)
+  console.log("look herererererer",rooms[room])
   io.to(room).emit('dealCards', {
     gameData: rooms[room]
   });
+}
+
+function reduceAce(playerSum, playerAceCount, room) {
+  while (playerSum > 21 && playerAceCount > 0) {
+      playerSum -= 10;
+      playerAceCount -= 1;
+  }
+  console.log("playerSum after reduce",playerSum)
+  console.log("playerAceAcount after reduce",playerAceCount)
+  return {playerSum,playerAceCount};
 }
 
 function hit(deck,room,playerSum,playerAceCount,currentPlayer) {
@@ -258,24 +275,91 @@ function hit(deck,room,playerSum,playerAceCount,currentPlayer) {
   });
 }
 
+function nextTurn(room) {
+  //console.log("rorororororor",rooms[room])
+  console.log("roooooooooooooooooooooooooooooooooom",room)
+  rooms[room].currentPlayerIndex++;
+  const playerIndex = rooms[room].currentPlayerIndex
 
-function setNextTurn (room) {
-  console.log(`Starting game for room ${room}`);
+  if (rooms[room].currentPlayerIndex < rooms[room].players.length) {
+    const nextPlayer = rooms[room].players[rooms[room].currentPlayerIndex];
+    io.to(nextPlayer.id).emit('your-second-turn',{
+      playerIndex: playerIndex
+    });
+  } else {
+    console.log(rooms[room].players)
+    io.in(room).emit('round-ended', {
+      dealerSum: rooms[room].dealerSum,
+      dealerHidden: rooms[room].dealerHidden,
+    });
+    endRound(room);
+  }
+}
 
-  // Set currentPlayerIndex to 0 to start with the first player
-  rooms[room].currentPlayerIndex = 0;
-
-  // Notify the first player to start their turn
-  const firstPlayer = rooms[room].players[rooms[room].currentPlayerIndex];
-  console.log("firstPlayer", firstPlayer)
-  console.log("keysssss",io.sockets.sockets.keys()); 
-
-  const playerRooms = io.sockets.sockets.get(firstPlayer.id)?.rooms;
-  console.log(`Player rooms:`, playerRooms);
-  const id = firstPlayer.id
-  io.to(id).emit('your-turn', {
-    message: "Ready to go"
+function endRound(room) {
+  console.log(`Ending round for room ${room}`);
+  const players = rooms[room].players
+  const dealerSum = rooms[room].dealerSum
+  const results = players.map(player => {
+    const result = calculatePayout(player, dealerSum);
+    const playerId = player.id
+    const playerName = player.name
+    const status = result.result
+    const payout = result.payout
+    io.to(playerId).emit('balanceUpdate',{
+      playerName: playerName,
+      status: status,
+      payout: payout
+    });
+    
   });
+  console.log(results)
+  
+  
+}
+
+
+function calculatePayout(player, dealerSum) {
+  const { playerSum, bet, hand } = player;
+  let payout = 0;
+
+  // Check for Blackjack (21 with two cards)
+  const isPlayerBlackjack = playerSum === 21 && hand.length === 2;
+  const isDealerBlackjack = dealerSum === 21 && hand.length === 2;
+
+  // Check if player has busted
+  if (playerSum > 21) {
+    // Player busts, loses bet
+    return { result: 'Lose!', payout: 0 };
+  }
+
+  // Dealer busts, player wins
+  if (dealerSum > 21) {
+    return { result: 'Win!', payout: bet * 2 };
+  }
+
+  // Player has Blackjack, wins 1.5x their bet if dealer doesn't have Blackjack
+  if (isPlayerBlackjack && !isDealerBlackjack) {
+    return { result: 'BlackJack!', payout: bet * 2.5 }; // Wins 1.5x + original bet
+  }
+
+  // Push if both have Blackjack
+  if (isPlayerBlackjack && isDealerBlackjack) {
+    return { result: 'Push!', payout: bet }; // Player gets their bet back
+  }
+
+  // Player wins if their sum is greater than dealer's
+  if (playerSum > dealerSum) {
+    return { result: 'Win!', payout: bet * 2 }; // Wins 1x + original bet
+  }
+
+  // Push if sums are equal
+  if (playerSum === dealerSum) {
+    return { result: 'Push!', payout: bet }; // Player gets their bet back
+  }
+
+  // Dealer wins if their sum is greater
+  return { result: 'Lose!', payout: 0 };
 }
 
 io.on('connection', (socket) => {
@@ -295,7 +379,7 @@ io.on('connection', (socket) => {
         gameData: rooms[room],
         message: `!🙂 ${playerName} has joined the room`
       });
-      console.log("firstPlayer", rooms[room].players)
+      console.log("players", rooms[room].players)
   
       // Initialize bet tracking for the room if not done already
       if (!bets[room]) {
@@ -304,17 +388,14 @@ io.on('connection', (socket) => {
       
       if (!rooms[room].gameInProgress) {
         startJoinTimeout(room);
-        console.log("now")
+        console.log("starting join timeout")
       }
     });
 
-    socket.on('firstBetPlaced', (data) => {
-
-      const bet = data.bet
+    socket.on('next-player', (data) => {
       const room = data.room
-      const playerId = data.playerId
-      const player = rooms[room].players.find(p => p.id === socket.id);
-      console.log("playereeeeee", player)
+      console.log("this is the room", room)
+      nextTurn(room);
       /* player.bet = bet
       const playerName = player.name
       if (!playerBets[room]) {
@@ -329,15 +410,11 @@ io.on('connection', (socket) => {
     })
   
     socket.on('place-bet', (data) => {
-      console.log("dataaaaaaaa", data)
       const bet = data.bet
       const room = data.room
-      const playerId = data.playerId
-      console.log("roooms", rooms[room])
-      const players = rooms[room].players
-      const player = players.find(el => el.id = socket.id)
-      console.log("playerlater", player)
-      
+      const playerId = data.id
+      //console.log("roooms", rooms[room])
+      const player = rooms[room].players.find(p => p.id === playerId);
       const playerName = player.name
       if (!playerBets[room]) {
         playerBets[room] = {};
@@ -347,7 +424,6 @@ io.on('connection', (socket) => {
       }
       player.bet = bet
       playerBets[room][socket.id] = bet;
-      console.log("playerlater", player)
       io.in(room).emit('new_update_players', {
         gameData: rooms[room],
         playerName: playerName,
@@ -360,8 +436,8 @@ io.on('connection', (socket) => {
       const id = data.id
       const room = data.room
       //console.log("222222222222222222222222",rooms[room])
-      const totalBetAmount = data.placedBet
-      const currentPlayerIndex = data.currentPlayerIndex;
+      const bet = data.placedBet
+      const currentPlayerIndex = rooms[room].currentPlayerIndex;
       const currentPlayer = rooms[room].players[currentPlayerIndex];
       console.log("currrrrrrrrrrrrrrrent", currentPlayer)
       rooms[room].dealerHand = data.gameData.dealerHand
@@ -375,6 +451,23 @@ io.on('connection', (socket) => {
       console.log("player ace account before hit",playerAceCount)
       hit(deck,room,playerSum,playerAceCount,currentPlayer);
       
+    });
+    socket.on('playerStays', (data) => {
+      const room = data.room
+      console.log(rooms[room].players)
+      nextTurn(room);
+    });
+    socket.on('doubledBet', (data) => {
+      const bet = data.placedBet
+      const room = data.room
+      const id = data.id
+      const currentPlayerIndex = rooms[room].currentPlayerIndex;
+      const currentPlayer = rooms[room].players[currentPlayerIndex];
+      currentPlayer.bet = bet
+      console.log("currentPlauer", currentPlayer)
+      io.in(room).emit('restoreAmount',{
+        players: rooms[room].players
+      });
     })
   
     // Handle game actions like 'hit' or 'stand'
@@ -451,17 +544,7 @@ io.on('connection', (socket) => {
   
   
   // Function to move to the next player's turn
-  function nextTurn(room) {
-    rooms[room].currentPlayerIndex++;
   
-    if (rooms[room].currentPlayerIndex < rooms[room].players.length) {
-      const nextPlayer = rooms[room].players[rooms[room].currentPlayerIndex];
-      io.to(nextPlayer.id).emit('your-turn');
-    } else {
-      // All players have finished their turns, end the round
-      endRound(room);
-    }
-  }
   
   // Function to handle player actions (e.g., hit or stand)
   function processPlayerAction(action, player, room) {
@@ -470,11 +553,7 @@ io.on('connection', (socket) => {
   }
   
   // Function to end the round after all players have taken their turns
-  function endRound(room) {
-    console.log(`Ending round for room ${room}`);
-    // Calculate winners, reset for next round
-    io.in(room).emit('round-ended', { result: 'Round ended, calculate scores' });
-  }
+  
 
 httpServer.listen(8080, () => {
     console.log("server running on 8080")

@@ -1,5 +1,19 @@
 import { toast } from 'react-toastify';
 
+export const autoCloseOff = (message) => {
+  toast(message, {
+    className: "custom-toast",
+    position: "top-right",
+    autoClose: false,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "dark",
+        });
+};
+
 export const placeBetNotify  = (message) => {
   toast(message, {
     className: "custom-toast",

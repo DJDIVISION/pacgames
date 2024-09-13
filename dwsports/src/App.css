@@ -280,19 +280,22 @@ a{
   position: absolute;
   width: 200px;
   height: 300px;
-  background-color: lightgray;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
 }
 
 .card-content {
   display: flex;
-  
+  border: 2px solid aqua;
   align-items: center;
   flex-direction: column;
   height: 100%;
-  background-color: skyblue;
+  background-color: rgba(0, 0, 0, 0.8);
   font-size: 1.5rem;
   text-align: center;
   position: relative;
+  border-radius: 8px;
 }
 
 h3 {
@@ -307,8 +310,10 @@ p {
 /* Empty cards styling */
 .card-content.empty {
   background-color: transparent; /* You can adjust this as needed */
-  border: 2px dashed gray;
+  border: 1px solid #c2c2c2;
 }
+
+
 
 
 

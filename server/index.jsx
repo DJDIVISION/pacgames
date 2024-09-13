@@ -296,7 +296,7 @@ io.on("connection", (socket) => {
     const room = data.room
     //console.log("222222222222222222222222",rooms[room])
     const totalBetAmount = data.placedBet
-    const currentPlayerIndex = data.currentPlayerIndex;
+    const currentPlayerIndex = rooms[room].currentPlayerIndex;
     const currentPlayer = rooms[room].players[currentPlayerIndex];
     console.log("currrrrrrrrrrrrrrrent", currentPlayer)
     rooms[room].dealerHand = data.gameData.dealerHand
