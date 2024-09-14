@@ -9,6 +9,43 @@ import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import { IconButton } from "@mui/material";
 
+export const MessageText = styled.h1`
+  color: ${props => props.theme.text};
+  font-size: 16px;
+  margin-left: 10px;
+`;
+
+export const MessageHolder = styled.div`
+  width: 80%;
+  min-height: 40px;
+  border: 1px solid aqua;
+  margin: 15px 0;
+  border-radius: 10px;
+  position: relative;
+  padding: 0 10px;
+`;
+
+export const AvatarHolder = styled.div`
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    float: left;
+    margin: 0px 5px 0px 0px;
+`;
+
+export const MessageTime = styled.div`
+  width: 30px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-top: auto;
+  color: ${props => props.theme.MainAccent};
+  font-size: 14px;
+`;
+
 export const actionMenuVariants = {
   open: {
     height: '200px',
@@ -87,9 +124,9 @@ export const RecordIcon = styled(MicIcon)`
 export const ActionMenu = styled(motion.div)`
   position: absolute;
   width: 60px; 
-  height: 200px;
-  right: 0;
-  bottom: 60px;
+  height: 150px;
+  right: 10px;
+  bottom: 20px;
 `;
 
 export const Action = styled(motion.div)`

@@ -5,7 +5,7 @@ import { StyledButton, Disconnect,DealerCard,ColumnTopSmall,ColumnTopBig } from 
 import { DndContext } from '@dnd-kit/core';
 import Swal from "sweetalert2";
 import io from 'socket.io-client';
-import { autoCloseOff,dismissAll,welcomeNotify,placeBetNotify,waitingtToStarttNotify,fetchMessages,
+import { autoCloseOff,dismissAll,welcomeNotify,placeBetNotify,waitingtToStarttNotify,
  } from './functions'
 
 import { BetState } from '../context/BetsContext';
@@ -28,6 +28,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ChatInput from '../components/chats/ChatInput';
 import { StyledIconButton } from '../components/chats';
 import ActionIcons from '../components/chats/ActionIcons';
+import ChatMessages from '../components/chats/ChatMessages';
 
 
 const socket = io.connect("http://localhost:8080")
@@ -87,12 +88,15 @@ const BlackJack = ({player}) => {
   const [cantHit, setCantHit] = useState(false)
   const [balance, setBalance] = useState(500); // Initial state
   const [chatMenuOpen, setChatMenuOpen] = useState(false)
-  //const {messages, setMessages} = fetchMessages();
+  
   const [isExpanded, setIsExpanded] = useState(false);
   const [actionMenuOpen, setActionMenuOpen] = useState(false)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const chatEndRef = useRef(null);
+
+  
  
   useEffect(() => {
     if (player?.hand && carroussel.current) {
@@ -414,7 +418,7 @@ const BlackJack = ({player}) => {
 
   const icon =  isExpanded ? <CloseChatRoomIcon /> : <ChatRoomIcon />
   //if(playOnline && players)
-  if (playOnline && players) {
+  if (!playOnline) {
     return (
       <BlackSection>
         <BlackJackTitle>BlackJack</BlackJackTitle>
@@ -423,18 +427,27 @@ const BlackJack = ({player}) => {
     )
   }
   //if(playOnline && players)
-  if(!playOnline) {
+  if(playOnline && players) {
     return (
       <BlackJackSection>
         <BlackJackTitle animate={{ height: activePlayer ? '35vh' : '40vh' }}
         initial={{ height: '70vh' }}
         transition={{ duration: 0.5 }}>
-        <BalanceColumn onClick={disconnect}>
-          <ColumnTopBig>
-          <Avatar alt="Image" src={playerAvatar} sx={{ width: 60, height: 60 }} />
-          </ColumnTopBig>
-          <ColumnTopSmall>Balance: <span id="counter">{balance}</span></ColumnTopSmall>
-        </BalanceColumn>
+        <ChatContainer id="smallChat" initial={{ height: '40vh', width: '25vw' }} animate={{ height: isExpanded ? '100vh' : '40vh', width: isExpanded ? '100vw' : '25vw' }} transition={{ duration: 0.5 }}>
+          <ButtonAbsolute onClick={() => {setIsExpanded(!isExpanded); setActionMenuOpen(false)}}>{icon}</ButtonAbsolute>
+          <ActionIcons actionMenuOpen={actionMenuOpen} setShowEmojiPicker={setShowEmojiPicker} showEmojiPicker={showEmojiPicker}
+          message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
+          />
+          
+          <MessagesWrapper>
+          <ChatMessages chatEndRef={chatEndRef}/>
+          </MessagesWrapper>
+          {isExpanded && (
+            <ChatInput isExpanded={isExpanded} 
+            actionMenuOpen={actionMenuOpen} setActionMenuOpen={setActionMenuOpen} showEmojiPicker={showEmojiPicker}
+            setShowEmojiPicker={setShowEmojiPicker} message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}/>
+          )}
+          </ChatContainer>
         <BlackJackBigColumn>
         <div id="dealer-cards" style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <motion.img id="hidden" src="./assets/cards/BACK.png" initial="out" animate="in" variants={animationFour} transition={transitionLong}/>
@@ -445,22 +458,13 @@ const BlackJack = ({player}) => {
             })}
         </div>
         </BlackJackBigColumn>
-  
-          <ChatContainer id="smallChat" initial={{ height: '40vh' }} animate={{ height: isExpanded ? '100vh' : '40vh' }} transition={{ duration: 0.5 }}>
-          <ButtonAbsolute onClick={() => setIsExpanded(!isExpanded)}>{icon}</ButtonAbsolute>
-          <ActionIcons actionMenuOpen={actionMenuOpen} setShowEmojiPicker={setShowEmojiPicker} showEmojiPicker={showEmojiPicker}
-          message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
-          playerName={playerName} socket_id={myId} user_avatar={playerAvatar}/>
+        <BalanceColumn onClick={disconnect}>
+          <ColumnTopBig>
+          <Avatar alt="Image" src={playerAvatar} sx={{ width: 60, height: 60 }} />
+          </ColumnTopBig>
+          <ColumnTopSmall>Balance: <span id="counter">{balance}</span></ColumnTopSmall>
+        </BalanceColumn>
           
-          {isExpanded && (
-            <ChatInput isExpanded={isExpanded} 
-            actionMenuOpen={actionMenuOpen} setActionMenuOpen={setActionMenuOpen} showEmojiPicker={showEmojiPicker}
-            setShowEmojiPicker={setShowEmojiPicker} message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}/>
-          )}
-            
-          
-          
-          </ChatContainer>
           
         </BlackJackTitle>
         <BlackJackCards animate={{ height: activePlayer ? '55vh' : '60vh' }}
@@ -568,7 +572,14 @@ const BalanceColumn = styled.div`
     padding: 5px;
     position: absolute;
     top: 0;
-    left: 0;
+    left: 75vw;
+`;
+
+const MessagesWrapper = styled.div`
+  width: 100%;
+  height: 80%;
+  padding: 5px 15px;
+  overflow-y: scroll;
 `;
 
 const ChatContainer = styled(motion.div)`
@@ -578,12 +589,12 @@ const ChatContainer = styled(motion.div)`
     align-items: center;
     justify-content: flex-end;
     flex-direction: column;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(20px);
     border: 1px solid ${props => props.theme.MainAccent};
     position: absolute;
     top: 0;
-    left: 75vw;
+    left: 0;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     z-index: 3000;

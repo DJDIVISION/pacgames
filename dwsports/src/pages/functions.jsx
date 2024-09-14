@@ -61,42 +61,49 @@ export const welcomeNotify = (message) => {
           });
 };
 
-export const fetchMessages = async () => {
+export const useFetchMessages = () => {
   const [messages, setMessages] = useState([]);
+
   useEffect(() => {
-    // Fetch initial messages
+    // Function to fetch initial messages
     const fetchMessages = async () => {
-        const { data, error } = await supabase.from('games_chat_messages').select('*').order('created_at', { ascending: true });
-          if(error){
-            console.log(error)
-          }
-          if(data){
-            console.log(data[0])
-            setMessages(data)
-          }
+      const { data, error } = await supabase
+        .from('games_chat_messages')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.log('Error fetching messages:', error);
+      }
+
+      if (data) {
+        console.log('Fetched messages:', data);
+        setMessages(data); // Set the messages to state
+      }
     };
 
+    // Call the fetch function on component mount
     fetchMessages();
 
-    // Subscribe to new messages
-    
-      const channel = supabase
-          .channel('schema-db-changes')
-          .on(
-              'postgres_changes',
-              {
-                  event: '*',
-                  schema: 'public',
-              },
-              (payload) => console.log(payload)
-          )
-          .subscribe()
+    // Subscribe to new messages using Supabase real-time feature
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public' },
+        (payload) => {
+          console.log('New message payload:', payload);
+          setMessages((prevMessages) => [...prevMessages, payload.new]);
+        }
+      )
+      .subscribe();
 
-    // Cleanup subscription on unmount
+    // Cleanup subscription when the component unmounts
     return () => {
-        supabase.removeChannel(channel)
+      supabase.removeChannel(channel);
     };
   }, []);
-  return {messages, setMessages}
+
+  return { messages };
 };
 

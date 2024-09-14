@@ -13,7 +13,7 @@ import { BetState } from "../../context/BetsContext";
 
 
 
-const ChatInput = ({ playerName,socket_id,user_avatar,isExpanded,actionMenuOpen,setActionMenuOpen,showEmojiPicker,
+const ChatInput = ({ isExpanded,actionMenuOpen,setActionMenuOpen,showEmojiPicker,playerName,socket_id,user_avatar,
     setShowEmojiPicker,message,setMessage,selectedFile,setSelectedFile
  }) => {
   
@@ -88,6 +88,32 @@ const ChatInput = ({ playerName,socket_id,user_avatar,isExpanded,actionMenuOpen,
   };
 
   
+    
+    const handleSendMessage = async () => {
+        //onSendMessage(message);
+        //setMessage("");
+        //setSelectedFile(null);
+        const updatedData = {
+            message: message,
+            user_id: user.id,
+            user_email: user.email,
+            playerName: playerName,
+            socket_id: socket_id,
+            user_avatar: user_avatar
+          }
+          const { data, error } = await supabase
+            .from('games_chat_messages')
+            .insert([updatedData])
+            if (error) {
+              console.error('Error inserting/updating user session data:', error.message)
+            } else {
+              console.log('User session data saved:', data)
+            }
+            setMessage("");
+            setSelectedFile(null);
+      };
+
+  
 
   return (
     <ChatInputContainer>
@@ -105,6 +131,9 @@ const ChatInput = ({ playerName,socket_id,user_avatar,isExpanded,actionMenuOpen,
                   onChange={(e) => setMessage(e.target.value)}
               />
           </InputWrapper>
+          <DialWrapper>
+              <StyledIconButton onClick={handleSendMessage}><SendChatIcon /></StyledIconButton>
+          </DialWrapper>
           <DialWrapper>
               <StyledIconButton onClick={toggleMenu}>{icon}</StyledIconButton>
           </DialWrapper>
@@ -135,16 +164,17 @@ const ChatInputContainer = styled.div`
 `;
 
 const InputWrapper = styled.div`
-    width: 85%;
+    width: 90%;
     height: 100%;
     display: flex;
     z-index: 4000;
     align-items: center;
     margin-top: 10px;
+    padding-left: 20px;
 `;
 
 const DialWrapper = styled.div`
-    width: 15%;
+    width: 5%;
     height: 100%;
     display: flex;
     align-items:center;
