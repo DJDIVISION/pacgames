@@ -631,7 +631,7 @@ export const BlackJackColumn = styled.div`
     color: ${props => props.theme.text};
     font-size: 24px;
     flex-direction: column;
-    border: 1px solid red;
+    border: 1px solid blue;
     padding: 5px;
 `;
 

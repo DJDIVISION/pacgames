@@ -71,6 +71,35 @@ a{
   align-items: center;
 }
 
+.menu-container-eight{
+  position:fixed;
+  width:25vw;
+  height:100vh;
+  top: 0;
+  left: 75vw;
+  color:#fff;
+  display:flex;
+  flex-direction: column;
+  z-index: 3000;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-container-eight{
+  position:fixed;
+  width:100px;
+  height:20vh;
+  top: 0;
+  left: 0;
+  color:#fff;
+  background: orange;
+  display:flex;
+  flex-direction: column;
+  z-index: 3000;
+  justify-content: center;
+  align-items: center;
+}
+
 .bet-info{
   color: white;
   font-size: 24px;
@@ -106,7 +135,6 @@ a{
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 10px 15px;
 }
 
 .custom-input {
@@ -311,6 +339,10 @@ p {
 .card-content.empty {
   background-color: transparent; /* You can adjust this as needed */
   border: 1px solid #c2c2c2;
+}
+
+.MuiButtonBase-root{
+  background: transparent;
 }
 
 

@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useCycle } from "framer-motion";
 import styled from 'styled-components'
-import { StyledButton, Disconnect,BlackJackColumn,BlackJackBigColumn,DealerCard,ColumnTopSmall,ColumnTopBig } from './index'
+import { StyledButton, Disconnect,DealerCard,ColumnTopSmall,ColumnTopBig } from './index'
 import { DndContext } from '@dnd-kit/core';
 import Swal from "sweetalert2";
 import io from 'socket.io-client';
-import { autoCloseOff, dismissAll, welcomeNotify, placeBetNotify, waitingtToStarttNotify } from './functions'
+import { autoCloseOff,dismissAll,welcomeNotify,placeBetNotify,waitingtToStarttNotify,fetchMessages,
+ } from './functions'
+
 import { BetState } from '../context/BetsContext';
 import { ToastContainer, toast } from 'react-toastify';
 import { IconButton } from '@mui/material';
@@ -22,6 +24,11 @@ import {Button,CircularProgress } from '@mui/material'
 import { EffectCards } from 'swiper/modules';
 import { transitionLong,animationFour } from '../animations';
 import ChatIcon from '@mui/icons-material/Chat';
+import CloseIcon from '@mui/icons-material/Close'; 
+import ChatInput from '../components/chats/ChatInput';
+import { StyledIconButton } from '../components/chats';
+import ActionIcons from '../components/chats/ActionIcons';
+
 
 const socket = io.connect("http://localhost:8080")
 
@@ -79,34 +86,14 @@ const BlackJack = ({player}) => {
   const [loading, setLoading] = useState(true); 
   const [cantHit, setCantHit] = useState(false)
   const [balance, setBalance] = useState(500); // Initial state
-  const [currentNumber, setCurrentNumber] = useState(500); // Initial number
-  const [intervalId, setIntervalId] = useState(null);
-  const [stayDisabled, setStayDisabled] = useState(false)
-  const [isOpen, toggleOpen] = useCycle(false, true);
+  const [chatMenuOpen, setChatMenuOpen] = useState(false)
+  //const {messages, setMessages} = fetchMessages();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [actionMenuOpen, setActionMenuOpen] = useState(false)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [message, setMessage] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
  
-  const sidebar = {
-    open: (height = 1000) => ({
-      clipPath: `circle(${height * 2 + 200}px at 40px 40px)`,
-      transition: {
-        type: "spring",
-        stiffness: 20,
-        restDelta: 2
-      }
-    }),
-    closed: {
-      clipPath: "circle(30px at 40px 40px)",
-      transition: {
-        delay: 0.5,
-        type: "spring",
-        stiffness: 400,
-        damping: 40
-      }
-    }
-  };
-
-  console.log(balance)
-
-
   useEffect(() => {
     if (player?.hand && carroussel.current) {
       // Scroll to the end of the container when player.hand updates
@@ -425,9 +412,9 @@ const BlackJack = ({player}) => {
     );
   };
 
-  
+  const icon =  isExpanded ? <CloseChatRoomIcon /> : <ChatRoomIcon />
   //if(playOnline && players)
-  if (!playOnline) {
+  if (playOnline && players) {
     return (
       <BlackSection>
         <BlackJackTitle>BlackJack</BlackJackTitle>
@@ -436,18 +423,18 @@ const BlackJack = ({player}) => {
     )
   }
   //if(playOnline && players)
-  if(playOnline && players) {
+  if(!playOnline) {
     return (
       <BlackJackSection>
         <BlackJackTitle animate={{ height: activePlayer ? '35vh' : '40vh' }}
         initial={{ height: '70vh' }}
         transition={{ duration: 0.5 }}>
-        <BlackJackColumn onClick={disconnect}>
+        <BalanceColumn onClick={disconnect}>
           <ColumnTopBig>
           <Avatar alt="Image" src={playerAvatar} sx={{ width: 60, height: 60 }} />
           </ColumnTopBig>
           <ColumnTopSmall>Balance: <span id="counter">{balance}</span></ColumnTopSmall>
-        </BlackJackColumn>
+        </BalanceColumn>
         <BlackJackBigColumn>
         <div id="dealer-cards" style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <motion.img id="hidden" src="./assets/cards/BACK.png" initial="out" animate="in" variants={animationFour} transition={transitionLong}/>
@@ -458,15 +445,23 @@ const BlackJack = ({player}) => {
             })}
         </div>
         </BlackJackBigColumn>
-        <BlackJackColumn>
-          <ChatContainer>
-             
-                <ButtonAbsolute><ChatRoomIcon /></ButtonAbsolute>
-              
+  
+          <ChatContainer id="smallChat" initial={{ height: '40vh' }} animate={{ height: isExpanded ? '100vh' : '40vh' }} transition={{ duration: 0.5 }}>
+          <ButtonAbsolute onClick={() => setIsExpanded(!isExpanded)}>{icon}</ButtonAbsolute>
+          <ActionIcons actionMenuOpen={actionMenuOpen} setShowEmojiPicker={setShowEmojiPicker} showEmojiPicker={showEmojiPicker}
+          message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
+          playerName={playerName} socket_id={myId} user_avatar={playerAvatar}/>
+          
+          {isExpanded && (
+            <ChatInput isExpanded={isExpanded} 
+            actionMenuOpen={actionMenuOpen} setActionMenuOpen={setActionMenuOpen} showEmojiPicker={showEmojiPicker}
+            setShowEmojiPicker={setShowEmojiPicker} message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}/>
+          )}
             
-            <motion.div className="navbar" variants={sidebar} />
+          
+          
           </ChatContainer>
-        </BlackJackColumn>
+          
         </BlackJackTitle>
         <BlackJackCards animate={{ height: activePlayer ? '55vh' : '60vh' }}
         initial={{ height: '70vh' }}
@@ -547,6 +542,60 @@ const getTransformForIndex = (index) => {
 export default BlackJack;
 
 
+
+
+
+const BlackJackBigColumn = styled.div`
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 25vw;
+`;
+
+const BalanceColumn = styled.div`
+    width: 25vw;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.text};
+    font-size: 24px;
+    flex-direction: column;
+    padding: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+`;
+
+const ChatContainer = styled(motion.div)`
+    width: 25vw;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: column;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid ${props => props.theme.MainAccent};
+    position: absolute;
+    top: 0;
+    left: 75vw;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    z-index: 3000;
+`;
+
+const CloseChatRoomIcon = styled(CloseIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+    }
+`;
+
+
 const ActionButtons = styled(motion.div)`
     width: 30%;
     height: 10vh;
@@ -620,6 +669,7 @@ const BlackJackSection = styled.div`
     background-image: url(${BJBack});
     background-repeat: no-repeat;
     background-size: cover;
+    
 `;
 
 const BlackSection = styled.div`
@@ -638,8 +688,8 @@ const BlackJackTitle = styled(motion.div)`
     align-items: center;
     justify-content: center;
     color: ${props => props.theme.text};
-    border: 1px solid red;
     font-size: 98px;
+    position: relative;
 `;
 
 const EmptyCardLine = styled.div`
@@ -659,15 +709,6 @@ const CardHolder = styled.div`
   font-size: 26px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-const PlayerName = styled.div`
-  width: 100%;
-  height: 10%;
-  border: 1px solid white;
-  display: flex;
   align-items: center;
   justify-content: center;
 `;
@@ -715,26 +756,13 @@ const BlackJackCards = styled(motion.div)`
     
 `;
 
-const ChatContainer = styled.div`
-    width: 95%;
-    height: 95%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px);
-    border: 1px solid ${props => props.theme.MainAccent};
-    border-radius: 10px;
-    position: relative;
-`;
-
 const ButtonAbsolute = styled(IconButton)`
         &&&{
           border: 0.5px solid ${props => props.theme.MainAccent};
         position: absolute;
         top: 15px;
         right: 15px;
+        z-index: 4000;
         }
 `;
 

@@ -324,18 +324,18 @@ const TeamStats = () => {
                 <AccordionTitle>ATTACKING</AccordionTitle>
                 {isAttackExpanded && <div className="hidden-content2">
                   <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%' }}>
-                  {Object.entries(attacking).map(([key, value], index) => (
-                    <React.Fragment key={index}>
-                      <div style={{ flex: '1 1 85%', padding: '5px', fontWeight: 'bold', color: 'white' }}>
-                        {key}
-                      </div>
-                      <div style={{ flex: '1 1 15%', padding: '5px', color: 'white', textAlign: 'right' }}>
-                        {value}
-                      </div>
-                    </React.Fragment>
-                  ))}
-                </div>
-                              </div>}
+                    {Object.entries(attacking).map(([key, value], index) => (
+                      <React.Fragment key={index}>
+                        <div style={{ flex: '1 1 85%', padding: '5px', fontWeight: 'bold', color: 'white' }}>
+                          {key}
+                        </div>
+                        <div style={{ flex: '1 1 15%', padding: '5px', color: 'white', textAlign: 'right' }}>
+                          {value}
+                        </div>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>}
             </motion.div>
             <motion.div
                 initial={{ height: 50, border: '1px solid white', borderRadius: '10px'}} // Initial height
