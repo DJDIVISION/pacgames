@@ -8,6 +8,56 @@ import SendIcon from '@mui/icons-material/Send';
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import { IconButton } from "@mui/material";
+import ChatIcon from '@mui/icons-material/Chat';
+import CloseIcon from '@mui/icons-material/Close';
+
+export const ChatRoomIcon = styled(ChatIcon)`
+  &&&{
+    color: ${props => props.theme.text};
+    
+  }
+`;
+
+export const CloseChatRoomIcon = styled(CloseIcon)`
+  &&&{
+      color: ${props => props.theme.text};
+  }
+`;
+
+export const MessagesWrapper = styled.div`
+  width: 100%;
+  height: 80%;
+  padding: 5px 15px;
+  overflow-y: scroll;
+`;
+
+export const ButtonAbsolute = styled(IconButton)`
+  &&&{
+    border: 0.5px solid ${props => props.theme.MainAccent};
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 4000;
+  }
+`;
+
+export const ChatContainer = styled(motion.div)`
+  width: 25vw;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: column;
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid ${props => props.theme.MainAccent};
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  z-index: 3000;
+`;
 
 export const MessageText = styled.h1`
   color: ${props => props.theme.text};

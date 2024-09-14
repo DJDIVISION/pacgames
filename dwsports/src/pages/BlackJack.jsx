@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useCycle } from "framer-motion";
 import styled from 'styled-components'
-import { StyledButton, Disconnect,DealerCard,ColumnTopSmall,ColumnTopBig } from './index'
+import { StyledButton,DealerCard,ColumnTopSmall,ColumnTopBig } from './index'
 import { DndContext } from '@dnd-kit/core';
 import Swal from "sweetalert2";
 import io from 'socket.io-client';
@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Chips from '../components/blackjack/Chips';
 import BetArea from '../components/blackjack/BetArea';
 import { Avatar } from '@mui/material';
-import chipImage from '../assets/chips/emptyChip.png'
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import BJBack from '../assets/bjTable.jpg';
 import 'swiper/css';
@@ -23,12 +23,12 @@ import 'swiper/css/effect-cards';
 import {Button,CircularProgress } from '@mui/material'
 import { EffectCards } from 'swiper/modules';
 import { transitionLong,animationFour } from '../animations';
-import ChatIcon from '@mui/icons-material/Chat';
-import CloseIcon from '@mui/icons-material/Close'; 
+
 import ChatInput from '../components/chats/ChatInput';
 import { StyledIconButton } from '../components/chats';
 import ActionIcons from '../components/chats/ActionIcons';
 import ChatMessages from '../components/chats/ChatMessages';
+import PlayerCards from '../components/blackjack/PlayerCards';
 
 
 const socket = io.connect("http://localhost:8080")
@@ -59,7 +59,7 @@ const takePlayerName = async () => {
 
 const BlackJack = ({player}) => {
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  
   const [playOnline, setPlayOnline] = useState(false)
   const [playerName, setPlayerName] = useState(null);
   const [playerAvatar, setPlayerAvatar] = useState(null);
@@ -80,8 +80,7 @@ const BlackJack = ({player}) => {
   const [playerAceCount, setPlayerAceCount] = useState(null);
   const [dealerAceCount, setDealerAceCount] = useState(null);
   const [gameData, setGameData] = useState([])
-  const [width, setWidth] = useState(0);
-  const carroussel = useRef();
+  
   const [activePlayer, setActivePlayer] = useState(false);
   const [active, setActive] = useState("menuTwo");
   const [loading, setLoading] = useState(true); 
@@ -90,20 +89,14 @@ const BlackJack = ({player}) => {
   const [chatMenuOpen, setChatMenuOpen] = useState(false)
   
   const [isExpanded, setIsExpanded] = useState(false);
-  const [actionMenuOpen, setActionMenuOpen] = useState(false)
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [message, setMessage] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const chatEndRef = useRef(null);
+  
+  
+  
+  
 
   
  
-  useEffect(() => {
-    if (player?.hand && carroussel.current) {
-      // Scroll to the end of the container when player.hand updates
-      carroussel.current.scrollLeft = carroussel.current.scrollWidth;
-    }
-  }, [player?.hand]);
+  
 
   const handleDragEnd = (event) => {
     const { over, active } = event;
@@ -369,54 +362,9 @@ const BlackJack = ({player}) => {
     });
   }
 
-  const CardSpot = ({ transform, index, currentIndex }) => {
-    if (!players || players.length === 0) return null;
+ 
 
-    // Calculate the content index for this card spot
-    const contentIndex = (index - currentIndex + players.length) % players.length;
-
-    // Check if we should render content
-    const shouldRenderContent = index < players.length;
-    const player = shouldRenderContent ? players[contentIndex] : null;
-
-    return (
-      <div className="card-spot" style={{ transform }}>
-        {shouldRenderContent && players ? (
-          <motion.div
-            className="card-content"
-            key={player.id}
-            initial={{ opacity: 0, x: index > currentIndex ? 100 : -100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: index > currentIndex ? -100 : 100 }}
-            transition={{ duration: 0.5 }}
-          >
-            {/* Display dynamic content */}
-            <UserAvatar><Avatar alt="Image" src={player.avatar} sx={{ width: 80, height: 80 }} /></UserAvatar>
-            <UserChipSum id="chipSum" style={{ backgroundImage: `url(${chipImage})`, backgroundPosition: 'center' }}>{player.bet}</UserChipSum>
-            <EmptyCardLine></EmptyCardLine>
-            <EmptyCardLine>{player.name}</EmptyCardLine>
-            <CardHolder>
-            <SportsCarousel ref={carroussel}>
-            <InnerSportsCarousel drag="x" dragConstraints={{right: 0, left: -width}} whileTap={{cursor: 'grabbing'}}>
-              {player.hand.map((card) => {
-                return (
-                  <Card style={{backgroundImage: `url(./assets/cards/${card}.png)`,
-                  backgroundSize: 'contain',}} initial="out" animate="in" variants={animationFour} transition={transitionLong} activePlayer={activePlayer}></Card>
-                )
-              })}
-              </InnerSportsCarousel>
-              </SportsCarousel>
-              <EmptyCardLine>POINTS: {player.playerSum}</EmptyCardLine>
-            </CardHolder>
-          </motion.div>
-        ) : (
-          <div className="card-content empty"></div> // Render empty content
-        )}
-      </div>
-    );
-  };
-
-  const icon =  isExpanded ? <CloseChatRoomIcon /> : <ChatRoomIcon />
+  
   //if(playOnline && players)
   if (!playOnline) {
     return (
@@ -433,21 +381,7 @@ const BlackJack = ({player}) => {
         <BlackJackTitle animate={{ height: activePlayer ? '35vh' : '40vh' }}
         initial={{ height: '70vh' }}
         transition={{ duration: 0.5 }}>
-        <ChatContainer id="smallChat" initial={{ height: '40vh', width: '25vw' }} animate={{ height: isExpanded ? '100vh' : '40vh', width: isExpanded ? '100vw' : '25vw' }} transition={{ duration: 0.5 }}>
-          <ButtonAbsolute onClick={() => {setIsExpanded(!isExpanded); setActionMenuOpen(false)}}>{icon}</ButtonAbsolute>
-          <ActionIcons actionMenuOpen={actionMenuOpen} setShowEmojiPicker={setShowEmojiPicker} showEmojiPicker={showEmojiPicker}
-          message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
-          />
-          
-          <MessagesWrapper>
-          <ChatMessages chatEndRef={chatEndRef}/>
-          </MessagesWrapper>
-          {isExpanded && (
-            <ChatInput isExpanded={isExpanded} 
-            actionMenuOpen={actionMenuOpen} setActionMenuOpen={setActionMenuOpen} showEmojiPicker={showEmojiPicker}
-            setShowEmojiPicker={setShowEmojiPicker} message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}/>
-          )}
-          </ChatContainer>
+        <ChatMessages isExpanded={isExpanded} setIsExpanded={setIsExpanded}/>
         <BlackJackBigColumn>
         <div id="dealer-cards" style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
             <motion.img id="hidden" src="./assets/cards/BACK.png" initial="out" animate="in" variants={animationFour} transition={transitionLong}/>
@@ -467,20 +401,7 @@ const BlackJack = ({player}) => {
           
           
         </BlackJackTitle>
-        <BlackJackCards animate={{ height: activePlayer ? '55vh' : '60vh' }}
-        initial={{ height: '70vh' }}
-        transition={{ duration: 0.5 }}>
-          <IconButton  onClick={disconnect}><Disconnect /></IconButton>
-          {Array.from({ length: 5 }).map((_, i) => (
-              <CardSpot
-                key={i}
-                transform={getTransformForIndex(i)}
-                index={i}
-                currentIndex={currentIndex}
-                players={players}
-              />
-            ))}
-        </BlackJackCards>
+        <PlayerCards players={players} activePlayer={activePlayer}/>
         {/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <button onClick={disconnect}>Previous</button>
           <button onClick={goToNext}>Next</button>
@@ -575,36 +496,11 @@ const BalanceColumn = styled.div`
     left: 75vw;
 `;
 
-const MessagesWrapper = styled.div`
-  width: 100%;
-  height: 80%;
-  padding: 5px 15px;
-  overflow-y: scroll;
-`;
 
-const ChatContainer = styled(motion.div)`
-    width: 25vw;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-direction: column;
-    background: rgba(0,0,0,0.9);
-    backdrop-filter: blur(20px);
-    border: 1px solid ${props => props.theme.MainAccent};
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    z-index: 3000;
-`;
 
-const CloseChatRoomIcon = styled(CloseIcon)`
-    &&&{
-        color: ${props => props.theme.text};
-    }
-`;
+
+
+
 
 
 const ActionButtons = styled(motion.div)`
@@ -619,28 +515,9 @@ const ActionButtons = styled(motion.div)`
     border-radius: 10px;
 `;
 
-const Card = styled(motion.div)`
-    min-width: 110px;
-    min-height: 160px;
-    margin: 0 10px;
-    transform: ${({ activePlayer }) => (activePlayer ? "scale(0.9)" : "scale(1)")};
-  `;
 
-const SportsCarousel = styled(motion.div)`
-  cursor: grab;
-  height: 200px;
-  width: 180px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-`;
 
-const InnerSportsCarousel = styled(motion.div)`
-  display: flex;
-  align-items: center;
-  height: 200px;
-  width: 180px;
-`;
+
 
 const item = {
   exit: {
@@ -703,84 +580,14 @@ const BlackJackTitle = styled(motion.div)`
     position: relative;
 `;
 
-const EmptyCardLine = styled.div`
-  width: 100%;
-  height: 50px;
-  color: ${props => props.theme.text};
-  font-size: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-`;
 
-const CardHolder = styled.div`
-  width: 100%;
-  height: 70%;
-  font-size: 26px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
 
-const UserAvatar = styled.div`
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: orange;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 2px solid aqua;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-`;
 
-const UserChipSum = styled.div`
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: red;
-    position: absolute;
-    top: 10%;
-    left: 55%;
-    transform: translate(-25%, -25%);
-    color: ${props => props.theme.body};
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-`;
 
-const BlackJackCards = styled(motion.div)`
-    width: 100%;
-    height: 60vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    perspective: 1200px;
-    
-`;
 
-const ButtonAbsolute = styled(IconButton)`
-        &&&{
-          border: 0.5px solid ${props => props.theme.MainAccent};
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        z-index: 4000;
-        }
-`;
 
-const ChatRoomIcon = styled(ChatIcon)`
-    &&&{
-      color: ${props => props.theme.text};
-      
-    }
-    
-`;
+
+
+
+
+
