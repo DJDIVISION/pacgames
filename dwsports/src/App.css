@@ -345,6 +345,12 @@ p {
   background: transparent;
 }
 
+.box.active{
+  background-color: rgb(95, 91, 83);
+  color: aqua;
+  font-weight: bold;
+}
+
 
 
 

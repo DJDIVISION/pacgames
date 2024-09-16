@@ -7,11 +7,13 @@ import { motion } from 'framer-motion'
 import chipImage from '../../assets/chips/emptyChip.png'
 import { transitionLong,animationFour } from '../../animations';
 
-const PlayerCards = ({players,player,activePlayer}) => {
+const PlayerCards = ({players,player,activePlayer,rooms,playerSum}) => {
 
     const carroussel = useRef();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [width, setWidth] = useState(0);
+
+    
 
     useEffect(() => {
         if (player?.hand && carroussel.current) {
@@ -19,6 +21,13 @@ const PlayerCards = ({players,player,activePlayer}) => {
           carroussel.current.scrollLeft = carroussel.current.scrollWidth;
         }
       }, [player?.hand,carroussel]);
+
+      const goToNext = () => {
+        setCurrentIndex((prevIndex) => (prevIndex - 1) % players?.length);
+      };
+      const goToPrev = () => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1 + players?.length) % players?.length);
+      };
 
     const getTransformForIndex = (index) => {
         const transforms = [
@@ -60,7 +69,7 @@ const PlayerCards = ({players,player,activePlayer}) => {
                 <CardHolder>
                 <SportsCarousel ref={carroussel}>
                 <InnerSportsCarousel drag="x" dragConstraints={{right: 0, left: -width}} whileTap={{cursor: 'grabbing'}}>
-                  {player.hand.map((card) => {
+                  {player.hand?.map((card) => {
                     return (
                       <Card key={card} style={{backgroundImage: `url(./assets/cards/${card}.png)`,
                       backgroundSize: 'contain',}} initial="out" animate="in" variants={animationFour} transition={transitionLong} activePlayer={activePlayer}></Card>

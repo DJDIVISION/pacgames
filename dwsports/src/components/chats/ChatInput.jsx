@@ -14,7 +14,7 @@ import { BetState } from "../../context/BetsContext";
 
 
 const ChatInput = ({ isExpanded,actionMenuOpen,setActionMenuOpen,showEmojiPicker,playerName,socket_id,user_avatar,
-    setShowEmojiPicker,message,setMessage,selectedFile,setSelectedFile
+    setShowEmojiPicker,message,setMessage,selectedFile,setSelectedFile,activeRoom
  }) => {
   
   
@@ -99,7 +99,9 @@ const ChatInput = ({ isExpanded,actionMenuOpen,setActionMenuOpen,showEmojiPicker
             user_email: user.email,
             playerName: playerName,
             socket_id: socket_id,
-            user_avatar: user_avatar
+            user_avatar: user_avatar,
+            room_id: activeRoom,
+            sendedBy: "PLAYER"
           }
           const { data, error } = await supabase
             .from('games_chat_messages')

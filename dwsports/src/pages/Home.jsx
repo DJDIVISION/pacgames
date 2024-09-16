@@ -13,7 +13,6 @@ const Home = () => {
 
     const {user, setUser} = BetState();
     const navigate = useNavigate()
-    console.log(user)
 
   useEffect(() => {
     // Get the current user session

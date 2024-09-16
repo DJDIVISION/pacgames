@@ -1,5 +1,5 @@
 import React from 'react'
-import { AttachIcon,EmojiIcon,RecordIcon,ActionMenu,Action,actionMenuVariants } from './index';
+import { AttachIcon,EmojiIcon,RecordIcon,ActionMenu,Action,actionMenuVariants,StyledIconButtonHover } from './index';
 import { IconButton } from '@mui/material';
 import { supabase } from '../../supabase/client';
 import { BetState } from '../../context/BetsContext';
@@ -19,35 +19,35 @@ const ActionIcons = ({actionMenuOpen,setShowEmojiPicker,showEmojiPicker,message,
                 {actionMenuOpen && (
                     <>
                      <Action initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: .5 }}
+                    transition={{ delay: .25 }}
                     exit={{
                       opacity: 0,
                       y: 90,
                       transition: {
                         ease: "easeInOut",
-                        delay: .4
+                        delay: .2
                       }
-                    }}><IconButton><RecordIcon /></IconButton></Action>
+                    }}><StyledIconButtonHover><RecordIcon /></StyledIconButtonHover></Action>
                      <Action initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: .4 }}
+                    transition={{ delay: .15 }}
                     exit={{
                       opacity: 0,
                       y: 90,
                       transition: {
                         ease: "easeInOut",
-                        delay: .3
+                        delay: .1
                       }
-                    }}><IconButton><AttachIcon /></IconButton></Action>
+                    }}><StyledIconButtonHover><AttachIcon /></StyledIconButtonHover></Action>
                       <Action initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: .3 }}
+                    transition={{ delay: .1 }}
                     exit={{
                       opacity: 0,
                       y: 90,
                       transition: {
                         ease: "easeInOut",
-                        delay: 0.2
+                        delay: 0.05
                       }
-                    }}><IconButton onClick={() => setShowEmojiPicker(!showEmojiPicker)}><EmojiIcon /></IconButton></Action>
+                    }}><StyledIconButtonHover onClick={() => setShowEmojiPicker(!showEmojiPicker)}><EmojiIcon /></StyledIconButtonHover></Action>
                     </>
                 )}
           </ActionMenu>

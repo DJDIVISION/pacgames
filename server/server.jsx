@@ -63,13 +63,6 @@ const findOrCreateRoom = () => {
   return newRoom;
 };
 
-
-function findPlayerRoom(playerId) {
-  return Object.keys(rooms).find(room =>
-    rooms[room].players.some(player => player.id === playerId)
-  );
-}
-
 function startJoinTimeout(room) {
   if (roomJoinTimeouts[room]) {
     clearTimeout(roomJoinTimeouts[room]);
@@ -80,7 +73,13 @@ function startJoinTimeout(room) {
       console.log(`Join timeout expired in room: ${room}`);
       rooms[room].gameInProgress = true;
 
-      io.in(room).emit('betting-start', { players: rooms[room].players });  //setChipMenuOpen
+      io.in(room).emit('betting-start', { 
+        players: rooms[room].players,
+        message: `The game has started. You have 15 seconds to place your bet ⏱️`,
+        dealer: 'Jack',
+        dealer_avatar: 'https://ibb.co/MS5RdHV',
+        sendedBy: 'ADMIN' 
+      });  //setChipMenuOpen
       startBettingTimeout(room)
       console.log("time expired!!!")
     }
@@ -121,18 +120,6 @@ function startBettingTimeout(room) {
       //console.log("all bets placed, now what!!!")
     }
   }, BETTING_TIMEOUT_DURATION);
-}
-
-
-function setActivePlayer(room){
-  io.in(room).emit('all-bets-placed', {
-    message: "All bets placed!!!!!!"
-  });
-  startGame(room)
-  rooms[room].gameStarted = true
-  rooms[room].deck = shuffleDeck()
-  console.log(rooms[room].deck)
-  dealCards(room);
 }
 
 function startGame(room) {
@@ -362,7 +349,53 @@ function calculatePayout(player, dealerSum) {
   return { result: 'Lose!', payout: 0 };
 }
 
+const roomPlayers = {};
+
 io.on('connection', (socket) => {
+    console.log(`new player in room: ${socket.id}`);
+    socket.on('join-room', async (data) => {
+      const playerName = data.playerName
+      const googleId = data.googleId
+      const avatar = data.avatar
+      const room = data.room
+      socket.playerName = data.playerName;
+      rooms[room] = {
+        players: [],
+        deck: [],
+        dealerHand: [],
+        dealerHidden: "",
+        dealerAceCount: 0,
+        dealerSum: 0,
+        gameStarted: false,
+        waitingList: [],
+        room: room,
+        currentPlayerIndex: 0
+      }
+      rooms[room].players.push({ id: socket.id, name: playerName, bet: 0, googleId: googleId, playerSum: 0, hand:[], playerAceCount: 0, avatar: avatar });
+      socket.join(room);
+      
+      
+      if (!roomPlayers[room]) {
+        roomPlayers[room] = [];
+      }
+  
+      // Add the player to the roomPlayers array if they don't already exist
+      roomPlayers[room].push({ id: socket.id, name: playerName, bet: 0, googleId: googleId, playerSum: 0, hand:[], playerAceCount: 0, avatar: avatar });
+  
+      // Emit the updated list of players to the room
+      socket.emit('roomPlayers', {
+        players: roomPlayers[room]
+      });
+      io.to(socket.id).emit('thisIsYourId', {
+        playerId: socket.id
+      });
+  
+      console.log(`Player ${playerName} (${socket.id}) joined room ${room}. Players:`, roomPlayers[room]);
+
+    });
+    socket.on('getAllRoomPlayers', () => {
+      socket.emit('allRoomPlayers', roomPlayers); // Send roomPlayers to the client
+    });
     socket.on('request_to_play', (data) => {
       const playerName = data.playerName
       const googleId = data.id
@@ -375,11 +408,15 @@ io.on('connection', (socket) => {
       io.to(socket.id).emit('thisIsYourId', {
         playerId: socket.id,
       });
-      io.to(room).emit('update_players', {
+      
+      /* io.to(room).emit('update_players', {
         gameData: rooms[room],
-        message: `!🙂 ${playerName} has joined the room`
+        message: `${playerName} has joined the room 🙂!`,
+        dealer: 'Jack',
+        dealer_avatar: 'https://ibb.co/MS5RdHV',
+        sendedBy: 'ADMIN'
       });
-      console.log("players", rooms[room].players)
+      console.log("players", rooms[room].players) */
   
       // Initialize bet tracking for the room if not done already
       if (!bets[room]) {
@@ -391,24 +428,12 @@ io.on('connection', (socket) => {
         console.log("starting join timeout")
       }
     });
-
     socket.on('next-player', (data) => {
       const room = data.room
       console.log("this is the room", room)
       nextTurn(room);
-      /* player.bet = bet
-      const playerName = player.name
-      if (!playerBets[room]) {
-        playerBets[room] = {};
-      }
-      playerBets[room][socket.id] = bet;
-      io.in(room).emit('new_update_players', {
-        gameData: rooms[room],
-        playerName: playerName,
-        bet: bet
-      }); */
+
     })
-  
     socket.on('place-bet', (data) => {
       const bet = data.bet
       const room = data.room
@@ -469,30 +494,6 @@ io.on('connection', (socket) => {
         players: rooms[room].players
       });
     })
-  
-    // Handle game actions like 'hit' or 'stand'
-    socket.on('action', (action) => {
-      const room = Object.keys(rooms).find((room) =>
-        rooms[room].players.find((player) => player.id === socket.id)
-      );
-  
-      if (room) {
-        const currentPlayerIndex = rooms[room].currentPlayerIndex;
-        const currentPlayer = rooms[room].players[currentPlayerIndex];
-  
-        // Check if it's the player's turn
-        if (currentPlayer.id === socket.id) {
-          // Process the action (e.g., hit, stand)
-          processPlayerAction(action, currentPlayer, room);
-  
-          // Move to the next player after the current player finishes their turn
-          nextTurn(room);
-        } else {
-          // Notify the player that it's not their turn
-          socket.emit('not-your-turn');
-        }
-      }
-    });
     socket.on('manual-disconnect', (data) => {
       for (const room in rooms) {
         const playerIndex = rooms[room].players.findIndex(
@@ -515,44 +516,23 @@ io.on('connection', (socket) => {
         }
       }
     });
-  
     socket.on('disconnect', () => {
-      for (const room in rooms) {
-        const playerIndex = rooms[room].players.findIndex(
-          (p) => p.id === socket.id
-        );
-        if (playerIndex !== -1) {
-          rooms[room].players.splice(playerIndex, 1);
-          io.in(room).emit('selfDisconnected',{
-            gameData: rooms[room].players
-          });
-    
-          // Remove player's bet from the room
-          if (bets[room]) {
-            delete bets[room][socket.id];
+      const rooms = Array.from(socket.rooms); // Get the rooms the socket is in
+
+      rooms.forEach((roomName) => {
+        // Check if the room exists in roomPlayers
+        if (roomPlayers[roomName]) {
+          // Remove the disconnecting player from the roomPlayers array
+          roomPlayers[roomName] = roomPlayers[roomName].filter(player => player.id !== socket.id);
+          console.log(`${socket.id} deleted`)
+          // If room is empty, delete the room
+          if (roomPlayers[roomName].length === 0) {
+            delete roomPlayers[roomName];
           }
-          if (rooms[room].players.length === 0) {
-          delete rooms[room];
-          console.log(`Room ${room} deleted as it is empty`);
         }
-        }
-      }
+      });
     });
   });
-  
-  // Function to start the game after all bets are placed
-  
-  
-  // Function to move to the next player's turn
-  
-  
-  // Function to handle player actions (e.g., hit or stand)
-  function processPlayerAction(action, player, room) {
-    console.log(`${player.name} in room ${room} chose to ${action}`);
-    // Implement the logic for 'hit', 'stand', etc.
-  }
-  
-  // Function to end the round after all players have taken their turns
   
 
 httpServer.listen(8080, () => {

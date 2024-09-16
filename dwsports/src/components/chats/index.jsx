@@ -73,6 +73,16 @@ export const MessageHolder = styled.div`
   border-radius: 10px;
   position: relative;
   padding: 0 10px;
+  display: flex;
+  margin-left: auto;
+`;
+
+export const MessageName = styled.h1`
+  color: ${props => props.theme.text};
+  font-size: 14px;
+  position: absolute;
+  top: -20px;
+  
 `;
 
 export const AvatarHolder = styled.div`
@@ -90,8 +100,6 @@ export const MessageTime = styled.div`
   height: 20px;
   display: flex;
   align-items: center;
-  margin-left: auto;
-  margin-top: auto;
   color: ${props => props.theme.MainAccent};
   font-size: 14px;
 `;
@@ -126,6 +134,13 @@ export const item = {
 
 export const StyledIconButton = styled(IconButton)`
   &&&{
+    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    background: transparent;
+  }
+`;
+
+export const StyledIconButtonHover = styled(IconButton)`
+  &&&:hover{
     box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
     background: transparent;
   }

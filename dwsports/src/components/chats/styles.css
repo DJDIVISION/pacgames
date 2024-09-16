@@ -1,0 +1,20 @@
+.ADMIN {
+    border: 1px solid orange !important;
+    margin-left: 0px !important;
+}
+.ADMINTIME {
+    margin-left: auto;
+    margin-top: auto;
+}
+.ADMINNAME {
+    left: 3px;
+}
+
+.PLAYER{
+    flex-direction: row-reverse;
+    text-align: right;
+}
+.PLAYERTIME {
+    margin-right: auto;
+    margin-top: auto;
+}

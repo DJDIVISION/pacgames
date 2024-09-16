@@ -104,6 +104,6 @@ export const useFetchMessages = () => {
     };
   }, []);
 
-  return { messages };
+  return { messages,setMessages };
 };
 
