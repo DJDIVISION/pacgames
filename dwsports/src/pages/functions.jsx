@@ -65,45 +65,23 @@ export const useFetchMessages = () => {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    // Function to fetch initial messages
     const fetchMessages = async () => {
-      const { data, error } = await supabase
-        .from('games_chat_messages')
-        .select('*')
-        .order('created_at', { ascending: true });
+      try {
+        const response = await fetch('https://pacton-server.vercel.app/api/messages'); // Call the serverless function
+        const data = await response.json();
 
-      if (error) {
-        console.log('Error fetching messages:', error);
-      }
-
-      if (data) {
-        console.log('Fetched messages:', data);
-        setMessages(data); // Set the messages to state
-      }
-    };
-
-    // Call the fetch function on component mount
-    fetchMessages();
-
-    // Subscribe to new messages using Supabase real-time feature
-    const channel = supabase
-      .channel('schema-db-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public' },
-        (payload) => {
-          console.log('New message payload:', payload);
-          setMessages((prevMessages) => [...prevMessages, payload.new]);
+        if (response.ok) {
+          setMessages(data);
+        } else {
+          console.error('Error fetching messages:', data.error);
         }
-      )
-      .subscribe();
-
-    // Cleanup subscription when the component unmounts
-    return () => {
-      supabase.removeChannel(channel);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
     };
+
+    fetchMessages();
   }, []);
 
-  return { messages,setMessages };
+  return { messages };
 };
-

@@ -6,6 +6,7 @@ import { animationOne, animationTwo, transition } from '../animations'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { BetState } from '../context/BetsContext'
+import { useFetchMessages } from './functions'
 
 
 
@@ -13,7 +14,9 @@ const Home = () => {
 
     const {user, setUser} = BetState();
     const navigate = useNavigate()
+    const { messages } = useFetchMessages();
 
+  console.log(messages)
   useEffect(() => {
     // Get the current user session
     const getUser = async () => {
