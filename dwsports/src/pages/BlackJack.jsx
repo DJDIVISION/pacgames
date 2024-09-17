@@ -15,7 +15,9 @@ import BetArea from '../components/blackjack/BetArea';
 import { supabase } from '../supabase/client';
 
 
-const socket = io.connect("https://pacton-server.vercel.app/")
+const socket = io.connect("https://pacton-server.vercel.app", {
+  withCredentials: true
+})
 
 
 
