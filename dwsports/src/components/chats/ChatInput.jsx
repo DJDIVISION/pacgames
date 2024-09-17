@@ -13,7 +13,7 @@ import { BetState } from "../../context/BetsContext";
 
 
 
-const ChatInput = ({ isExpanded,actionMenuOpen,setActionMenuOpen,showEmojiPicker,playerName,socket_id,user_avatar,
+const ChatInput = ({ isExpanded,actionMenuOpen,setActionMenuOpen,showEmojiPicker,playerName,playerId,playerAvatar,
     setShowEmojiPicker,message,setMessage,selectedFile,setSelectedFile,activeRoom
  }) => {
   
@@ -87,7 +87,7 @@ const ChatInput = ({ isExpanded,actionMenuOpen,setActionMenuOpen,showEmojiPicker
     // You can handle file upload or sending logic here
   };
 
-  
+  console.log(user)
     
     const handleSendMessage = async () => {
         //onSendMessage(message);
@@ -98,8 +98,8 @@ const ChatInput = ({ isExpanded,actionMenuOpen,setActionMenuOpen,showEmojiPicker
             user_id: user.id,
             user_email: user.email,
             playerName: playerName,
-            socket_id: socket_id,
-            user_avatar: user_avatar,
+            socket_id: playerId,
+            user_avatar: user.user_metadata.avatar_url,
             room_id: activeRoom,
             sendedBy: "PLAYER"
           }

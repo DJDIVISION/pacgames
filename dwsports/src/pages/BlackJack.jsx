@@ -42,6 +42,10 @@ const BlackJack = () => {
     const [gameData, setGameData] = useState([])
     const [dealerAceCount, setDealerAceCount] = useState(null);
     const [playerSum, setPlayerSum] = useState(null);
+    const [playerName, setPlayerName] = useState(null);
+    const [gameFinished, setGameFinished] = useState(false)
+
+    console.log(dealerHidden)
     
     const sendAmdminMessage = async (messageToUpdate) => {
       const { data, error } = await supabase
@@ -75,6 +79,12 @@ const BlackJack = () => {
           ]);
         }
     };
+
+    
+
+    const callTimeOut = () => {
+      sendAmdminMessage("Waiting for more players to join. The game starts in 10 secons.")
+    }
 
     const startGame = () => {
 
@@ -131,7 +141,7 @@ const BlackJack = () => {
         setPlayOnline(true) 
         //waitingtToStarttNotify('Waiting for other players to join the room... ⌛')
       });
-      socket?.on('update-room-players', (data) => {
+      socket?.on('update_players', (data) => {
         const { message, dealer, dealer_avatar, sendedBy } = data;
         const messageToUpdate = {
           message: message,
@@ -140,7 +150,11 @@ const BlackJack = () => {
           sendedBy: sendedBy,
           room_id: activeRoom
         }
-        console.log(data)
+        sendAmdminMessage(messageToUpdate)
+        callTimeOut()
+      });
+      socket?.on('reveal-card', (data) => {
+        document.getElementById("hidden").src = "./assets/cards/" + data.hidden + ".png";
       });
       socket?.on('timeoutStarting', () => {
         console.log('time out has started')
@@ -149,9 +163,17 @@ const BlackJack = () => {
         console.log("time out expired, place tyour bet")
         setChipMenuOpen(true)
       });
-      socket?.on('game-started', () => {
-        console.log("all bets placed")
-        //setChipMenuOpen(true)
+      socket?.on('game-started', (data) => {
+        const { players, message, dealer, dealer_avatar, sendedBy } = data;
+        setPlayers(players)
+        /* const messageToUpdate = {
+          message: message,
+          playerName: dealer,
+          user_avatar: dealer_avatar,
+          sendedBy: sendedBy,
+          room_id: activeRoom
+        }
+        sendAmdminMessage(messageToUpdate) */
       });
       socket?.on('firstRound', (data) => {
         setGameData(data)
@@ -180,27 +202,62 @@ const BlackJack = () => {
             const amount = balance + payout
             setBalance(amount)
             
-            console.log("You have won! Your balance has been updated.")
+            console.log(`${playerName} wins ${payout}$. All balances updated!`)
           }
           if(status === "Push!"){
             const amount = balance + payout
             setBalance(amount)
             
-            console.log("Push! Your bet has been returned.")
+            console.log(`Push! ${playerName}'s bet has been returned.`)
           }
           if(status === 'BlackJack!'){
             const amount = balance + payout
             setBalance(amount)
             
-            console.log("BlackJack! Your earn 1.5x your bet.")
+            console.log(`${playerName}'s got BlackJack and wins ${payout}$!`)
           }
         } else {
           if(status === 'Lose!'){
             
-            console.log("You have lost the game! Try again!")
+            console.log(`${playerName} has lost the game.`)
           }
         }
        });
+       socket?.on('bets-placed', (data) => {
+        const { message, dealer, dealer_avatar, sendedBy } = data;
+        const messageToUpdate = {
+          message: message,
+          playerName: dealer,
+          user_avatar: dealer_avatar,
+          sendedBy: sendedBy,
+          room_id: activeRoom
+        }
+        sendAmdminMessage(messageToUpdate)
+       })
+       socket?.on('all.bets-placed', (data) => {
+        const { message, dealer, dealer_avatar, sendedBy } = data;
+        const messageToUpdate = {
+          message: message,
+          playerName: dealer,
+          user_avatar: dealer_avatar,
+          sendedBy: sendedBy,
+          room_id: activeRoom
+        }
+        sendAmdminMessage(messageToUpdate)
+       });
+       socket.on('gameResults', (data) => {
+        const { message, dealer, dealer_avatar, sendedBy, hidden } = data;
+        const messageToUpdate = {
+          message: message,
+          playerName: dealer,
+          user_avatar: dealer_avatar,
+          sendedBy: sendedBy,
+          room_id: activeRoom
+        }
+        setGameFinished(true)
+        console.log(hidden)
+        sendAmdminMessage(messageToUpdate)
+       })
       return () => {
         socket.off('roomsUpdate');
         socket.off('allPlayersUpdate');
@@ -211,8 +268,11 @@ const BlackJack = () => {
         socket.off('game-started');
         socket.off('firstRound');
         socket.off('balanceUpdate');
+        socket.off('bets-placed');
+        socket.off('all.bets-placed');
+        socket.off('results');
       };
-    }, []);
+    }, [dealerHidden]);
 
     const doubleBet= () => {
       const prev = placedBet
@@ -252,7 +312,7 @@ const BlackJack = () => {
     //(!playOnline)
     if (!playOnline) {
         return (
-          <BlackJackTabs socket={socket} rooms={rooms} players={players} />
+          <BlackJackTabs socket={socket} rooms={rooms} players={players} playerName={playerName} setPlayerName={setPlayerName}/>
         )
     }
       //(playOnline && players)
@@ -262,15 +322,17 @@ const BlackJack = () => {
                 <BlackJackTitle animate={{ height: activePlayer ? '35vh' : '40vh' }}
                     initial={{ height: '70vh' }}
                     transition={{ duration: 0.5 }}>
-                    <ChatMessages isExpanded={isExpanded} setIsExpanded={setIsExpanded} activeRoom={activeRoom} />
+                    <ChatMessages isExpanded={isExpanded} setIsExpanded={setIsExpanded} activeRoom={activeRoom} playerName={playerName}
+                    playerId={myId} playerAvatar={playerAvatar}/>
                     <BlackJackBigColumn>
-                    <div id="dealer-cards" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div id="dealer-cards" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                         <motion.img id="hidden" src="./assets/cards/BACK.png" initial="out" animate="in" variants={animationFour} transition={transitionLong} />
                         {dealerHand?.map(card => {
                             return (
                                 <DealerCard key={card} initial="out" animate="in" variants={animationFour} transition={transitionLong}><img src={`./assets/cards/${card}.png`} /></DealerCard>
                             )
                         })}
+                        {gameFinished && <DealerText>The dealer has got {dealerSum} points.</DealerText>}
                     </div>
                 </BlackJackBigColumn>
                 <BalanceColumn>
@@ -333,6 +395,16 @@ const BlackJackBigColumn = styled.div`
     top: 0;
     left: 25vw;
     border: 1px solid red;
+`;
+
+export const DealerText = styled.div`
+  width: 400px;
+  height: 50px;
+  color: ${props => props.theme.text};
+  font-size: 24px;
+  position: absolute;
+  top: 110%;
+  left: -5%;
 `;
 
 const BalanceColumn = styled.div`

@@ -8,9 +8,9 @@ import ActionIcons from './ActionIcons';
 import ChatInput from './ChatInput';
 import './styles.css'
 
-const ChatMessages = ({isExpanded,setIsExpanded,activeRoom}) => {
+const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId}) => {
 
-    /* const { messages } = useFetchMessages(); */
+    const { messages } = useFetchMessages();
     const [actionMenuOpen, setActionMenuOpen] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [message, setMessage] = useState("");
@@ -27,13 +27,13 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom}) => {
         }, 500)
       }
 
-    /* useEffect(() => {
+    useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages,isExpanded]); */
+    }, [messages,isExpanded]);
 
   return (
     <ChatContainer id="smallChat" initial={{ height: '40vh', width: '25vw' }} animate={{ height: isExpanded ? '100vh' : '40vh', width: isExpanded ? '100vw' : '25vw' }} transition={{ duration: 0.5 }}>
-       {/*  <ButtonAbsolute onClick={closeChat}>{icon}</ButtonAbsolute>
+        <ButtonAbsolute onClick={closeChat}>{icon}</ButtonAbsolute>
         <ActionIcons actionMenuOpen={actionMenuOpen} setShowEmojiPicker={setShowEmojiPicker} showEmojiPicker={showEmojiPicker}
           message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
         />
@@ -56,10 +56,10 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom}) => {
               <div ref={chatEndRef}></div>
         </MessagesWrapper>
         {isExpanded && (
-            <ChatInput isExpanded={isExpanded} activeRoom={activeRoom}
+            <ChatInput isExpanded={isExpanded} activeRoom={activeRoom} playerName={playerName} playerId={playerId}
             actionMenuOpen={actionMenuOpen} setActionMenuOpen={setActionMenuOpen} showEmojiPicker={showEmojiPicker}
             setShowEmojiPicker={setShowEmojiPicker} message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}/>
-          )} */}
+          )}
     </ChatContainer>
   )
 }

@@ -32,7 +32,7 @@ const takePlayerName = async () => {
   return result;
 };
 
-const BlackJackTabs = ({players,socket,rooms}) => {
+const BlackJackTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
 
   const [activeTab, setActiveTab] = useState(1)
   const [activeBackground, setActiveBackground] = useState(1)
@@ -41,16 +41,17 @@ const BlackJackTabs = ({players,socket,rooms}) => {
   const [animate, animateApi] = useAnimate();
   const staggeredItems = stagger(0.2); 
   const { user, setUser } = BetState();
-  const [playerName, setPlayerName] = useState(null);
   const [playerAvatar, setPlayerAvatar] = useState(null);
   const [myId, setMyId] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     if(user === null){
+      navigate('/')
       window.location.reload()
     }
     if(socket.connected === false){
+      navigate('/')
       window.location.reload()
     }
   }, [user,socket])
@@ -116,16 +117,16 @@ const BlackJackTabs = ({players,socket,rooms}) => {
                       </>
                     )}
                     <PlayersOnline>
-                    <PlayerHolder key={room.id}>
+                    
                     {room.players.filter(player => player.playerId !== "").map((player, index) => (
-                      <>
+                      <PlayerHolder key={room.id}>
                       <PlayerAvatar>
                       <Avatar alt="Image" src={player.avatar} sx={{ width: 20, height: 20 }} />
                       </PlayerAvatar>
                       <PlayerUser>{player.name}</PlayerUser>
-                      </>
+                      </PlayerHolder>
                     ))}
-                    </PlayerHolder>
+                   
                     </PlayersOnline>
                     <JoinButton><StyledButton onClick={() => joinRoom(room)}>JOIN ROOM</StyledButton></JoinButton>
                   

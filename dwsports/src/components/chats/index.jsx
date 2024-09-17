@@ -69,7 +69,7 @@ export const MessageHolder = styled.div`
   width: 80%;
   min-height: 40px;
   border: 1px solid aqua;
-  margin: 15px 0;
+  margin: 20px 0;
   border-radius: 10px;
   position: relative;
   padding: 0 10px;
