@@ -557,6 +557,4 @@ io.on("connection", (socket) => {
 
 
 
-module.exports = (req, res) => {
-  httpServer.emit('request', req, res);
-};
+module.exports = httpServer;
