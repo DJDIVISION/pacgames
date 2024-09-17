@@ -1,8 +1,17 @@
 const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const { createClient } = require('@supabase/supabase-js');
+const supabaseUrl = 'https://qfywnsvevkeuiuxtiqko.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmeXduc3ZldmtldWl1eHRpcWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjUyNzE2MDQsImV4cCI6MjA0MDg0NzYwNH0.sVYe0wlcg_H2Psn_17g32DYDRYLkfH8KIcHk3EP2Hdg'; // Or service role key for server-side operations
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const app = express();
+
+app.get('/', (req, res) => {
+  res.send('Welcome to the Blackjack Game!');
+});
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
@@ -155,69 +164,173 @@ function startGame(room) {
 function nextTurn(roomId) {
   const room = rooms.find((room) => room.id === roomId);
   room.currentPlayerIndex++;
-
+  
+  console.log("hiddddddden", hidden)
   if (room.currentPlayerIndex < room.players.length) {
     const nextPlayer = room.players[room.currentPlayerIndex];
     io.to(nextPlayer.playerId).emit('your-turn');
   } else {
-    // All players have finished their turns, end the round
+    console.log("hidddddddddddddddddddddddddden", hidden)
+    io.to(roomId).emit("reveal-card", {
+      hidden: hidden
+    })
     endRound(room);
   }
 }
 
 function calculatePayout(player, dealerSum) {
-  const { playerSum, bet, hand } = player;
+  const { playerSum, bet, hand, name, playerId, room } = player;
   let payout = 0;
-
-  // Check for Blackjack (21 with two cards)
+  const roomId = player.room
   const isPlayerBlackjack = playerSum === 21 && hand.length === 2;
   const isDealerBlackjack = dealerSum === 21 && hand.length === 2;
-
-  // Check if player has busted
   if (playerSum > 21) {
-    // Player busts, loses bet
-    return { result: 'Lose!', payout: 0 };
+    io.to(playerId).emit('balanceUpdate',{
+      playerName: name,
+      status: 'Lose!',
+      payout: 0
+    });
+    io.to(roomId).emit('gameResults', {
+      message: `${name} has lost the game!`,
+      dealer: 'Jack',
+      dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+      sendedBy: 'ADMIN',
+      hidden: room.dealerHidden
+    });
+    return { result: `${name} has lost the game!`, payout: 0 };
   }
 
-  // Dealer busts, player wins
-  if (dealerSum > 21) {
-    return { result: 'Win!', payout: bet * 2 };
+  if (dealerSum > 21 && playerSum < 21) {
+    io.to(playerId).emit('balanceUpdate',{
+      playerName: name,
+      status: "Win!",
+      payout: bet
+    });
+    io.to(roomId).emit('gameResults', {
+      message: `${name} wins ${bet}$`,
+      dealer: 'Jack',
+      dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+      sendedBy: 'ADMIN'
+    });
+    return { result: `${name} wins ${bet}$`, payout: bet * 2 };
   }
 
-  // Player has Blackjack, wins 1.5x their bet if dealer doesn't have Blackjack
   if (isPlayerBlackjack && !isDealerBlackjack) {
-    return { result: 'BlackJack!', payout: bet * 2.5 }; // Wins 1.5x + original bet
+    io.to(playerId).emit('balanceUpdate',{
+      playerName: name,
+      status: "Win!",
+      payout: (bet * 1.5)
+    });
+    io.to(roomId).emit('gameResults', {
+      message: `${name} hits BlackJack and wins ${(bet * 1.5)}$`,
+      dealer: 'Jack',
+      dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+      sendedBy: 'ADMIN'
+    });
+    return { result: `${name} hits BlackJack and wins ${(bet * 1.5)}$`, payout: bet * 2.5 }; 
   }
 
-  // Push if both have Blackjack
   if (isPlayerBlackjack && isDealerBlackjack) {
-    return { result: 'Push!', payout: bet }; // Player gets their bet back
+    io.to(playerId).emit('balanceUpdate',{
+      playerName: name,
+      status: "Push!",
+      payout: bet / 2
+    });
+    io.to(roomId).emit('gameResults', {
+      message: `Push! ${name}'s bet has been returned`,
+      dealer: 'Jack',
+      dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+      sendedBy: 'ADMIN',
+      
+    });
+    return { result: `Push! ${name}'s bet has been returned`, payout: bet }; 
   }
 
-  // Player wins if their sum is greater than dealer's
   if (playerSum > dealerSum) {
-    return { result: 'Win!', payout: bet * 2 }; // Wins 1x + original bet
+    io.to(playerId).emit('balanceUpdate',{
+      playerName: name,
+      status: "Win!",
+      payout: bet / 2
+    });
+    io.to(roomId).emit('gameResults', {
+      message: `${name} wins ${bet}$`,
+      dealer: 'Jack',
+      dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+      sendedBy: 'ADMIN'
+    });
+    return { result: `${name} wins ${bet}$`, payout: bet * 2 }; 
   }
 
-  // Push if sums are equal
   if (playerSum === dealerSum) {
-    return { result: 'Push!', payout: bet }; // Player gets their bet back
+    io.to(playerId).emit('balanceUpdate',{
+      playerName: name,
+      status: "Push!",
+      payout: bet
+    });
+    io.to(roomId).emit('gameResults', {
+      message: `Push! ${name}'s bet has been returned`,
+      dealer: 'Jack',
+      dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+      sendedBy: 'ADMIN'
+    });
+    return { result: `Push! ${name}'s bet has been returned`, payout: bet };
   }
-
-  // Dealer wins if their sum is greater
-  return { result: 'Lose!', payout: 0 };
+  io.to(playerId).emit('balanceUpdate',{
+    playerName: name,
+    status: 'Lose!',
+    payout: 0
+  });
+  io.to(roomId).emit('gameResults', {
+    message: `${name} has lost the game`,
+    dealer: 'Jack',
+    dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+    sendedBy: 'ADMIN'
+  });
+  return { result: `${name} has lost the game`, payout: 0 };
 }
 
-function endRound(room) {
+async function endRound (room,hidden) {
+  const players = room.players
+  const dealerSum = room.dealerSum
+  const roomId = room.id
+  
+  const playerResults = room.players.map(player => ({
+    playerId: player.playerId,
+    name: player.name,
+    bet: player.bet,
+    googleId: player.googleId,
+    dealerSum: dealerSum,
+    finalHand: player.hand, // Assuming player's final hand of cards is stored in player.hand
+    finalSum: player.playerSum, // Assuming player's final sum is stored in player.playerSum
+    result: calculatePayout(player,dealerSum, hidden), // Custom function to calculate if the player won or lost
+  }));
+  const { data, error } = await supabase
+    .from('blackJack')
+    .insert([
+      {
+        room_id: roomId,         // Store the room ID
+        results: playerResults,   // Store the results as a JSONB object
+      }
+    ]);
+
+  if (error) {
+    console.error('Error inserting game results into Supabase:', error.message);
+  } else {
+    console.log('Game results successfully inserted into Supabase:', data);
+  }
+}
+
+/* function endRound(room) {
   console.log(`Ending round for room ${room}`);
-  const players = rooms[room].players
-  const dealerSum = rooms[room].dealerSum
+  const players = room.players
+  const dealerSum = room.dealerSum
   const results = players.map(player => {
     const result = calculatePayout(player, dealerSum);
-    const playerId = player.id
+    const playerId = player.playerId
     const playerName = player.name
     const status = result.result
     const payout = result.payout
+    
     io.to(playerId).emit('balanceUpdate',{
       playerName: playerName,
       status: status,
@@ -225,8 +338,16 @@ function endRound(room) {
     });
     
   });
+  io.to(room).emit('results', {
+    message: `${dealerSum}`,
+    dealer: 'Jack',
+    dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+    sendedBy: 'ADMIN',
+  })
   console.log(results)
-}
+} */
+
+
 
 const getAllPlayers = () => {
   return rooms.map((room) => ({
@@ -267,7 +388,10 @@ function startBettingTimeout(roomId) {
 
     // Proceed to start the game with players who placed their bets
     if (room.players.length > 0) {
-      io.in(room).emit('game-started', room.players); // Notify remaining players
+      io.to(room).emit('game-started',{
+        players: room.players,
+
+      }); // Notify remaining players
     }
   }, 15000);
 }
@@ -323,6 +447,12 @@ io.on("connection", (socket) => {
           playerId: socket.id,
           room: roomId
         });
+        io.to(roomId).emit('update_players', {
+          message: `${playerName} has joined the room. The game will start in 10 seconds!`,
+          dealer: 'Jack',
+          dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+          sendedBy: 'ADMIN'
+        });
         // Update all clients about the room and players
         io.emit('roomsUpdate', rooms);
         io.emit('allPlayersUpdate', getAllPlayers()); // Emit all players after a change
@@ -353,13 +483,23 @@ io.on("connection", (socket) => {
       player.bet = betAmount;
       player.hasBet = true; // Mark player as having placed the bet
       console.log(`Player ${socket.id} placed a bet of ${betAmount} in room ${roomId}`);
-
+      io.to(roomId).emit('bets-placed', {
+        message: `${player.name} has placed a bet of ${betAmount}$`,
+        dealer: 'Jack',
+        dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+        sendedBy: 'ADMIN'
+      })
       // Notify all clients about the updated players and bets
       io.to(roomId).emit('roomsUpdate', room);
       io.to(roomId).emit('allPlayersUpdate', getAllPlayers());
       if(room.players.every(player => player.hasBet)){
         clearTimeout(bettingTimeouts[room]);
-        io.to(roomId).emit('game-started')
+        io.to(roomId).emit('all.bets-placed', {
+          message: `All bets have been placed. The game starts!`,
+          dealer: 'Jack',
+          dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+          sendedBy: 'ADMIN'
+        })
         startGame(room)
         room.gameStarted = true
         room.deck = shuffleDeck()
@@ -378,7 +518,6 @@ io.on("connection", (socket) => {
     const room = rooms.find(room => room.id === roomId);
     const currentPlayerIndex = room.currentPlayerIndex;
     const currentPlayer = room.players[currentPlayerIndex];
-    console.log("currrrrrrrrrrrrrrrent", currentPlayer)
     room.dealerHand = data.gameData.dealerHand
     room.dealerHidden = data.gameData.dealerHidden
     room.dealerSum = data.gameData.dealerSum
@@ -386,8 +525,6 @@ io.on("connection", (socket) => {
     const deck = room.deck
     const playerSum = currentPlayer.playerSum
     const playerAceCount = currentPlayer.playerAceCount
-    console.log("player sum before hit",playerSum)
-    console.log("player ace account before hit",playerAceCount)
     hit(deck,room,playerSum,playerAceCount,currentPlayer,roomId);
     
   });
