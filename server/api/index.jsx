@@ -653,3 +653,7 @@ io.on("connection", (socket) => {
 httpServer.listen(3030, () => {
   console.log("server running on 3030")
 });
+
+module.exports = (req, res) => {
+  httpServer.emit('request', req, res);
+};
