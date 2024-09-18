@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "*",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]  // Client URL
   },
  });
@@ -320,6 +320,34 @@ async function endRound (room,hidden) {
   }
 }
 
+/* function endRound(room) {
+  console.log(`Ending round for room ${room}`);
+  const players = room.players
+  const dealerSum = room.dealerSum
+  const results = players.map(player => {
+    const result = calculatePayout(player, dealerSum);
+    const playerId = player.playerId
+    const playerName = player.name
+    const status = result.result
+    const payout = result.payout
+    
+    io.to(playerId).emit('balanceUpdate',{
+      playerName: playerName,
+      status: status,
+      payout: payout
+    });
+    
+  });
+  io.to(room).emit('results', {
+    message: `${dealerSum}`,
+    dealer: 'Jack',
+    dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+    sendedBy: 'ADMIN',
+  })
+  console.log(results)
+} */
+
+
 
 const getAllPlayers = () => {
   return rooms.map((room) => ({
@@ -506,6 +534,71 @@ io.on("connection", (socket) => {
     nextTurn(roomId);
   })
 
+  
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  socket.on("firstBetPlaced", (data) => {
+    const id = data.id
+    const room = data.room
+    const totalBetAmount = data.totalBetAmount
+    const player = rooms[room].players.find(p => p.id === socket.id);
+    player.totalBetAmount = totalBetAmount
+    bets[room][socket.id] = totalBetAmount
+    const currentPlayerIndex = rooms[room].currentPlayerIndex;
+    const currentPlayer = rooms[room].players[currentPlayerIndex];
+    if (Object.keys(bets[room]).length === rooms[room].players.length){
+      io.in(room).emit('all-bets-placed');
+      startGame(room)
+      rooms[room].gameStarted = true
+      rooms[room].deck = shuffleDeck()
+      dealCards(room);
+      
+      if (currentPlayer.socket === socket.id){
+        socket.emit("nextTurn", {
+          room: room,
+          currentPlayer: currentPlayer
+        });
+      }
+    } else {
+      io.in(room).emit('not-all-bets-placed');
+    }
+  });
+  socket.on("playerLost", (data) => {
+    const room = data.room
+
+    nextTurn(room);
+  });
+  
+  socket.on('gameStarted', (data) => {
+    console.log("game started!!!!")
+    const room = data.room
+    //console.log("roooooom", room)
+    rooms[room].gameStarted = true
+    rooms[room].deck = shuffleDeck();
+    //console.log(rooms[room].deck)
+    /* dealCards(room,socket);
+    io.to(room).emit('firstRound', {
+      gameData: rooms[room]
+    }); */
+  });
   socket.on('manual-disconnect', (data) => {
 
     const currentPlayer = allUsers[socket.id].playerName
@@ -557,4 +650,7 @@ io.on("connection", (socket) => {
 
 
 
-module.exports = httpServer;
+httpServer.listen(3030, () => {
+  console.log("server running on 3030")
+});
+
