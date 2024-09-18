@@ -2,12 +2,18 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { createClient } = require('@supabase/supabase-js');
+const cors = require('cors')
 const supabaseUrl = 'https://qfywnsvevkeuiuxtiqko.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmeXduc3ZldmtldWl1eHRpcWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjUyNzE2MDQsImV4cCI6MjA0MDg0NzYwNH0.sVYe0wlcg_H2Psn_17g32DYDRYLkfH8KIcHk3EP2Hdg'; // Or service role key for server-side operations
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const app = express();
+app.use(cors({
+  origin: 'https://pacgames-frontend.onrender.com/', // Your frontend URL
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Blackjack Game!');
