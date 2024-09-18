@@ -15,7 +15,7 @@ import BetArea from '../components/blackjack/BetArea';
 import { supabase } from '../supabase/client';
 
 
-const socket = io.connect("http://localhost:3030/", {
+const socket = io.connect("https://pacgames.onrender.com/", {
   withCredentials: true
 })
 
