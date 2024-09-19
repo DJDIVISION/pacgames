@@ -10,7 +10,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const app = express();
 app.use(cors({
-  origin: 'https://pacgames-frontend.onrender.com', // Replace with your frontend URL
+  origin: 'http://localhost:5173', // Replace with your frontend URL
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "https://pacgames-frontend.onrender.com",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]  // Client URL
   },
  });
@@ -138,9 +138,7 @@ function reduceAce(playerSum, playerAceCount, room) {
 let CardToHit
 
 function hit(deck,room,playerSum,playerAceCount,currentPlayer,roomId) {
-  /* if (!canHit) {
-      return;
-  } */
+
   let card = deck.pop();
   playerSum += getValue(card);
   playerAceCount += checkAce(card);
@@ -160,11 +158,7 @@ function hit(deck,room,playerSum,playerAceCount,currentPlayer,roomId) {
 
 function startGame(room) {
   room.currentPlayerIndex = 0;
-
-  // Notify the first player to start their turn
   const firstPlayer = room.players[room.currentPlayerIndex];
-  //console.log("firstPlayer", firstPlayer)
-  //console.log("firstPlayer", room.currentPlayerIndex)
   io.to(firstPlayer.playerId).emit('your-turn');
 }  
 
@@ -172,12 +166,10 @@ function nextTurn(roomId) {
   const room = rooms.find((room) => room.id === roomId);
   room.currentPlayerIndex++;
   
-  //console.log("hiddddddden", hidden)
   if (room.currentPlayerIndex < room.players.length) {
     const nextPlayer = room.players[room.currentPlayerIndex];
     io.to(nextPlayer.playerId).emit('your-turn');
   } else {
-    //console.log("hidddddddddddddddddddddddddden", hidden)
     io.to(roomId).emit("reveal-card", {
       hidden: hidden
     })
@@ -187,7 +179,6 @@ function nextTurn(roomId) {
 
 function calculatePayout(player,room) {
   const { playerSum, bet, hand, name, playerId } = player;
-  //console.log("dealerrrrrrrrrrrrr", dealerSum)
   let payout = 0;
   const dealerSum = room.dealerSum
   console.log("playerSum", playerSum)
@@ -311,12 +302,12 @@ async function endRound (roomId) {
     bet: player.bet,
     googleId: player.googleId,
     dealerSum: dealerSum,
-    finalHand: player.hand, // Assuming player's final hand of cards is stored in player.hand
-    finalSum: player.playerSum, // Assuming player's final sum is stored in player.playerSum
-    result: calculatePayout(player,room), // Custom function to calculate if the player won or lost
+    finalHand: player.hand, 
+    finalSum: player.playerSum, 
+    result: calculatePayout(player,room), 
   }));
   startStayLeaveTimeout(roomId)
- /*  const { data, error } = await supabase
+  const { data, error } = await supabase
     .from('blackJack')
     .insert([
       {
@@ -329,7 +320,7 @@ async function endRound (roomId) {
     console.error('Error inserting game results into Supabase:', error.message);
   } else {
     console.log('Game results successfully inserted into Supabase:', data);
-  } */
+  }
 }
 
 const startStayLeaveTimeout = (roomId) => {
@@ -345,8 +336,6 @@ const startStayLeaveTimeout = (roomId) => {
       if(player.playerMessage === "leaving" || player.playerMessage === null){
         console.log(`Player ${player.name} has left the room`);
         io.to(player.playerId).emit('removed-by-own-decision');
-        
-        // Rem,ove the player from the room
         room.players.splice(index, 1);
       }
       if(player.playerMessage === "staying"){
@@ -379,7 +368,7 @@ const startStayLeaveTimeout = (roomId) => {
       })
       resetRoomTimeout(roomId)
     }
-  }, 15000)
+  }, 7550000)
 }
 
 
