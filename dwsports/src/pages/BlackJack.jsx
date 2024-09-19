@@ -155,7 +155,7 @@ const BlackJack = () => {
           sendedBy: sendedBy,
           room_id: activeRoom
         }
-        //sendAmdminMessage(messageToUpdate)
+        sendAmdminMessage(messageToUpdate)
         callTimeOut()
       });
       socket?.on('reveal-card', (data) => {
@@ -171,14 +171,14 @@ const BlackJack = () => {
       socket?.on('game-started', (data) => {
         const { players, message, dealer, dealer_avatar, sendedBy } = data;
         setPlayers(players)
-        /* const messageToUpdate = {
+        const messageToUpdate = {
           message: message,
           playerName: dealer,
           user_avatar: dealer_avatar,
           sendedBy: sendedBy,
           room_id: activeRoom
         }
-        sendAmdminMessage(messageToUpdate) */
+        sendAmdminMessage(messageToUpdate)
       });
       socket?.on('firstRound', (data) => {
         setGameData(data)
@@ -243,7 +243,7 @@ const BlackJack = () => {
           sendedBy: sendedBy,
           room_id: activeRoom
         }
-        //sendAmdminMessage(messageToUpdate)
+        sendAmdminMessage(messageToUpdate)
        })
        socket?.on('all.bets-placed', (data) => {
         const { message, dealer, dealer_avatar, sendedBy } = data;
@@ -254,7 +254,7 @@ const BlackJack = () => {
           sendedBy: sendedBy,
           room_id: activeRoom
         }
-        //sendAmdminMessage(messageToUpdate)
+        sendAmdminMessage(messageToUpdate)
        });
        socket.on('gameResults', (data) => {
         const { message, dealer, dealer_avatar, sendedBy, hidden } = data;
