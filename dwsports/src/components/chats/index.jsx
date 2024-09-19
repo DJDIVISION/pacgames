@@ -75,6 +75,7 @@ export const MessageHolder = styled.div`
   padding: 0 10px;
   display: flex;
   margin-left: auto;
+  margin-right: ${({ isExpanded }) => (isExpanded ? "50px" : "0")};
 `;
 
 export const MessageName = styled.h1`

@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { message } from 'antd';
 import { supabase } from '../supabase/client';
+import { useAuth } from '../pages/functions';
 
 const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
 
@@ -17,7 +18,7 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
   const [multipleBet, setMultipleBet] = useState(false)
   const [multipleBets, setMultipleBets] = useState([])
   const {selectedBet, setSelectedBet} = BetState()
-  const {user, setUser} = BetState();
+  const { user } = useAuth();
 
   console.log(user)
 

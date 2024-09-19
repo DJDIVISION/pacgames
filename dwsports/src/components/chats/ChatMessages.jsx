@@ -10,7 +10,7 @@ import './styles.css'
 
 const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId}) => {
 
-    const { messages } = useFetchMessages();
+    /* const { messages } = useFetchMessages(); */
     const [actionMenuOpen, setActionMenuOpen] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [message, setMessage] = useState("");
@@ -27,9 +27,9 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
         }, 500)
       }
 
-    useEffect(() => {
+    /* useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages,isExpanded]);
+    }, [messages,isExpanded]); */
 
   return (
     <ChatContainer id="smallChat" initial={{ height: '40vh', width: '25vw' }} animate={{ height: isExpanded ? '100vh' : '40vh', width: isExpanded ? '100vw' : '25vw' }} transition={{ duration: 0.5 }}>
@@ -38,12 +38,12 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
           message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
         />
         <MessagesWrapper>
-              {messages?.map((msg, index) => {
+              {/* {messages?.map((msg, index) => {
                   let date = new Date(msg.created_at)
                   let str = date.toLocaleTimeString()
                   str = str.substring(0, str.length - 3);
                   return (
-                      <MessageHolder key={index} className={`${msg.sendedBy}`}>
+                      <MessageHolder key={index} className={`${msg.sendedBy}`} isExpanded={isExpanded}>
                         <MessageName className={`${msg.sendedBy}NAME`}>{msg.playerName}</MessageName>
                           <AvatarHolder>
                               <Avatar alt="Image" src={msg.user_avatar} sx={{ width: 30, height: 30 }} />
@@ -53,7 +53,7 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
                       </MessageHolder>
                   )
               })}
-              <div ref={chatEndRef}></div>
+              <div ref={chatEndRef}></div> */}
         </MessagesWrapper>
         {isExpanded && (
             <ChatInput isExpanded={isExpanded} activeRoom={activeRoom} playerName={playerName} playerId={playerId}

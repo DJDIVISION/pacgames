@@ -22,6 +22,7 @@ import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import { supabase } from '../supabase/client'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from './functions'
 
 const Bets = () => {
 
@@ -47,7 +48,7 @@ const Bets = () => {
     const [expandedId, setExpandedId] = useState(null)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
-    const {user, setUser} = BetState();
+    const { user } = useAuth();
     
 
     const toggleExpand = async (match) => {

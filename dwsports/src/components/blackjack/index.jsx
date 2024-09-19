@@ -11,21 +11,57 @@ export const GridItem = styled.div`
 `;
 
 export const JoinButton = styled.div`
-    width: 20%;
+    width: 15%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-left: 0.5px solid ${props => props.theme.MainAccent};
+`;
+
+export const GameProgressText = styled.div`
+    width: 13.5%;
+    height: 100%;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    color: ${props => props.theme.text};
+    border-left: 0.5px solid ${props => props.theme.MainAccent};
+`;
+
+export const GameProgressRound = styled.div`
+    width: 4%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.text};
+    transform: translateX(-10%);
+`;
+
+export const GameProgressCircle = styled.div`
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 0.5px solid ${props => props.theme.MainAccent};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.MainAccent};
+    font-size: 14px;
+    font-weight: bold;
 `;
 
 export const PlayersOnline = styled.div`
-    width: 32.5%;
+    width: 30%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-around;
     color: ${props => props.theme.text};
     font-size: 18px;
+    border-left: 0.5px solid ${props => props.theme.MainAccent};
 `;
 
 export const PlayerHolder = styled.div`
@@ -37,7 +73,7 @@ export const PlayerHolder = styled.div`
 
 export const PlayerAvatar = styled.div`
     width: 100%;
-    height: 70%;
+    height: 80%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -45,28 +81,30 @@ export const PlayerAvatar = styled.div`
 
 export const PlayerUser = styled.div`
     width: 100%;
-    height: 30%;
+    height: 20%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: ${props => props.theme.text};
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    transform: translateY(-50%);
 `;
 
 export const RoomAvailable = styled.div`
-    width: 20%;
+    width: 15%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: ${props => props.theme.text};
     font-size: 18px;
+    border-left: 0.5px solid ${props => props.theme.MainAccent};
 `;
 
 export const RoomNumber = styled.div`
     width: 7.5%;
     height: 100%;
-    border: 1px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -84,9 +122,9 @@ export const NumberWrapper = styled.div`
 `;
 
 export const RoomWrapper = styled(motion.div)`
-    width: 80%;
-    height: 50px;
-    border: 0.5px solid #c2c2c2;
+    width: 95%;
+    min-height: 60px !important;
+    border: 0.5px solid ${props => props.theme.MainAccent};
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -153,7 +191,7 @@ export const Tabs = styled.div`
 `;
 
 export const TabsContainer = styled.div`
-  width: 70%;
+  width: 80%;
   height: 90%;
 `;
 

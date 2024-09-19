@@ -92,7 +92,7 @@ export const useFetchMessages = () => {
         'postgres_changes',
         { event: '*', schema: 'public' },
         (payload) => {
-          console.log('New message payload:', payload);
+          
           setMessages((prevMessages) => [...prevMessages, payload.new]);
         }
       )
@@ -105,5 +105,44 @@ export const useFetchMessages = () => {
   }, []);
 
   return { messages,setMessages };
+};
+
+export const useAuth = () => {
+  const [user, setUser] = useState(null); // Store user state
+  const [loading, setLoading] = useState(true); // To handle loading state while session is being checked
+
+  useEffect(() => {
+    // Function to check if a session exists
+    const checkSession = async () => {
+      // Get session from Supabase auth
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        setUser(session.user); // Set the user state if session exists
+      } else {
+        setUser(null); // Clear the user state if no session
+      }
+      setLoading(false); // Loading finished
+    };
+
+    // Call the session checking function
+    checkSession();
+
+    // Set up an auth state listener to detect login/logout events
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        setUser(session.user); // Set user when signed in
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null); // Clear user on sign out
+      }
+    });
+
+    // Cleanup the listener on unmount
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []);
+
+  return { user, loading }; // Return user and loading state
 };
 

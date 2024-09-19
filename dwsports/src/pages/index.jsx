@@ -57,9 +57,10 @@ export const StyledButton = styled(Button)`
     transition: 0.5s;
     &:hover {
         background: ${props => props.theme.MainAccent};
-        color: #fff;
+        color: #ffffff;
         box-shadow: 0 0 5px ${props => props.theme.MainAccent}, 0 0 25px ${props => props.theme.MainAccent},
         0 0 50px ${props => props.theme.MainAccent}, 0 0 100px ${props => props.theme.MainAccent};
+        font-weight: bold;
     }
     }
 `;
@@ -701,6 +702,7 @@ export const GoogleButton = styled(motion.div)`
     border: 1px solid white;
     border-radius: 10px;
     display: flex;
+    cursor: pointer;
 `;
 
 export const GoogleLogo = styled.div`

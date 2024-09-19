@@ -9,6 +9,7 @@ import SpeedDialAction from '@mui/material/SpeedDialAction';
 import Box from '@mui/material/Box';
 import { supabase } from "../../supabase/client";
 import { BetState } from "../../context/BetsContext";
+import { useAuth } from "../../pages/functions";
 
 
 
@@ -22,7 +23,7 @@ const ChatInput = ({ isExpanded,actionMenuOpen,setActionMenuOpen,showEmojiPicker
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [audioChunks, setAudioChunks] = useState([]);
   const [audioURL, setAudioURL] = useState('');
-  const {user, setUser} = BetState();
+  const { user } = useAuth();
   
 
   const toggleMenu = () => {

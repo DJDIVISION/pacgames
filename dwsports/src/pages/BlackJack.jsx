@@ -13,11 +13,12 @@ import { DndContext } from '@dnd-kit/core';
 import Chips from '../components/blackjack/Chips';
 import BetArea from '../components/blackjack/BetArea';
 import { supabase } from '../supabase/client';
+import { BetState } from '../context/BetsContext';
+import { useAuth } from './functions';
+import { useNavigate } from 'react-router-dom';
 
 
-const socket = io.connect("https://pacgames.onrender.com/", {
-  withCredentials: true
-})
+const socket = io.connect("http://localhost:3030")
 
 
 
@@ -46,8 +47,9 @@ const BlackJack = () => {
     const [playerSum, setPlayerSum] = useState(null);
     const [playerName, setPlayerName] = useState(null);
     const [gameFinished, setGameFinished] = useState(false)
-
-    console.log(dealerHidden)
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    
     
     const sendAmdminMessage = async (messageToUpdate) => {
       const { data, error } = await supabase
@@ -82,7 +84,8 @@ const BlackJack = () => {
         }
     };
 
-    
+    console.log("dealer", dealerSum)
+    console.log("playerSum", playerSum)
 
     const callTimeOut = () => {
       sendAmdminMessage("Waiting for more players to join. The game starts in 10 secons.")
@@ -130,7 +133,7 @@ const BlackJack = () => {
       fetchInitialData();
       socket.on('roomsUpdate', (rooms) => {
         setRooms(rooms);
-        setGameData(rooms)
+        //setGameData(rooms)
       });
       socket.on('allPlayersUpdate', (allPlayers) => {
         const flattenedPlayers = allPlayers.flatMap(room => room.players);
@@ -152,7 +155,7 @@ const BlackJack = () => {
           sendedBy: sendedBy,
           room_id: activeRoom
         }
-        sendAmdminMessage(messageToUpdate)
+        //sendAmdminMessage(messageToUpdate)
         callTimeOut()
       });
       socket?.on('reveal-card', (data) => {
@@ -196,30 +199,35 @@ const BlackJack = () => {
         setPlayerSum(playerSum)
         setPlayers(gameData.players)
         console.log(data)
+        if(playerSum >= 21){
+          document.getElementById('hitButton').style.display = 'none'
+          document.getElementById('doubleButton').style.display = 'none'
+        document.getElementById('stayButton').style.boxShadow = '0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4'
+        }
       });
       socket.on("balanceUpdate", (data) => {
         const {playerName,status,payout} = data;
         if(payout > 0){
-          if(status === "Win!"){
+          if(status === "Win"){
             const amount = balance + payout
             setBalance(amount)
             
             console.log(`${playerName} wins ${payout}$. All balances updated!`)
           }
-          if(status === "Push!"){
+          if(status === "Push"){
             const amount = balance + payout
             setBalance(amount)
             
             console.log(`Push! ${playerName}'s bet has been returned.`)
           }
-          if(status === 'BlackJack!'){
+          if(status === 'BlackJack'){
             const amount = balance + payout
             setBalance(amount)
             
             console.log(`${playerName}'s got BlackJack and wins ${payout}$!`)
           }
         } else {
-          if(status === 'Lose!'){
+          if(status === 'Lose'){
             
             console.log(`${playerName} has lost the game.`)
           }
@@ -234,7 +242,7 @@ const BlackJack = () => {
           sendedBy: sendedBy,
           room_id: activeRoom
         }
-        sendAmdminMessage(messageToUpdate)
+        //sendAmdminMessage(messageToUpdate)
        })
        socket?.on('all.bets-placed', (data) => {
         const { message, dealer, dealer_avatar, sendedBy } = data;
@@ -245,7 +253,7 @@ const BlackJack = () => {
           sendedBy: sendedBy,
           room_id: activeRoom
         }
-        sendAmdminMessage(messageToUpdate)
+        //sendAmdminMessage(messageToUpdate)
        });
        socket.on('gameResults', (data) => {
         const { message, dealer, dealer_avatar, sendedBy, hidden } = data;
@@ -257,9 +265,56 @@ const BlackJack = () => {
           room_id: activeRoom
         }
         setGameFinished(true)
-        console.log(hidden)
         sendAmdminMessage(messageToUpdate)
-       })
+        //startJoinTimeOut()
+       });
+       socket.on('player-keeps-playing', (data) => {
+        const { room, message, dealer, dealer_avatar, sendedBy } = data;
+        console.log(data)
+        const messageToUpdate = {
+          message: message,
+          playerName: dealer,
+          user_avatar: dealer_avatar,
+          sendedBy: sendedBy,
+          room_id: activeRoom
+        }
+        setGameData(room)
+        setDealerSum(room.dealerSum)
+        setDealerAceCount(room.dealerAceCount)
+        setDealerHidden(room.dealerHidden)
+        setDealerHand(room.dealerHand)
+        setPlayers(room.players)
+        setPlacedBet(0)
+        setDroppedChips([])
+        document.getElementById("hidden").src = "./assets/cards/BACK.png";
+        
+        sendAmdminMessage(messageToUpdate)
+        //setPlayAgainTimer()
+       });
+       
+       socket.on('player-has-left-room', (data) => {
+        const { message, dealer, dealer_avatar, sendedBy } = data;
+        const messageToUpdate = {
+          message: message,
+          playerName: dealer,
+          user_avatar: dealer_avatar,
+          sendedBy: sendedBy,
+          room_id: activeRoom
+        }
+        sendAmdminMessage(messageToUpdate)
+      });
+      socket.on('openChipMenu', () => {
+        setChipMenuOpen(true)
+      })
+      socket.on('disconnected-for-leaving', () => {
+        selfDisconnect();
+      })
+      socket.on('disconnected-for-no-bet', () => {
+        selfDisconnect();
+      })
+      socket.on('removed-by-own-decision', () => {
+        selfDisconnect();
+      })
       return () => {
         socket.off('roomsUpdate');
         socket.off('allPlayersUpdate');
@@ -272,9 +327,37 @@ const BlackJack = () => {
         socket.off('balanceUpdate');
         socket.off('bets-placed');
         socket.off('all.bets-placed');
-        socket.off('results');
+        socket.off('gameResults');
+        socket.off('player-keeps-playing');
+        socket.off('player-has-left-room');
+        socket.off('openChipMenu');
+        socket.off('removed-by-own-decision');
+        socket.off('disconnected-for-no-bet');
       };
     }, [dealerHidden]);
+
+    const disconnect = () => {
+      socket?.disconnect();
+      socket?.emit('player-leaves-room',{
+        playerId: myId,
+        roomId : activeRoom
+      })
+      navigate('/')
+    }
+
+    const selfDisconnect = () => {
+      console.log("disconnecting")
+      socket?.disconnect();
+      navigate('/')
+    }
+
+    /* const startJoinTimeOut = () => {
+      const newTimeOut = setTimeout(() => {
+        disconnect()
+      }, 15000)
+      const button = document.getElementById('keepPlayingButton')
+      button.addEventListener('click', clearTimeout(newTimeOut))
+    } */
 
     const doubleBet= () => {
       const prev = placedBet
@@ -304,11 +387,28 @@ const BlackJack = () => {
       setActivePlayer(false)
       setCantHit(false)
       //goToNext();
+      console.log(activeRoom)
       socket?.emit("playerStays", {
-        playerSum: playerSum,
-        room: activeRoom,
+        roomId: activeRoom,
         id: myId
       });
+    }
+
+    const keepPlaying = () => {
+      setGameFinished(false)
+      socket?.emit("next-match-players", {
+        roomId: activeRoom,
+        playerId: myId,
+        message: 'staying'
+      });
+    }
+    const leaveGame = () => {
+      setGameFinished(false)
+      socket?.emit('next-match-players',{
+        playerId: myId,
+        roomId : activeRoom,
+        message: 'leaving'
+      })
     }
 
     //(!playOnline)
@@ -321,7 +421,7 @@ const BlackJack = () => {
     if(playOnline && players){
         return (
             <BlackJackSection>
-                <BlackJackTitle animate={{ height: activePlayer ? '35vh' : '40vh' }}
+                <BlackJackTitle animate={{ height: activePlayer || gameFinished ? '35vh' : '40vh' }}
                     initial={{ height: '70vh' }}
                     transition={{ duration: 0.5 }}>
                     <ChatMessages isExpanded={isExpanded} setIsExpanded={setIsExpanded} activeRoom={activeRoom} playerName={playerName}
@@ -344,7 +444,7 @@ const BlackJack = () => {
                     <ColumnTopSmall>Balance: <span id="counter">{balance}</span></ColumnTopSmall>
                 </BalanceColumn>
                 </BlackJackTitle>
-                <PlayerCards players={players} activePlayer={activePlayer} playerSum={playerSum}/>
+                <PlayerCards players={players} activePlayer={activePlayer} playerSum={playerSum} gameFinished={gameFinished}/>
             {chipMenuOpen && (
               <motion.div className="menu-container-seven" variants={item}
                 initial={{ opacity: 0, height: 0 }}
@@ -352,7 +452,7 @@ const BlackJack = () => {
                 transition={{ duration: .5 }}
                 exit="exit">
                 <DndContext onDragEnd={handleDragEnd}>
-                  <ChipBalance>{placedBet !== 0 ? <div className="bet-info">Bet placed with: ${placedBet} chip</div> : <div className="bet-info">Time remaining: {timeRemaining}</div>}</ChipBalance>
+                  <ChipBalance>{placedBet !== 0 ? <div className="bet-info">Bet placed with: ${placedBet} chip</div> : ""}</ChipBalance>
                   <BetArea droppedChips={droppedChips} droppedChipValue={droppedChipValue} />
                   <BJStartGame><StyledButton onClick={startGame} /* disabled={disabled} */>START GAME</StyledButton></BJStartGame>
                   <Chips />
@@ -367,11 +467,19 @@ const BlackJack = () => {
                   <StyledButton onClick={stay}>FOLD</StyledButton>
                 ) : (
                   <>
-                    <StyledButton onClick={doubleBet}>DOUBLE</StyledButton>
+                    <StyledButton onClick={doubleBet} id="doubleButton">DOUBLE</StyledButton>
                     <StyledButton id="hitButton" onClick={askHit}>HIT</StyledButton>
-                    <StyledButton onClick={stay}>STAY</StyledButton>
+                    <StyledButton onClick={stay} id="stayButton">STAY</StyledButton>
                   </>
                 )}
+              </ActionButtons>
+            )}
+            {gameFinished && (
+              <ActionButtons initial={{ opacity: 0, y: '13vh' }}
+                animate={{ opacity: 1, y: '-10px' }}
+                transition={{ duration: 0.5 }}>
+                    <StyledButton onClick={leaveGame}>LEAVE ROOM</StyledButton>
+                    <StyledButton onClick={keepPlaying} id="keepPlayingButton">KEEP PLAYING</StyledButton>
               </ActionButtons>
             )}
             </BlackJackSection>

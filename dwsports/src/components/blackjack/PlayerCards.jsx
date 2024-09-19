@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import chipImage from '../../assets/chips/emptyChip.png'
 import { transitionLong,animationFour } from '../../animations';
 
-const PlayerCards = ({players,player,activePlayer,rooms,playerSum}) => {
+const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
 
     const carroussel = useRef();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -16,11 +16,11 @@ const PlayerCards = ({players,player,activePlayer,rooms,playerSum}) => {
     
 
     useEffect(() => {
-        if (player?.hand && carroussel.current) {
-          // Scroll to the end of the container when player.hand updates
-          carroussel.current.scrollLeft = carroussel.current.scrollWidth;
+        //console.log(carroussel.current.scrollWidth, carroussel.current.offsetWidth);
+        if(carroussel.current){
+          setWidth(carroussel.current.scrollWidth - carroussel.current.offsetWidth);
         }
-      }, [player?.hand,carroussel]);
+    })
 
       const goToNext = () => {
         setCurrentIndex((prevIndex) => (prevIndex - 1) % players?.length);
@@ -71,8 +71,10 @@ const PlayerCards = ({players,player,activePlayer,rooms,playerSum}) => {
                 <InnerSportsCarousel drag="x" dragConstraints={{right: 0, left: -width}} whileTap={{cursor: 'grabbing'}}>
                   {player.hand?.map((card) => {
                     return (
+                      <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center'}}>
                       <Card key={card} style={{backgroundImage: `url(./assets/cards/${card}.png)`,
                       backgroundSize: 'contain',}} initial="out" animate="in" variants={animationFour} transition={transitionLong} activePlayer={activePlayer}></Card>
+                      </div>
                     )
                   })}
                   </InnerSportsCarousel>
@@ -88,7 +90,7 @@ const PlayerCards = ({players,player,activePlayer,rooms,playerSum}) => {
     });
 
   return (
-    <BlackJackCards animate={{ height: activePlayer ? '55vh' : '60vh' }}
+    <BlackJackCards animate={{ height: activePlayer || gameFinished ? '55vh' : '60vh' }}
         initial={{ height: '70vh' }}
         transition={{ duration: 0.5 }}>
           {/* <IconButton  onClick={disconnect}><Disconnect /></IconButton> */}

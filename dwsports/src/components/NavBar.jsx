@@ -11,13 +11,16 @@ import { BetState } from '../context/BetsContext';
 import { Avatar } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client';
+import { useAuth } from '../pages/functions'
 
 const NavBar = () => {
 
     const [active, setActive] = useState("menuOne");
     const [scrollNavDown, setScrollNavDown] = useState(false);
-    const {user, setUser} = BetState();
+    const { user } = useAuth();
     const navigate = useNavigate()
+
+    console.log(user)
 
     const handleLogout = async () => {
         const { error } = await supabase.auth.signOut()

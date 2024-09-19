@@ -1,6 +1,7 @@
 import React, {useState,useEffect} from 'react'
 import {BlackSection,WelcomeTitle,Tabs,TabsContainer,TabWrapper,Tab,FilterContainer,RoomWrapper,
-  RoomNumber,NumberWrapper,RoomAvailable,PlayersOnline,GridItem,JoinButton,PlayerHolder,PlayerAvatar,PlayerUser
+  RoomNumber,NumberWrapper,RoomAvailable,PlayersOnline,GridItem,JoinButton,PlayerHolder,PlayerAvatar,PlayerUser,
+  GameProgressText,GameProgressRound,GameProgressCircle
 } from './index'
 import { motion, useAnimate, stagger } from "framer-motion";
 import { StyledButton } from '../../pages';
@@ -9,6 +10,7 @@ import Swal from "sweetalert2";
 import io from 'socket.io-client';
 import { Avatar } from '@mui/material';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../pages/functions';
 
 
 const takePlayerName = async () => {
@@ -40,21 +42,18 @@ const BlackJackTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
   const [room, setRoom] = useState("")
   const [animate, animateApi] = useAnimate();
   const staggeredItems = stagger(0.2); 
-  const { user, setUser } = BetState();
+  const { user } = useAuth(); 
   const [playerAvatar, setPlayerAvatar] = useState(null);
   const [myId, setMyId] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(user === null){
-      navigate('/')
-      window.location.reload()
-    }
+    
     if(socket.connected === false){
       navigate('/')
       window.location.reload()
     }
-  }, [user,socket])
+  }, [socket])
 
   
 
@@ -100,6 +99,7 @@ const BlackJackTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
                 },
               }}>
             {rooms.map((room, index) => {
+              console.log(room)
               return(
                 <RoomWrapper key={index} initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -121,14 +121,20 @@ const BlackJackTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
                     {room.players.filter(player => player.playerId !== "").map((player, index) => (
                       <PlayerHolder key={room.id}>
                       <PlayerAvatar>
-                      <Avatar alt="Image" src={player.avatar} sx={{ width: 20, height: 20 }} />
+                      <Avatar alt="Image" src={player.avatar} sx={{ width: 30, height: 30 }} />
                       </PlayerAvatar>
-                      <PlayerUser>{player.name}</PlayerUser>
+                      <PlayerUser>{player.name}</PlayerUser> 
                       </PlayerHolder>
                     ))}
                    
                     </PlayersOnline>
-                    <JoinButton><StyledButton onClick={() => joinRoom(room)}>JOIN ROOM</StyledButton></JoinButton>
+                    <GameProgressText>GAME IN PROGRESS: </GameProgressText>
+                    <GameProgressRound><GameProgressCircle style={{background: room.gameStarted ? 'red' : 'green'}}>{room.gameStarted ? "YES" : "NO"}</GameProgressCircle></GameProgressRound>
+                    <JoinButton>
+                      {room.gameStarted && <StyledButton onClick={() => joinRoom(room)}>JOIN AND WAIT</StyledButton>}
+                      {!room.gameStarted && <StyledButton onClick={() => joinRoom(room)}>JOIN ROOM</StyledButton>}
+                    </JoinButton>
+
                   
                 
                 </RoomWrapper>

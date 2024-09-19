@@ -3,7 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css'
 import { themes } from "./styles/Themes";
 import { ThemeProvider } from "styled-components";
-
+import { useAuth } from './pages/functions';
+import { Navigate } from 'react-router-dom';
+import { HomeSection } from './pages';
+import { CircularProgress } from '@mui/material';
 
 import Bets from './pages/Bets';
 import Home from './pages/Home';
@@ -16,6 +19,11 @@ import BlackJack from './pages/BlackJack';
 function App() {
 
   const [theme, setTheme] = useState('dark');
+  const { user, loading } = useAuth(); 
+
+  if (loading) {
+    return <HomeSection><CircularProgress sx={{ width: 80, height: 80 }} /></HomeSection>; // Display a loading message while checking the session
+  }
 
   return (
     <ThemeProvider theme={themes[theme]}>
@@ -23,11 +31,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/bets" element={<Bets />} />
-        <Route path="/blackjack" element={<BlackJack />} />
-        <Route path="/poker" element={<Poker />} />
-        <Route path="/player/:id" element={<PlayerStats />} />
-        <Route path="/team/:id" element={<TeamStats />} />
+        <Route path="/bets" element={<ProtectedRoute><Bets /></ProtectedRoute>} />
+        <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />
+        <Route path="/poker" element={<ProtectedRoute><Poker /></ProtectedRoute>} />
+        <Route path="/player/:id" element={<ProtectedRoute><PlayerStats /></ProtectedRoute>} />
+        <Route path="/team/:id" element={<ProtectedRoute><TeamStats /></ProtectedRoute>} />
       </Routes>
     </Router>
     </ThemeProvider>
@@ -35,5 +43,21 @@ function App() {
 }
 
 export default App
+
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <HomeSection><CircularProgress sx={{ width: 80, height: 80 }} /></HomeSection>; // Display a loading message while checking the session
+  }
+
+  if (!user) {
+    // If no user, redirect to the login page
+    return <Navigate to="/login" />;
+  }
+
+  // If user exists, render the children components (protected content)
+  return children;
+};
 
 

@@ -23,7 +23,7 @@ const Login = () => {
   
     return (
       <LoginSection>
-        <GoogleButton onClick={handleGoogleSignIn}>
+        <GoogleButton onClick={handleGoogleSignIn} whileHover={{scale: 1.2}} whileTap={{scale: 0.9}}>
             <GoogleLogo><img src={logo} alt="" /></GoogleLogo>
             <GoogleText>SIGN IN WITH GOOGLE</GoogleText>
         </GoogleButton>

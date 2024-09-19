@@ -6,18 +6,18 @@ import { animationOne, animationTwo, transition } from '../animations'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { BetState } from '../context/BetsContext'
-import { useFetchMessages } from './functions'
+import { useAuth, useFetchMessages } from './functions'
 
 
 
 const Home = () => {
 
-    const {user, setUser} = BetState();
     const navigate = useNavigate()
     const { messages } = useFetchMessages();
+    const { user } = useAuth();
 
-  console.log(messages)
-  useEffect(() => {
+  
+  /* useEffect(() => {
     // Get the current user session
     const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -25,19 +25,7 @@ const Home = () => {
         setUser(session.user)
         localStorage.setItem("user", JSON.stringify(session.user))
         const user = session.user
-        const updatedData = {
-          email: user.email,
-          name: user.user_metadata.full_name,
-          avatar: user.user_metadata.avatar_url
-        }
-        /* const { data, error } = await supabase
-          .from('user_logins')
-          .insert([updatedData])
-          if (error) {
-            console.error('Error inserting/updating user session data:', error.message)
-          } else {
-            console.log('User session data saved:', data)
-          } */
+        
       } else {
         // If no user is found, redirect to the login page
         navigate('/login')
@@ -45,7 +33,7 @@ const Home = () => {
     }
 
     getUser()
-  }, [navigate])
+  }, [navigate]) */
   
 
 
