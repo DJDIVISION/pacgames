@@ -18,7 +18,7 @@ import { useAuth } from './functions';
 import { useNavigate } from 'react-router-dom';
 
 
-const socket = io.connect("http://localhost:3030")
+const socket = io.connect("https://pacgames.onrender.com")
 
 
 
@@ -203,6 +203,7 @@ const BlackJack = () => {
           document.getElementById('hitButton').style.display = 'none'
           document.getElementById('doubleButton').style.display = 'none'
         document.getElementById('stayButton').style.boxShadow = '0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4'
+        document.getElementById('stayButton').style.color = '#03e9f4'
         }
       });
       socket.on("balanceUpdate", (data) => {
