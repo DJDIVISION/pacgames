@@ -335,6 +335,7 @@ export const PlayerWrapper = styled.div`
     margin: 10px 0;
 `;
 
+
 export const ChipContainer = styled.div`
     width: 50%;
     height: 15vh;

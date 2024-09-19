@@ -9,9 +9,62 @@ import ReduceCapacityIcon from '@mui/icons-material/ReduceCapacity';
 import SportsIcon from '@mui/icons-material/Sports';
 import HistoryIcon from '@mui/icons-material/History';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
-import { Button } from '@mui/material';
+import { Button,IconButton } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeDown from '@mui/icons-material/VolumeDown';
+
+
+
+
+export const BettingTimer = styled.div`
+width: 50%;
+height: 30vh;
+display: flex;
+align-items: center;
+justify-content: center;
+border: 1px solid ${props => props.theme.MainAccent};
+`;
+
+export const BettingText = styled.div`
+    font-size: 24px;
+    color: ${props => props.theme.text};
+    span{
+        color:${props => props.theme.MainAccent};
+        font-size: 36px;
+        margin: 0 5px;
+    }
+`;
+
+export const ButtonHoverAbsolute = styled(IconButton)`
+    &&&{
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        z-index: 5000;
+        &:hover{
+            box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+            background: transparent;
+        }
+    }
+`;
+
+export const VolumeIcon = styled(VolumeUpIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 1.5;
+        background: transparent;
+    }
+`;
+
+export const VolumeDownIcon = styled(VolumeDown)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 1.5;
+        background: transparent;
+    }
+`;
 
 export const Disconnect = styled(ExitToAppIcon)`
     &&&{
@@ -636,34 +689,64 @@ export const BlackJackColumn = styled.div`
     padding: 5px;
 `;
 
-
-export const ColumnTopBig = styled.div`
+export const WholeColumn = styled.div`
     width: 70%;
-    height: 40%;
+    height: 60%;
     border: 1px solid ${props => props.theme.MainAccent};
-    border-bottom: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-radius: 10px;
     background: rgba(0,0,0,0.5);
     backdrop-filter: blur(10px);
+    flex-direction: column;
+`;
+
+export const ColumnMedium = styled.div`
+    width: 100%;
+    height: 35%;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+`;
+
+export const ColumnTitle = styled.div`
+    width: 100%;
+    height: 15%;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    background: transparent;
+    color: ${props=> props.theme.text};
+    font-size: 14px;
+    transform: translateY(5px);
+`;
+
+
+export const ColumnTopBig = styled.div`
+    width: 100%;
+    height: 70%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background: transparent;
 `;
 export const ColumnTopSmall = styled.div`
-    width: 70%;
-    height: 20%;
+    width: 100%;
+    height: 30%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 32px;
     color: ${props => props.theme.MainAccent};
-    border: 1px solid ${props => props.theme.MainAccent};
-    border-top: none;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px);
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
+    background: transparent;
+    text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
+    transform: translateY(-20%);
+    
     span{
         margin-left: 10px;
         font-weight: bold;

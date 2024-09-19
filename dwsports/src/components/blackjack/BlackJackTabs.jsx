@@ -1,7 +1,7 @@
 import React, {useState,useEffect} from 'react'
 import {BlackSection,WelcomeTitle,Tabs,TabsContainer,TabWrapper,Tab,FilterContainer,RoomWrapper,
   RoomNumber,NumberWrapper,RoomAvailable,PlayersOnline,GridItem,JoinButton,PlayerHolder,PlayerAvatar,PlayerUser,
-  GameProgressText,GameProgressRound,GameProgressCircle
+  GameProgressText,GameProgressRound,GameProgressCircle,VolumeIcon,ButtonHoverAbsolute
 } from './index'
 import { motion, useAnimate, stagger } from "framer-motion";
 import { StyledButton } from '../../pages';
@@ -81,6 +81,7 @@ const BlackJackTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
 
   return (
     <BlackSection>
+      <ButtonHoverAbsolute><VolumeIcon /></ButtonHoverAbsolute>
       <WelcomeTitle>BlackJack</WelcomeTitle>
       <Tabs>
         <TabsContainer>

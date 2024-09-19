@@ -2,6 +2,27 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { Button,IconButton } from '@mui/material';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+
+export const ButtonHoverAbsolute = styled(IconButton)`
+    &&&{
+        position: absolute;
+        top: 30px;
+        right: 30px;
+    }
+  &&&:hover{
+    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    background: transparent;
+  }
+`;
+
+export const VolumeIcon = styled(VolumeUpIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 1.5;
+        background: transparent;
+    }
+`;
 
 export const GridItem = styled.div`
   height: 50%;
@@ -170,6 +191,7 @@ export const BlackSection = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 `;
 
 export const WelcomeTitle = styled.div`

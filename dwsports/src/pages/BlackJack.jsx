@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import BlackJackTabs from '../components/blackjack/BlackJackTabs'
 import io from 'socket.io-client';
 import styled from 'styled-components';
@@ -7,7 +7,9 @@ import BJBack from '../assets/bjTable.jpg';
 import ChatMessages from '../components/chats/ChatMessages';
 import { transitionLong,animationFour } from '../animations';
 import { Avatar } from '@mui/material';
-import { StyledButton,ColumnTopSmall,ColumnTopBig } from './index'
+import { StyledButton,ColumnTopSmall,ColumnTopBig,BettingTimer,BettingText,VolumeIcon,ButtonHoverAbsolute,WholeColumn,
+  ColumnMedium,ColumnTitle
+ } from './index'
 import PlayerCards from '../components/blackjack/PlayerCards';
 import { DndContext } from '@dnd-kit/core';
 import Chips from '../components/blackjack/Chips';
@@ -16,9 +18,13 @@ import { supabase } from '../supabase/client';
 import { BetState } from '../context/BetsContext';
 import { useAuth } from './functions';
 import { useNavigate } from 'react-router-dom';
+import { playChipSound,playShuffle,playAmbience,playWinnings,MusicVolumeSlider,EffectsVolumeSlider } from './functions';
 
 
-const socket = io.connect("https://pacgames.onrender.com")
+
+const socket = io.connect("http://localhost:3030")
+
+
 
 
 
@@ -49,6 +55,45 @@ const BlackJack = () => {
     const [gameFinished, setGameFinished] = useState(false)
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [seconds, setSeconds] = useState(null);
+    const intervalRef = useRef(null);
+    const [volumeMenuOpen, setVolumeMenuOpen] = useState(false)
+    const [effectsVolume, setEffectsVolume] = useState(0.5);
+    const [musicVolume, setMusicVolume] = useState(0.5);
+    const [allowMusic, setAllowMusic] = useState(true);
+
+    useEffect(() => {
+      playAmbience();
+    }, [])
+
+    const toggleVolumeMenu = () => {
+      setVolumeMenuOpen(!volumeMenuOpen)
+    }
+
+    const startCountdown = () => {
+      let countdownTime = 15;
+      setSeconds(countdownTime);
+  
+      // Store the interval ID in intervalRef
+      intervalRef.current = setInterval(() => {
+        countdownTime -= 1;
+        setSeconds(countdownTime);
+  
+        // Stop the timer when it reaches 0
+        if (countdownTime <= 0) {
+          clearInterval(intervalRef.current);
+        }
+      }, 1000); // Every 1 second
+    };
+  
+    // Function to stop the countdown manually
+    const stopCountdown = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current); // Clears the interval
+        intervalRef.current = null; // Reset the reference
+        setSeconds(null); // Optionally reset the timer display
+      }
+    };
     
     
     const sendAmdminMessage = async (messageToUpdate) => {
@@ -82,18 +127,16 @@ const BlackJack = () => {
             { chipValue, chipImage },  // Store value and image of the chip
           ]);
         }
+        playChipSound();
     };
-
-    console.log("dealer", dealerSum)
-    console.log("playerSum", playerSum)
 
     const callTimeOut = () => {
       sendAmdminMessage("Waiting for more players to join. The game starts in 10 secons.")
     }
 
     const startGame = () => {
-
-        if (placedBet > 0) {
+      stopCountdown();
+      if (placedBet > 0) {
           socket?.emit("placeBet", {
             betAmount: placedBet,
             roomId: activeRoom,
@@ -120,10 +163,6 @@ const BlackJack = () => {
         socket.disconnect();
       };
     }, []);
-
-    useEffect(() => {
-      console.log(socket)
-    }, [socket])
 
     useEffect(() => {
       const fetchInitialData = () => {
@@ -167,6 +206,7 @@ const BlackJack = () => {
       socket?.on('timeoutExpired', () => {
         console.log("time out expired, place tyour bet")
         setChipMenuOpen(true)
+        startCountdown();
       });
       socket?.on('game-started', (data) => {
         const { players, message, dealer, dealer_avatar, sendedBy } = data;
@@ -181,6 +221,7 @@ const BlackJack = () => {
         sendAmdminMessage(messageToUpdate)
       });
       socket?.on('firstRound', (data) => {
+        playShuffle();
         setGameData(data)
         setDealerSum(data.gameData.dealerSum)
         setDealerAceCount(data.gameData.dealerAceCount)
@@ -196,14 +237,16 @@ const BlackJack = () => {
       });
       socket.on("cardAfterHit", (data) => {
         const {playerName,playerSum,gameData} = data;
+        playShuffle();
         setPlayerSum(playerSum)
         setPlayers(gameData.players)
         console.log(data)
         if(playerSum >= 21){
           document.getElementById('hitButton').style.display = 'none'
           document.getElementById('doubleButton').style.display = 'none'
-        document.getElementById('stayButton').style.boxShadow = '0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4'
-        document.getElementById('stayButton').style.color = '#03e9f4'
+          document.getElementById('stayButton').style.boxShadow = '0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4'
+          document.getElementById('stayButton').style.background = '#03e9f4'
+          document.getElementById('stayButton').style.color = '#fcfcfc'
         }
       });
       socket.on("balanceUpdate", (data) => {
@@ -212,6 +255,7 @@ const BlackJack = () => {
           if(status === "Win"){
             const amount = balance + payout
             setBalance(amount)
+            playWinnings();
             
             console.log(`${playerName} wins ${payout}$. All balances updated!`)
           }
@@ -306,6 +350,7 @@ const BlackJack = () => {
       });
       socket.on('openChipMenu', () => {
         setChipMenuOpen(true)
+        startCountdown()
       })
       socket.on('disconnected-for-leaving', () => {
         selfDisconnect();
@@ -337,28 +382,12 @@ const BlackJack = () => {
       };
     }, [dealerHidden]);
 
-    const disconnect = () => {
-      socket?.disconnect();
-      socket?.emit('player-leaves-room',{
-        playerId: myId,
-        roomId : activeRoom
-      })
-      navigate('/')
-    }
 
     const selfDisconnect = () => {
       console.log("disconnecting")
       socket?.disconnect();
       navigate('/')
     }
-
-    /* const startJoinTimeOut = () => {
-      const newTimeOut = setTimeout(() => {
-        disconnect()
-      }, 15000)
-      const button = document.getElementById('keepPlayingButton')
-      button.addEventListener('click', clearTimeout(newTimeOut))
-    } */
 
     const doubleBet= () => {
       const prev = placedBet
@@ -405,6 +434,7 @@ const BlackJack = () => {
     }
     const leaveGame = () => {
       setGameFinished(false)
+      selfDisconnect();
       socket?.emit('next-match-players',{
         playerId: myId,
         roomId : activeRoom,
@@ -415,13 +445,17 @@ const BlackJack = () => {
     //(!playOnline)
     if (!playOnline) {
         return (
+          
           <BlackJackTabs socket={socket} rooms={rooms} players={players} playerName={playerName} setPlayerName={setPlayerName}/>
+        
         )
     }
       //(playOnline && players)
     if(playOnline && players){
         return (
             <BlackJackSection>
+              <ButtonHoverAbsolute onClick={toggleVolumeMenu}><VolumeIcon /></ButtonHoverAbsolute>
+              {gameFinished && <DealerText>The dealer has got <span>{dealerSum}</span> points.</DealerText>}
                 <BlackJackTitle animate={{ height: activePlayer || gameFinished ? '35vh' : '40vh' }}
                     initial={{ height: '70vh' }}
                     transition={{ duration: 0.5 }}>
@@ -435,23 +469,46 @@ const BlackJack = () => {
                                 <DealerCard key={card} initial="out" animate="in" variants={animationFour} transition={transitionLong}><img src={`./assets/cards/${card}.png`} /></DealerCard>
                             )
                         })}
-                        {gameFinished && <DealerText>The dealer has got {dealerSum} points.</DealerText>}
                     </div>
+                    
                 </BlackJackBigColumn>
-                <BalanceColumn>
-                    <ColumnTopBig>
-                        <Avatar alt="Image" src={playerAvatar} sx={{ width: 60, height: 60 }} />
+                {volumeMenuOpen ? (
+                  <BalanceColumn>
+                    <WholeColumn>
+                      <ColumnTitle>MUSIC</ColumnTitle>
+                      <ColumnMedium>
+                      <MusicVolumeSlider setMusicVolume={setMusicVolume} musicVolume={musicVolume} allowMusic={allowMusic} setAllowMusic={setAllowMusic}/>
+                      </ColumnMedium>
+                      <ColumnTitle>EFFECTS</ColumnTitle>
+                      <ColumnMedium>
+                      <EffectsVolumeSlider effectsVolume={effectsVolume} setEffectsVolume={setEffectsVolume}/>
+                      </ColumnMedium>
+                      
+                    </WholeColumn>
+                  </BalanceColumn>
+                ) : (
+                  <BalanceColumn>
+                    <WholeColumn>
+                      <ColumnTopBig>
+                          <Avatar alt = "Image" src = {user.user_metadata.avatar_url} sx={{ width: 60, height: 60 }} />
                     </ColumnTopBig>
-                    <ColumnTopSmall>Balance: <span id="counter">{balance}</span></ColumnTopSmall>
+                  <ColumnTopSmall>Balance: <span id="counter">{balance}$</span></ColumnTopSmall>
+                    </WholeColumn>
+
                 </BalanceColumn>
+                )}
+
                 </BlackJackTitle>
                 <PlayerCards players={players} activePlayer={activePlayer} playerSum={playerSum} gameFinished={gameFinished}/>
             {chipMenuOpen && (
               <motion.div className="menu-container-seven" variants={item}
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "70vh" }}
+                animate={{ opacity: 1, height: "100vh" }}
                 transition={{ duration: .5 }}
                 exit="exit">
+                  <BettingTimer>
+                    <BettingText>You have <span>{seconds}</span> seconds to place your bet or you'll get disconnected!</BettingText>
+                  </BettingTimer>
                 <DndContext onDragEnd={handleDragEnd}>
                   <ChipBalance>{placedBet !== 0 ? <div className="bet-info">Bet placed with: ${placedBet} chip</div> : ""}</ChipBalance>
                   <BetArea droppedChips={droppedChips} droppedChipValue={droppedChipValue} />
@@ -505,24 +562,28 @@ const BlackJackBigColumn = styled.div`
     position: absolute;
     top: 0;
     left: 25vw;
-    border: 1px solid red;
 `;
 
 export const DealerText = styled.div`
   width: 400px;
   height: 50px;
-  color: ${props => props.theme.text};
-  font-size: 24px;
+  color: ${props => props.theme.MainAccent};
+  font-size: 32px;
   position: absolute;
-  top: 110%;
-  left: -5%;
+  top: 30%;
+  left: 50%;
+  transform: translate(-42.5%, -5%);
+  text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
+  span{
+    font-weight: bold;
+  }
 `;
 
 const BalanceColumn = styled.div`
     width: 25vw;
     height: 100%;
     display: flex;
-    align-items: center;
+    /* align-items: center;  */
     justify-content: center;
     color: ${props => props.theme.text};
     font-size: 24px;

@@ -5,6 +5,7 @@ import {Link as LinkR} from 'react-router-dom'
 import sportsIcon from '../assets/sportsIcon.png'
 import lottery from '../assets/bingo.png'
 import chip from '../assets/chip.png'
+import pacton from '../assets/pacton_robot_png.png'
 import axios from 'axios'
 import { message } from 'antd';
 import { BetState } from '../context/BetsContext';
@@ -93,6 +94,12 @@ const NavBar = () => {
                 <img src={sportsIcon} alt="sports" />
             </NavIcon>
             <NavText>SPORTS</NavText>
+        </NavColumn></LinkR>
+        <LinkR to="/airdrop"><NavColumn>
+            <NavIcon>
+                <img src={pacton} alt="sports" />
+            </NavIcon>
+            <NavText>AIRDROP</NavText>
         </NavColumn></LinkR>
         <NavColumn onClick={fetchData}>
             <NavIcon>
