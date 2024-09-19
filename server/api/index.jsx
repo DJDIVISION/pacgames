@@ -10,20 +10,18 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const app = express();
 app.use(cors({
-  origin: 'https://pacgames-frontend.onrender.com', // Your frontend URL
+  origin: 'http://localhost:5173', // Replace with your frontend URL
   methods: ['GET', 'POST'],
   credentials: true
 }));
-
 app.get('/', (req, res) => {
   res.send('Welcome to the Blackjack Game!');
 });
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "https://pacgames-frontend.onrender.com",
-    methods: ["GET", "POST"],
-    credentials: true, 
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]  // Client URL
   },
  });
 
@@ -102,18 +100,19 @@ function dealCards(room,roomId) {
   room.dealerHidden = hidden;
   room.dealerSum += getValue(hidden);
   room.dealerAceCount += checkAce(hidden);
-
   while (room.dealerSum < 17){
     let card = deck.pop();
     room.dealerHand.push(card);
     room.dealerSum += getValue(card);
     room.dealerAceCount += checkAce(card);
   }
+  console.log("roooooomdealersum", room.dealerSum)
   const players = room.players;
   const hands = {};
 
   // Deal two cards to each player (standard in blackjack)
   players.forEach((player) => {
+    player.dealerSum = room.dealerSum
     let card = deck.pop();
     player.playerSum += getValue(card)
     player.hand.push(card)
@@ -122,6 +121,7 @@ function dealCards(room,roomId) {
     player.hand.push(card2)
     });
     room.players = players
+    console.log("roomPlayerssssssssssssss",room.players)
     io.to(roomId).emit('firstRound', {
       gameData: room
     });
@@ -163,8 +163,8 @@ function startGame(room) {
 
   // Notify the first player to start their turn
   const firstPlayer = room.players[room.currentPlayerIndex];
-  console.log("firstPlayer", firstPlayer)
-  console.log("firstPlayer", room.currentPlayerIndex)
+  //console.log("firstPlayer", firstPlayer)
+  //console.log("firstPlayer", room.currentPlayerIndex)
   io.to(firstPlayer.playerId).emit('your-turn');
 }  
 
@@ -172,29 +172,33 @@ function nextTurn(roomId) {
   const room = rooms.find((room) => room.id === roomId);
   room.currentPlayerIndex++;
   
-  console.log("hiddddddden", hidden)
+  //console.log("hiddddddden", hidden)
   if (room.currentPlayerIndex < room.players.length) {
     const nextPlayer = room.players[room.currentPlayerIndex];
     io.to(nextPlayer.playerId).emit('your-turn');
   } else {
-    console.log("hidddddddddddddddddddddddddden", hidden)
+    //console.log("hidddddddddddddddddddddddddden", hidden)
     io.to(roomId).emit("reveal-card", {
       hidden: hidden
     })
-    endRound(room);
+    endRound(roomId);
   }
 }
 
-function calculatePayout(player, dealerSum) {
-  const { playerSum, bet, hand, name, playerId, room } = player;
+function calculatePayout(player,room) {
+  const { playerSum, bet, hand, name, playerId } = player;
+  //console.log("dealerrrrrrrrrrrrr", dealerSum)
   let payout = 0;
+  const dealerSum = room.dealerSum
+  console.log("playerSum", playerSum)
+  console.log("dealerSum", dealerSum)
   const roomId = player.room
   const isPlayerBlackjack = playerSum === 21 && hand.length === 2;
   const isDealerBlackjack = dealerSum === 21 && hand.length === 2;
   if (playerSum > 21) {
     io.to(playerId).emit('balanceUpdate',{
       playerName: name,
-      status: 'Lose!',
+      status: 'Lose',
       payout: 0
     });
     io.to(roomId).emit('gameResults', {
@@ -210,8 +214,8 @@ function calculatePayout(player, dealerSum) {
   if (dealerSum > 21 && playerSum < 21) {
     io.to(playerId).emit('balanceUpdate',{
       playerName: name,
-      status: "Win!",
-      payout: bet
+      status: "Win",
+      payout: (bet * 2)
     });
     io.to(roomId).emit('gameResults', {
       message: `${name} wins ${bet}$`,
@@ -225,11 +229,11 @@ function calculatePayout(player, dealerSum) {
   if (isPlayerBlackjack && !isDealerBlackjack) {
     io.to(playerId).emit('balanceUpdate',{
       playerName: name,
-      status: "Win!",
-      payout: (bet * 1.5)
+      status: "BlackJack",
+      payout: (bet * 2.5)
     });
     io.to(roomId).emit('gameResults', {
-      message: `${name} hits BlackJack and wins ${(bet * 1.5)}$`,
+      message: `${name} hits BlackJack and wins ${(bet * 2.5)}$`,
       dealer: 'Jack',
       dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
       sendedBy: 'ADMIN'
@@ -240,8 +244,8 @@ function calculatePayout(player, dealerSum) {
   if (isPlayerBlackjack && isDealerBlackjack) {
     io.to(playerId).emit('balanceUpdate',{
       playerName: name,
-      status: "Push!",
-      payout: bet / 2
+      status: "Push",
+      payout: bet 
     });
     io.to(roomId).emit('gameResults', {
       message: `Push! ${name}'s bet has been returned`,
@@ -256,8 +260,8 @@ function calculatePayout(player, dealerSum) {
   if (playerSum > dealerSum) {
     io.to(playerId).emit('balanceUpdate',{
       playerName: name,
-      status: "Win!",
-      payout: bet / 2
+      status: "Win",
+      payout: (bet * 2)
     });
     io.to(roomId).emit('gameResults', {
       message: `${name} wins ${bet}$`,
@@ -271,7 +275,7 @@ function calculatePayout(player, dealerSum) {
   if (playerSum === dealerSum) {
     io.to(playerId).emit('balanceUpdate',{
       playerName: name,
-      status: "Push!",
+      status: "Push",
       payout: bet
     });
     io.to(roomId).emit('gameResults', {
@@ -284,7 +288,7 @@ function calculatePayout(player, dealerSum) {
   }
   io.to(playerId).emit('balanceUpdate',{
     playerName: name,
-    status: 'Lose!',
+    status: 'Lose',
     payout: 0
   });
   io.to(roomId).emit('gameResults', {
@@ -296,11 +300,11 @@ function calculatePayout(player, dealerSum) {
   return { result: `${name} has lost the game`, payout: 0 };
 }
 
-async function endRound (room,hidden) {
+async function endRound (roomId) {
+  const room = rooms.find((room) => room.id === roomId);
   const players = room.players
   const dealerSum = room.dealerSum
-  const roomId = room.id
-  
+  console.log("rooooooooooooooomsomsosmsomsosm", dealerSum)
   const playerResults = room.players.map(player => ({
     playerId: player.playerId,
     name: player.name,
@@ -309,9 +313,10 @@ async function endRound (room,hidden) {
     dealerSum: dealerSum,
     finalHand: player.hand, // Assuming player's final hand of cards is stored in player.hand
     finalSum: player.playerSum, // Assuming player's final sum is stored in player.playerSum
-    result: calculatePayout(player,dealerSum, hidden), // Custom function to calculate if the player won or lost
+    result: calculatePayout(player,room), // Custom function to calculate if the player won or lost
   }));
-  const { data, error } = await supabase
+  startStayLeaveTimeout(roomId)
+ /*  const { data, error } = await supabase
     .from('blackJack')
     .insert([
       {
@@ -324,36 +329,58 @@ async function endRound (room,hidden) {
     console.error('Error inserting game results into Supabase:', error.message);
   } else {
     console.log('Game results successfully inserted into Supabase:', data);
-  }
+  } */
 }
 
-/* function endRound(room) {
-  console.log(`Ending round for room ${room}`);
-  const players = room.players
-  const dealerSum = room.dealerSum
-  const results = players.map(player => {
-    const result = calculatePayout(player, dealerSum);
-    const playerId = player.playerId
-    const playerName = player.name
-    const status = result.result
-    const payout = result.payout
-    
-    io.to(playerId).emit('balanceUpdate',{
-      playerName: playerName,
-      status: status,
-      payout: payout
-    });
-    
-  });
-  io.to(room).emit('results', {
-    message: `${dealerSum}`,
-    dealer: 'Jack',
-    dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
-    sendedBy: 'ADMIN',
+const startStayLeaveTimeout = (roomId) => {
+  const room = rooms.find((room) => room.id === roomId);
+  room.players.forEach(player => {
+    if(!player.playerMessage){
+      player.playerMessage = null
+    }
   })
-  console.log(results)
-} */
-
+  console.log(room.players)
+  const startOrLeave = setTimeout(() => {
+    room.players.forEach((player, index) => {
+      if(player.playerMessage === "leaving" || player.playerMessage === null){
+        console.log(`Player ${player.name} has left the room`);
+        io.to(player.playerId).emit('removed-by-own-decision');
+        
+        // Rem,ove the player from the room
+        room.players.splice(index, 1);
+      }
+      if(player.playerMessage === "staying"){
+        console.log(`Player ${player.name} stays in the room`);
+      }
+    });
+    room.players.forEach((player, index) => {
+      player.hand = [];
+      player.playerSum = 0;
+      player.playerAceCount = 0;
+      player.bet = 0;
+      player.hasBet = false;
+      player.playerMessage = null;
+    })
+    room.dealerAceCount = 0
+    room.dealerHand = []
+    room.dealerHidden = ""
+    room.dealerSum = 0
+    room.deck = []
+    console.log("roooomPlayerrrrs", room.players)
+    if(room.players.length > 0){
+      room.gameStarted = false
+      io.emit('roomsUpdate', rooms);
+      io.to(roomId).emit('player-keeps-playing', {
+        room: room,
+        message: `The game will start in 10 seconds!`,
+        dealer: 'Jack',
+        dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+        sendedBy: 'ADMIN'
+      })
+      resetRoomTimeout(roomId)
+    }
+  }, 15000)
+}
 
 
 const getAllPlayers = () => {
@@ -364,7 +391,7 @@ const getAllPlayers = () => {
 };
 
 function resetRoomTimeout(roomId) {
-  // Clear existing timeout if there is one
+  console.log("waiting timeout has started! Yeah!!!!!!")
   const room = rooms.find((room) => room.id === roomId);
   if (roomTimeouts[room]) {
     clearTimeout(roomTimeouts[room]);
@@ -381,6 +408,8 @@ function resetRoomTimeout(roomId) {
 
 function startBettingTimeout(roomId) {
   const room = rooms.find((room) => room.id === roomId);
+  room.gameStarted = true
+  io.emit('roomsUpdate', rooms);
   bettingTimeouts[room] = setTimeout(() => {
     console.log(`Betting time ended in room: ${room}`);
 
@@ -388,11 +417,18 @@ function startBettingTimeout(roomId) {
     room.players.forEach(player => {
       if (player.bet === 0) {
         console.log(`Disconnecting player ${player.name} for not betting in time`);
-        io.to(player.id).emit('disconnected-for-no-bet');
-        io.sockets.sockets.get(player.id).disconnect();
+        io.to(player.playerId).emit('disconnected-for-no-bet');
+        io.sockets.sockets.get(player.playerId).disconnect();
+        room.players = room.players.filter(p => p.playerId === player.playerId)
+        console.log("this",room.players.length)
+        if(room.players.length === 0){
+          room.gameStarted = false
+          io.emit('roomsUpdate', rooms);
+          //io.emit('allPlayersUpdate', getAllPlayers()); 
+        }
       }
     });
-
+    console.log(room.players.length)
     // Proceed to start the game with players who placed their bets
     if (room.players.length > 0) {
       io.to(room).emit('game-started',{
@@ -433,7 +469,6 @@ io.on("connection", (socket) => {
     const roomId = data.roomId
     console.log("doomddddddeddddddddddd",roomId)
     const room = rooms.find((room) => room.id === roomId);
-    const playerId = socket.id
     if (room) {
       if (room.players.length < 5) { // Check if room has space
         // Add the player to the room
@@ -507,10 +542,11 @@ io.on("connection", (socket) => {
           dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
           sendedBy: 'ADMIN'
         })
-        startGame(room)
-        room.gameStarted = true
+        
+        
         room.deck = shuffleDeck()
         dealCards(room,roomId);
+        startGame(room)
       }
       /* io.in(room).emit('new_update_players', {
         gameData: rooms[room],
@@ -527,108 +563,62 @@ io.on("connection", (socket) => {
     const currentPlayer = room.players[currentPlayerIndex];
     room.dealerHand = data.gameData.dealerHand
     room.dealerHidden = data.gameData.dealerHidden
-    room.dealerSum = data.gameData.dealerSum
+    //room.dealerSum = data.gameData.dealerSum
     room.dealerAceCount = data.gameData.dealerAceCount
     const deck = room.deck
     const playerSum = currentPlayer.playerSum
     const playerAceCount = currentPlayer.playerAceCount
     hit(deck,room,playerSum,playerAceCount,currentPlayer,roomId);
-    
   });
 
   socket.on('playerStays', (data) => {
-    const roomId = data.room
+    const roomId = data.roomId
     nextTurn(roomId);
   })
 
-  
+  socket.on('next-match-players', (data) => {
+    const roomId = data.roomId
+    const playerId = data.playerId
+    const playerMessage = data.message
+    const room = rooms.find(room => room.id === roomId);
 
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  socket.on("firstBetPlaced", (data) => {
-    const id = data.id
-    const room = data.room
-    const totalBetAmount = data.totalBetAmount
-    const player = rooms[room].players.find(p => p.id === socket.id);
-    player.totalBetAmount = totalBetAmount
-    bets[room][socket.id] = totalBetAmount
-    const currentPlayerIndex = rooms[room].currentPlayerIndex;
-    const currentPlayer = rooms[room].players[currentPlayerIndex];
-    if (Object.keys(bets[room]).length === rooms[room].players.length){
-      io.in(room).emit('all-bets-placed');
-      startGame(room)
-      rooms[room].gameStarted = true
-      rooms[room].deck = shuffleDeck()
-      dealCards(room);
-      
-      if (currentPlayer.socket === socket.id){
-        socket.emit("nextTurn", {
-          room: room,
-          currentPlayer: currentPlayer
-        });
+    
+    room.players.forEach(player => {
+      if(player.playerId === playerId){
+        player.playerMessage = playerMessage
       }
-    } else {
-      io.in(room).emit('not-all-bets-placed');
-    }
-  });
-  socket.on("playerLost", (data) => {
-    const room = data.room
-
-    nextTurn(room);
-  });
-  
-  socket.on('gameStarted', (data) => {
-    console.log("game started!!!!")
-    const room = data.room
-    //console.log("roooooom", room)
-    rooms[room].gameStarted = true
-    rooms[room].deck = shuffleDeck();
-    //console.log(rooms[room].deck)
-    /* dealCards(room,socket);
-    io.to(room).emit('firstRound', {
-      gameData: rooms[room]
-    }); */
-  });
-  socket.on('manual-disconnect', (data) => {
-
-    const currentPlayer = allUsers[socket.id].playerName
-
-    let roomToLeave = null;
-    for (const room in rooms) {
-      const playerIndex = rooms[room].players.findIndex(player => player.socket === socket.id);
-      if (playerIndex !== -1) {
-        roomToLeave = room;
-        // Remove the player from the room's players array
-        rooms[room].players.splice(playerIndex, 1);
-        // If the room is now empty, delete it
-        if (rooms[room].players.length === 0) {
-          delete rooms[room];
-        } else {
-          io.to(room).emit('playerLeft', {
-            playerLeft: currentPlayer,
-            players: rooms[room].players
-          });
+    })
+    /* setTimeout(() => {
+      room.players.forEach(player => {
+        if(player.playerMessage === 'leaving'){
+          room.players = room.players.filter(p => p.playerId !== playerId)
+          io.sockets.sockets.get(playerId).disconnect();
+          io.to(playerId).emit('you-are-disconnected')
         }
-        break; // Stop searching after finding the room
+      })
+    }, 10000)
+    console.log("playerrrrrrrrrrrrrrrrrrrs", room.players) */
+  });
+  
+  socket.on('manual-disconnect', (data) => {
+    const playerId = data.playerId
+    rooms.forEach((room) => {
+      // Remove player from room if they were in one
+      const playerIndex = room.players.findIndex(p => p.playerId === playerId);
+      if (playerIndex !== -1) {
+        room.players[playerIndex] = {
+          playerId: "",
+          name: "",
+          bet: 0,
+          googleId: "",
+          playerSum: 0,
+          hand: [],
+          playerAceCount: 0,
+          avatar: "",
+          room: ""
+        };
       }
-    }
+    });
   })
   socket.on('disconnect', () => {
     console.log('A user disconnected:', socket.id);
@@ -656,8 +646,7 @@ io.on("connection", (socket) => {
 });
 
 
-const PORT = 3030;
-httpServer.listen(PORT, () => {
+
+httpServer.listen(3030, () => {
   console.log("server running on 3030")
 });
-
