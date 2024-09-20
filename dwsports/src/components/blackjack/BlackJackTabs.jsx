@@ -81,7 +81,7 @@ const BlackJackTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
 
   return (
     <BlackSection>
-      <ButtonHoverAbsolute><VolumeIcon /></ButtonHoverAbsolute>
+      {/* <ButtonHoverAbsolute><VolumeIcon /></ButtonHoverAbsolute> */}
       <WelcomeTitle>BlackJack</WelcomeTitle>
       <Tabs>
         <TabsContainer>
@@ -100,7 +100,6 @@ const BlackJackTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
                 },
               }}>
             {rooms.map((room, index) => {
-              console.log(room)
               return(
                 <RoomWrapper key={index} initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

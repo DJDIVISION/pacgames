@@ -56,7 +56,7 @@ export const ChatContainer = styled(motion.div)`
   left: 0;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  z-index: 3000;
+  z-index: 9000;
 `;
 
 export const MessageText = styled.h1`
@@ -67,13 +67,13 @@ export const MessageText = styled.h1`
 
 export const MessageHolder = styled.div`
   width: 80%;
-  min-height: 40px;
   border: 1px solid aqua;
   margin: 20px 0;
   border-radius: 10px;
   position: relative;
   padding: 0 10px;
   display: flex;
+  align-items: center;
   margin-left: auto;
   margin-right: ${({ isExpanded }) => (isExpanded ? "50px" : "0")};
 `;

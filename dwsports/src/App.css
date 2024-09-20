@@ -60,12 +60,16 @@ a{
   top: 0;
   left: 0;
   overflow: hidden;
-  color:#fff;
   display:flex;
-  background-color:orange;
+  background-color:rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
   flex-direction: column;
-  z-index: 1000;
+  z-index: 6000;
   justify-content: center;
+}
+
+.dropped-chips{
+  display: flex;
 }
 
 .menu-container-seven{

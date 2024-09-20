@@ -1,5 +1,6 @@
 import React,{useState,useRef,useEffect} from "react";
 import axios from 'axios';
+import { supabase } from "../supabase/client";
 
 export const setSportsCarrousselWidth = () => {
 
@@ -56,3 +57,41 @@ export const useFetchSports = async () => {
       
     return {sports, sportsLoading, fetchSports}
 }
+
+export function useFetchMusicByGenre(selectedGenre) {
+    const [musicFiles, setMusicFiles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [url, setUrl] = useState(null);
+    const [songName, setSongName] = useState(null)
+  
+    useEffect(() => {
+      const fetchMusic = async () => {
+        try {
+          setLoading(true);
+          const { data, error } = await supabase
+            .from('music_files')
+            .select('*')
+            .eq('genre', selectedGenre);  // Fetch music by selected genre
+  
+          if (error) throw error;
+            console.log(data)
+          setMusicFiles(data);
+          setUrl(data[0].url)
+          setSongName(data[0].title)
+        } catch (error) {
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      if (selectedGenre) {
+        console.log("genre selected")
+        console.log(selectedGenre)
+        fetchMusic();
+      }
+    }, [selectedGenre]);
+  
+    return { musicFiles, loading, error, url, setUrl, songName, setSongName };
+  }

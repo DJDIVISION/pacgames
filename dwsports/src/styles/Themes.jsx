@@ -26,6 +26,16 @@ export const lightTheme = {
     bodyRgba: '32,32,32',
     textRgba: '255, 255, 255',
     pacBoxShadow: ' -11px 10px 15px -1px rgba(0,0,0,0.75)',
+    dosisAqua: {
+      fontFamily: 'Dosis',
+      color: '#03e9f4',
+      textShadow:  `-2px 2px 1px ${props => props.theme.text}`
+    },
+    dosisWhite: {
+      fontFamily: 'Dosis',
+      color: 'white',
+      textShadow:  `-2px 2px 1px black`
+    },
     pacman: {
       fontFamily: 'PacMan',
       fontWeight: 'bold',
@@ -39,7 +49,33 @@ export const lightTheme = {
       fontFamily: 'PacFont',
       fontWeight: 'bold',
       color: 'rgba(244,215,21,1)',
-      textShadow:  '-3px 4px 1px #000000'
+      textShadow:  '-2px 2px 1px #000000'
+    },
+    pacfontBlue: {
+      fontFamily: 'PacFont',
+      fontWeight: 'bold',
+      color: 'rgba(75,65,230,1)',
+      textShadow:  '-2px 2px 1px #000000'
+    },
+    displayFlexCenter: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    displayFlex: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    displayFlexColumn: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    displayFlexColumnCenter: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center'
     },
     grey: '#bebebe',
     MainAccent: '#03e9f4',

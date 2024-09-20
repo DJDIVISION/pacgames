@@ -391,6 +391,32 @@ export const StyledButton = styled(Button)`
     }
 `;
 
+export const StyledButtonYellow = styled(Button)`
+    &&&{
+        align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    cursor: pointer;
+    border: 1px solid rgba(244,215,21,1);
+    border-radius: 0.58vmin;
+    color: rgba(244,215,21,1);
+    padding: 10px 20px;
+    font-size: 1.9vmin;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: 0.5s;
+    &:hover {
+        background: rgba(244,215,21,1);
+        color: #fff;
+        box-shadow: 0 0 5px rgba(244,215,21,1), 0 0 25px rgba(244,215,21,1),
+        0 0 50px rgba(244,215,21,1), 0 0 100px ${props => props.theme.MainAccent};
+    }
+    }
+`;
+
 export const BJStartGame = styled.div`
     width: 30%;
     height: 15vh;

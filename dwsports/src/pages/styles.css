@@ -1,6 +1,6 @@
 .parallax-container {
     position: relative;
-    height: 150vh; /* Taller than viewport to allow scrolling */
+    height: 160vh; /* Taller than viewport to allow scrolling */
     overflow: hidden;
     text-align: center;
   }

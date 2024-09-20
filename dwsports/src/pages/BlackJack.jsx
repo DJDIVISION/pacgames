@@ -7,8 +7,8 @@ import BJBack from '../assets/bjTable.jpg';
 import ChatMessages from '../components/chats/ChatMessages';
 import { transitionLong,animationFour } from '../animations';
 import { Avatar } from '@mui/material';
-import { StyledButton,ColumnTopSmall,ColumnTopBig,BettingTimer,BettingText,VolumeIcon,ButtonHoverAbsolute,WholeColumn,
-  ColumnMedium,ColumnTitle
+import { StyledButton,ColumnTopSmall,ColumnTopBig,BettingTimer,BettingText,ButtonHoverAbsolute,WholeColumn,
+  ColumnMedium,ColumnTitle,VolumeIcon,VolumeDownIcon 
  } from './index'
 import PlayerCards from '../components/blackjack/PlayerCards';
 import { DndContext } from '@dnd-kit/core';
@@ -18,11 +18,18 @@ import { supabase } from '../supabase/client';
 import { BetState } from '../context/BetsContext';
 import { useAuth } from './functions';
 import { useNavigate } from 'react-router-dom';
-import { playChipSound,playShuffle,playAmbience,playWinnings,MusicVolumeSlider,EffectsVolumeSlider } from './functions';
+import karmacoma from '../assets/sounds/karmacoma.ogg'
+//import { playChipSound,playShuffle,playAmbience,playWinnings } from './functions';
+import chipSound from '../assets/sounds/chipSound.ogg'
+import shuffle from '../assets/sounds/shuffle.mp3'
+import casinoAmbience from '../assets/sounds/casinoAmbience.ogg'
+import winnings from '../assets/sounds/casinoAmbience.ogg'
+
+import MusicMenu from '../components/music/MusicMenu';
 
 
 
-const socket = io.connect("http://localhost:3030")
+const socket = io.connect("https://pacgames.onrender.com")
 
 
 
@@ -61,13 +68,44 @@ const BlackJack = () => {
     const [effectsVolume, setEffectsVolume] = useState(0.5);
     const [musicVolume, setMusicVolume] = useState(0.5);
     const [allowMusic, setAllowMusic] = useState(true);
+    const soundEffectsRef = useRef([]);
+    const musicRef = useRef(new Audio(casinoAmbience));
+    const [allowEffects, setAllowEffects] = useState(true);
+    const [currentTrack, setCurrentTrack] = useState(null);
+    console.log(musicVolume)
+
+    
+
+    
 
     useEffect(() => {
-      playAmbience();
-    }, [])
+      soundEffectsRef.current = [
+        new Audio(chipSound),
+        new Audio(shuffle),
+        new Audio(winnings),
+      ];
+      
+      // Apply the initial volume
+      soundEffectsRef.current.forEach((sound) => {
+        sound.volume = effectsVolume;
+      });
+    }, []);
+
+    useEffect(() => {
+      soundEffectsRef.current.forEach((sound) => {
+        sound.volume = effectsVolume;
+      });
+    }, [effectsVolume]);
+  
+    // Function to play a specific sound effect
+    const playEffect = (effectIndex) => {
+      if (allowEffects) {
+        soundEffectsRef.current[effectIndex].play();
+      }
+    };
 
     const toggleVolumeMenu = () => {
-      setVolumeMenuOpen(!volumeMenuOpen)
+      setVolumeMenuOpen(!volumeMenuOpen);
     }
 
     const startCountdown = () => {
@@ -127,7 +165,7 @@ const BlackJack = () => {
             { chipValue, chipImage },  // Store value and image of the chip
           ]);
         }
-        playChipSound();
+        playEffect(0);
     };
 
     const callTimeOut = () => {
@@ -221,7 +259,7 @@ const BlackJack = () => {
         sendAmdminMessage(messageToUpdate)
       });
       socket?.on('firstRound', (data) => {
-        playShuffle();
+        playEffect(1);
         setGameData(data)
         setDealerSum(data.gameData.dealerSum)
         setDealerAceCount(data.gameData.dealerAceCount)
@@ -237,7 +275,7 @@ const BlackJack = () => {
       });
       socket.on("cardAfterHit", (data) => {
         const {playerName,playerSum,gameData} = data;
-        playShuffle();
+        playEffect(1);
         setPlayerSum(playerSum)
         setPlayers(gameData.players)
         console.log(data)
@@ -255,7 +293,7 @@ const BlackJack = () => {
           if(status === "Win"){
             const amount = balance + payout
             setBalance(amount)
-            playWinnings();
+            playEffect(2);
             
             console.log(`${playerName} wins ${payout}$. All balances updated!`)
           }
@@ -442,11 +480,25 @@ const BlackJack = () => {
       })
     }
 
+    
+
+    console.log("volumn", effectsVolume)
+    
+
+
     //(!playOnline)
     if (!playOnline) {
         return (
+          <>
+            <ButtonHoverAbsolute onClick={toggleVolumeMenu}><VolumeIcon /></ButtonHoverAbsolute>
+            <BlackJackTabs socket={socket} rooms={rooms} players={players} playerName={playerName} setPlayerName={setPlayerName}/>
+            {volumeMenuOpen && (
+                <MusicMenu volumeMenuOpen={volumeMenuOpen} setVolumeMenuOpen={setVolumeMenuOpen} musicVolume={musicVolume} setMusicVolume={setMusicVolume} 
+                effectsVolume={effectsVolume} setEffectsVolume={setEffectsVolume} allowMusic={allowMusic} setAllowMusic={setAllowMusic}
+                allowEffects={allowEffects} setAllowEffects={setAllowEffects} currentTrack={currentTrack} setCurrentTrack={setCurrentTrack}/>
+              )}
+          </>
           
-          <BlackJackTabs socket={socket} rooms={rooms} players={players} playerName={playerName} setPlayerName={setPlayerName}/>
         
         )
     }
@@ -469,19 +521,45 @@ const BlackJack = () => {
                                 <DealerCard key={card} initial="out" animate="in" variants={animationFour} transition={transitionLong}><img src={`./assets/cards/${card}.png`} /></DealerCard>
                             )
                         })}
-                    </div>
-                    
+                    </div>  
                 </BlackJackBigColumn>
-                {volumeMenuOpen ? (
+                <BalanceColumn>
+                    <WholeColumn>
+                      <ColumnTopBig>
+                          <Avatar alt = "Image" src = {user.user_metadata.avatar_url} sx={{ width: 60, height: 60 }} />
+                    </ColumnTopBig>
+                  <ColumnTopSmall>Balance: <span id="counter">{balance}$</span></ColumnTopSmall>
+                    </WholeColumn>
+
+                </BalanceColumn>
+                {volumeMenuOpen && (
+                <MusicMenu volumeMenuOpen={volumeMenuOpen} setVolumeMenuOpen={setVolumeMenuOpen} musicVolume={musicVolume} setMusicVolume={setMusicVolume} 
+                effectsVolume={effectsVolume} setEffectsVolume={setEffectsVolume} allowMusic={allowMusic} setAllowMusic={setAllowMusic}
+                allowEffects={allowEffects} setAllowEffects={setAllowEffects} currentTrack={currentTrack} setCurrentTrack={setCurrentTrack}/>
+              )}
+                {/* {volumeMenuOpen ? (
                   <BalanceColumn>
                     <WholeColumn>
-                      <ColumnTitle>MUSIC</ColumnTitle>
-                      <ColumnMedium>
-                      <MusicVolumeSlider setMusicVolume={setMusicVolume} musicVolume={musicVolume} allowMusic={allowMusic} setAllowMusic={setAllowMusic}/>
-                      </ColumnMedium>
                       <ColumnTitle>EFFECTS</ColumnTitle>
                       <ColumnMedium>
-                      <EffectsVolumeSlider effectsVolume={effectsVolume} setEffectsVolume={setEffectsVolume}/>
+                      <Box sx={{ width: '100%', height: '40%' }}>
+                        <Stack spacing={2} direction="row" sx={{ height: '70%', alignItems: 'center', mb: 1, width: '90%', marginLeft: '10px' }}>
+                          <VolumeDownIcon />
+                          <Slider aria-label="Volume" value={effectsVolume * 100} onChange={handleEffectVolume} />
+                          <VolumeIcon />
+                        </Stack>
+                      </Box>
+                      </ColumnMedium>
+                      <ColumnTitle>MUSIC</ColumnTitle>
+                      <Box sx={{ width: '100%', height: '40%'}}>
+                      <Stack spacing={2} direction="row" sx={{ height: '70%', alignItems: 'center', mb: 1, width: '90%', marginLeft: '10px' }}>
+                        <VolumeDownIcon />
+                        <Slider aria-label="Volume" value={musicVolume * 100} onChange={handleMusicVolume} />
+                        <VolumeIcon />
+                      </Stack>
+                    </Box>
+                      <ColumnMedium>
+                      
                       </ColumnMedium>
                       
                     </WholeColumn>
@@ -496,7 +574,7 @@ const BlackJack = () => {
                     </WholeColumn>
 
                 </BalanceColumn>
-                )}
+                )} */}
 
                 </BlackJackTitle>
                 <PlayerCards players={players} activePlayer={activePlayer} playerSum={playerSum} gameFinished={gameFinished}/>
