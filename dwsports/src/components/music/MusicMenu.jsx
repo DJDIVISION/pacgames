@@ -12,7 +12,7 @@ import Record from '../../assets/record.png'
 import Effects from '../../assets/effects.png'
 import Rap from '../../assets/logos/rap.png'
 import Blues from '../../assets/logos/blues.png'
-import Reggae from '../../assets/logos/Reggae.png'
+import Reggae from '../../assets/logos/reggae.png'
 import Funk from '../../assets/logos/funk.png'
 import { useFetchMusicByGenre } from '../functions';
 
