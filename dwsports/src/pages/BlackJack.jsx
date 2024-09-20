@@ -29,7 +29,7 @@ import MusicMenu from '../components/music/MusicMenu';
 
 
 
-const socket = io.connect("http://localhost:3030")
+const socket = io.connect("https://pacgames.onrender.com")
 
 
 
