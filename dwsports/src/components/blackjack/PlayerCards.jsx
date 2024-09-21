@@ -6,6 +6,8 @@ import { IconButton, Avatar } from '@mui/material'
 import { motion } from 'framer-motion'
 import chipImage from '../../assets/chips/emptyChip.png'
 import { transitionLong,animationFour } from '../../animations';
+import { styled as styledTwo } from '@mui/system';
+
 
 const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
 
@@ -13,7 +15,22 @@ const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [width, setWidth] = useState(0);
 
-    
+    const ResponsiveAvatar = styledTwo(Avatar)(({ theme }) => ({
+      width: '30px',
+      height: '30px',
+      [theme.breakpoints.up('sm')]: {
+        width: '40px',
+        height: '40px',
+      },
+      [theme.breakpoints.up('md')]: {
+        width: '50px',
+        height: '50px',
+      },
+      [theme.breakpoints.up('lg')]: {
+          width: '80px',
+          height: '80px',
+        },
+    }));
 
     useEffect(() => {
         //console.log(carroussel.current.scrollWidth, carroussel.current.offsetWidth);
@@ -32,10 +49,11 @@ const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
     const getTransformForIndex = (index) => {
         const transforms = [
           'translateZ(0) rotateX(15deg)',
-          'rotateY(10deg) translateX(520px) translateZ(-50px) rotateX(15deg) scale(1.05)',
-          'rotateY(5deg) translateX(250px) translateZ(-50px) rotateX(15deg) scale(1.05)',
-          'rotateY(-5deg) translateX(-250px) translateZ(-50px) rotateX(15deg) scale(1.05)',
-          'rotateY(-10deg) translateX(-520px) translateZ(-50px) rotateX(15deg) scale(1.05)'
+          'rotateY(5deg) translateX(132.5%) translateZ(-50px) rotateX(15deg) scale(1.05)',
+          'rotateY(10deg) translateX(275%) translateZ(-50px) rotateX(15deg) scale(1.05)',
+          'rotateY(-10deg) translateX(-275%) translateZ(-50px) rotateX(15deg) scale(1.05)',
+          'rotateY(-5deg) translateX(-132.50%) translateZ(-50px) rotateX(15deg) scale(1.05)'
+          
         ];
         return transforms[index];
     };
@@ -56,31 +74,34 @@ const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
               <motion.div
                 className="card-content"
                 key={player.id}
-                initial={{ opacity: 0 }} // Only animate opacity, no x movement
+                initial={{ opacity: 1 }} // Only animate opacity, no x movement
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
               >
                 {/* Display dynamic content */}
-                <UserAvatar><Avatar alt="Image" src={player.avatar} sx={{ width: 80, height: 80 }} /></UserAvatar>
-                <UserChipSum id="chipSum" style={{ backgroundImage: `url(${chipImage})`, backgroundPosition: 'center' }}>{player.bet}</UserChipSum>
+                <UserAvatar><ResponsiveAvatar alt="Image" src={player.avatar} /></UserAvatar>
+                <UserChipSum id="chipSum" style={{ backgroundImage: `url(${chipImage})`, backgroundPosition: 'center', backgroundSize: 'cover' }}>{player.bet}</UserChipSum>
                 <EmptyCardLine></EmptyCardLine>
                 <EmptyCardLine>{player.name}</EmptyCardLine>
                 <CardHolder>
                 <SportsCarousel ref={carroussel}>
                 <InnerSportsCarousel drag="x" dragConstraints={{right: 0, left: -width}} whileTap={{cursor: 'grabbing'}}>
                   {player.hand?.map((card) => {
+                    console.log(card)
                     return (
-                      <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center'}}>
-                      <Card key={card} style={{backgroundImage: `url(./assets/cards/${card}.png)`,
-                      backgroundSize: 'contain',}} initial="out" animate="in" variants={animationFour} transition={transitionLong} activePlayer={activePlayer}></Card>
-                      </div>
+                      <Card style={{backgroundImage: `url(./assets/cards/${card}.png)`,
+                      backgroundSize: 'cover', backgroundRepeat: 'no-repeat'}}>
+                        
+                      </Card>
+                     
                     )
                   })}
                   </InnerSportsCarousel>
                   </SportsCarousel>
-                  <EmptyCardLine>POINTS: {player.playerSum}</EmptyCardLine>
+                  
                 </CardHolder>
+                <EmptyCardLine style={{border: '1px solid white'}}>POINTS: {player.playerSum}</EmptyCardLine>
               </motion.div>
             ) : (
               <div className="card-content empty"></div> // Render empty content
@@ -90,8 +111,8 @@ const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
     });
 
   return (
-    <BlackJackCards animate={{ height: activePlayer || gameFinished ? '55vh' : '60vh' }}
-        initial={{ height: '70vh' }}
+    <BlackJackCards animate={{ height: activePlayer || gameFinished ? '60%' : '70%' }}
+        initial={{ height: '70%' }}
         transition={{ duration: 0.5 }}>
           {/* <IconButton  onClick={disconnect}><Disconnect /></IconButton> */}
           {Array.from({ length: 5 }).map((_, i) => (

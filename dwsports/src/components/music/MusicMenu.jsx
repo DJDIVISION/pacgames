@@ -86,8 +86,8 @@ const MusicMenu = ({volumeMenuOpen,setVolumeMenuOpen,musicVolume,setMusicVolume,
                   exit="exit">
                 <Section>
                 <ButtonHoverAbsolute onClick={toggleVolumeMenu}><CloseChatRoomIcon /></ButtonHoverAbsolute>
-                <AnimatedDiv><FirstRow>MUSIC SETTINGS</FirstRow></AnimatedDiv>
-                <AnimatedDiv><SecondRow>
+                <FirstRow>MUSIC SETTINGS</FirstRow>
+                <SecondRow>
                     <Column>
                     <Image>
                         <ImageHolder><motion.img src={Record} alt="record" /></ImageHolder>
@@ -116,7 +116,7 @@ const MusicMenu = ({volumeMenuOpen,setVolumeMenuOpen,musicVolume,setMusicVolume,
                         </Stack>
                     </SliderWrapper>
                     </Column>
-                </SecondRow></AnimatedDiv>
+                </SecondRow>
                 <GenreHolder>
                     <GenreTitle>CHOOSE YOUR FAVOURITE GENRE</GenreTitle>
                     <GenreWrapper>
@@ -173,6 +173,9 @@ const GenreTitle = styled.div`
     ${props => props.theme.dosisWhite};
     ${props => props.theme.displayFlexCenter};
     font-size: 32px;
+    @media (max-width: 968px) {
+        font-size: 24px;
+    }
 `;
 
 const GenreHolder = styled.div`
@@ -189,7 +192,10 @@ const TextHolder = styled.div`
     height: 30%;
     ${props => props.theme.displayFlexCenter};
     ${props => props.theme.dosisWhite};
-    font-size: 1.8rem;
+    font-size: 24px;
+    @media (max-width: 968px) {
+        font-size: 16px;
+    }
 `;
 
 const ImageHolderTwo = styled(motion.div)`
@@ -201,6 +207,10 @@ const ImageHolderTwo = styled(motion.div)`
         width: 75%;
         display: block;
         object-fit: cover;
+        font-size: 32px;
+        @media (max-width: 968px) {
+            width: 50%;
+        }
     }
 `;
 
@@ -212,6 +222,9 @@ const ImageHolder = styled.div`
         width: 100%;
         display: block;
         object-fit: cover;
+        @media (max-width: 968px) {
+            width: 75%;
+        }
     }
 `;
 
@@ -234,7 +247,7 @@ const Column = styled.div`
 `;
 
 const SecondRow = styled.div`
-    min-width: 60vw;
+    width: 70vw;
     min-height: 25vh;
     ${props => props.theme.displayFlexCenter};
     
@@ -267,8 +280,8 @@ const Section = styled.div`
 
 const FirstRow = styled.div`
     width: 100%;
-    height: 15vh;
+    height: 15%;
     ${props => props.theme.displayFlexCenter};
     ${props => props.theme.dosisAqua};
-    font-size: 4.5rem;
+    font-size: 42px;
 `;

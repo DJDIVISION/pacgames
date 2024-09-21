@@ -192,6 +192,20 @@ export const BlackSection = styled.div`
     flex-direction: column;
     align-items: center;
     position: relative;
+    @media screen and (max-width: 468px){
+      display: none;
+    }
+`;
+
+export const BlackSectionSmart = styled.div`
+    width: 100vw;
+    min-height: 100vh;
+    background: ${props => props.theme.body};
+    ${props => props.theme.displayFlexColumnCenter};
+    ${props => props.theme.dosisWhite};
+    @media screen and (min-width: 468px){
+    display: none;
+    }
 `;
 
 export const WelcomeTitle = styled.div`
@@ -201,7 +215,11 @@ export const WelcomeTitle = styled.div`
     align-items: center;
     justify-content: center;
     color: ${props => props.theme.text};
-    font-size: 98px;
+    font-size: 64px;
+    @media screen and (max-width: 768px){
+        height: 10vh;
+        font-size: 34px;
+    }
 `;
 
 export const Tabs = styled.div`
@@ -210,11 +228,17 @@ export const Tabs = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+    @media screen and (max-width: 768px){
+            height: 90vh;
+    }
 `;
 
 export const TabsContainer = styled.div`
   width: 80%;
   height: 90%;
+  @media screen and (max-width: 768px){
+    width: 90%;
+    }
 `;
 
 export const Disconnect = styled(ExitToAppIcon)`
@@ -264,19 +288,18 @@ export const LogOutText = styled.div`
 
 export const BlackJackCards = styled(motion.div)`
     width: 100%;
-    height: 60vh;
+    height: 70%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     perspective: 1200px;
+    border: 1px solid blue;
 `;
 
 export const UserAvatar = styled.div`
-    width: 80px;
-    height: 80px;
+    
     border-radius: 50%;
-    background: orange;
     position: absolute;
     top: 0;
     left: 50%;
@@ -288,13 +311,13 @@ export const UserAvatar = styled.div`
 `;
 
 export const UserChipSum = styled.div`
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background: red;
     position: absolute;
-    top: 10%;
-    left: 55%;
+    top: 7.5%;
+    left: 60%;
     transform: translate(-25%, -25%);
     color: ${props => props.theme.body};
     display: flex;
@@ -302,48 +325,64 @@ export const UserChipSum = styled.div`
     justify-content: center;
     font-weight: bold;
     font-size: 18px;
+    @media(max-width: 968px){
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
 `;
 
 export const EmptyCardLine = styled.div`
     width: 100%;
-    height: 50px;
+    height: 15%;
     color: ${props => props.theme.text};
     font-size: 26px;
-    display: flex;
+    display: flex; 
     align-items: center;
     justify-content: center;
     font-weight: bold;
+    @media(max-width: 968px){
+        font-size: 14px;
+    }
 `;
 
 export const CardHolder = styled.div`
     width: 100%;
-    height: 70%;
+    height: 55%;
     font-size: 26px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border: 1px solid green;
 `;
 
 export const SportsCarousel = styled(motion.div)`
   cursor: grab;
-  height: 200px;
-  width: 180px;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
+  border: 1px solid red;
+  
 `;
 
 export const InnerSportsCarousel = styled(motion.div)`
   display: flex;
   align-items: center;
-  height: 200px;
-  width: 180px;
+  height: 100%;
+  width: 100%;
+  padding: 0;
 `;
 
-export const Card = styled(motion.div)`
-    min-width: 110px;
-    min-height: 160px;
-    margin: 0 10px;
-    transform: ${({ activePlayer }) => (activePlayer ? "scale(0.9)" : "scale(1)")};
+export const Card = styled.div`
+    min-width:45%;
+    height: 130px;
+    background: white;
+    margin-left: 20px;
+    @media(max-width: 968px){
+        min-width: 52.5%;
+        height: 100px;
+    }
 `;

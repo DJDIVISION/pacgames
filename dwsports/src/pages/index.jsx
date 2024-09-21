@@ -42,12 +42,43 @@ export const ButtonHoverAbsolute = styled(IconButton)`
         position: absolute;
         top: 30px;
         right: 30px;
+        z-index: 100;
+        &:hover{
+            box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+            background: transparent;
+        }
+        @media (max-width: 968px) {
+        top: 20px;
+        right: 20px;
+        }
+        @media (max-width: 768px) {
+        top: 15px;
+        right: 15px;
+        }
+    }
+    
+`;
+
+export const ButtonHoverAbsoluteLeft = styled(IconButton)`
+    &&&{
+        position: absolute;
+        top: 30px;
+        left: 30px;
         z-index: 5000;
         &:hover{
             box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
             background: transparent;
         }
+        @media (max-width: 968px) {
+        top: 20px;
+        left: 20px;
+        }
+        @media (max-width: 768px) {
+        top: 15px;
+        left: 15px;
+        }
     }
+    
 `;
 
 export const VolumeIcon = styled(VolumeUpIcon)`
@@ -55,6 +86,9 @@ export const VolumeIcon = styled(VolumeUpIcon)`
         color: ${props => props.theme.text};
         scale: 1.5;
         background: transparent;
+        @media (max-width: 968px) {
+            scale: 1.2;
+        }
     }
 `;
 
@@ -671,7 +705,6 @@ export const BlackJackTitle = styled.div`
     align-items: center;
     justify-content: center;
     font-size: 98px;
-    border: 1px solid white;
 `;
 
 
@@ -691,7 +724,7 @@ export const BlackJackColumn = styled.div`
 
 export const WholeColumn = styled.div`
     width: 70%;
-    height: 60%;
+    height: 80%;
     border: 1px solid ${props => props.theme.MainAccent};
     display: flex;
     align-items: center;
@@ -750,6 +783,10 @@ export const ColumnTopSmall = styled.div`
     span{
         margin-left: 10px;
         font-weight: bold;
+        margin-right: 5px;
+    }
+    @media(max-width: 968px){
+        font-size: 20px; 
     }
 `;
 

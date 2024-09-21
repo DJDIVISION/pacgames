@@ -179,10 +179,34 @@ a{
   margin: 0;
 }
 
-#dealer-cards img {
-  height: 150px;
-  width: 100px;
-  margin: 0 5px;
+#dealer-cards{
+  width: auto;
+  height: 100%;
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  border: 1px solid orange;
+}
+
+
+
+
+#hidden{
+  width: 100%;
+}
+
+
+
+.topCard{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topCard:first-child{
+  margin: 0 10px;
+  width: 15%;
+  height:100%;
 }
 
 #your-cards img {
@@ -326,8 +350,8 @@ a{
 
 .card-spot {
   position: absolute;
-  width: 200px;
-  height: 300px;
+  width: 15%;
+  height: 80%;
   background-color: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 8px;

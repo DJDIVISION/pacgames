@@ -3,13 +3,14 @@ import BlackJackTabs from '../components/blackjack/BlackJackTabs'
 import io from 'socket.io-client';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import BJBack from '../assets/bjTable.jpg';
+
 import ChatMessages from '../components/chats/ChatMessages';
 import { transitionLong,animationFour } from '../animations';
 import { Avatar } from '@mui/material';
-import { StyledButton,ColumnTopSmall,ColumnTopBig,BettingTimer,BettingText,ButtonHoverAbsolute,WholeColumn,
+import { StyledButton,ColumnTopSmall,ColumnTopBig,BettingTimer,BettingText,ButtonHoverAbsolute,WholeColumn,ButtonHoverAbsoluteLeft,
   ColumnMedium,ColumnTitle,VolumeIcon,VolumeDownIcon 
  } from './index'
+import {BlackJackSection,BlackJackSectionSmart,BlackJackTitle,BlackJackBigColumn,ActionButtons,ChatRoomIcon} from './indexTwo'
 import PlayerCards from '../components/blackjack/PlayerCards';
 import { DndContext } from '@dnd-kit/core';
 import Chips from '../components/blackjack/Chips';
@@ -26,10 +27,11 @@ import casinoAmbience from '../assets/sounds/casinoAmbience.ogg'
 import winnings from '../assets/sounds/casinoAmbience.ogg'
 
 import MusicMenu from '../components/music/MusicMenu';
+import { ButtonAbsolute, CloseChatRoomIcon } from '../components/chats';
 
 
 
-const socket = io.connect("https://pacgames.onrender.com")
+const socket = io.connect("http://localhost:3030")
 
 
 
@@ -52,6 +54,7 @@ const BlackJack = () => {
     const [droppedChips, setDroppedChips] = useState([]);
     const [droppedChipValue, setDroppedChipValue] = useState(null);
     const [chipMenuOpen, setChipMenuOpen] = useState(false)
+    const [chatMenuOpen, setChatMenuOpen] = useState(false)
     const [myId, setMyId] = useState("");
     const [rooms, setRooms] = useState([]);
     const [cantHit, setCantHit] = useState(false)
@@ -74,7 +77,26 @@ const BlackJack = () => {
     const [currentTrack, setCurrentTrack] = useState(null);
     console.log(musicVolume)
 
-    
+    const ResponsiveAvatar = styled(Avatar)(({ theme }) => ({
+      width: '20px',
+      height: '20px',
+      [theme.breakpoints.up('sm')]: {
+        width: '30px',
+        height: '30px',
+      },
+      [theme.breakpoints.up('md')]: {
+        width: '35px',
+        height: '35px',
+      },
+      [theme.breakpoints.up('lg')]: {
+          width: '50px',
+          height: '50px',
+        },
+    }));
+
+    const closeChat = () => {
+      setChatMenuOpen(!chatMenuOpen)
+    }
 
     
 
@@ -454,6 +476,7 @@ const BlackJack = () => {
     const stay = () => {
       setActivePlayer(false)
       setCantHit(false)
+      setGameFinished(true)
       //goToNext();
       console.log(activeRoom)
       socket?.emit("playerStays", {
@@ -505,8 +528,111 @@ const BlackJack = () => {
       //(playOnline && players)
     if(playOnline && players){
         return (
+          <>
             <BlackJackSection>
-              <ButtonHoverAbsolute onClick={toggleVolumeMenu}><VolumeIcon /></ButtonHoverAbsolute>
+            <ButtonHoverAbsolute onClick={toggleVolumeMenu}><VolumeIcon /></ButtonHoverAbsolute>
+            <ButtonHoverAbsoluteLeft onClick={closeChat}><ChatRoomIcon /></ButtonHoverAbsoluteLeft>
+              <BlackJackTitle animate={{ height: activePlayer || gameFinished ? '25%' : '30%' }}
+                    initial={{ height: '30%' }}
+                    transition={{ duration: 0.5 }}>
+              <ChatMessages isExpanded={isExpanded} setIsExpanded={setIsExpanded} activeRoom={activeRoom} playerName={playerName}
+                    playerId={myId} playerAvatar={playerAvatar}/>
+              <BlackJackBigColumn>
+                    
+                              <div className="topCard"><motion.img id="hidden"  src="./assets/cards/BACK.png" initial="out" animate="in" variants={animationFour} transition={transitionLong} /></div>
+                              {dealerHand?.map(card => {
+                                  return (
+                                      <DealerCard key={card} className="topCard" /* initial="out" animate="in" variants={animationFour} transition={transitionLong} */><img src={`./assets/cards/${card}.png`} /></DealerCard>
+                                  )
+                              })}
+                     
+              </BlackJackBigColumn>
+              <BalanceColumn>
+                    <WholeColumn>
+                      <ColumnTopBig>
+                          <Avatar alt = "Image" src = {user.user_metadata.avatar_url}  sx={{
+                      width: { xs: 20, sm: 20, md: 40, lg: 70, xl: 70 }, 
+                      height: { xs: 20, sm: 20, md: 40, lg: 70, xl: 70 },
+                    }}/>
+                    </ColumnTopBig>
+                  <ColumnTopSmall>Balance: <span id="counter">{balance} $</span></ColumnTopSmall>
+                    </WholeColumn>
+
+                </BalanceColumn>
+              </BlackJackTitle>
+              <PlayerCards players={players} activePlayer={activePlayer} playerSum={playerSum} gameFinished={gameFinished}/>
+              <ActionButtons animate={{ height: activePlayer || gameFinished ? '15%' : '0' }}
+                    initial={{ height: '0' }}
+                    transition={{ duration: 0.5 }}>
+                    {activePlayer && (
+                    <>
+                      {cantHit ? (
+                        <StyledButton onClick={stay}>FOLD</StyledButton>
+                      ) : (
+                        <>
+                          <StyledButton onClick={doubleBet} id="doubleButton">DOUBLE</StyledButton>
+                          <StyledButton id="hitButton" onClick={askHit}>HIT</StyledButton>
+                          <StyledButton onClick={stay} id="stayButton">STAY</StyledButton>
+                        </>
+                      )}
+                    </>
+                    )}  
+                  {gameFinished && (
+                      <>
+                      <StyledButton onClick={leaveGame}>LEAVE ROOM</StyledButton>
+                      <StyledButton onClick={keepPlaying} id="keepPlayingButton">KEEP PLAYING</StyledButton>
+                      </>
+                  )}
+              </ActionButtons>
+            </BlackJackSection>
+              {volumeMenuOpen && (
+                <MusicMenu volumeMenuOpen={volumeMenuOpen} setVolumeMenuOpen={setVolumeMenuOpen} musicVolume={musicVolume} setMusicVolume={setMusicVolume} 
+                effectsVolume={effectsVolume} setEffectsVolume={setEffectsVolume} allowMusic={allowMusic} setAllowMusic={setAllowMusic}
+                allowEffects={allowEffects} setAllowEffects={setAllowEffects} currentTrack={currentTrack} setCurrentTrack={setCurrentTrack}/>
+              )} 
+              {chatMenuOpen && (
+                <motion.div className="menu-container-six" variants={item}
+                initial={{height:0, opacity:0,}}
+                animate={{height:"100vh", opacity:1}}
+                transition={{duration:.5}}
+                exit="exit">
+                <ButtonHoverAbsoluteLeft onClick={closeChat}><CloseChatRoomIcon /></ButtonHoverAbsoluteLeft>
+                </motion.div>
+              )}
+              {chipMenuOpen && (
+              <motion.div className="menu-container-seven" variants={item}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "100vh" }}
+                transition={{ duration: .5 }}
+                exit="exit">
+                  <BettingTimer>
+                    <BettingText>You have <span>{seconds}</span> seconds to place your bet or you'll get disconnected!</BettingText>
+                  </BettingTimer>
+                <DndContext onDragEnd={handleDragEnd}>
+                  <ChipBalance>{placedBet !== 0 ? <div className="bet-info">Bet placed with: ${placedBet} chip</div> : ""}</ChipBalance>
+                  <BetArea droppedChips={droppedChips} droppedChipValue={droppedChipValue} />
+                  <BJStartGame><StyledButton onClick={startGame}>START GAME</StyledButton></BJStartGame>
+                  <Chips />
+                </DndContext>
+              </motion.div>
+            )}
+            
+            {/* {activePlayer && (
+              <ActionButtons initial={{ opacity: 0, y: '13vh' }}
+                animate={{ opacity: 1, y: '-10px' }}
+                transition={{ duration: 0.5 }}>
+                {cantHit ? (
+                  <StyledButton onClick={stay}>FOLD</StyledButton>
+                ) : (
+                  <>
+                    <StyledButton onClick={doubleBet} id="doubleButton">DOUBLE</StyledButton>
+                    <StyledButton id="hitButton" onClick={askHit}>HIT</StyledButton>
+                    <StyledButton onClick={stay} id="stayButton">STAY</StyledButton>
+                  </>
+                )}
+              </ActionButtons>
+            )} */}
+              {/* <ButtonHoverAbsolute onClick={toggleVolumeMenu}><VolumeIcon /></ButtonHoverAbsolute>
               {gameFinished && <DealerText>The dealer has got <span>{dealerSum}</span> points.</DealerText>}
                 <BlackJackTitle animate={{ height: activePlayer || gameFinished ? '35vh' : '40vh' }}
                     initial={{ height: '70vh' }}
@@ -537,44 +663,6 @@ const BlackJack = () => {
                 effectsVolume={effectsVolume} setEffectsVolume={setEffectsVolume} allowMusic={allowMusic} setAllowMusic={setAllowMusic}
                 allowEffects={allowEffects} setAllowEffects={setAllowEffects} currentTrack={currentTrack} setCurrentTrack={setCurrentTrack}/>
               )}
-                {/* {volumeMenuOpen ? (
-                  <BalanceColumn>
-                    <WholeColumn>
-                      <ColumnTitle>EFFECTS</ColumnTitle>
-                      <ColumnMedium>
-                      <Box sx={{ width: '100%', height: '40%' }}>
-                        <Stack spacing={2} direction="row" sx={{ height: '70%', alignItems: 'center', mb: 1, width: '90%', marginLeft: '10px' }}>
-                          <VolumeDownIcon />
-                          <Slider aria-label="Volume" value={effectsVolume * 100} onChange={handleEffectVolume} />
-                          <VolumeIcon />
-                        </Stack>
-                      </Box>
-                      </ColumnMedium>
-                      <ColumnTitle>MUSIC</ColumnTitle>
-                      <Box sx={{ width: '100%', height: '40%'}}>
-                      <Stack spacing={2} direction="row" sx={{ height: '70%', alignItems: 'center', mb: 1, width: '90%', marginLeft: '10px' }}>
-                        <VolumeDownIcon />
-                        <Slider aria-label="Volume" value={musicVolume * 100} onChange={handleMusicVolume} />
-                        <VolumeIcon />
-                      </Stack>
-                    </Box>
-                      <ColumnMedium>
-                      
-                      </ColumnMedium>
-                      
-                    </WholeColumn>
-                  </BalanceColumn>
-                ) : (
-                  <BalanceColumn>
-                    <WholeColumn>
-                      <ColumnTopBig>
-                          <Avatar alt = "Image" src = {user.user_metadata.avatar_url} sx={{ width: 60, height: 60 }} />
-                    </ColumnTopBig>
-                  <ColumnTopSmall>Balance: <span id="counter">{balance}$</span></ColumnTopSmall>
-                    </WholeColumn>
-
-                </BalanceColumn>
-                )} */}
 
                 </BlackJackTitle>
                 <PlayerCards players={players} activePlayer={activePlayer} playerSum={playerSum} gameFinished={gameFinished}/>
@@ -590,26 +678,12 @@ const BlackJack = () => {
                 <DndContext onDragEnd={handleDragEnd}>
                   <ChipBalance>{placedBet !== 0 ? <div className="bet-info">Bet placed with: ${placedBet} chip</div> : ""}</ChipBalance>
                   <BetArea droppedChips={droppedChips} droppedChipValue={droppedChipValue} />
-                  <BJStartGame><StyledButton onClick={startGame} /* disabled={disabled} */>START GAME</StyledButton></BJStartGame>
+                  <BJStartGame><StyledButton onClick={startGame}>START GAME</StyledButton></BJStartGame>
                   <Chips />
                 </DndContext>
               </motion.div>
             )}
-            {activePlayer && (
-              <ActionButtons initial={{ opacity: 0, y: '13vh' }}
-                animate={{ opacity: 1, y: '-10px' }}
-                transition={{ duration: 0.5 }}>
-                {cantHit ? (
-                  <StyledButton onClick={stay}>FOLD</StyledButton>
-                ) : (
-                  <>
-                    <StyledButton onClick={doubleBet} id="doubleButton">DOUBLE</StyledButton>
-                    <StyledButton id="hitButton" onClick={askHit}>HIT</StyledButton>
-                    <StyledButton onClick={stay} id="stayButton">STAY</StyledButton>
-                  </>
-                )}
-              </ActionButtons>
-            )}
+            
             {gameFinished && (
               <ActionButtons initial={{ opacity: 0, y: '13vh' }}
                 animate={{ opacity: 1, y: '-10px' }}
@@ -617,30 +691,23 @@ const BlackJack = () => {
                     <StyledButton onClick={leaveGame}>LEAVE ROOM</StyledButton>
                     <StyledButton onClick={keepPlaying} id="keepPlayingButton">KEEP PLAYING</StyledButton>
               </ActionButtons>
-            )}
-            </BlackJackSection>
+            )} */}
+            <BlackJackSectionSmart>TURN YOUR DEVICE FOR A BETTER PLAY</BlackJackSectionSmart>
+          </>
         )
     }
 }
 
 export default BlackJack
 
-const DealerCard = styled(motion.div)`
-    height: 150px;
-    width: 100px;
-    margin: 0 5px;
+const DealerCard = styled.div`
+    /* max-height: 80%;
+    width: 15%; */
+    margin: 0 10px;
+    width: 15%;
 `;
 
-const BlackJackBigColumn = styled.div`
-    width: 50%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    top: 0;
-    left: 25vw;
-`;
+
 
 export const DealerText = styled.div`
   width: 400px;
@@ -667,22 +734,10 @@ const BalanceColumn = styled.div`
     font-size: 24px;
     flex-direction: column;
     padding: 5px;
-    position: absolute;
-    top: 0;
-    left: 75vw;
+    
 `;
 
-const ActionButtons = styled(motion.div)`
-    width: 30%;
-    height: 10vh;
-    border: 1px solid ${props => props.theme.MainAccent};
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    border-radius: 10px;
-`;
+
 
 const item = {
   exit: {
@@ -712,25 +767,7 @@ const BJStartGame = styled.div`
     justify-content: center;
 `;
 
-const BlackJackSection = styled.div`
-    width: 100vw;
-    min-height: 100vh;
-    background: ${props => props.theme.body};
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-image: url(${BJBack});
-    background-repeat: no-repeat;
-    background-size: cover;
-`;
 
-const BlackJackTitle = styled(motion.div)`
-    width: 100%;
-    height: 40vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: ${props => props.theme.text};
-    font-size: 98px;
-    position: relative;
-`;
+
+
+
