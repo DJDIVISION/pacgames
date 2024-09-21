@@ -13,6 +13,7 @@ import { StyledButton,ColumnTopSmall,ColumnTopBig,BettingTimer,BettingText,Butto
 import {BlackJackSection,BlackJackSectionSmart,BlackJackTitle,BlackJackBigColumn,ActionButtons,ChatRoomIcon} from './indexTwo'
 import PlayerCards from '../components/blackjack/PlayerCards';
 import { DndContext } from '@dnd-kit/core';
+import { TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
 import Chips from '../components/blackjack/Chips';
 import BetArea from '../components/blackjack/BetArea';
 import { supabase } from '../supabase/client';
@@ -77,28 +78,18 @@ const BlackJack = () => {
     const [currentTrack, setCurrentTrack] = useState(null);
     console.log(musicVolume)
 
-    const ResponsiveAvatar = styled(Avatar)(({ theme }) => ({
-      width: '20px',
-      height: '20px',
-      [theme.breakpoints.up('sm')]: {
-        width: '30px',
-        height: '30px',
-      },
-      [theme.breakpoints.up('md')]: {
-        width: '35px',
-        height: '35px',
-      },
-      [theme.breakpoints.up('lg')]: {
-          width: '50px',
-          height: '50px',
+    const sensors = useSensors(
+      useSensor(MouseSensor),
+      useSensor(TouchSensor, {
+        activationConstraint: {
+          distance: 10, // Start dragging after 10px of movement
         },
-    }));
+      })
+    );
 
     const closeChat = () => {
       setChatMenuOpen(!chatMenuOpen)
     }
-
-    
 
     useEffect(() => {
       soundEffectsRef.current = [
@@ -608,7 +599,7 @@ const BlackJack = () => {
                   <BettingTimer>
                     <BettingText>You have <span>{seconds}</span> seconds to place your bet or you'll get disconnected!</BettingText>
                   </BettingTimer>
-                <DndContext onDragEnd={handleDragEnd}>
+                <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
                   <ChipBalance>{placedBet !== 0 ? <div className="bet-info">Bet placed with: ${placedBet} chip</div> : ""}</ChipBalance>
                   <BetArea droppedChips={droppedChips} droppedChipValue={droppedChipValue} />
                   <BJStartGame><StyledButton onClick={startGame}>START GAME</StyledButton></BJStartGame>
