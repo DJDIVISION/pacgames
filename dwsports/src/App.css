@@ -74,6 +74,13 @@ a{
   display: flex;
 }
 
+
+.chip img{
+  width: 70%;
+  display: flex;
+  margin: auto;
+}
+
 .menu-container-seven{
   position:fixed;
   width:100vw;

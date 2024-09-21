@@ -8,7 +8,7 @@ import ChatMessages from '../components/chats/ChatMessages';
 import { transitionLong,animationFour } from '../animations';
 import { Avatar } from '@mui/material';
 import { StyledButton,ColumnTopSmall,ColumnTopBig,BettingTimer,BettingText,ButtonHoverAbsolute,WholeColumn,ButtonHoverAbsoluteLeft,
-  ColumnMedium,ColumnTitle,VolumeIcon,VolumeDownIcon 
+  ColumnMedium,ColumnTitle,VolumeIcon,VolumeDownIcon,DealerResult
  } from './index'
 import {BlackJackSection,BlackJackSectionSmart,BlackJackTitle,BlackJackBigColumn,ActionButtons,ChatRoomIcon} from './indexTwo'
 import PlayerCards from '../components/blackjack/PlayerCards';
@@ -32,7 +32,7 @@ import { ButtonAbsolute, CloseChatRoomIcon } from '../components/chats';
 
 
 
-const socket = io.connect("https://pacgames.onrender.com")
+const socket = io.connect("http://localhost:3030")
 
 
 
@@ -571,6 +571,7 @@ const BlackJack = () => {
                   {gameFinished && (
                       <>
                       <StyledButton onClick={leaveGame}>LEAVE ROOM</StyledButton>
+                      <DealerResult>The dealer has {dealerSum} points.</DealerResult>
                       <StyledButton onClick={keepPlaying} id="keepPlayingButton">KEEP PLAYING</StyledButton>
                       </>
                   )}
@@ -719,7 +720,7 @@ const BalanceColumn = styled.div`
     width: 25vw;
     height: 100%;
     display: flex;
-    /* align-items: center;  */
+    border: 1px solid ${props => props.theme.MainAccent};
     justify-content: center;
     color: ${props => props.theme.text};
     font-size: 24px;

@@ -21,9 +21,7 @@ const BetArea = ({droppedChips }) => {
               src={chip.chipImage}
               alt={`Chip ${chip.chipValue}`}
               className="dropped-chip"
-              width={30}
-              height={30}
-              style={{margin: '10px 10px'}}
+              style={{margin: '10px 10px', transform: 'scale(0.8)'}}
             />
           ))}
         </div>

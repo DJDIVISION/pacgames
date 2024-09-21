@@ -125,6 +125,11 @@ export const DealerCard = styled(motion.div)`
     margin: 0 5px;
 `;
 
+export const DealerResult = styled.div`
+    color: ${props => props.theme.MainAccent};
+    font-size: 24px;
+`;
+
 export const StyledButton = styled(Button)`
     &&&{
         align-self: center;
@@ -718,7 +723,6 @@ export const BlackJackColumn = styled.div`
     color: ${props => props.theme.text};
     font-size: 24px;
     flex-direction: column;
-    border: 1px solid blue;
     padding: 5px;
 `;
 
@@ -733,6 +737,7 @@ export const WholeColumn = styled.div`
     background: rgba(0,0,0,0.5);
     backdrop-filter: blur(10px);
     flex-direction: column;
+    margin-left: 10px;
 `;
 
 export const ColumnMedium = styled.div`

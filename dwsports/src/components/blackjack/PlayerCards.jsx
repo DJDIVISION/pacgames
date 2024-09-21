@@ -101,7 +101,7 @@ const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
                   </SportsCarousel>
                   
                 </CardHolder>
-                <EmptyCardLine style={{border: '1px solid white'}}>POINTS: {player.playerSum}</EmptyCardLine>
+                <EmptyCardLine>POINTS: {player.playerSum}</EmptyCardLine>
               </motion.div>
             ) : (
               <div className="card-content empty"></div> // Render empty content

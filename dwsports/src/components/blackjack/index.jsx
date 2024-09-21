@@ -294,7 +294,6 @@ export const BlackJackCards = styled(motion.div)`
     justify-content: center;
     position: relative;
     perspective: 1200px;
-    border: 1px solid blue;
 `;
 
 export const UserAvatar = styled.div`
@@ -354,7 +353,6 @@ export const CardHolder = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 1px solid green;
 `;
 
 export const SportsCarousel = styled(motion.div)`
@@ -364,7 +362,6 @@ export const SportsCarousel = styled(motion.div)`
   overflow: hidden;
   display: flex;
   align-items: center;
-  border: 1px solid red;
   
 `;
 
@@ -378,11 +375,11 @@ export const InnerSportsCarousel = styled(motion.div)`
 
 export const Card = styled.div`
     min-width:45%;
-    height: 130px;
+    height: 77.5%;
     background: white;
     margin-left: 20px;
     @media(max-width: 968px){
-        min-width: 52.5%;
-        height: 100px;
+        min-width: 42.5%;
+        height: 75%;
     }
 `;
