@@ -407,7 +407,11 @@ function startBettingTimeout(roomId) {
       if (player.bet === 0) {
         console.log(`Disconnecting player ${player.name} for not betting in time`);
         io.to(player.playerId).emit('disconnected-for-no-bet');
-        io.sockets.sockets.get(player.playerId).disconnect();
+        const socket = io.sockets.sockets.get(player.playerId); // Fetch socket by playerId
+        if (socket) {
+          socket.disconnect();  // Disconnect the socket
+          console.log(`Player ${player.name} has been disconnected`);
+        }
         room.players = room.players.filter(p => p.playerId === player.playerId)
         console.log("this",room.players.length)
         if(room.players.length === 0){
@@ -425,7 +429,7 @@ function startBettingTimeout(roomId) {
 
       }); // Notify remaining players
     }
-  }, 30000000);
+  }, 15000);
 }
 
 
