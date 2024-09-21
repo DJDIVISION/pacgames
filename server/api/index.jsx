@@ -425,7 +425,7 @@ function startBettingTimeout(roomId) {
 
       }); // Notify remaining players
     }
-  }, 15000);
+  }, 30000);
 }
 
 
