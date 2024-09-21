@@ -202,7 +202,7 @@ function calculatePayout(player,room) {
     return { result: `${name} has lost the game!`, payout: 0 };
   }
 
-  if (dealerSum > 21 && playerSum < 21) {
+  if (dealerSum > 21 && playerSum <= 21) {
     io.to(playerId).emit('balanceUpdate',{
       playerName: name,
       status: "Win",
@@ -425,7 +425,7 @@ function startBettingTimeout(roomId) {
 
       }); // Notify remaining players
     }
-  }, 30000);
+  }, 30000000);
 }
 
 
