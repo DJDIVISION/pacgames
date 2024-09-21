@@ -57,7 +57,7 @@
         "purpose": "maskable"
       }
     ],
-    "start_url": "https://pacgames-frontend.onrender.com",
+    "start_url": "http://localhost:5173",
     "display": "standalone",
     "theme_color": "#000000",
     "background_color": "#ffffff"

@@ -65,15 +65,13 @@ export const ButtonHoverAbsoluteLeft = styled(IconButton)`
         top: 30px;
         left: 30px;
         z-index: 5000;
+        padding: 10px;
+        background: ${props => props.theme.body};
         &:hover{
             box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
-            background: transparent;
+            //background: transparent;
         }
         @media (max-width: 968px) {
-        top: 20px;
-        left: 20px;
-        }
-        @media (max-width: 768px) {
         top: 15px;
         left: 15px;
         }

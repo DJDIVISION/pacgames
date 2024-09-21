@@ -155,14 +155,15 @@ export default ChatInput;
 const ChatInputContainer = styled.div`
   display: flex;
   align-items: center;
-  //justify-content: center;
-  height: 50px;
+  justify-content: space-between;
+  height: 60px;
   width: 100%;
   padding: 0;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   padding: 0 5px;
   margin-bottom: 10px;
+  margin-top: auto;
   border-top: 1px solid ${props => props.theme.text};
 `;
 
@@ -173,7 +174,11 @@ const InputWrapper = styled.div`
     z-index: 4000;
     align-items: center;
     margin-top: 10px;
-    padding-left: 20px;
+    padding-left: 15px;
+    @media(max-width: 968px){
+      padding-left: 10px;
+      width: 85%;
+    }
 `;
 
 const DialWrapper = styled.div`

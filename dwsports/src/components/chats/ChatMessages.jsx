@@ -10,31 +10,23 @@ import './styles.css'
 
 const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId}) => {
 
-    /* const { messages } = useFetchMessages(); */
+    const { messages } = useFetchMessages();
     const [actionMenuOpen, setActionMenuOpen] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [message, setMessage] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const chatEndRef = useRef(null);
-
-    const icon =  isExpanded ? <CloseChatRoomIcon /> : <ChatRoomIcon />
     
-    const closeChat = () => {
-        setIsExpanded(!isExpanded)
-        setActionMenuOpen(false)
-        setTimeout(() => {
-            chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 500)
-      }
-
-    /* useEffect(() => {
+    useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages,isExpanded]); */
+    }, [messages,isExpanded]);
 
   return (
-    <ChatContainer /* id="smallChat" */>
+    <ChatContainer /* id="smallChat" */ initial={{ height: '30vh', width: '25vw'}} // Initial height
+    animate={{ height: isExpanded ? '100vh' : '30vh', width: isExpanded ? '100vw' : '25vw' }} // Height transitions between 100px and 300px
+    transition={{ duration: 0.5 }} isExpanded={isExpanded}>
       
-       {/* 
+       
         <ActionIcons actionMenuOpen={actionMenuOpen} setShowEmojiPicker={setShowEmojiPicker} showEmojiPicker={showEmojiPicker}
           message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
         />
@@ -45,7 +37,7 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
                   str = str.substring(0, str.length - 3);
                   return (
                       <MessageHolder key={index} className={`${msg.sendedBy}`} isExpanded={isExpanded}>
-                        <MessageName className={`${msg.sendedBy}NAME`}>{msg.playerName}</MessageName>
+                      <MessageName className={`${msg.sendedBy}NAME`}>{msg.playerName}</MessageName>
                           <AvatarHolder>
                               <Avatar alt="Image" src={msg.user_avatar} sx={{ width: 30, height: 30 }} />
                           </AvatarHolder>
@@ -60,7 +52,7 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
             <ChatInput isExpanded={isExpanded} activeRoom={activeRoom} playerName={playerName} playerId={playerId}
             actionMenuOpen={actionMenuOpen} setActionMenuOpen={setActionMenuOpen} showEmojiPicker={showEmojiPicker}
             setShowEmojiPicker={setShowEmojiPicker} message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}/>
-          )} */}
+          )}
     </ChatContainer>
   )
 }

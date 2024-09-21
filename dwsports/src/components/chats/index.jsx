@@ -26,7 +26,7 @@ export const CloseChatRoomIcon = styled(CloseIcon)`
 
 export const MessagesWrapper = styled.div`
   width: 100%;
-  height: 80%;
+  height: 90%;
   padding: 5px 15px;
   overflow-y: scroll;
 `;
@@ -42,16 +42,21 @@ export const ButtonAbsolute = styled(IconButton)`
 
 export const ChatContainer = styled(motion.div)`
   width: 25%;
-  height: 100%;
+  height: 30vh;
   display: flex;
   align-items: center;
+  flex-direction: column;
+  z-index: 1000;
   //background: rgba(0,0,0,0.9);
   //backdrop-filter: blur(20px);
+  background: ${({ isExpanded }) => (isExpanded ? "rgba(0,0,0,0.9)" : "transparent")};
   border: 1px solid ${props => props.theme.MainAccent};
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0
 `;
 
-export const MessageText = styled.h1`
+export const MessageText = styled.div`
   color: ${props => props.theme.text};
   font-size: 16px;
   margin-left: 10px;
@@ -59,6 +64,7 @@ export const MessageText = styled.h1`
 
 export const MessageHolder = styled.div`
   width: 80%;
+  //height: auto;
   border: 1px solid aqua;
   margin: 20px 0;
   border-radius: 10px;
@@ -70,7 +76,7 @@ export const MessageHolder = styled.div`
   margin-right: ${({ isExpanded }) => (isExpanded ? "50px" : "0")};
 `;
 
-export const MessageName = styled.h1`
+export const MessageName = styled.div`
   color: ${props => props.theme.text};
   font-size: 14px;
   position: absolute;

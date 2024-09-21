@@ -1,7 +1,6 @@
 .ADMIN {
     border: 1px solid orange !important;
     margin-left: 0px !important;
-    min-height: 40px;
 }
 .ADMINTIME {
     margin-left: auto;

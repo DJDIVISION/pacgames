@@ -35,7 +35,31 @@ import { ButtonAbsolute, CloseChatRoomIcon } from '../components/chats';
 const socket = io.connect("https://pacgames.onrender.com")
 
 
+const BalanceDisplay = ({ balance }) => {
+  const [displayBalance, setDisplayBalance] = useState(balance);
 
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayBalance((prev) => {
+        if (prev < balance) return Math.min(prev + 1, balance);
+        if (prev > balance) return Math.max(prev - 1, balance);
+        return balance;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [balance]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+      style={{ fontSize: '2rem', fontWeight: 'bold' }}
+    >
+      ${displayBalance}
+    </motion.div>
+  );
+};
 
 
 const BlackJack = () => {
@@ -51,6 +75,7 @@ const BlackJack = () => {
     const [dealerSum, setDealerSum] = useState(null);
     const [playerAvatar, setPlayerAvatar] = useState(null);
     const [balance, setBalance] = useState(500);
+    
     const [placedBet, setPlacedBet] = useState(null);
     const [droppedChips, setDroppedChips] = useState([]);
     const [droppedChipValue, setDroppedChipValue] = useState(null);
@@ -78,6 +103,8 @@ const BlackJack = () => {
     const [currentTrack, setCurrentTrack] = useState(null);
     console.log(musicVolume)
 
+    
+
     const sensors = useSensors(
       useSensor(MouseSensor),
       useSensor(TouchSensor, {
@@ -88,7 +115,7 @@ const BlackJack = () => {
     );
 
     const closeChat = () => {
-      setChatMenuOpen(!chatMenuOpen)
+      setIsExpanded(!isExpanded)
     }
 
     useEffect(() => {
@@ -546,7 +573,7 @@ const BlackJack = () => {
                       height: { xs: 20, sm: 20, md: 40, lg: 70, xl: 70 },
                     }}/>
                     </ColumnTopBig>
-                  <ColumnTopSmall>Balance: <span id="counter">{balance} $</span></ColumnTopSmall>
+                  <ColumnTopSmall>Balance: <span><BalanceDisplay balance={balance} /></span></ColumnTopSmall>
                     </WholeColumn>
 
                 </BalanceColumn>
@@ -582,15 +609,17 @@ const BlackJack = () => {
                 effectsVolume={effectsVolume} setEffectsVolume={setEffectsVolume} allowMusic={allowMusic} setAllowMusic={setAllowMusic}
                 allowEffects={allowEffects} setAllowEffects={setAllowEffects} currentTrack={currentTrack} setCurrentTrack={setCurrentTrack}/>
               )} 
-              {chatMenuOpen && (
+              {/* {chatMenuOpen && (
                 <motion.div className="menu-container-six" variants={item}
                 initial={{height:0, opacity:0,}}
                 animate={{height:"100vh", opacity:1}}
                 transition={{duration:.5}}
                 exit="exit">
                 <ButtonHoverAbsoluteLeft onClick={closeChat}><CloseChatRoomIcon /></ButtonHoverAbsoluteLeft>
+                <ChatMessages isExpanded={isExpanded} setIsExpanded={setIsExpanded} activeRoom={activeRoom} playerName={playerName}
+                    playerId={myId} playerAvatar={playerAvatar} style={{width: '100vw'}}/>
                 </motion.div>
-              )}
+              )} */}
               {chipMenuOpen && (
               <motion.div className="menu-container-seven" variants={item}
                 initial={{ opacity: 0, height: 0 }}

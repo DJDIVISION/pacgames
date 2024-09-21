@@ -60,6 +60,7 @@ export const BlackJackBigColumn = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: 25vw;
 `;
 
 export const ActionButtons = styled(motion.div)`
