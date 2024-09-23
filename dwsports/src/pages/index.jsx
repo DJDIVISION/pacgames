@@ -139,8 +139,8 @@ export const StyledButton = styled(Button)`
     border: 1px solid ${props => props.theme.MainAccent};
     border-radius: 0.58vmin;
     color: ${props => props.theme.MainAccent};
-    padding: 5px 20px;
-    font-size: 1.9vmin;
+    padding: 5px 25px;
+    font-size: 20px;
     text-decoration: none;
     text-transform: uppercase;
     overflow: hidden;
@@ -151,6 +151,9 @@ export const StyledButton = styled(Button)`
         box-shadow: 0 0 5px ${props => props.theme.MainAccent}, 0 0 25px ${props => props.theme.MainAccent},
         0 0 50px ${props => props.theme.MainAccent}, 0 0 100px ${props => props.theme.MainAccent};
         font-weight: bold;
+    }
+    @media(max-width: 968px){
+        font-size: 14px;
     }
     }
 `;
@@ -236,6 +239,8 @@ export const StatsIcon = styled(AnalyticsIcon)`
     }
 `;
 
+
+
 export const BetSection = styled.div`
     width: 100vw;
     height: 100vh;
@@ -282,6 +287,28 @@ export const ArrowLeft = styled(KeyboardArrowDownIcon)`
         top: 30px;
         left: 20px;
         transform: rotate(90deg);
+    }
+`;
+
+export const ArrowLeftMiddle = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 2;
+        position: absolute;
+        top: 50%;
+        left: 20px;
+        transform: rotate(90deg);
+    }
+`;
+
+export const ArrowRightMiddle = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 2;
+        position: absolute;
+        top: 50%;
+        right: 20px;
+        transform: rotate(270deg);
     }
 `;
 
@@ -801,14 +828,7 @@ export const BlackJackBigColumn = styled.div`
     justify-content: center;
 `;
 
-export const RouletteSection = styled.div`
-    width: 100vw;
-    min-height: 100vh;
-    background: ${props => props.theme.body};
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-`;
+
 
 export const LoginSection = styled.div`
     width: 100vw;

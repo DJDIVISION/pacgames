@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import chipImage from '../../assets/chips/emptyChip.png'
 import { transitionLong,animationFour } from '../../animations';
 import { styled as styledTwo } from '@mui/system';
+import { ArrowLeftMiddle,ArrowRightMiddle } from '../../pages'
 
 
 const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
@@ -114,6 +115,8 @@ const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
     <BlackJackCards animate={{ height: activePlayer || gameFinished ? '60%' : '70%' }}
         initial={{ height: '70%' }}
         transition={{ duration: 0.5 }}>
+          <ArrowLeftMiddle onClick={goToPrev}/>
+          <ArrowRightMiddle onClick={goToNext}/>
           {/* <IconButton  onClick={disconnect}><Disconnect /></IconButton> */}
           {Array.from({ length: 5 }).map((_, i) => (
               <CardSpot

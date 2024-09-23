@@ -101,12 +101,12 @@ const NavBar = () => {
             </NavIcon>
             <NavText>AIRDROP</NavText>
         </NavColumn></LinkR> */}
-        <NavColumn onClick={fetchData}>
+        <LinkR to="/roulette"><NavColumn >
             <NavIcon>
                 <img src={lottery} alt="sports" />
             </NavIcon>
             <NavText>LOTTERY</NavText>
-        </NavColumn>
+        </NavColumn></LinkR>
         <LinkR to="/blackjack"><NavColumn>
             <NavIcon>
                 <img src={chip} alt="sports" />

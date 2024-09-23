@@ -16,6 +16,8 @@ import Login from './pages/Login';
 import Poker from './pages/Poker';
 import BlackJack from './pages/BlackJack';
 import Airdrop from './pages/Airdrop';
+import Roulette from './pages/Roulette';
+import RouletteTwo from './pages/RouletteTwo';
 
 function App() {
 
@@ -35,7 +37,7 @@ function App() {
         <Route path="/bets" element={<ProtectedRoute><Bets /></ProtectedRoute>} />
         <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />
         <Route path="/poker" element={<ProtectedRoute><Poker /></ProtectedRoute>} />
-        <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+        <Route path="/roulette" element={<ProtectedRoute><RouletteTwo /></ProtectedRoute>} />
         <Route path="/player/:id" element={<ProtectedRoute><PlayerStats /></ProtectedRoute>} />
         <Route path="/team/:id" element={<ProtectedRoute><TeamStats /></ProtectedRoute>} />
       </Routes>

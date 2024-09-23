@@ -1,6 +1,6 @@
 .parallax-container {
     position: relative;
-    height: 160vh; /* Taller than viewport to allow scrolling */
+    height: 160vh; 
     overflow: hidden;
     text-align: center;
   }
@@ -19,11 +19,11 @@
   }
   
   .content {
-    margin-top: 100vh; /* Push content below parallax section */
+    margin-top: 100vh; 
   }
   
   .filler {
-    height: 50vh; /* Extra space for scrolling */
+    height: 50vh; 
   }
   
   .large-content {
@@ -40,3 +40,4 @@
   .large-content p {
     margin-bottom: 20px;
   }
+
