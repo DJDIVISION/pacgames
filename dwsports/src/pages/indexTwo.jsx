@@ -5,6 +5,26 @@ import BJBack from '../assets/bjTable.jpg';
 import ChatIcon from '@mui/icons-material/Chat';
 import BG from '../assets/roulette-bg.png'
 
+export const SmallColumn = styled.div`
+  width: 15%;
+  height: 100%;
+  border:1px solid red;
+`;
+
+export const BigColumn = styled.div`
+  width: 70%;
+  height: 100%;
+  border:1px solid white;
+  position: relative;
+  ${props => props.theme.displayFlexColumnCenter};
+`;
+
+export const Row = styled.div`
+  ${props => props.theme.displayFlexCenter};
+`;
+
+//************************ */
+
 export const RouletteTableContainer = styled.div`
   width: 50%;
   height: 100%;
