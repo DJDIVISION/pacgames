@@ -1,3 +1,14 @@
+export const Zeroes = [
+    {
+        number: 0,
+        color: "green"
+    },
+    {
+        number: "00",
+        color: "green"
+    }
+]
+
 export const FirstRow = [
     {
         number: 3,
@@ -6,7 +17,7 @@ export const FirstRow = [
         borderLeftId : "borderLeft-3",
         borderTopId : "borderTop-3",
         borderTop: [3,2,1],
-        borderLeft: ["00",3],
+        borderLeft: [0,3],
         color: "red"
     },
     {
@@ -124,7 +135,7 @@ export const FirstRow = [
 export const SecondRow = [
     {
         number: 2,
-        cornerLeft: ["00",3,2],
+        cornerLeft: [0,3,2],
         cornerLeftId : "corner-2",
         borderLeftId : "borderLeft-2",
         borderTopId : "borderTop-2",
@@ -247,12 +258,12 @@ export const SecondRow = [
 export const ThirdRow = [
     {
         number: 1,
-        cornerLeft: [0,1,2],
+        cornerLeft: ["00",1,2],
         cornerLeftId : "corner-1",
         borderLeftId : "borderLeft-1",
         borderTopId : "borderTop-1",
         borderTop: [1,2],
-        borderLeft: [0,1],
+        borderLeft: ["00",1],
         color: "red"
     },
     {
@@ -370,31 +381,37 @@ export const ThirdRow = [
 export const LastRow = [
     {
         name: "1 - 18",
+        id: "first-18",
         numbers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],
         color: 'transparent'
     },
     {
         name: "EVEN",
+        id: "EVEN",
         numbers: [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35],
         color: 'transparent'
     },
     {
         name: "",
+        id: "reds",
         numbers: [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36],
         color: 'red'
     },
     {
         name: "",
+        id: "blacks",
         numbers: [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35],
         color: 'black'
     },
     {
         name: "ODD",
+        id: "ODD",
         numbers: [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36],
         color: 'transparent'
     },
     {
         name: "19 - 36",
+        id: "last-18",
         numbers: [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],
         color: 'transparent'
     }
@@ -418,18 +435,18 @@ export const BetPerRows = [
 
 export const BetPerColumns = [
     {
-        column:3,
+        id: 'column-3',
         name: "2:1",
         numbers: [3,6,9,12,15,18,21,24,27,30,33,36]
     },
     {
-        column:2,
+        id: 'column-2',
         name: "2:1",
         numbers: [2,5,8,11,14,17,20,23,26,29,32,35]
     }
     ,
     {
-        column:1,
+        id: 'column-1',
         name: "2:1",
         numbers: [1,4,7,10,13,16,19,22,25,28,31,34]
     }

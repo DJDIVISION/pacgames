@@ -8,13 +8,16 @@ import BG from '../assets/roulette-bg.png'
 export const SmallColumn = styled.div`
   width: 15%;
   height: 100%;
+  padding-top: 80px;
+  ${props => props.theme.displayFlexColumn};
 `;
 
 export const BigColumn = styled.div`
   width: 70%;
   height: 100%;
   position: relative;
-  ${props => props.theme.displayFlexColumnCenter};
+  ${props => props.theme.displayFlexColumn};
+  padding-top: 80px;
 `;
 
 export const Row = styled.div`

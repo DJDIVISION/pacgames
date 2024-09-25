@@ -42,14 +42,14 @@
   }
 
   .number-active {
-    filter: drop-shadow(0 0 10px lime);
+    box-shadow: inset 1px 1px 5px 5px #00ff37bd;
     border: 2px solid yellow;
     transition: 0.8 all ease-in-out !important;  
-    color: lime !important;
+    color: rgb(22, 235, 22) !important;
   }
 
   .cell-active {
-    background: #2fda54;
+    box-shadow: inset 1px 1px 5px 5px #00ff37bd;
   }
 
 .roulette-dropped-chip{
@@ -57,6 +57,13 @@
   top: 0;
   left: 0;
   transform: scale(0.6) !important;
+}
+.zero-dropped-chip{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
 }
 
 .corner-dropped-chip{
@@ -78,8 +85,32 @@
   top: 0;
   left: 0;
   transform: scale(0.6) translateY(-60%);
-  
 }
 
+.first-dropped-chip{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  transform: translate(-20px, -20px);
+}
 
+@media screen and (max-width: 968px){
+  .zero-dropped-chip{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+  }
+  .first-dropped-chip{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    transform: translate(-15px, -15px);
+  }
+}
 

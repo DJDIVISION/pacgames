@@ -1,7 +1,7 @@
 import React,{useEffect, useState} from 'react'
 import styled from 'styled-components'
 import { RouletteSection,BigColumn,SmallColumn,Row } from './indexTwo'
-import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow} from './fakeData'
+import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns} from './fakeData'
 import { motion } from 'framer-motion'
 import { DndContext } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
@@ -15,10 +15,16 @@ const RouletteTwo = () => {
     const [placedBet, setPlacedBet] = useState(null);
     const [droppedChips, setDroppedChips] = useState({});
     const [droppedCornerChips, setDroppedCornerChips] = useState({});
+    const [droppedRowChips, setDroppedRowChips] = useState({});
+    const [droppedLastRowChips, setDroppedLastRowChips] = useState({});
+    const [droppedColumnChips, setDroppedColumnChips] = useState({});
     const [droppedBorderLeftChips, setDroppedBorderLeftChips] = useState({});
     const [droppedBorderTopChips, setDroppedBorderTopChips] = useState({});
     const [droppedChipValue, setDroppedChipValue] = useState(null);
     const [droppedCornerChipValue, setDroppedCornerChipValue] = useState(null);
+    const [droppedRowChipValue, setDroppedRowChipValue] = useState(null);
+    const [droppedLastRowChipValue, setDroppedLastRowChipValue] = useState(null);
+    const [droppedColumnChipValue, setDroppedColumnChipValue] = useState(null);
     const [droppedBorderLeftChipValue, setDroppedBorderLeftChipValue] = useState(null);
     const [droppedBorderTopChipValue, setDroppedBorderTopChipValue] = useState(null);
     const [selectedId, setSelectedId] = useState(null)
@@ -29,10 +35,8 @@ const RouletteTwo = () => {
     const getAllRows = () => {
         const allRows = FirstRow.concat(SecondRow).concat(ThirdRow)
         if(droppedChips){
-            console.log("there are chips")
             const droppedChipsKeys = Object.keys(droppedChips);
             droppedChipsKeys.forEach(chip => {
-                console.log(chip)
                 document.getElementById(chip).classList.add("cell-active")
                 
             })
@@ -51,7 +55,6 @@ const RouletteTwo = () => {
             const droppedChipsKeys = Object.keys(droppedBorderLeftChips);
             droppedChipsKeys.forEach(chip => {
                 const filter = allRows.filter(el => el.borderLeftId === chip)
-                console.log(filter);
                 const numbers = filter[0].borderLeft
                 numbers.forEach(number => {
                     document.getElementById(number).classList.add("cell-active");
@@ -59,7 +62,6 @@ const RouletteTwo = () => {
             })
         }
         if(droppedBorderTopChips){
-            console.log(droppedBorderTopChips)
             const droppedChipsKeys = Object.keys(droppedBorderTopChips);
             droppedChipsKeys.forEach(chip => {
                 const filter = allRows.filter(el => el.borderTopId === chip)
@@ -69,8 +71,37 @@ const RouletteTwo = () => {
                 })
             })
         }
+        if(droppedRowChips){
+            const droppedChipsKeys = Object.keys(droppedRowChips);
+            droppedChipsKeys.forEach(chip => {
+                const filter = BetPerRows.filter(el => el.name === chip)
+                const numbers = filter[0].numbers
+                numbers.forEach(number => {
+                    document.getElementById(number).classList.add("cell-active");
+                })
+            })
+        }
+        if(droppedLastRowChips){
+            const droppedChipsKeys = Object.keys(droppedLastRowChips);
+            droppedChipsKeys.forEach(chip => {
+                const filter = LastRow.filter(el => el.id === chip)
+                const numbers = filter[0].numbers
+                numbers.forEach(number => {
+                    document.getElementById(number).classList.add("cell-active");
+                })
+            })
+        }
+        if(droppedColumnChips){
+            const droppedChipsKeys = Object.keys(droppedColumnChips);
+            droppedChipsKeys.forEach(chip => {
+                const filter = BetPerColumns.filter(el => el.id === chip)
+                const numbers = filter[0].numbers
+                numbers.forEach(number => {
+                    document.getElementById(number).classList.add("cell-active");
+                })
+            })
+        }
         if(activeContainer){
-            
             if(!isNaN(activeContainer)){
                 checkSingleNumber(activeContainer)
             } else {
@@ -92,7 +123,9 @@ const RouletteTwo = () => {
 
     useEffect(() => {
         getAllRows();
-    }, [droppedChips,droppedCornerChips,droppedBorderLeftChips,droppedBorderTopChips,activeContainer])
+    }, [droppedChips,droppedCornerChips,droppedBorderLeftChips,droppedBorderTopChips,activeContainer,droppedRowChips,
+        droppedLastRowChips,droppedColumnChips
+    ])
 
     const CornerDropArea = ({ card }) => {
         const { isOver, setNodeRef } = useDroppable({
@@ -168,6 +201,153 @@ const RouletteTwo = () => {
         );
       };
 
+      const ZeroesArea = ({card,onLeave  }) => {
+        const { isOver, setNodeRef } = useDroppable({
+          id: card.number,
+        });
+        if (!isOver && onLeave) {
+            onLeave(card.number);
+          }
+        const borderTop = card.borderTop
+        const number = card.number
+        return (
+          <Zero ref={setNodeRef} id={card.number} className="number-inactive"  onMouseEnter={() => checkSingleNumber(number)} onMouseLeave={() => removeSingleNumber(number)}
+           key={card.number}  >
+            <NumberZeroWrapper style={{background: `${card.color}`}}  >{number}</NumberZeroWrapper>
+            {
+                !droppedChips[number] || droppedChips[number].length === 0 ? (
+                    <div></div>
+                ) : (
+                    <div className="roulette-dropped-chips">
+                    {droppedChips[number].map((chip, index) => (
+                        <img
+                        key={index}
+                        src={chip.chipImage}
+                        alt={`Chip ${chip.chipValue}`}
+                        className="zero-dropped-chip"
+                        />
+                    ))}
+                    </div>
+                )
+                }
+          </Zero>
+        );
+    };
+
+    const BetPerRowsArea = ({card,onLeave  }) => {
+        const { isOver, setNodeRef } = useDroppable({
+          id: card.name,
+        });
+        if (!isOver && onLeave) {
+            onLeave(card.name);
+          }
+        const borderTop = card.borderTop
+        const name = card.name
+        const numbers = card.numbers
+        return (
+          <BetPerRowsWrapper ref={setNodeRef} id={name} className="number-inactive"  onMouseEnter={() => checkRowNumbers(numbers)} onMouseLeave={() => removeRowNumbers(numbers)}
+           key={name}  >
+            {
+                !droppedRowChips[name] || droppedRowChips[name].length === 0 ? (
+                    <div>{name}</div>
+                ) : (
+                    <div className="roulette-dropped-chips">
+                    {droppedRowChips[name].map((chip, index) => (
+                        <img
+                        key={index}
+                        src={chip.chipImage}
+                        alt={`Chip ${chip.chipValue}`}
+                        className="first-dropped-chip"
+                        />
+                    ))}
+                    </div>
+                )
+                }
+          </BetPerRowsWrapper>
+        );
+    };
+
+    const LastRowArea = ({card,onLeave  }) => {
+        const { isOver, setNodeRef } = useDroppable({
+          id: card.id,
+        });
+        if (!isOver && onLeave) {
+            onLeave(card.name);
+          }
+        const borderTop = card.borderTop
+        const name = card.name
+        const numbers = card.numbers
+        return (
+          <LastRowWrapper style={{background: `${card.color}`}} ref={setNodeRef} id={card.id} className="number-inactive"  onMouseEnter={() => checkRowNumbers(numbers)} onMouseLeave={() => removeRowNumbers(numbers)}
+           key={card.id}  >
+            {
+                !droppedLastRowChips[card.id] || droppedLastRowChips[card.id].length === 0 ? (
+                    <div>{name}</div>
+                ) : (
+                    <div className="roulette-dropped-chips">
+                    {droppedLastRowChips[card.id].map((chip, index) => (
+                        <img
+                        key={index}
+                        src={chip.chipImage}
+                        alt={`Chip ${chip.chipValue}`}
+                        className="first-dropped-chip"
+                        />
+                    ))}
+                    </div>
+                )
+                }
+          </LastRowWrapper>
+        );
+    };
+
+
+    const BetPerColumnsArea = ({card,onLeave  }) => {
+        const { isOver, setNodeRef } = useDroppable({
+          id: card.id,
+        });
+        if (!isOver && onLeave) {
+            onLeave(card.id);
+          }
+        const borderTop = card.borderTop
+        const name = card.name
+        const numbers = card.numbers
+        return (
+          <Number ref={setNodeRef} id={card.id} className="number-inactive"  onMouseEnter={() => checkColumnNumbers(numbers)} onMouseLeave={() => removeColumnNumbers(numbers)}
+           key={card.id}  >
+            {
+                !droppedColumnChips[card.id] || droppedColumnChips[card.id].length === 0 ? (
+                    <div>{name}</div>
+                ) : (
+                    <div className="roulette-dropped-chips">
+                    {droppedColumnChips[card.id].map((chip, index) => (
+                        <img
+                        key={index}
+                        src={chip.chipImage}
+                        alt={`Chip ${chip.chipValue}`}
+                        className="roulette-dropped-chip"
+                        />
+                    ))}
+                    </div>
+                )
+                }
+          </Number>
+        );
+    };
+
+    const removeBet = (droppedChips,chip,number) => {
+        console.log(droppedChips)
+        console.log(chip)
+        console.log(number)
+        setDroppedChips((prevDroppedChips) => {
+            const updatedDroppedChips = { ...prevDroppedChips };
+            delete updatedDroppedChips[number];  // Remove the entry for the specific number
+            return updatedDroppedChips;
+          });
+    }
+
+    console.log(droppedChips)
+      
+
     const BetNumbersArea = ({card,onLeave  }) => {
         const { isOver, setNodeRef } = useDroppable({
           id: card.number,
@@ -198,7 +378,8 @@ const RouletteTwo = () => {
                         key={index}
                         src={chip.chipImage}
                         alt={`Chip ${chip.chipValue}`}
-                        className="roulette-dropped-chip"
+                        className="zero-dropped-chip"
+                        onClick={() => removeBet(droppedChips,chip,number)}
                         />
                     ))}
                     </div>
@@ -207,8 +388,6 @@ const RouletteTwo = () => {
           </Number>
         );
       };
-      
-      
 
     const checkCornerLeft = (cornerLeft) => {
         cornerLeft.forEach(el => {
@@ -266,6 +445,20 @@ const RouletteTwo = () => {
             
         })
     }
+    const checkColumnNumbers = (numbers) => {
+        numbers.forEach(el => {
+            const item = document.getElementById(el)
+            item.classList.add('number-active')
+            
+        })
+    }
+    const removeColumnNumbers = (numbers) => {
+        numbers.forEach(el => {
+            const item = document.getElementById(el)
+            item.classList.remove('number-active')
+            
+        })
+    }
     const checkSingleNumber = (number) => {
         const item = document.getElementById(number)
         item.classList.add('number-active')
@@ -286,8 +479,9 @@ const RouletteTwo = () => {
 
     const handleDragOver = (event) => {
         const { over } = event;
-    
+        
         if (over) {
+            console.log(over.id)
           setActiveContainer(over.id);
         }
     };
@@ -297,7 +491,6 @@ const RouletteTwo = () => {
           setActiveContainer(null); 
         }
       };
-
 
     const handleDragEnd = (event) => {
         const { over, active } = event;
@@ -359,6 +552,46 @@ const RouletteTwo = () => {
                     setPlacedBet(oldValue + chipValue)
                     setDroppedBorderTopChipValue(chipValue);
                 }
+            } else if (droppedNumberId.startsWith('1') || droppedNumberId.startsWith('2') || droppedNumberId.startsWith('3')) {
+                setDroppedRowChips((prevChips) => ({
+                    ...prevChips,
+                    [droppedNumberId]: [...(prevChips[droppedNumberId] || []), { chipValue, chipImage }],
+                }));
+                if (chipValue === null) {
+                    setPlacedBet(chipValue);
+                    setDroppedRowChipValue(chipValue);
+                } else {
+                    const oldValue = placedBet
+                    setPlacedBet(oldValue + chipValue)
+                    setDroppedRowChipValue(chipValue);
+                }
+            } else if (droppedNumberId.startsWith('firs') || droppedNumberId.startsWith('las') || droppedNumberId.startsWith('EVE') 
+                || droppedNumberId.startsWith('OD') || droppedNumberId.startsWith('blac') || droppedNumberId.startsWith('red')){
+                    setDroppedLastRowChips((prevChips) => ({
+                    ...prevChips,
+                    [droppedNumberId]: [...(prevChips[droppedNumberId] || []), { chipValue, chipImage }],
+                }));
+                if (chipValue === null) {
+                    setPlacedBet(chipValue);
+                    setDroppedLastRowChipValue(chipValue);
+                } else {
+                    const oldValue = placedBet
+                    setPlacedBet(oldValue + chipValue)
+                    setDroppedLastRowChipValue(chipValue);
+                }
+            } else if (droppedNumberId.startsWith('column')){
+                setDroppedColumnChips((prevChips) => ({
+                    ...prevChips,
+                    [droppedNumberId]: [...(prevChips[droppedNumberId] || []), { chipValue, chipImage }],
+                }));
+                if (chipValue === null) {
+                    setPlacedBet(chipValue);
+                    setDroppedColumnChipValue(chipValue);
+                } else {
+                    const oldValue = placedBet
+                    setPlacedBet(oldValue + chipValue)
+                    setDroppedColumnChipValue(chipValue);
+                }
             }
         }
         
@@ -369,10 +602,20 @@ const RouletteTwo = () => {
 
   return (
     <RouletteSection>
-      <SmallColumn></SmallColumn>
+         <DndContext onDragEnd={handleDragEnd} sensors={sensors} onDragOver={handleDragOver}>
+      <SmallColumn>
+        <div style={{marginLeft: 'auto'}}>
+            {Zeroes.map((card,index) => {
+                return(
+                    <ZeroesArea card={card} key={index} onLeave={handleLeave}/>
+                )
+            })}
+        </div>
+      </SmallColumn>
       <BigColumn>
-            <DndContext onDragEnd={handleDragEnd} sensors={sensors} onDragOver={handleDragOver}>
+           
             <Row>
+            
             {FirstRow.map((card,index) => {
                 return(
                     <BetNumbersArea card={card} key={index} onLeave={handleLeave}/>
@@ -395,32 +638,33 @@ const RouletteTwo = () => {
             </Row>
             <Row>
             {BetPerRows.map((card,index) => {
-                const numbers = card.numbers
                 return(
-                    <BetPerRowsWrapper onMouseEnter={() => checkRowNumbers(numbers)} onMouseLeave={() => removeRowNumbers(numbers)} className="number-inactive" key={card.numbers}>
-                        {card.name}
-                    </BetPerRowsWrapper>
+                    <BetPerRowsArea card={card} onLeave={handleLeave} key={index} />
                 )
             })}
             </Row>
             <Row>
             {LastRow.map((card,index) => {
-                const numbers = card.numbers
-                const color = card.color
                 return(
-                    <LastRowWrapper onMouseEnter={() => checkRowNumbers(numbers)} onMouseLeave={() => removeRowNumbers(numbers)} className="number-inactive" key={card.numbers}
-                    style={{background: `${color}`}}>
-                        {card.name}
-                    </LastRowWrapper>
+                    <LastRowArea card={card} onLeave={handleLeave} key={index} />
                 )
             })}
             </Row>
-            <Row style={{width: '80%', marginTop: '20px'}}>
+            <Row style={{width: '80%', marginTop: '20px', height: '20%'}}>
                 <Chips />
             </Row>
-            </DndContext>
+            
       </BigColumn>
-      <SmallColumn></SmallColumn>
+      <SmallColumn>
+      <div style={{marginRight: 'auto'}}>
+            {BetPerColumns.map((card,index) => {
+                return(
+                    <BetPerColumnsArea card={card} key={index} onLeave={handleLeave}/>
+                )
+            })}
+        </div>
+      </SmallColumn>
+      </DndContext>
     </RouletteSection>
   )
 }
@@ -430,6 +674,7 @@ export default RouletteTwo
 const LastRowWrapper = styled.div`
     width: calc(70vw * 2/12);
     height: calc(70vw/12);
+    position: relative;
     border: 1px solid ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
     color: ${props => props.theme.text};
@@ -441,6 +686,7 @@ const LastRowWrapper = styled.div`
 const BetPerRowsWrapper = styled.div`
     width: calc(70vw * 4/12);
     height: calc(70vw/12);
+    position: relative;
     border: 1px solid ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
     color: ${props => props.theme.text};
@@ -479,6 +725,17 @@ const Number = styled.div`
     cursor: pointer;
 `;
 
+const Zero = styled.div`
+    width: calc(70vw/12);
+    height: calc(70vw/12 * 1.5);
+    border: 1px solid ${props => props.theme.text};
+    position: relative;
+    ${props => props.theme.displayFlexColumnCenter};
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+`;
+
 const CornerLeft = styled(motion.div)`
     position: absolute;
     width: 30px;
@@ -494,6 +751,14 @@ const CornerLeft = styled(motion.div)`
 const NumberWrapper = styled.div`
     width: 70%;
     height: 70%;
+    border-radius: 50%;
+    ${props => props.theme.displayFlexCenter};
+    border: 1px solid orange;
+`;
+
+const NumberZeroWrapper = styled.div`
+    width: 70%;
+    height: 50%;
     border-radius: 50%;
     ${props => props.theme.displayFlexCenter};
     border: 1px solid orange;
