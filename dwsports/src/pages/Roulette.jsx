@@ -9,7 +9,7 @@ import { initWheel } from './functions';
 import { Button } from '@mui/material';
 import './styles.css'
 
-const socket = io.connect("https://pacgames.onrender.com")
+const socket = io.connect("http://localhost:8080")
 
 const americanRouletteNumbers = [
     { number: 0, color: "lime" },

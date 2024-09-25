@@ -4,8 +4,7 @@ import { RouletteSection,BigColumn,SmallColumn,Row } from './indexTwo'
 import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow} from './fakeData'
 import { motion } from 'framer-motion'
 import { DndContext } from '@dnd-kit/core';
-import { TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { useDroppable } from '@dnd-kit/core';
+import { TouchSensor, MouseSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
 import Chips from '../components/blackjack/Chips';
 import './styles.css'
 
@@ -23,11 +22,9 @@ const RouletteTwo = () => {
     const [droppedBorderLeftChipValue, setDroppedBorderLeftChipValue] = useState(null);
     const [droppedBorderTopChipValue, setDroppedBorderTopChipValue] = useState(null);
     const [selectedId, setSelectedId] = useState(null)
+    const [activeContainer, setActiveContainer] = useState(null)
 
-    console.log(droppedCornerChips)
-    console.log(droppedBorderLeftChips)
-    console.log(droppedChips)
-    console.log(placedBet)
+    
 
     const getAllRows = () => {
         const allRows = FirstRow.concat(SecondRow).concat(ThirdRow)
@@ -66,18 +63,36 @@ const RouletteTwo = () => {
             const droppedChipsKeys = Object.keys(droppedBorderTopChips);
             droppedChipsKeys.forEach(chip => {
                 const filter = allRows.filter(el => el.borderTopId === chip)
-                console.log(filter);
                 const numbers = filter[0].borderTop
                 numbers.forEach(number => {
                     document.getElementById(number).classList.add("cell-active");
                 })
             })
         }
-    }
+        if(activeContainer){
+            
+            if(!isNaN(activeContainer)){
+                checkSingleNumber(activeContainer)
+            } else {
+                if (activeContainer.startsWith('corner')){
+                    const filter = allRows.filter(el => el.cornerLeftId === activeContainer);
+                    checkCornerLeft(filter[0].cornerLeft)
+                } else if (activeContainer.startsWith('borderL')){
+                    const filter = allRows.filter(el => el.borderLeftId === activeContainer);
+                    checkBorderLeft(filter[0].borderLeft)
+                } else if (activeContainer.startsWith('borderT')){
+                    const filter = allRows.filter(el => el.borderTopId === activeContainer);
+                    checkBorderTop(filter[0].borderTop)
+                }
+            }
+        } else if(activeContainer === null){
+            console.log("null")
+        }
+    };
 
     useEffect(() => {
         getAllRows();
-    }, [droppedChips,droppedCornerChips,droppedBorderLeftChips,droppedBorderTopChips])
+    }, [droppedChips,droppedCornerChips,droppedBorderLeftChips,droppedBorderTopChips,activeContainer])
 
     const CornerDropArea = ({ card }) => {
         const { isOver, setNodeRef } = useDroppable({
@@ -153,10 +168,13 @@ const RouletteTwo = () => {
         );
       };
 
-    const BetNumbersArea = ({card }) => {
+    const BetNumbersArea = ({card,onLeave  }) => {
         const { isOver, setNodeRef } = useDroppable({
           id: card.number,
         });
+        if (!isOver && onLeave) {
+            onLeave(card.number);
+          }
         const borderTop = card.borderTop
         const number = card.number
         return (
@@ -267,10 +285,18 @@ const RouletteTwo = () => {
     );
 
     const handleDragOver = (event) => {
-        if(event.over){
-            console.log(event.over.id)
+        const { over } = event;
+    
+        if (over) {
+          setActiveContainer(over.id);
         }
-      }
+    };
+
+    const handleLeave = (id) => {
+        if (activeContainer === id) {
+          setActiveContainer(null); 
+        }
+      };
 
 
     const handleDragEnd = (event) => {
@@ -349,21 +375,21 @@ const RouletteTwo = () => {
             <Row>
             {FirstRow.map((card,index) => {
                 return(
-                    <BetNumbersArea card={card} key={index}/>
+                    <BetNumbersArea card={card} key={index} onLeave={handleLeave}/>
                 )
             })}
             </Row>
             <Row>
             {SecondRow.map((card,index) => {
                 return(
-                    <BetNumbersArea card={card} key={index}/>
+                    <BetNumbersArea card={card} key={index} onLeave={handleLeave}/>
                 )
             })}
             </Row>
             <Row>
             {ThirdRow.map((card,index) => {
                 return(
-                    <BetNumbersArea card={card} key={index}/>
+                    <BetNumbersArea card={card} key={index} onLeave={handleLeave}/>
                 )
             })}
             </Row>
