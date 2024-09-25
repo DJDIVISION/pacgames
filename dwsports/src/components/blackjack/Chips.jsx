@@ -81,7 +81,7 @@ const Chip = ({ chipValue, image }) => {
   // Apply transform styles during drag
   const style = {
     transform: transform
-      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0) scale(0.6)`
       : undefined,
   };
 

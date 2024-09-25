@@ -52,37 +52,34 @@
     background: #2fda54;
   }
 
-  .roulette-dropped-chip{
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: translate(-10px, -10px) scale(0.7) !important;
-  }
+.roulette-dropped-chip{
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(0.6) !important;
+}
 
 .corner-dropped-chip{
   position: absolute;
   top: 0;
   left: 0;
-  width: 25px;
-  height: 25px;
-  transform: translate(-25%, -25%) !important;
+  
 }
 
 .borderLeft-dropped-chip{
   position: absolute;
-  top: 0;
+  top: 25%;
   left: 0;
-  width: 25px;
-  height: 25px;
-  transform: translate(-35%, 0) !important;
+  transform: scale(1.2);
 }
 
 .borderTop-dropped-chip{
   position: absolute;
   top: 0;
   left: 0;
-  width: 25px;
-  height: 25px;
-  transform: translate(20%, -25%) !important;
+  transform: scale(0.6) translateY(-60%);
+  
 }
+
+
 

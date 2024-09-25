@@ -31,18 +31,19 @@ const RouletteTwo = () => {
 
     const getAllRows = () => {
         const allRows = FirstRow.concat(SecondRow).concat(ThirdRow)
-        console.log(allRows)
         if(droppedChips){
+            console.log("there are chips")
             const droppedChipsKeys = Object.keys(droppedChips);
             droppedChipsKeys.forEach(chip => {
-                document.getElementById(chip).classList.add("cell-active");
+                console.log(chip)
+                document.getElementById(chip).classList.add("cell-active")
+                
             })
         }
         if(droppedCornerChips){
             const droppedChipsKeys = Object.keys(droppedCornerChips);
             droppedChipsKeys.forEach(chip => {
                 const filter = allRows.filter(el => el.cornerLeftId === chip)
-                console.log(filter);
                 const numbers = filter[0].cornerLeft
                 numbers.forEach(number => {
                     document.getElementById(number).classList.add("cell-active");
@@ -61,6 +62,7 @@ const RouletteTwo = () => {
             })
         }
         if(droppedBorderTopChips){
+            console.log(droppedBorderTopChips)
             const droppedChipsKeys = Object.keys(droppedBorderTopChips);
             droppedChipsKeys.forEach(chip => {
                 const filter = allRows.filter(el => el.borderTopId === chip)
@@ -93,7 +95,6 @@ const RouletteTwo = () => {
                     src={chip.chipImage}
                     alt={`Chip ${chip.chipValue}`}
                     className="corner-dropped-chip"
-                    style={{ margin: '2px', transform: 'scale(0.5)' }}
                   />
                 ))}
               </div>
@@ -119,7 +120,6 @@ const RouletteTwo = () => {
                     src={chip.chipImage}
                     alt={`Chip ${chip.chipValue}`}
                     className="borderLeft-dropped-chip"
-                    style={{ transform: 'scale(0.5)' }}
                   />
                 ))}
               </div>
@@ -139,13 +139,12 @@ const RouletteTwo = () => {
             {/* Display chips if there are any */}
             {droppedBorderTopChips[wrappedId]?.length > 0 && (
               <div className="corner-chips">
-                {droppedBorderTopChips[wrappedId].map((chip, index) => (
+                {droppedBorderTopChips[`borderTop-${card.number}`].map((chip, index) => (
                   <img
                     key={index}
                     src={chip.chipImage}
                     alt={`Chip ${chip.chipValue}`}
                     className="borderTop-dropped-chip"
-                    style={{ transform: 'scale(0.5)' }}
                   />
                 ))}
               </div>
@@ -160,10 +159,10 @@ const RouletteTwo = () => {
         });
         const borderTop = card.borderTop
         const number = card.number
-        
         return (
-          <Number ref={setNodeRef} onMouseEnter={() => checkSingleNumber(number)} onMouseLeave={() => removeSingleNumber(number)}
-           key={card.number} id={card.number} className="number-inactive">
+          <Number ref={setNodeRef} id={card.number} className="number-inactive"  onMouseEnter={() => checkSingleNumber(number)} onMouseLeave={() => removeSingleNumber(number)}
+           key={card.number}  >
+            <NumberWrapper style={{background: `${card.color}`}}  >{number}</NumberWrapper>
             <CornerDropArea 
                 card={card} 
                 droppedCornerChips={droppedCornerChips} 
@@ -173,7 +172,7 @@ const RouletteTwo = () => {
             <BorderTopArea card={card} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips}/>
             {
                 !droppedChips[number] || droppedChips[number].length === 0 ? (
-                    <NumberWrapper style={{background: `${card.color}`}}>{number}</NumberWrapper>
+                    <div></div>
                 ) : (
                     <div className="roulette-dropped-chips">
                     {droppedChips[number].map((chip, index) => (
@@ -182,7 +181,6 @@ const RouletteTwo = () => {
                         src={chip.chipImage}
                         alt={`Chip ${chip.chipValue}`}
                         className="roulette-dropped-chip"
-                        style={{ margin: '10px 10px', transform: 'scale(0.8)' }}
                         />
                     ))}
                     </div>
@@ -277,8 +275,6 @@ const RouletteTwo = () => {
 
     const handleDragEnd = (event) => {
         const { over, active } = event;
-        console.log("over", over)
-        console.log("active", active)
         // Check if the chip was dropped in the bet area
         const chipValue = active.data.current.chipValue;
         const chipImage = active.data.current.chipImage;
@@ -393,7 +389,7 @@ const RouletteTwo = () => {
                 )
             })}
             </Row>
-            <Row>
+            <Row style={{width: '80%'}}>
                 <Chips />
             </Row>
             </DndContext>
@@ -428,23 +424,23 @@ const BetPerRowsWrapper = styled.div`
 `;
 
 const BorderTop = styled.div`
-    width: 85%;
-    height: 10px;
+    width: 60%;
+    height: 20px;
     background: transparent;
     position: absolute;
-    top: -5px;
-    left: 10px;
+    top: -10%;
+    left: 20%;
 `;
 
 const BorderLeft = styled.div`
-    width: 10px;
-    height: 80%;
+    width: 20px;
+    height: 60%;
     background: transparent;
     position: absolute;
-    top: 20px;
-    left: 0px;
-    transform:translate(-50%, -10%);
+    top: 20%;
+    left: -15%;
 `;
+
 
 const Number = styled.div`
     width: calc(70vw/12);
@@ -459,16 +455,14 @@ const Number = styled.div`
 
 const CornerLeft = styled(motion.div)`
     position: absolute;
-    width: 15px;
-    height: 15px;
+    width: 30px;
+    height: 30px;
     border-radius: 50px;
-    background: aqua;
+    //background: aqua;
     top: 0;
     left: 0;
     transform: translate(-50%,-50%);
-    &:hover{
-        background: yellow;
-    }
+    z-index: 9000;
 `;
 
 const NumberWrapper = styled.div`
