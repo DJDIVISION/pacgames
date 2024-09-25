@@ -415,7 +415,7 @@ const RouletteTwo = () => {
                 )
             })}
             </Row>
-            <Row style={{width: '80%'}}>
+            <Row style={{width: '80%', marginTop: '20px'}}>
                 <Chips />
             </Row>
             </DndContext>
