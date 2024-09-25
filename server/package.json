@@ -13,7 +13,7 @@
   "version": "1.0.0",
   "main": "index.jsx",
   "scripts": {
-    "start": "nodemon api/server.jsx",
+    "start": "nodemon api/index.jsx",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
