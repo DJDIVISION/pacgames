@@ -335,6 +335,16 @@ export const PlayerWrapper = styled.div`
     margin: 10px 0;
 `;
 
+export const RouletteChipContainer = styled.div`
+    width: 100%;
+    height: 15vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border: 1px solid ${props => props.theme.MainAccent};
+    border-radius: 10px;
+`;
+
 
 export const ChipContainer = styled.div`
     width: 50%;

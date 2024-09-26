@@ -380,7 +380,7 @@ export const ThirdRow = [
 
 export const LastRow = [
     {
-        name: "1 - 18",
+        name: "1-18",
         id: "first-18",
         numbers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],
         color: 'transparent'
@@ -410,7 +410,7 @@ export const LastRow = [
         color: 'transparent'
     },
     {
-        name: "19 - 36",
+        name: "19-36",
         id: "last-18",
         numbers: [19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],
         color: 'transparent'
@@ -419,16 +419,16 @@ export const LastRow = [
 
 export const BetPerRows = [
     {
-        name: "1st - 12",
+        name: "1st-12",
         numbers: [1,2,3,4,5,6,7,8,9,10,11,12]
     },
     {
-        name: "2nd - 12",
+        name: "2nd-12",
         numbers: [13,14,15,16,17,18,19,20,21,22,23,24]
     }
     ,
     {
-        name: "3rd - 12",
+        name: "3rd-12",
         numbers: [25,26,27,28,29,30,31,32,33,34,35,36]
     }
 ]

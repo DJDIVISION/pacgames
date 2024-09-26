@@ -10,6 +10,21 @@ export const SmallColumn = styled.div`
   height: 100%;
   padding-top: 80px;
   ${props => props.theme.displayFlexColumn};
+  @media(max-width: 968px){
+    padding-top: 30px;
+  }
+`;
+
+export const TopRow = styled.div`
+  width: 100%;
+  height: 75%;
+  ${props => props.theme.displayFlexCenter};
+`;
+
+export const BottomRow = styled.div`
+  width: 100%;
+  height: 25%;
+  ${props => props.theme.displayFlexCenter};
 `;
 
 export const BigColumn = styled.div`
@@ -18,10 +33,86 @@ export const BigColumn = styled.div`
   position: relative;
   ${props => props.theme.displayFlexColumn};
   padding-top: 80px;
+  @media(max-width: 968px){
+    padding-top: 30px;
+  }
 `;
 
 export const Row = styled.div`
   ${props => props.theme.displayFlexCenter};
+`;
+
+export const SmallBottomColumn = styled.div`
+  width: 35%;
+  height: 100%;
+  padding: 10px;
+  ${props => props.theme.displayFlexCenter};
+`;
+
+export const BigBottomColumn = styled.div`
+  width: 30%;
+  height: 100%;
+  ${props => props.theme.displayFlexCenter};
+  padding: 10px;
+`;
+
+export const BottomContainer = styled.div`
+    width: 100%;
+    height: 18vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 10px;
+`;
+
+export const BottomContainerColumn = styled.div`
+    width: 100%;
+    height: 18vh;
+    ${props => props.theme.displayFlexColumn};
+    border: 1px solid ${props => props.theme.MainAccent};
+    border-radius: 10px;
+`;
+
+export const RowIcons = styled.div`
+  width: 100%;
+  height: 50%;
+  border-bottom: 1px solid white;
+`;
+
+export const IconHolder = styled(motion.div)`
+  width: 20%;
+  height: 90%;
+  ${props => props.theme.displayFlexColumn};
+  border: 0.5px solid #c3c3c3;
+  border-radius: 6px;
+`;
+
+export const IconWrapper = styled.div`
+  width: 100%;
+  height: 70%;
+  ${props => props.theme.displayFlexCenter};
+  position: relative;
+`;
+
+export const IconRound = styled.div`
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  ${props => props.theme.displayFlexCenter};
+  img{
+    position: absolute;
+    right: 3px;
+    bottom: 0px;
+    width: 40%;
+  }
+`;
+
+export const IconName = styled.div`
+  width: 100%;
+  height: 30%;
+  ${props => props.theme.displayFlexCenter};
+  color: ${props => props.theme.text};
+  font-size: 12px;
 `;
 
 //************************ */
@@ -113,9 +204,7 @@ export const RouletteSection = styled.div`
 width: 100vw;
 height: 100vh;
 background: ${props => props.theme.body};
-display: flex;
-justify-content: center;
-align-items: center;
+${props => props.theme.displayFlexColumn};
 `;
 
 export const RouletteColumn = styled.div`
