@@ -1,18 +1,21 @@
 import React,{useEffect, useState} from 'react'
 import styled from 'styled-components'
 import { RouletteSection,BigColumn,SmallColumn,Row,TopRow,BottomRow,BigBottomColumn,SmallBottomColumn,
-    BottomContainer,IconHolder,IconWrapper,IconName,IconRound,BottomContainerColumn,RowIcons
+    BottomContainer,IconHolder,IconWrapper,IconName,IconRound,BottomContainerColumn,RowIcons,BottomContainerRow,
+    SmallIconHolder,SmallTextHolder
  } from './indexTwo'
-import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns} from './fakeData'
+import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, LatestNumbers} from './fakeData'
 import { motion } from 'framer-motion'
 import { DndContext } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
 import Chips from '../components/roulette/Chips';
 import './styles.css'
-import blueChip from '../assets/chips/blue-chip.png'
+import blueChip from '../assets/chips/emptyChip2.png'
 import chips from '../assets/chips/poker-chips.png'
 import cross from '../assets/chips/delete.png'
+import roulette from '../assets/chips/roulette.png'
 import repeat from '../assets/chips/repeat.png'
+import balanceIcon from '../assets/chips/balance-bag.png'
 import x2 from '../assets/chips/x2.png'
 
 
@@ -31,8 +34,9 @@ const RouletteTwo = () => {
     const [selectedId, setSelectedId] = useState(null)
     const [activeContainer, setActiveContainer] = useState(null)
     const [allBets, setAllBets] = useState({})
-
-    
+    const [balance, setBalance] = useState(5000)
+    const [clearBetMenuOpen, setClearBetMenuOpen] = useState(false)
+ 
 
     const getAllRows = () => {
         const allRows = FirstRow.concat(SecondRow).concat(ThirdRow)
@@ -117,16 +121,17 @@ const RouletteTwo = () => {
                     const filter = allRows.filter(el => el.borderTopId === activeContainer);
                     checkBorderTop(filter[0].borderTop)
                 } else if((activeContainer.startsWith('1') || activeContainer.startsWith('2') || activeContainer.startsWith('3'))){
-                    console.log(activeContainer)
                     const filter = BetPerRows.filter(el => el.name === activeContainer);
                     const numbers = filter[0].numbers
-                    console.log("12 numbers",numbers)
                     checkRowNumbers(numbers)
                 } else if(['first', 'last', 'EVEN', 'ODD', 'black', 'red'].some(prefix => activeContainer.startsWith(prefix))){
                     const filter = LastRow.filter(el => el.id === activeContainer);
                     const numbers = filter[0].numbers
-                    console.log("last row",numbers)
                     checkRowNumbers(numbers)
+                } else if(activeContainer.startsWith('column')){
+                    const filter = BetPerColumns.filter(el => el.id === activeContainer);
+                    const numbers = filter[0].numbers
+                    checkColumnNumbers(numbers)
                 }
             }
         } else if(activeContainer === null){
@@ -156,6 +161,7 @@ const RouletteTwo = () => {
                     src={chip.chipImage}
                     alt={`Chip ${chip.chipValue}`}
                     className="corner-dropped-chip"
+                    onClick={() => removeBet(chip,droppedCornerChips,setDroppedCornerChips)}
                   />
                 ))}
               </div>
@@ -181,6 +187,7 @@ const RouletteTwo = () => {
                     src={chip.chipImage}
                     alt={`Chip ${chip.chipValue}`}
                     className="borderLeft-dropped-chip"
+                    onClick={() => removeBet(chip,droppedBorderLeftChips,setDroppedBorderLeftChips)}
                   />
                 ))}
               </div>
@@ -206,6 +213,7 @@ const RouletteTwo = () => {
                     src={chip.chipImage}
                     alt={`Chip ${chip.chipValue}`}
                     className="borderTop-dropped-chip"
+                    onClick={() => removeBet(chip,droppedBorderTopChips,setDroppedBorderTopChips)}
                   />
                 ))}
               </div>
@@ -238,6 +246,7 @@ const RouletteTwo = () => {
                         src={chip.chipImage}
                         alt={`Chip ${chip.chipValue}`}
                         className="zero-dropped-chip"
+                        onClick={() => removeBet(chip,droppedChips,setDroppedChips)}
                         />
                     ))}
                     </div>
@@ -270,6 +279,7 @@ const RouletteTwo = () => {
                         src={chip.chipImage}
                         alt={`Chip ${chip.chipValue}`}
                         className="first-dropped-chip"
+                        onClick={() => removeBet(chip,droppedRowChips,setDroppedRowChips)}
                         />
                     ))}
                     </div>
@@ -302,6 +312,7 @@ const RouletteTwo = () => {
                         src={chip.chipImage}
                         alt={`Chip ${chip.chipValue}`}
                         className="first-dropped-chip"
+                        onClick={() => removeBet(chip,droppedLastRowChips,setDroppedLastRowChips)}
                         />
                     ))}
                     </div>
@@ -336,6 +347,7 @@ const RouletteTwo = () => {
                         src={chip.chipImage}
                         alt={`Chip ${chip.chipValue}`}
                         className="roulette-dropped-chip"
+                        onClick={() => removeBet(chip,droppedColumnChips,setDroppedColumnChips)}
                         />
                     ))}
                     </div>
@@ -344,15 +356,6 @@ const RouletteTwo = () => {
           </Number>
         );
     };
-
-    const removeBet = (droppedChips,chip,number) => {
-        setDroppedChips((prevDroppedChips) => {
-            const updatedDroppedChips = { ...prevDroppedChips };
-            delete updatedDroppedChips[number];  // Remove the entry for the specific number
-            return updatedDroppedChips;
-          });
-    }
-      
 
     const BetNumbersArea = ({card,onLeave  }) => {
         const { isOver, setNodeRef } = useDroppable({
@@ -385,7 +388,7 @@ const RouletteTwo = () => {
                         src={chip.chipImage}
                         alt={`Chip ${chip.chipValue}`}
                         className="zero-dropped-chip"
-                        onClick={() => removeBet(droppedChips,chip,number)}
+                        onClick={() => removeBet(chip,droppedChips,setDroppedChips)}
                         />
                     ))}
                     </div>
@@ -503,32 +506,33 @@ const RouletteTwo = () => {
         const chipImage = active.data.current.chipImage;
         let droppedNumberId = over?.id;
         const allRows = FirstRow.concat(SecondRow).concat(ThirdRow);
-    
+        setBalance(balance - chipValue)
         // Function to update the chips and placed bets
         const updateChipsAndBets = (numberId,droppedNumberId, updateChipsFn, updateBetFn, betType) => {
-            console.log("droppedID", droppedNumberId)
             updateChipsFn((prevChips) => ({
                 ...prevChips,
-                [droppedNumberId]: [...(prevChips[droppedNumberId] || []), { chipValue, chipImage }],
+                [droppedNumberId]: [...(prevChips[droppedNumberId] || []), { chipValue, chipImage, betType, numberId, droppedNumberId }],
             }));
+            console.log("numberId", numberId)
+            console.log("droppedNumberId", droppedNumberId)
             const oldValue = placedBet;
             setPlacedBet(oldValue + chipValue);
-    
-            updateBetFn(numberId, betType);
+            updateBetFn(numberId, betType, droppedNumberId);
         };
     
         const updateAllBets = (numberId, betType) => {
             setAllBets((prevBets) => {
                 const existingBets = prevBets[numberId] || [];
                 const existingBetIndex = existingBets.findIndex((bet) => bet.typeofBet === betType);
-    
+                console.log("numberId2", numberId)
+                console.log("droppedNumberId2", droppedNumberId)
                 let updatedBets;
                 if (existingBetIndex !== -1) {
                     updatedBets = existingBets.map((bet, index) =>
-                        index === existingBetIndex ? { ...bet, amount: bet.amount + chipValue } : bet
+                        index === existingBetIndex ? { ...bet, amount: bet.amount + chipValue, number: droppedNumberId } : bet
                     );
                 } else {
-                    updatedBets = [...existingBets, { amount: chipValue, typeofBet: betType }];
+                    updatedBets = [...existingBets, { amount: chipValue, typeofBet: betType, number: droppedNumberId }];
                 }
     
                 return {
@@ -560,14 +564,12 @@ const RouletteTwo = () => {
                 updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderTopChips, (id) => updateAllBets(id, `borderTop`), `borderTop`);
             })
         } else if (droppedNumberId.startsWith('1') || droppedNumberId.startsWith('2') || droppedNumberId.startsWith('3')) {
-            console.log(droppedNumberId)
             const item = BetPerRows.find(el => el.name === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
                 updateChipsAndBets(numberId,droppedNumberId, setDroppedRowChips, (id) => updateAllBets(id, `12-numbers-bet`), `12-numbers-bet`);
             })
         } else if (['first', 'last', 'EVEN', 'ODD', 'black', 'red'].some(prefix => droppedNumberId.startsWith(prefix))) {
-            console.log(droppedNumberId)
             const item = LastRow.find(el => el.id === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
@@ -581,11 +583,10 @@ const RouletteTwo = () => {
             })
         }
     }; 
-
     
     const clearAllBets = () => {
-        /* const cells = document.querySelectorAll('.cell-active')
-        cells.classList.remove('cell-active') */
+        setActiveContainer(null)
+        setBalance(balance + placedBet)
         setAllBets({})
         setPlacedBet(null)
         setDroppedChips({})
@@ -596,9 +597,48 @@ const RouletteTwo = () => {
         setDroppedBorderLeftChips({})
         setDroppedBorderTopChips({})
     }
+    
+
+
+    const removeBet = (chip,elements,updateChipsFn) => {
+    
+    const id = chip.droppedNumberId
+    const value = chip.chipValue
+    setBalance(balance + value)
+    setPlacedBet(placedBet - value)
+    const { [id]: removed, ...updatedElements } = elements;
+
+    // Check if the element was found and removed
+    if (removed) {
+        for (let key in allBets) {
+            // Filter out the items where number is "corner-25" and typeofBet is "corner-4-bet"
+            allBets[key] = allBets[key].filter(
+              (bet) => !(bet.number === id)
+            );
+            
+            // Remove the key if the array is empty
+            if (allBets[key].length === 0) {
+              delete allBets[key];
+            }
+          }
+        
+    } else {
+        console.log(`No element found with id: ${id}`);
+    }
+    updateChipsFn(updatedElements)
+
+    }
 
     console.log(allBets)
+    console.log(droppedBorderTopChips)
 
+    const toggleClear = () => {
+        setClearBetMenuOpen(!clearBetMenuOpen)
+    }
+
+
+
+    
 
   return (
     <RouletteSection>
@@ -614,9 +654,7 @@ const RouletteTwo = () => {
         </div>
       </SmallColumn>
       <BigColumn>
-           
             <Row>
-            
             {FirstRow.map((card,index) => {
                 return(
                     <BetNumbersArea card={card} key={index} onLeave={handleLeave}/>
@@ -651,8 +689,6 @@ const RouletteTwo = () => {
                 )
             })}
             </Row>
-            
-            
       </BigColumn>
       <SmallColumn>
       <div style={{marginRight: 'auto'}}>
@@ -668,7 +704,25 @@ const RouletteTwo = () => {
             <SmallBottomColumn>
                 <BottomContainerColumn>
                     <RowIcons>
-
+                    <BottomContainerRow>
+                        <SmallIconHolder><img src={balanceIcon} alt="balance" /></SmallIconHolder>
+                        <SmallTextHolder>BALANCE : ${balance}</SmallTextHolder>
+                    </BottomContainerRow>
+                    <BottomContainerRow>
+                        <SmallIconHolder><img src={chips} alt="balance" /></SmallIconHolder>
+                        <SmallTextHolder> CURRENT BET: ${placedBet}</SmallTextHolder>
+                    </BottomContainerRow>
+                    <BottomContainerRow>
+                        <SmallIconHolder><img src={roulette} alt="balance" /></SmallIconHolder>
+                        <SmallTextHolder> NUMBERS: {Object.values(allBets).length}</SmallTextHolder>
+                    </BottomContainerRow>
+                    </RowIcons>
+                    <RowIcons>
+                        {LatestNumbers.map(el => {
+                            return(
+                                <SmallNumberWrapper style={{background: `${el.color}`}}>{el.number}</SmallNumberWrapper>
+                            )
+                        })}
                     </RowIcons>
                 </BottomContainerColumn>
             </SmallBottomColumn>
@@ -676,28 +730,33 @@ const RouletteTwo = () => {
                 <Chips />
             </BigBottomColumn>
             <SmallBottomColumn>
-            <BottomContainer>
-            <IconHolder whileTap={{scale: 0.95}}>
-                    <IconWrapper ><IconRound style={{backgroundImage: `url(${repeat})`, backgroundPosition: 'center',
-                backgroundSize: 'cover'}}></IconRound></IconWrapper>
-                    <IconName>REPEAT</IconName>
-                </IconHolder>
-                <IconHolder whileTap={{scale: 0.95}}>
-                    <IconWrapper ><IconRound style={{backgroundImage: `url(${x2})`, backgroundPosition: 'center',
-                backgroundSize: 'cover'}}></IconRound></IconWrapper>
-                    <IconName>DOUBLE</IconName>
-                </IconHolder>
-                <IconHolder whileTap={{scale: 0.95}}>
-                    <IconWrapper ><IconRound style={{backgroundImage: `url(${blueChip})`, backgroundPosition: 'center',
-                backgroundSize: 'cover'}}><img src={cross} alt="cross" /></IconRound></IconWrapper>
-                    <IconName>CLEAR BET</IconName>
-                </IconHolder>
-                <IconHolder whileTap={{scale: 0.95}} onClick={clearAllBets}>
-                    <IconWrapper whileTap={{scale: 0.95}}><IconRound style={{backgroundImage: `url(${chips})`, backgroundPosition: 'center',
-                backgroundSize: 'cover'}}><img src={cross} alt="cross" /></IconRound></IconWrapper>
-                    <IconName>CLEAR ALL</IconName>
-                </IconHolder>
-            </BottomContainer>
+                {clearBetMenuOpen ? (
+                    <BottomContainer></BottomContainer>
+                ) : (
+                    <BottomContainer>
+                    <IconHolder whileTap={{scale: 0.95}}>
+                            <IconWrapper ><IconRound style={{backgroundImage: `url(${repeat})`, backgroundPosition: 'center',
+                        backgroundSize: 'cover'}}></IconRound></IconWrapper>
+                            <IconName>REPEAT</IconName>
+                        </IconHolder>
+                        <IconHolder whileTap={{scale: 0.95}}>
+                            <IconWrapper ><IconRound style={{backgroundImage: `url(${x2})`, backgroundPosition: 'center',
+                        backgroundSize: 'cover'}}></IconRound></IconWrapper>
+                            <IconName>DOUBLE</IconName>
+                        </IconHolder>
+                        <IconHolder whileTap={{scale: 0.95}}>
+                            <IconWrapper ><IconRound style={{backgroundImage: `url(${blueChip})`, backgroundPosition: 'center',
+                        backgroundSize: 'cover'}}><img src={cross} alt="cross" /></IconRound></IconWrapper>
+                            <IconName onClick={toggleClear}>CLEAR BET</IconName>
+                        </IconHolder>
+                        <IconHolder whileTap={{scale: 0.95}} onClick={clearAllBets}>
+                            <IconWrapper whileTap={{scale: 0.95}}><IconRound style={{backgroundImage: `url(${chips})`, backgroundPosition: 'center',
+                        backgroundSize: 'cover'}}><img src={cross} alt="cross" /></IconRound></IconWrapper>
+                            <IconName>CLEAR ALL</IconName>
+                        </IconHolder>
+                    </BottomContainer> 
+                )}
+            
             </SmallBottomColumn>
       </BottomRow>
       </DndContext>
@@ -784,12 +843,23 @@ const CornerLeft = styled(motion.div)`
     z-index: 9000;
 `;
 
+const SmallNumberWrapper = styled.div`
+    width: 25px;
+    height: 25px;
+    margin: 0 2px;
+    border-radius: 50%;
+    ${props => props.theme.displayFlexCenter};
+    border: 1px solid orange;
+    color: ${props => props.theme.text};
+`;
+
 const NumberWrapper = styled.div`
     width: 70%;
     height: 70%;
     border-radius: 50%;
     ${props => props.theme.displayFlexCenter};
     border: 1px solid orange;
+    color: ${props => props.theme.text};
 `;
 
 const NumberZeroWrapper = styled.div`

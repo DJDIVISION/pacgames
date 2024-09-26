@@ -63,6 +63,7 @@ export const BottomContainer = styled.div`
     align-items: center;
     justify-content: space-around;
     border-radius: 10px;
+    border: 1px solid aqua;
 `;
 
 export const BottomContainerColumn = styled.div`
@@ -73,10 +74,36 @@ export const BottomContainerColumn = styled.div`
     border-radius: 10px;
 `;
 
+export const BottomContainerRow = styled.div`
+    width: 33%;
+    height: 9vh;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const SmallIconHolder = styled.div`
+  width: 40%;
+  height: 100%;
+  ${props => props.theme.displayFlexCenter};
+  img{
+      width: 75%;
+      display: block;
+      object-fit: cover;
+    }
+`;
+
+export const SmallTextHolder = styled.div`
+  width: 60%;
+  height: 100%;
+  color: ${props => props.theme.text};
+  font-size: 12px;
+  ${props => props.theme.displayFlexCenter};
+  font-weight: bold;
+`;
+
 export const RowIcons = styled.div`
   width: 100%;
   height: 50%;
-  border-bottom: 1px solid white;
+  ${props => props.theme.displayFlexCenter};
 `;
 
 export const IconHolder = styled(motion.div)`

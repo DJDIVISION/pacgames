@@ -378,6 +378,49 @@ export const ThirdRow = [
     }
 ]
 
+export const LatestNumbers = [
+    {
+        number: 34,
+        color: "red" 
+    },
+    {
+        number: 22,
+        color: "black"
+    },
+    {
+        number: 23,
+        color: "red"
+    },
+    {
+        number: 0,
+        color: "green"
+    },
+    {
+        number: 18,
+        color: "red"
+    },
+    {
+        number: 17,
+        color: "black"
+    },
+    {
+        number: 3,
+        color: "red"
+    },
+    {
+        number: 27,
+        color: "red"
+    },
+    {
+        number: 3,
+        color: "red"
+    },
+    {
+        number: 9,
+        color: "red"
+    }
+]
+
 export const LastRow = [
     {
         name: "1-18",
