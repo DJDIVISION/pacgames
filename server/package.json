@@ -13,7 +13,7 @@
   "version": "1.0.0",
   "main": "server.jsx",
   "scripts": {
-    "start": "node api/server.jsx",
+    "start": "node api/index.jsx",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
