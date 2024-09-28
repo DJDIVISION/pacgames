@@ -11,9 +11,9 @@
   },
   "name": "server",
   "version": "1.0.0",
-  "main": "index.jsx",
+  "main": "server.jsx",
   "scripts": {
-    "start": "node api/index.jsx",
+    "start": "node api/server.jsx",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
