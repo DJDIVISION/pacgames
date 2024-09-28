@@ -1,4 +1,48 @@
 import styled from "styled-components";
+import {motion} from 'framer-motion'
+
+export const LastRowWrapper = styled.div`
+width: calc(70vw * 2/12);
+height: calc(70vw/12);
+position: relative;
+border: 1px solid ${props => props.theme.text};
+${props => props.theme.displayFlexCenter};
+color: ${props => props.theme.text};
+font-size: 24px;
+font-weight: bold;
+cursor: pointer;
+`;
+
+export const BetPerRowsWrapper = styled.div`
+width: calc(70vw * 4/12);
+height: calc(70vw/12);
+position: relative;
+border: 1px solid ${props => props.theme.text};
+${props => props.theme.displayFlexCenter};
+color: ${props => props.theme.text};
+font-size: 24px;
+font-weight: bold;
+cursor: pointer;
+`;
+
+export const NumberZeroWrapper = styled.div`
+width: 70%;
+height: 50%;
+border-radius: 50%;
+${props => props.theme.displayFlexCenter};
+border: 1px solid orange;
+`;
+
+export const Zero = styled.div`
+width: calc(70vw/12);
+height: calc(70vw/12 * 1.5);
+border: 1px solid ${props => props.theme.text};
+position: relative;
+${props => props.theme.displayFlexColumnCenter};
+color: white;
+font-size: 24px;
+cursor: pointer;
+`;
 
 export const CornerLeft = styled(motion.div)`
 position: absolute;

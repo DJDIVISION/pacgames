@@ -3,7 +3,8 @@ import { motion, useAnimation,AnimatePresence } from "framer-motion";
 import { RouletteSection,RouletteColumn,RouletteContainer,BettingColumn,NumberCard,Wheel,Span,SpinButton,Number,NumberSpan,
     RouletteTableContainer,TableItem,RouletteSmallColumn,RouletteRow,ChatRoomIcon,StyledAbsolute,LatestRolls,NumberWrapper,
     BalanceWrapper,RouletteMainRow,RouletteMainIcon,PlayerBetsWrapper,BetNumberHolder,BetAmount,BetNumber,
-    SmallColumn
+    SmallColumn,
+    BigColumn
  } from './indexTwo'
  import {ButtonHoverAbsoluteLeft,BettingText} from './index'
 import { io } from "socket.io-client";
@@ -22,6 +23,8 @@ import { BalanceDisplayBig,PlacedBetDisplayBig,NumbersBetDisplayBig } from './fu
 import placeBet from '../assets/chips/placeBet.png'
 import balanceIcon from '../assets/chips/balance-bag.png'
 import roulette from '../assets/chips/roulette.png'
+import { BetState } from '../context/BetsContext';
+import { ZeroesArea } from '../components/roulette/functions';
 
 
 
@@ -49,7 +52,6 @@ const Roulette = () => {
     const [timeOutStarted, setTimeOutStarted] = useState(false)
     const [winningNumber, setWinningNumber] = useState(null)
     const [latestNumbers, setLatestNumbers] = useState([])
-    const [balance, setBalance] = useState(5000)
     const [placedBet, setPlacedBet] = useState(null);
     const [allBets, setAllBets] = useState({})
     const [droppedChips, setDroppedChips] = useState({});
@@ -59,6 +61,11 @@ const Roulette = () => {
     const [droppedColumnChips, setDroppedColumnChips] = useState({});
     const [droppedBorderLeftChips, setDroppedBorderLeftChips] = useState({});
     const [droppedBorderTopChips, setDroppedBorderTopChips] = useState({});
+    const [lastBet, setLastBet] = useState({});
+    const {balance, setBalance} = BetState();
+
+    console.log(balance)
+
 
     const startCountdown = () => {
         let countdownTime = 15;
@@ -145,7 +152,7 @@ const Roulette = () => {
               sendedBy: sendedBy,
               room_id: activeRoom
             }
-            sendAmdminMessage(messageToUpdate)
+            //sendAmdminMessage(messageToUpdate)
             setTimeout(() => {
                 setPlaceBets(true)
                 setTimeOutStarted(true)
@@ -160,7 +167,7 @@ const Roulette = () => {
               sendedBy: sendedBy,
               room_id: activeRoom
             }
-            sendAmdminMessage(messageToUpdate)
+            //sendAmdminMessage(messageToUpdate)
             setTimeout(() => {
                 setPlaceBets(true)
                 setTimeOutStarted(true)
@@ -196,7 +203,7 @@ const Roulette = () => {
                 sendedBy: sendedBy,
                 room_id: activeRoom
               }
-              sendAmdminMessage(messageToUpdate)
+              //sendAmdminMessage(messageToUpdate)
         });
         socket.on('player-lost', (data) => {
             message.error("You have lost this game!!!")
@@ -211,7 +218,7 @@ const Roulette = () => {
             const winnings = data.winnings
             const latest = data.latest
             setLatestNumbers(latest)
-            setBalance(balance + winnings)
+            setBalance((prevBalance) => prevBalance + winnings);
             setGameStarted(false)
             setSpinning(false)
             setWinningNumber(null)
@@ -262,8 +269,6 @@ const Roulette = () => {
             <RouletteTabs socket={socket} rooms={rooms} players={players} playerName={playerName} setPlayerName={setPlayerName}/>
         )
     }
-
-    console.log(droppedBorderTopChips)
   
     return (
         <RouletteSection>
@@ -305,6 +310,18 @@ const Roulette = () => {
             <BettingColumn>
                 <RouletteTableContainer>
                     <SmallColumn>
+                        <div style={{ marginLeft: 'auto' }}>
+                            {Zeroes.map((card, index) => {
+                                return (
+                                    <ZeroesArea card={card} key={index}  droppedChips={droppedChips} setDroppedChips={setDroppedChips}/>
+                                )
+                            })}
+                        </div>
+                    </SmallColumn>
+                    <BigColumn>
+
+                    </BigColumn>
+                    <SmallColumn>
                         
                     </SmallColumn>
                    {/*  <BalanceWrapper>
@@ -340,10 +357,10 @@ const Roulette = () => {
             
             </BettingColumn>
             <RouletteTable setPlaceBets={setPlaceBets} placeBets={placeBets} activeRoom={activeRoom} myId={myId} socket={socket}
-            balance={balance} setBalance={setBalance} placedBet={placedBet} setPlacedBet={setPlacedBet} allBets={allBets} setAllBets={setAllBets}
+            placedBet={placedBet} setPlacedBet={setPlacedBet} allBets={allBets} setAllBets={setAllBets}
             droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips}
             droppedRowChips={droppedRowChips} setDroppedRowChips={setDroppedRowChips} droppedLastRowChips={droppedLastRowChips} setDroppedLastRowChips={setDroppedLastRowChips}
-            droppedColumnChips={droppedColumnChips} setDroppedColumnChips={setDroppedColumnChips} droppedBorderLeftChips={droppedBorderLeftChips}
+            droppedColumnChips={droppedColumnChips} setDroppedColumnChips={setDroppedColumnChips} droppedBorderLeftChips={droppedBorderLeftChips} lastBet={lastBet} setLastBet={setLastBet}
             setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips}/>
       </RouletteSection>
     );

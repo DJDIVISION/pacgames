@@ -3,7 +3,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { BorderLeft, BorderTop, CornerLeft } from './index';
 
 
-export const CornerDropArea = ({ card, droppedCornerChips, setDroppedCornerChips }) => {
+export const CornerDropArea = ({ card, droppedCornerChips, setDroppedCornerChips,checkCornerLeft,removeCornerLeft,removeBet }) => {
     const { isOver, setNodeRef } = useDroppable({
         id: `corner-${card.number}`, // Unique ID for the corner area
     });
@@ -33,14 +33,14 @@ export const CornerDropArea = ({ card, droppedCornerChips, setDroppedCornerChips
     );
 };
 
-export const BorderLeftArea = ({ card,droppedBorderLeftChips,setDroppedBorderLeftChips }) => {
+export const BorderLeftArea = ({ card,droppedBorderLeftChips,setDroppedBorderLeftChips,checkBorderLeft,removeBorderLeft,removeBet }) => {
     const { isOver, setNodeRef } = useDroppable({
-      id: `borderLeft-${card.number}`, // Unique ID for the corner area
+      id: `split-${card.number}`, // Unique ID for the corner area
     });
     const borderLeft = card.borderLeft
-    const wrappedId = "borderLeft-"+card.number
+    const wrappedId = "split-"+card.number
     return (
-        <BorderLeft ref={setNodeRef} id={`borderLeft-${card.number}`} onMouseEnter={() => checkBorderLeft(borderLeft)} onMouseLeave={() => removeBorderLeft(borderLeft)}>
+        <BorderLeft ref={setNodeRef} id={`split-${card.number}`} onMouseEnter={() => checkBorderLeft(borderLeft)} onMouseLeave={() => removeBorderLeft(borderLeft)}>
         {/* Display chips if there are any */}
         {droppedBorderLeftChips[wrappedId]?.length > 0 && (
           <div className="corner-chips">
@@ -59,15 +59,15 @@ export const BorderLeftArea = ({ card,droppedBorderLeftChips,setDroppedBorderLef
     );
 };
 
-export const BorderTopArea = ({ card, droppedBorderTopChips, setDroppedBorderTopChips }) => {
+export const BorderTopArea = ({ card, droppedBorderTopChips, setDroppedBorderTopChips,checkBorderTop,removeBorderTop,removeBet }) => {
     const { isOver, setNodeRef } = useDroppable({
-        id: `border-top-${card.number}`, // Unique ID for the border-top area
+        id: `borderTop-${card.number}`, // Unique ID for the border-top area
     });
 
     return (
         <BorderTop
             ref={setNodeRef}
-            id={`border-top-${card.number}`}
+            id={`borderTop-${card.number}`}
             onMouseEnter={() => checkBorderTop(card.borderTop)}
             onMouseLeave={() => removeBorderTop(card.borderTop)}
         >
@@ -78,7 +78,7 @@ export const BorderTopArea = ({ card, droppedBorderTopChips, setDroppedBorderTop
                             key={index}
                             src={chip.chipImage}
                             alt={`Chip ${chip.chipValue}`}
-                            className="border-top-dropped-chip"
+                            className="borderTop-dropped-chip"
                             onClick={() => removeBet(chip, droppedBorderTopChips, setDroppedBorderTopChips)}
                         />
                     ))}

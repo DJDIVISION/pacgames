@@ -231,7 +231,7 @@ export const IconName = styled.div`
 export const RouletteTableContainer = styled.div`
   width: 70%;
   height: 100%;
-  ${props => props.theme.displayFlexColumn}
+  ${props => props.theme.displayFlexCenter}
   border: 1px solid red;
 `;
 
