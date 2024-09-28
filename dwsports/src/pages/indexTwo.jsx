@@ -4,11 +4,13 @@ import { motion } from 'framer-motion';
 import BJBack from '../assets/bjTable.jpg';
 import ChatIcon from '@mui/icons-material/Chat';
 import BG from '../assets/roulette-bg.png'
+import { IconButton } from '@mui/material';
 
 export const SmallColumn = styled.div`
   width: 15%;
   height: 100%;
   padding-top: 80px;
+  border: 1px solid red;
   ${props => props.theme.displayFlexColumn};
   @media(max-width: 968px){
     padding-top: 30px;
@@ -83,12 +85,40 @@ export const BottomContainerRow = styled.div`
 export const SmallIconHolder = styled.div`
   width: 40%;
   height: 100%;
+  border: 1px solid red;
   ${props => props.theme.displayFlexCenter};
   img{
       width: 75%;
       display: block;
       object-fit: cover;
     }
+`;
+
+export const BetNumberHolder = styled.div`
+  width: 50%;
+  height: 100%;
+  border: 1px solid red;
+  ${props => props.theme.displayFlexColumn};
+  img{
+      width: 75%;
+      display: block;
+      object-fit: cover;
+    }
+`;
+
+export const BetAmount = styled.div`
+  width: 100%;
+  height: 25%;
+  ${props => props.theme.displayFlexCenter};
+  color: ${props => props.theme.text};
+  border: 1px solid grey;
+`;
+
+export const BetNumber = styled.div`
+  width: 100%;
+  height: 50%;
+  border: 1px solid red;
+  ${props => props.theme.displayFlexCenter};
 `;
 
 export const SmallTextHolder = styled.div`
@@ -98,6 +128,42 @@ export const SmallTextHolder = styled.div`
   font-size: 12px;
   ${props => props.theme.displayFlexCenter};
   font-weight: bold;
+  transform: translateX(10px);
+  @media(min-width: 968px){
+    font-size: 18px;
+    
+  }
+`;
+
+export const RouletteMainRow = styled.div`
+  width: 30%;
+  height: 100%;
+  ${props => props.theme.displayFlexCenter};
+`;
+
+export const BigTextHolder = styled.div`
+  width: fit-content;
+  height: 10vh;
+  padding: 0 10px;
+  color: ${props => props.theme.text};
+  font-size: 18px;
+  ${props => props.theme.displayFlexCenter};
+  font-weight: bold;
+  @media(min-width: 968px){
+    font-size: 18px;
+    
+  }
+`;
+
+export const RouletteMainIcon = styled.div`
+  width: 20%;
+  height: 10vh;
+  ${props => props.theme.displayFlexCenter};
+  img{
+    width: 80%;
+    display: block;
+    object-fit: cover;
+  }
 `;
 
 export const RowIcons = styled.div`
@@ -109,9 +175,27 @@ export const RowIcons = styled.div`
 export const IconHolder = styled(motion.div)`
   width: 20%;
   height: 90%;
-  ${props => props.theme.displayFlexColumn};
+  ${props => props.theme.displayFlexColumnCenter};
   border: 0.5px solid #c3c3c3;
   border-radius: 6px;
+`;
+
+export const BettingText = styled.div`
+    font-size: 16px;
+    color: ${props => props.theme.text};
+    text-align: center;
+    line-height: 1.2;
+    span{
+        color:${props => props.theme.MainAccent};
+        font-size: 18px;
+        margin: 0 5px;
+    }
+    @media(min-width: 968px){
+      font-size: 22px;
+      span{
+        font-size: 24px;
+      }
+    }
 `;
 
 export const IconWrapper = styled.div`
@@ -145,9 +229,49 @@ export const IconName = styled.div`
 //************************ */
 
 export const RouletteTableContainer = styled.div`
-  width: 50%;
+  width: 70%;
   height: 100%;
-  ${props => props.theme.displayFlexColumnCenter}
+  ${props => props.theme.displayFlexColumn}
+  border: 1px solid red;
+`;
+
+export const NumberWrapper = styled.div`
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: ${props => props.theme.MainAccent};
+    border:1px solid orange;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: 0 10px;
+    color: ${props => props.theme.text};
+`;
+
+export const LatestRolls = styled.div`
+  border: 1px solid blue;
+  width: 100%;
+  height: 30%;
+  ${props => props.theme.displayFlexCenter}
+`;
+
+export const BalanceWrapper = styled.div`
+  border: 1px solid blue;
+  width: 100%;
+  height: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const PlayerBetsWrapper = styled.div`
+  border: 1px solid orange;
+  width: 100%;
+  height: 40%;
+  display: flex;
+  align-items: center;
+  
 `;
 
 export const TableItem = styled.div`
@@ -173,25 +297,39 @@ export const NumberSpan = styled.div`
   --i: ${(props) => props.index};
   transform: rotate(calc(9.4736deg * var(--i)));
   text-align: center;
-  font-size: 24px;
+  font-size: 20px;
   //color:${props => props.theme.MainAccent}; 
   //filter: drop-shadow(0 0 5px aqua);
+  @media(max-width: 968px){
+    font-size: 12px;
+    inset: 2px;
+    }
 `;
 
 export const SpinButton = styled.div`
   position: absolute;
-  inset: 200px;
+  inset: 160px;
   background: ${props => props.theme.MainAccent};
   border-radius: 50%;
   filter: drop-shadow(0 0 5px aqua);
   z-index: 5000;
   cursor: pointer;
+  ${props => props.theme.displayFlexCenter}; 
+  @media(max-width: 968px){
+    inset: 80px;
+  }
+  img{
+    transform: rotate(4.67deg) translateY(-3px);
+  }
 `;
 
 export const Number = styled.div`
   position: absolute;
-  inset: 0;
+  inset: -10px;
   rotate: 5deg;
+  @media(max-width: 968px){
+    inset: 0;
+  }
 `;
 
 export const Span = styled.span`
@@ -239,12 +377,45 @@ width: 40%;
 height: 100%;
 ${props => props.theme.displayFlexCenter};
 border: 1px solid white;
+padding: 20px;
+`;
+
+export const RouletteSmallColumn = styled.div`
+width: 30%;
+height: 100%;
+${props => props.theme.displayFlexCenter};
+border: 1px solid white;
+padding: 20px;
+`;
+
+
+export const RouletteRow = styled.div`
+  width: 100%;
+  height: 60vh;
+  ${props => props.theme.displayFlexCenter};
+  border: 1px solid red;
+`;
+
+export const StyledAbsolute = styled(IconButton)`
+  &&&{
+    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    background: transparent;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    z-index: 9000;
+    @media(max-width: 968px){
+      transform: scale(0.8);
+      top: 10px;
+      right: 10px;
+    }
+  }
 `;
 
 
 export const RouletteContainer = styled(motion.div)`
-  width: 38vw;
-  height: 38vw;
+  width: 25vw;
+  height: 25vw;
   border-radius: 50%;
   position: relative;
   border: 3px solid ${props => props.theme.MainAccent};
@@ -256,10 +427,15 @@ export const RouletteContainer = styled(motion.div)`
     position: absolute;
     top: 0px;
     width: 20px;
-    height: 50px;
+    height: 30px;
     background: ${props => props.theme.MainAccent};
     clip-path: polygon(50% 0%, 65% 50%, 50% 100%, 35% 50%);
-    transform: translate(110%, -50%) rotate(4deg);
+    transform: translate(70%, -50%) rotate(4deg);
+    @media(max-width: 968px){
+      transform: translate(50%, -70%) rotate(4deg);
+      height: 30px;
+      top: 5px;
+    }
   }
 `;
 
@@ -277,8 +453,8 @@ export const NumberCard = styled.div`
 `;
 
 export const BettingColumn = styled.div`
-width: 60%;
-height: 100%;
+width: 100%;
+height: 40vh;
 ${props => props.theme.displayFlexColumnCenter};
 `;
 
@@ -295,7 +471,7 @@ export const ChatRoomIcon = styled(ChatIcon)`
   &&&{
     color: ${props => props.theme.text};
     @media (max-width: 968px) {
-            scale: 1.2;
+            scale: 1;
         }
   }
 `;

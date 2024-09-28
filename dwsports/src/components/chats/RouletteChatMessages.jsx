@@ -1,6 +1,6 @@
 import React, {useRef,useEffect,useState} from 'react'
-import { useFetchMessages } from '../../pages/functions';
-import {MessageHolder,AvatarHolder,MessageText,MessageTime,ChatContainer,ButtonAbsolute,MessagesWrapper,CloseChatRoomIcon,
+import { useFetchRouletteMessages } from '../../pages/functions';
+import {MessageHolder,AvatarHolder,MessageText,MessageTime,RouletteChatContainer,ButtonAbsolute,MessagesWrapper,CloseChatRoomIcon,
     ChatRoomIcon,MessageName 
 } from './index'
 import { Avatar } from '@mui/material';
@@ -8,22 +8,22 @@ import ActionIcons from './ActionIcons';
 import ChatInput from './ChatInput';
 import './styles.css'
 
-const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId}) => {
+const RouletteChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId}) => {
 
-    /* const { messages } = useFetchMessages(); */
+    const { rouletteMessages } = useFetchRouletteMessages();
     const [actionMenuOpen, setActionMenuOpen] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [message, setMessage] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const chatEndRef = useRef(null);
     
-    /* useEffect(() => {
+    useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages,isExpanded]); */
+    }, [rouletteMessages,isExpanded]);
 
   return (
-    <ChatContainer /* id="smallChat" */ initial={{ height: '30vh', width: '25vw'}} // Initial height
-    animate={{ height: isExpanded ? '100vh' : '30vh', width: isExpanded ? '100vw' : '25vw' }} // Height transitions between 100px and 300px
+    <RouletteChatContainer /* id="smallChat" */ initial={{ height: '60vh', width: '30vw'}} // Initial height
+    animate={{ height: isExpanded ? '100vh' : '60vh', width: isExpanded ? '100vw' : '30vw' }} // Height transitions between 100px and 300px
     transition={{ duration: 0.5 }} isExpanded={isExpanded}>
       
        
@@ -31,7 +31,7 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
           message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
         />
         <MessagesWrapper>
-              {/* {messages?.map((msg, index) => {
+              {rouletteMessages?.map((msg, index) => {
                   let date = new Date(msg.created_at)
                   let str = date.toLocaleTimeString()
                   str = str.substring(0, str.length - 3);
@@ -45,7 +45,7 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
                           <MessageTime className={`${msg.sendedBy}TIME`}>{str}</MessageTime>
                       </MessageHolder>
                   )
-              })} */}
+              })}
               <div ref={chatEndRef}></div>
         </MessagesWrapper>
         {isExpanded && (
@@ -53,10 +53,10 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
             actionMenuOpen={actionMenuOpen} setActionMenuOpen={setActionMenuOpen} showEmojiPicker={showEmojiPicker}
             setShowEmojiPicker={setShowEmojiPicker} message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}/>
           )}
-    </ChatContainer>
+    </RouletteChatContainer>
   )
 }
 
-export default ChatMessages
+export default RouletteChatMessages
 
 

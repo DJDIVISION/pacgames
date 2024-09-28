@@ -67,13 +67,15 @@ export const ButtonHoverAbsoluteLeft = styled(IconButton)`
         z-index: 5000;
         padding: 10px;
         background: ${props => props.theme.body};
+        box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
         &:hover{
-            box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+            
             //background: transparent;
         }
         @media (max-width: 968px) {
-        top: 15px;
-        left: 15px;
+        top: 10px;
+        left: 10px;
+        scale: 0.8;
         }
     }
     
@@ -333,15 +335,9 @@ export const SportsButtonRow = styled(motion.div)`
 `;
 
 export const item={
-    exit:{
-      opacity:0,
-      height:0,
-      transition:{
-        ease:"easeInOut",
-        duration:0.3,
-        delay:1
-      }
-    }
+    initial: { height: 0, opacity: 0 },
+    animate: { height: "100vh", opacity: 1, transition: { duration: 0.5 } },
+    exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
 }
 
 export const MatchWrapper = styled.div`

@@ -53,7 +53,23 @@ export const ChatContainer = styled(motion.div)`
   border: 1px solid ${props => props.theme.MainAccent};
   position: absolute;
   top: 0;
-  left: 0
+  left: 0;
+`;
+
+export const RouletteChatContainer = styled(motion.div)`
+  width: 30vh;
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  z-index: 1000;
+  //background: rgba(0,0,0,0.9);
+  //backdrop-filter: blur(20px);
+  background: ${({ isExpanded }) => (isExpanded ? "rgba(0,0,0,0.9)" : "transparent")};
+  border: 1px solid ${props => props.theme.MainAccent};
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 export const MessageText = styled.div`

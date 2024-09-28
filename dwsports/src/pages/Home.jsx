@@ -13,7 +13,7 @@ import { useAuth, useFetchMessages } from './functions'
 const Home = () => {
 
     const navigate = useNavigate()
-    const { messages } = useFetchMessages();
+    /* const { messages } = useFetchMessages(); */
     const { user } = useAuth();
 
   

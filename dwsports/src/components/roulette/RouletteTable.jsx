@@ -1,42 +1,64 @@
-import React,{useEffect, useState} from 'react'
+import React,{useEffect, useState, useRef} from 'react'
 import styled from 'styled-components'
 import { RouletteSection,BigColumn,SmallColumn,Row,TopRow,BottomRow,BigBottomColumn,SmallBottomColumn,
     BottomContainer,IconHolder,IconWrapper,IconName,IconRound,BottomContainerColumn,RowIcons,BottomContainerRow,
-    SmallIconHolder,SmallTextHolder
- } from './indexTwo'
-import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, LatestNumbers} from './fakeData'
-import { motion } from 'framer-motion'
+    SmallIconHolder,SmallTextHolder,BettingText
+ } from '../../pages/indexTwo'
+import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, LatestNumbers} from '../../pages/fakeData'
+import { motion,AnimatePresence  } from 'framer-motion'
 import { DndContext } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
-import Chips from '../components/roulette/Chips';
+import Chips from './Chips';
 import './styles.css'
-import blueChip from '../assets/chips/emptyChip2.png'
-import chips from '../assets/chips/poker-chips.png'
-import cross from '../assets/chips/delete.png'
-import roulette from '../assets/chips/roulette.png'
-import repeat from '../assets/chips/repeat.png'
-import balanceIcon from '../assets/chips/balance-bag.png'
-import x2 from '../assets/chips/x2.png'
+import blueChip from '../../assets/chips/emptyChip2.png'
+import chips from '../../assets/chips/poker-chips.png'
+import cross from '../../assets/chips/delete.png'
+import roulette from '../../assets/chips/roulette.png'
+import repeat from '../../assets/chips/repeat.png'
+import placeBet from '../../assets/chips/placeBet.png'
+import balanceIcon from '../../assets/chips/balance-bag.png'
+import x2 from '../../assets/chips/x2.png'
+import { BalanceDisplay,PlacedBetDisplay,NumbersBetDisplay } from '../../pages/functions';
 
 
 
 
-const RouletteTwo = () => {
 
-    const [placedBet, setPlacedBet] = useState(null);
-    const [droppedChips, setDroppedChips] = useState({});
-    const [droppedCornerChips, setDroppedCornerChips] = useState({});
-    const [droppedRowChips, setDroppedRowChips] = useState({});
-    const [droppedLastRowChips, setDroppedLastRowChips] = useState({});
-    const [droppedColumnChips, setDroppedColumnChips] = useState({});
-    const [droppedBorderLeftChips, setDroppedBorderLeftChips] = useState({});
-    const [droppedBorderTopChips, setDroppedBorderTopChips] = useState({});
+const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,balance,setBalance,placedBet,setPlacedBet,
+    allBets,setAllBets,droppedChips,setDroppedChips,droppedCornerChips,setDroppedCornerChips,droppedRowChips,setDroppedRowChips,
+    droppedLastRowChips,setDroppedLastRowChips,droppedColumnChips,setDroppedColumnChips,droppedBorderLeftChips,setDroppedBorderLeftChips,
+    droppedBorderTopChips,setDroppedBorderTopChips
+}) => {
+
+    
+    
     const [selectedId, setSelectedId] = useState(null)
     const [activeContainer, setActiveContainer] = useState(null)
-    const [allBets, setAllBets] = useState({})
-    const [balance, setBalance] = useState(5000)
     const [clearBetMenuOpen, setClearBetMenuOpen] = useState(false)
- 
+    const [seconds, setSeconds] = useState(null);
+    const intervalRef = useRef(null);
+
+    const startCountdown = () => {
+        let countdownTime = 15000;
+        setSeconds(countdownTime);
+    
+        // Store the interval ID in intervalRef
+        intervalRef.current = setInterval(() => {
+          countdownTime -= 1;
+          setSeconds(countdownTime);
+    
+          // Stop the timer when it reaches 0
+          if (countdownTime <= 0) {
+            clearInterval(intervalRef.current);
+          }
+        }, 1000); // Every 1 second
+    };
+
+    useEffect(() => {
+        if(placeBets){
+            startCountdown();
+        }
+    }, [placeBets])
 
     const getAllRows = () => {
         const allRows = FirstRow.concat(SecondRow).concat(ThirdRow)
@@ -68,6 +90,7 @@ const RouletteTwo = () => {
             })
         }
         if(droppedBorderTopChips){
+            console.log(droppedBorderTopChips)
             const droppedChipsKeys = Object.keys(droppedBorderTopChips);
             droppedChipsKeys.forEach(chip => {
                 const filter = allRows.filter(el => el.borderTopId === chip)
@@ -549,7 +572,7 @@ const RouletteTwo = () => {
             const item = allRows.find(el => el.cornerLeftId === droppedNumberId);
             const numbers = item?.cornerLeft || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `corner-${numbers.length}-bet`), `corner-${numbers.length}-bet`);
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `corner-bet-${numbers.length}`), `corner-bet-${numbers.length}`);
             })
         } else if (droppedNumberId.startsWith('borderLeft')) {
             const item = allRows.find(el => el.borderLeftId === droppedNumberId);
@@ -561,7 +584,7 @@ const RouletteTwo = () => {
             const item = allRows.find(el => el.borderTopId === droppedNumberId);
             const numbers = item?.borderTop || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderTopChips, (id) => updateAllBets(id, `borderTop`), `borderTop`);
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderTopChips, (id) => updateAllBets(id, `borderTop-${numbers.length}`), `borderTop-${numbers.length}`);
             })
         } else if (droppedNumberId.startsWith('1') || droppedNumberId.startsWith('2') || droppedNumberId.startsWith('3')) {
             const item = BetPerRows.find(el => el.name === droppedNumberId);
@@ -629,18 +652,40 @@ const RouletteTwo = () => {
 
     }
 
-    console.log(allBets)
-    console.log(droppedBorderTopChips)
-
     const toggleClear = () => {
         setClearBetMenuOpen(!clearBetMenuOpen)
     }
 
+    const item={
+        initial: { height: 0, opacity: 0 },
+        animate: { height: "100vh", opacity: 1, transition: { duration: 1 } },
+        exit: { height: 0, opacity: 0, transition: { duration: 1 } }
+    }
+
+    const sendBet =  () => {
+      if (placedBet > 0) {
+        console.log("bet sended")
+        setPlaceBets(false)
+          socket?.emit("placeBet", {
+            playerBets: allBets,
+            roomId: activeRoom,
+            playerId: myId,
+            placedBet: placedBet
+          });
+        } else {
+          message.error("There is no bet placed!")
+        }
+    }
 
 
-    
 
   return (
+    <AnimatePresence>
+        {placeBets && (
+            <motion.div className="menu-container-six" variants={item}
+            initial="initial"
+            animate="animate"
+            exit="exit">  
     <RouletteSection>
          <DndContext onDragEnd={handleDragEnd} sensors={sensors} onDragOver={handleDragOver}>
             <TopRow>
@@ -706,15 +751,15 @@ const RouletteTwo = () => {
                     <RowIcons>
                     <BottomContainerRow>
                         <SmallIconHolder><img src={balanceIcon} alt="balance" /></SmallIconHolder>
-                        <SmallTextHolder>BALANCE : ${balance}</SmallTextHolder>
+                        <BalanceDisplay balance={balance} />
                     </BottomContainerRow>
                     <BottomContainerRow>
                         <SmallIconHolder><img src={chips} alt="balance" /></SmallIconHolder>
-                        <SmallTextHolder> CURRENT BET: ${placedBet}</SmallTextHolder>
+                        <PlacedBetDisplay placedBet={placedBet} />
                     </BottomContainerRow>
                     <BottomContainerRow>
                         <SmallIconHolder><img src={roulette} alt="balance" /></SmallIconHolder>
-                        <SmallTextHolder> NUMBERS: {Object.values(allBets).length}</SmallTextHolder>
+                        <NumbersBetDisplay allBets={allBets} />
                     </BottomContainerRow>
                     </RowIcons>
                     <RowIcons>
@@ -734,25 +779,23 @@ const RouletteTwo = () => {
                     <BottomContainer></BottomContainer>
                 ) : (
                     <BottomContainer>
-                    <IconHolder whileTap={{scale: 0.95}}>
-                            <IconWrapper ><IconRound style={{backgroundImage: `url(${repeat})`, backgroundPosition: 'center',
+                        <IconHolder whileTap={{scale: 0.95}} onClick={sendBet}>
+                            <IconWrapper ><IconRound style={{backgroundImage: `url(${placeBet})`, backgroundPosition: 'center',
                         backgroundSize: 'cover'}}></IconRound></IconWrapper>
-                            <IconName>REPEAT</IconName>
+                            <IconName >PLACE BET</IconName>
                         </IconHolder>
                         <IconHolder whileTap={{scale: 0.95}}>
                             <IconWrapper ><IconRound style={{backgroundImage: `url(${x2})`, backgroundPosition: 'center',
                         backgroundSize: 'cover'}}></IconRound></IconWrapper>
                             <IconName>DOUBLE</IconName>
                         </IconHolder>
-                        <IconHolder whileTap={{scale: 0.95}}>
-                            <IconWrapper ><IconRound style={{backgroundImage: `url(${blueChip})`, backgroundPosition: 'center',
-                        backgroundSize: 'cover'}}><img src={cross} alt="cross" /></IconRound></IconWrapper>
-                            <IconName onClick={toggleClear}>CLEAR BET</IconName>
-                        </IconHolder>
                         <IconHolder whileTap={{scale: 0.95}} onClick={clearAllBets}>
                             <IconWrapper whileTap={{scale: 0.95}}><IconRound style={{backgroundImage: `url(${chips})`, backgroundPosition: 'center',
                         backgroundSize: 'cover'}}><img src={cross} alt="cross" /></IconRound></IconWrapper>
                             <IconName>CLEAR ALL</IconName>
+                        </IconHolder>
+                        <IconHolder >
+                        <BettingText><span>{seconds}</span> seconds left!</BettingText>
                         </IconHolder>
                     </BottomContainer> 
                 )}
@@ -761,10 +804,13 @@ const RouletteTwo = () => {
       </BottomRow>
       </DndContext>
     </RouletteSection>
+    </motion.div>
+        )}
+    </AnimatePresence>
   )
 }
 
-export default RouletteTwo
+export default RouletteTable
 
 const LastRowWrapper = styled.div`
     width: calc(70vw * 2/12);
@@ -851,6 +897,10 @@ const SmallNumberWrapper = styled.div`
     ${props => props.theme.displayFlexCenter};
     border: 1px solid orange;
     color: ${props => props.theme.text};
+    @media(min-width: 968px){
+        width: 40px;
+        height: 40px; 
+    }
 `;
 
 const NumberWrapper = styled.div`

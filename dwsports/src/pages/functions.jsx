@@ -1,6 +1,203 @@
 import React, {useState, useEffect, useRef}from 'react'
 import { toast } from 'react-toastify';
 import { supabase } from '../supabase/client';
+import { motion } from 'framer-motion';
+import { SmallTextHolder,BigTextHolder } from './indexTwo';
+
+export const BalanceDisplay = ({ balance }) => {
+  const [displayBalance, setDisplayBalance] = useState(balance);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayBalance((prev) => {
+        if (prev < balance) return Math.min(prev + 1, balance);
+        if (prev > balance) return Math.max(prev - 1, balance);
+        return balance;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [balance]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+    >
+     <SmallTextHolder>BALANCE: ${displayBalance}</SmallTextHolder>
+    </motion.div>
+  );
+};
+
+export const BalanceDisplayBig = ({ balance }) => {
+  const [displayBalance, setDisplayBalance] = useState(balance);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayBalance((prev) => {
+        if (prev < balance) return Math.min(prev + 1, balance);
+        if (prev > balance) return Math.max(prev - 1, balance);
+        return balance;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [balance]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+    >
+     <BigTextHolder>BALANCE: ${displayBalance}</BigTextHolder>
+    </motion.div>
+  );
+};
+
+export const PlacedBetDisplay = ({ placedBet }) => {
+  const [displayPlacedBet, setDisplayPlacedBet] = useState(placedBet);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayPlacedBet((prev) => {
+        if (prev < placedBet) return Math.min(prev + 1, placedBet);
+        if (prev > placedBet) return Math.max(prev - 1, placedBet);
+        return placedBet;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [placedBet]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+      style={{ fontSize: '12px', fontWeight: 'bold' }}
+    >
+     <SmallTextHolder>BET: ${displayPlacedBet}</SmallTextHolder>
+    </motion.div>
+  );
+};
+
+export const PlacedBetDisplayBig = ({ placedBet }) => {
+  const [displayPlacedBet, setDisplayPlacedBet] = useState(placedBet);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayPlacedBet((prev) => {
+        if (prev < placedBet) return Math.min(prev + 1, placedBet);
+        if (prev > placedBet) return Math.max(prev - 1, placedBet);
+        return placedBet;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [placedBet]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+      style={{ fontSize: '12px', fontWeight: 'bold' }}
+    >
+     <BigTextHolder>BET: ${displayPlacedBet}</BigTextHolder>
+    </motion.div>
+  );
+};
+
+export const NumbersBetDisplay = ({ allBets }) => {
+  const [displayNumbersBet, setDisplayNumbersBet] = useState(Object.values(allBets).length);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayNumbersBet((prev) => {
+        if (prev < Object.values(allBets).length) return Math.min(prev + 1, Object.values(allBets).length);
+        if (prev > Object.values(allBets).length) return Math.max(prev - 1, Object.values(allBets).length);
+        return Object.values(allBets).length;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [allBets]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+      style={{ fontSize: '12px', fontWeight: 'bold' }}
+    >
+     <SmallTextHolder>NUMBERS: {displayNumbersBet}</SmallTextHolder>
+    </motion.div>
+  );
+};
+
+export const NumbersBetDisplayBig = ({ allBets }) => {
+  const [displayNumbersBet, setDisplayNumbersBet] = useState(Object.values(allBets).length);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayNumbersBet((prev) => {
+        if (prev < Object.values(allBets).length) return Math.min(prev + 1, Object.values(allBets).length);
+        if (prev > Object.values(allBets).length) return Math.max(prev - 1, Object.values(allBets).length);
+        return Object.values(allBets).length;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [allBets]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+      style={{ fontSize: '12px', fontWeight: 'bold' }}
+    >
+     <BigTextHolder>NUMBERS: {displayNumbersBet}</BigTextHolder>
+    </motion.div>
+  );
+};
+
+ export const americanRouletteNumbers = [
+  { number: 0, color: "lime" },
+  { number: 28, color: "black" },
+  { number: 9, color: "red" },
+  { number: 26, color: "black" },
+  { number: 30, color: "red" },
+  { number: 11, color: "black" },
+  { number: 7, color: "red" },
+  { number: 20, color: "black" },
+  { number: 32, color: "red" },
+  { number: 17, color: "black" },
+  { number: 5, color: "red" },
+  { number: 22, color: "black" },
+  { number: 34, color: "red" },
+  { number: 15, color: "black" },
+  { number: 3, color: "red" },
+  { number: 24, color: "black" },
+  { number: 36, color: "red" },
+  { number: 13, color: "black" },
+  { number: 1, color: "red" },
+  { number: "00", color: "lime" },
+  { number: 27, color: "red" },
+  { number: 10, color: "black" },
+  { number: 25, color: "red" },
+  { number: 29, color: "black" },
+  { number: 12, color: "red" },
+  { number: 8, color: "black" },
+  { number: 19, color: "red" },
+  { number: 31, color: "black" },
+  { number: 18, color: "red" },
+  { number: 6, color: "black" },
+  { number: 21, color: "red" },
+  { number: 33, color: "black" },
+  { number: 16, color: "red" },
+  { number: 4, color: "black" },
+  { number: 23, color: "red" },
+  { number: 35, color: "black" },
+  { number: 14, color: "red" },
+  { number: 2, color: "black" },
+];
 
 export const autoCloseOff = (message) => {
   toast(message, {
@@ -106,6 +303,52 @@ export const useFetchMessages = () => {
   return { messages,setMessages };
 };
 
+export const useFetchRouletteMessages = () => {
+  const [rouletteMessages, setRouletteMessages] = useState([]);
+
+  useEffect(() => {
+    // Function to fetch initial messages
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from('roulette_chat_messages')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.log('Error fetching messages:', error);
+      }
+
+      if (data) {
+        console.log('Fetched messages:', data);
+        setRouletteMessages(data); // Set the messages to state
+      }
+    };
+
+    // Call the fetch function on component mount
+    fetchMessages();
+
+    // Subscribe to new messages using Supabase real-time feature
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public' },
+        (payload) => {
+          
+          setRouletteMessages((prevMessages) => [...prevMessages, payload.new]);
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription when the component unmounts
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  return { rouletteMessages,setRouletteMessages };
+};
+
 export const useAuth = () => {
   const [user, setUser] = useState(null); // Store user state
   const [loading, setLoading] = useState(true); // To handle loading state while session is being checked
@@ -145,52 +388,5 @@ export const useAuth = () => {
   return { user, loading }; // Return user and loading state
 };
 
-export const initWheel = () => {
-  let wheelContent = [];
-  for (let x = 0; x < 35; x++) {
-    wheelContent.push(
-      <div className="row" key={x}>
-        <div className="card red">28</div>
-        <div className="card black">12</div>
-        <div className="card red">35</div>
-        <div className="card black">3</div>
-        <div className="card red">26</div>
-        <div className="card green">0</div>
-        <div className="card black">32</div>
-        <div className="card red">15</div>
-        <div className="card black">9</div>
-        <div className="card red">4</div>
-        <div className="card black">21</div>
-        <div className="card red">2</div>
-        <div className="card black">25</div>
-        <div className="card red">17</div>
-        <div className="card black">34</div>
-        <div className="card red">6</div>
-        <div className="card black">27</div>
-        <div className="card red">13</div>
-        <div className="card black">36</div>
-        <div className="card red">11</div>
-        <div className="card black">30</div>
-        <div className="card red">8</div>
-        <div className="card black">23</div>
-        <div className="card red">10</div>
-        <div className="card black">5</div>
-        <div className="card red">24</div>
-        <div className="card black">16</div>
-        <div className="card red">33</div>
-        <div className="card black">1</div>
-        <div className="card red">20</div>
-        <div className="card black">14</div>
-        <div className="card red">31</div>
-        <div className="card black">9</div>
-        <div className="card red">22</div>
-        <div className="card black">18</div>
-        <div className="card red">29</div>
-        <div className="card black">7</div>
-        
-      </div>
-    );
-  }
-  return wheelContent;
-};
+
 
