@@ -105,10 +105,93 @@ const getAllPlayers = () => {
 
 const bettingTimeouts = {};
 
+
+    
+const sendAllBetsToPlayers = (roomId) => {
+  const room = rooms.find((r) => r.id === roomId);
+
+  if (room) {
+      // Initialize empty arrays for all chip types
+      const allDroppedChips = {};  // Storing as an object
+      const allDroppedCornerChips = {};
+      const allDroppedRowChips = {};
+      const allDroppedLastRowChips = {};
+      const allDroppedColumnChips = {};
+      const allDroppedBorderLeftChips = {};
+      const allDroppedBorderTopChips = {};
+
+      room.players.forEach((player) => {
+          const playerBets = player.bets || {}; // Ensure player.bets is defined
+
+          // Aggregate droppedChips
+          if (playerBets.droppedChips) {
+              Object.keys(playerBets.droppedChips).forEach(key => {
+                  allDroppedChips[key] = allDroppedChips[key] || []; // Initialize if undefined
+                  allDroppedChips[key].push(...playerBets.droppedChips[key]); // Push the chips
+              });
+          }
+
+          // Aggregate droppedCornerChips
+          if (playerBets.droppedCornerChips) {
+              Object.keys(playerBets.droppedCornerChips).forEach(key => {
+                  allDroppedCornerChips[key] = allDroppedCornerChips[key] || []; // Initialize if undefined
+                  allDroppedCornerChips[key].push(...playerBets.droppedCornerChips[key]); // Push the chips
+              });
+          }
+
+          // Repeat this structure for the other chip types
+          if (playerBets.droppedRowChips) {
+              Object.keys(playerBets.droppedRowChips).forEach(key => {
+                  allDroppedRowChips[key] = allDroppedRowChips[key] || [];
+                  allDroppedRowChips[key].push(...playerBets.droppedRowChips[key]);
+              });
+          }
+
+          if (playerBets.droppedLastRowChips) {
+              Object.keys(playerBets.droppedLastRowChips).forEach(key => {
+                  allDroppedLastRowChips[key] = allDroppedLastRowChips[key] || [];
+                  allDroppedLastRowChips[key].push(...playerBets.droppedLastRowChips[key]);
+              });
+          }
+
+          if (playerBets.droppedColumnChips) {
+              Object.keys(playerBets.droppedColumnChips).forEach(key => {
+                  allDroppedColumnChips[key] = allDroppedColumnChips[key] || [];
+                  allDroppedColumnChips[key].push(...playerBets.droppedColumnChips[key]);
+              });
+          }
+
+          if (playerBets.droppedBorderLeftChips) {
+              Object.keys(playerBets.droppedBorderLeftChips).forEach(key => {
+                  allDroppedBorderLeftChips[key] = allDroppedBorderLeftChips[key] || [];
+                  allDroppedBorderLeftChips[key].push(...playerBets.droppedBorderLeftChips[key]);
+              });
+          }
+
+          if (playerBets.droppedBorderTopChips) {
+              Object.keys(playerBets.droppedBorderTopChips).forEach(key => {
+                  allDroppedBorderTopChips[key] = allDroppedBorderTopChips[key] || [];
+                  allDroppedBorderTopChips[key].push(...playerBets.droppedBorderTopChips[key]);
+              });
+          }
+      });
+
+      // Emit the combined data to all players in the room
+      io.to(roomId).emit('game-started', {
+          allDroppedChips,
+          allDroppedCornerChips,
+          allDroppedRowChips,
+          allDroppedLastRowChips,
+          allDroppedColumnChips,
+          allDroppedBorderLeftChips,
+          allDroppedBorderTopChips
+      });
+  }
+};
+
 function startBettingTimeout(roomId) {
   console.log("betting time started")
   const room = rooms.find((room) => room.id === roomId);
-  console.log("rooooooooooooooooooooooomn",room.gameStarted)
   io.emit('roomsUpdate', rooms);
   bettingTimeouts[room] = setTimeout(() => {
   
@@ -135,12 +218,20 @@ function startBettingTimeout(roomId) {
       }
     });
     // Proceed to start the game with players who placed their bets
-    if (room.players.length > 0) {
-      console.log(room)
-      console.log("allDroppedBorderLeftChips", room.allDroppedBorderLeftChips)
-      io.to(roomId).emit('game-started', {room})
-      declareWinningNumber(roomId);
-    }
+    if (room.players.every(player => player.bets)) {
+        // If all players have placed bets, emit the bets back to all players in the room
+      
+      // Emit the data to all players in the room
+      io.to(roomId).emit('message-sent', {
+        message: `All bets placed!`,
+        dealer: 'Jack',
+        dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+        sendedBy: 'ADMIN',
+      });
+        sendAllBetsToPlayers(roomId)
+        declareWinningNumber(roomId);
+      }
+    
   }, 30000);
 }
 
@@ -216,43 +307,24 @@ io.on("connection", (socket) => {
     });
 
     
-    socket.on('placeBet', ({playerBets,roomId,playerId,placedBet,droppedChips,droppedCornerChips,droppedRowChips,droppedLastRowChips,
-      droppedColumnChips,droppedBorderLeftChips,droppedBorderTopChips
-    }) => {
+    socket.on('placeBet', ({allChips,roomId,playerId,placedBet}) => {
+      const { droppedChips,droppedCornerChips,droppedRowChips,droppedLastRowChips,droppedColumnChips,droppedBorderLeftChips,droppedBorderTopChips } = allChips;
         const room = rooms.find((room) => room.id === roomId);
         const player = room.players.find(p => p.playerId === playerId);
-        player.playerBets = playerBets
-        if(droppedChips !== ""){
-          room.allDroppedChips.push(droppedChips)
-        }
-        if(droppedCornerChips !== ""){
-          room.allDroppedCornerChips.push(droppedCornerChips)
-        }
-        if(droppedRowChips !== ""){
-          room.allDroppedRowChips.push(droppedRowChips)
-        }
-        if(droppedLastRowChips !== ""){
-          room.allDroppedLastRowChips.push(droppedLastRowChips)
-        }
-        if(droppedColumnChips !== ""){
-          room.allDroppedColumnChips.push(droppedColumnChips)
-        }
-        if(droppedBorderLeftChips !== ""){
-          room.allDroppedBorderLeftChips.push(droppedBorderLeftChips)
-        }
-        if(droppedBorderTopChips !== ""){
-          room.allDroppedBorderTopChips.push(droppedBorderTopChips)
-        }
-        console.log(room)
-        console.log(droppedBorderTopChips)
+        
+        player.bets = player.bets || {};
+        player.bets.droppedChips = droppedChips || []; // Ensure these are arrays
+        player.bets.droppedCornerChips = droppedCornerChips || [];
+        player.bets.droppedRowChips = droppedRowChips || [];
+        player.bets.droppedLastRowChips = droppedLastRowChips || [];
+        player.bets.droppedColumnChips = droppedColumnChips || [];
+        player.bets.droppedBorderLeftChips = droppedBorderLeftChips || [];
+        player.bets.droppedBorderTopChips = droppedBorderTopChips || [];
         io.to(roomId).emit('message-sent', {
           message: `${player.playerName} has placed a bet of $${placedBet}`,
           dealer: 'Jack',
           dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
           sendedBy: 'ADMIN',
-        });
-        io.to(player.playerId).emit('update-balance', {
-          placedBet: placedBet
         });
     });
     socket.on('game-finished', ({activeRoom, myId}) => {

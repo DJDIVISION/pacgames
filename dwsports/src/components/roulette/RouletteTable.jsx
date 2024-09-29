@@ -753,18 +753,21 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
     const sendBet =  () => {
       if (placedBet > 0) {
         console.log("bet sended")
+        const allChips = {
+            droppedChips,
+            droppedCornerChips,
+            droppedRowChips,
+            droppedLastRowChips,
+            droppedColumnChips,
+            droppedBorderLeftChips,
+            droppedBorderTopChips
+        };
         socket?.emit("placeBet", {
-            playerBets: allBets,
+            allChips: allChips,
             roomId: activeRoom,
             playerId: myId,
             placedBet: placedBet,
-            droppedChips: droppedChips,
-            droppedCornerChips: droppedCornerChips,
-            droppedRowChips: droppedRowChips,
-            droppedLastRowChips: droppedLastRowChips,
-            droppedColumnChips: droppedColumnChips,
-            droppedBorderLeftChips: droppedBorderLeftChips,
-            droppedBorderTopChips: droppedBorderTopChips
+            
         });
         setPlaceBets(false)
         setActiveContainer(null)

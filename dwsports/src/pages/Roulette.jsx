@@ -185,26 +185,22 @@ const Roulette = () => {
             }, 2000)
         });
         socket?.on('game-started', (data) => {
-            const room = data.room
+            console.log("dataaaaaaaaaaaaaaaa",data)
             message.success("the game has started")
             setGameStarted(true)
             setTimeOutStarted(false)
             setPlaceBets(false)
-            console.log("hereeeeeeeeeeee",room.allDroppedChips)
-            Object.values(room.allDroppedChips).forEach(betGroup => {
-                Object.values(betGroup).forEach(betArray => {
-                  betArray.forEach(bet => {
-                    // Append each bet to the state
-                    setAllDroppedChips(prevBets => [...prevBets, bet]);
-                  });
-                });
-              });
-            /* setAllDroppedCornerChips(room.allDroppedCornerChips)
-            setAllDroppedRowChips(room.allDroppedRowChips)
-            setAllDroppedLastRowChips(room.allDroppedLastRowChips)
-            setAllDroppedColumnChips(room.allDroppedColumnChips)
-            setAllDroppedBorderLeftChips(room.allDroppedBorderLeftChips)
-            setAllDroppedBorderTopChips(room.allDroppedBorderTopChips) */
+            const { allDroppedChips,allDroppedCornerChips,allDroppedRowChips,allDroppedLastRowChips,allDroppedColumnChips,
+                allDroppedBorderLeftChips,allDroppedBorderTopChips } = data;
+           
+          
+            setAllDroppedChips(allDroppedChips)  
+            setAllDroppedCornerChips(allDroppedCornerChips)
+            setAllDroppedRowChips(allDroppedRowChips)
+            setAllDroppedLastRowChips(allDroppedLastRowChips)
+            setAllDroppedColumnChips(allDroppedColumnChips)
+            setAllDroppedBorderLeftChips(allDroppedBorderLeftChips)
+            setAllDroppedBorderTopChips(allDroppedBorderTopChips)
         });
         socket?.on('close-betting-table', () => {
             setGameStarted(true)
@@ -273,6 +269,7 @@ const Roulette = () => {
     }, [socket]);
 
     console.log(droppedChips)
+    console.log(droppedLastRowChips)
     const getRotationForNumber = (winningNumber) => {
         const targetIndex = americanRouletteNumbers.findIndex(num => num.number === winningNumber.number);
         const degreesPerNumber = 360 / totalNumbers;
