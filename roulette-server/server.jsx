@@ -73,7 +73,14 @@ const io = new Server(httpServer, {
   allBets: [],
   room: "",
   latestNumbers: [],
-  winningNumber: null
+  winningNumber: null,
+  allDroppedChips: [],
+  allDroppedCornerChips: [],
+  allDroppedRowChips: [],
+  allDroppedLastRowChips: [],
+  allDroppedColumnChips: [],
+  allDroppedBorderLeftChips: [],
+  allDroppedBorderTopChips: [],
 }));
 
 
@@ -210,17 +217,26 @@ io.on("connection", (socket) => {
         console.log('Spin requested');
         declareWinningNumber();  // Declare and send the winning number
     });
-    socket.on('placeBet', ({playerBets,roomId,playerId,placedBet}) => {
-      console.log("betPlaced!!!!!!")
+    socket.on('placeBet', ({playerBets,roomId,playerId,placedBet,droppedChips,droppedCornerChips,droppedRowChips,droppedLastRowChips,
+      droppedColumnChips,droppedBorderLeftChips,droppedBorderTopChips
+    }) => {
         const room = rooms.find((room) => room.id === roomId);
         const player = room.players.find(p => p.playerId === playerId);
         player.playerBets = playerBets
-        console.log("playerBetssssssssssss", playerBets)
+        room.allDroppedChips.push(droppedChips)
+        room.allDroppedCornerChips.push(droppedCornerChips)
+        room.allDroppedRowChips.push(droppedRowChips)
+        room.allDroppedLastRowChips.push(droppedLastRowChips)
+        room.allDroppedColumnChips.push(droppedColumnChips)
+        room.allDroppedBorderLeftChips.push(droppedBorderLeftChips)
+        room.allDroppedBorderTopChips.push(droppedBorderTopChips)
+        console.log(room)
         io.to(roomId).emit('message-sent', {
           message: `${player.playerName} has placed a bet of $${placedBet}`,
           dealer: 'Jack',
           dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
-          sendedBy: 'ADMIN'
+          sendedBy: 'ADMIN',
+          room: room
         });
         io.to(player.playerId).emit('update-balance', {
           placedBet: placedBet

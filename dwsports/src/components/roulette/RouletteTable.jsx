@@ -716,8 +716,8 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
 
     const item={
         initial: { height: 0, opacity: 0 },
-        animate: { height: "100vh", opacity: 1, transition: { duration: 1 } },
-        exit: { height: 0, opacity: 0, transition: { duration: 1 } }
+        animate: { height: "100vh", opacity: 1, transition: { duration: 0.7 } },
+        exit: { height: 0, opacity: 0, transition: { duration: 0.7 } }
     }
 
     const sendBet =  () => {
@@ -727,7 +727,14 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             playerBets: allBets,
             roomId: activeRoom,
             playerId: myId,
-            placedBet: placedBet
+            placedBet: placedBet,
+            droppedChips: droppedChips,
+            droppedCornerChips: droppedCornerChips,
+            droppedRowChips: droppedRowChips,
+            droppedLastRowChips: droppedLastRowChips,
+            droppedColumnChips: droppedColumnChips,
+            droppedBorderLeftChips: droppedBorderLeftChips,
+            droppedBorderTopChips: droppedBorderTopChips
         });
         setPlaceBets(false)
         setActiveContainer(null)
@@ -764,7 +771,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
       </SmallColumn>
       <BigColumn>
             <Row>
-            {FirstRow.map((card,index) => {
+            {FirstRow.map((card,index) => {  
                 return(
                     <BetNumbersArea key={index}
                         card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
@@ -981,7 +988,6 @@ const SmallNumberWrapper = styled.div`
     margin: 0 2px;
     border-radius: 50%;
     ${props => props.theme.displayFlexCenter};
-    border: 1px solid orange;
     color: ${props => props.theme.text};
     @media(min-width: 968px){
         width: 40px;

@@ -34,13 +34,13 @@ border: 1px solid orange;
 `;
 
 export const Zero = styled.div`
-width: calc(70vw/12);
-height: calc(70vw/12 * 1.5);
+width: calc(40vw/12);
+height: calc(40vw/12 * 1.5);
 border: 1px solid ${props => props.theme.text};
 position: relative;
 ${props => props.theme.displayFlexColumnCenter};
 color: white;
-font-size: 24px;
+font-size: 12px;
 cursor: pointer;
 `;
 
@@ -75,14 +75,17 @@ left: 20%;
 `;
 
 export const Number = styled.div`
-width: calc(70vw/12);
-height: calc(70vw/12);
-border: 1px solid ${props => props.theme.text};
-position: relative;
-${props => props.theme.displayFlexColumnCenter};
-color: white;
-font-size: 24px;
-cursor: pointer;
+    width: calc(40vw/12);
+    height: calc(40vw/12);
+    border: 1px solid ${props => props.theme.text};
+    position: relative;
+    ${props => props.theme.displayFlexColumnCenter};
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    @media(max-width: 968px){
+    font-size: 14px; 
+    }
 `;
 
 export const NumberWrapper = styled.div`

@@ -3,10 +3,11 @@ import { motion, useAnimation,AnimatePresence } from "framer-motion";
 import { RouletteSection,RouletteColumn,RouletteContainer,BettingColumn,NumberCard,Wheel,Span,SpinButton,Number,NumberSpan,
     RouletteTableContainer,TableItem,RouletteSmallColumn,RouletteRow,ChatRoomIcon,StyledAbsolute,LatestRolls,NumberWrapper,
     BalanceWrapper,RouletteMainRow,RouletteMainIcon,PlayerBetsWrapper,BetNumberHolder,BetAmount,BetNumber,
-    SmallColumn,
-    BigColumn
+    
+    Row,
+    SmallTableColumn
  } from './indexTwo'
- import {ButtonHoverAbsoluteLeft,BettingText} from './index'
+ import {ButtonHoverAbsoluteLeft,BettingText,SmallColumn,BigColumn} from './index'
 import { io } from "socket.io-client";
 import {RouletteWrapper,Selector} from './indexTwo'
 import { Button } from '@mui/material';
@@ -24,7 +25,7 @@ import placeBet from '../assets/chips/placeBet.png'
 import balanceIcon from '../assets/chips/balance-bag.png'
 import roulette from '../assets/chips/roulette.png'
 import { BetState } from '../context/BetsContext';
-import { ZeroesArea } from '../components/roulette/functions';
+import { ZeroesArea,BetNumbersArea,BetPerColumnsArea,BetPerRowsArea,LastRowArea } from '../components/roulette/functions';
 
 
 
@@ -55,12 +56,19 @@ const Roulette = () => {
     const [placedBet, setPlacedBet] = useState(null);
     const [allBets, setAllBets] = useState({})
     const [droppedChips, setDroppedChips] = useState({});
+    const [allDroppedChips, setAllDroppedChips] = useState({});
     const [droppedCornerChips, setDroppedCornerChips] = useState({});
+    const [allDroppedCornerChips, setAllDroppedCornerChips] = useState({});
     const [droppedRowChips, setDroppedRowChips] = useState({});
+    const [allDroppedRowChips, setAllDroppedRowChips] = useState({});
     const [droppedLastRowChips, setDroppedLastRowChips] = useState({});
+    const [allDroppedLastRowChips, setAllDroppedLastRowChips] = useState({});
     const [droppedColumnChips, setDroppedColumnChips] = useState({});
+    const [allDroppedColumnChips, setAllDroppedColumnChips] = useState({});
     const [droppedBorderLeftChips, setDroppedBorderLeftChips] = useState({});
+    const [allDroppedBorderLeftChips, setAllDroppedBorderLeftChips] = useState({});
     const [droppedBorderTopChips, setDroppedBorderTopChips] = useState({});
+    const [allDroppedBorderTopChips, setAllDroppedBorderTopChips] = useState({});
     const [lastBet, setLastBet] = useState({});
     const {balance, setBalance} = BetState();
 
@@ -195,14 +203,21 @@ const Roulette = () => {
             setWinningNumber(winningNumber)
         });
         socket.on('message-sent', (data) => {
-            const { message, dealer, dealer_avatar, sendedBy } = data;
+            const { message, dealer, dealer_avatar, sendedBy, room } = data;
             const messageToUpdate = {
                 message: message,
                 playerName: dealer,
                 user_avatar: dealer_avatar,
                 sendedBy: sendedBy,
                 room_id: activeRoom
-              }
+            }
+            setAllDroppedChips(room.allDroppedChips[0])
+            setAllDroppedCornerChips(room.allDroppedCornerChips[0])
+            setAllDroppedRowChips(room.allDroppedRowChips[0])
+            setAllDroppedLastRowChips(room.allDroppedLastRowChips[0])
+            setAllDroppedColumnChips(room.allDroppedColumnChips[0])
+            setAllDroppedBorderLeftChips(room.allDroppedBorderLeftChips[0])
+            setAllDroppedBorderTopChips(room.allDroppedBorderTopChips[0])
               //sendAmdminMessage(messageToUpdate)
         });
         socket.on('player-lost', (data) => {
@@ -212,6 +227,13 @@ const Roulette = () => {
             setGameStarted(false)
             setSpinning(false)
             setWinningNumber(null)
+            setAllDroppedChips({})
+            setAllDroppedCornerChips({})
+            setAllDroppedRowChips({})
+            setAllDroppedLastRowChips({})
+            setAllDroppedColumnChips({})
+            setAllDroppedBorderLeftChips({})
+            setAllDroppedBorderTopChips({})
         });
         socket.on('player-wins', (data) => {
             message.success("You win!!!")
@@ -222,6 +244,13 @@ const Roulette = () => {
             setGameStarted(false)
             setSpinning(false)
             setWinningNumber(null)
+            setAllDroppedChips({})
+            setAllDroppedCornerChips({})
+            setAllDroppedRowChips({})
+            setAllDroppedLastRowChips({})
+            setAllDroppedColumnChips({})
+            setAllDroppedBorderLeftChips({})
+            setAllDroppedBorderTopChips({})
         });
         return () => {
             socket.off('roomsUpdate');
@@ -308,21 +337,72 @@ const Roulette = () => {
             </RouletteSmallColumn>
             </RouletteRow>
             <BettingColumn>
+                <SmallTableColumn></SmallTableColumn>
                 <RouletteTableContainer>
+                    
                     <SmallColumn>
                         <div style={{ marginLeft: 'auto' }}>
                             {Zeroes.map((card, index) => {
                                 return (
-                                    <ZeroesArea card={card} key={index}  droppedChips={droppedChips} setDroppedChips={setDroppedChips}/>
+                                    <ZeroesArea card={card} key={index}  allDroppedChips={allDroppedChips} setAllDroppedChips={setAllDroppedChips}/>
                                 )
                             })}
                         </div>
                     </SmallColumn>
                     <BigColumn>
-
+                        <Row>
+                            {FirstRow.map((card, index) => {
+                                return (
+                                    <BetNumbersArea key={index}
+                                        card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} 
+                                       allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}
+                                    />
+                                )
+                            })}
+                        </Row>
+                        <Row>
+                            {SecondRow.map((card, index) => {
+                                return (
+                                    <BetNumbersArea key={index} card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} 
+                                    allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}
+                                    />
+                                )
+                            })}
+                        </Row>
+                        <Row>
+                            {ThirdRow.map((card, index) => {
+                                return (
+                                    <BetNumbersArea key={index}
+                                    card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} 
+                                       allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}
+                                        
+                                    />
+                                )
+                            })}
+                        </Row>
+                        <Row>
+                            {BetPerRows.map((card, index) => {
+                                return (
+                                    <BetPerRowsArea card={card} key={index} allDroppedRowChips={allDroppedRowChips} setAllDroppedRowChips={setAllDroppedRowChips}/>
+                                )
+                            })}
+                        </Row>
+                        <Row>
+                            {LastRow.map((card, index) => {
+                                return (
+                                    <LastRowArea card={card} key={index} allDroppedLastRowChips={allDroppedLastRowChips} setAllDroppedLastRowChips={setAllDroppedLastRowChips}/>
+                                )
+                            })}
+                        </Row>
                     </BigColumn>
                     <SmallColumn>
-                        
+                        <div style={{ marginRight: 'auto' }}>
+                            {BetPerColumns.map((card, index) => {
+                                return (
+                                    <BetPerColumnsArea card={card} key={index} allDroppedColumnChips={allDroppedColumnChips} setAllDroppedColumnChips={setAllDroppedColumnChips}/>
+                                )
+                            })}
+                        </div>
                     </SmallColumn>
                    {/*  <BalanceWrapper>
                         <RouletteMainRow><RouletteMainIcon><img src={balanceIcon} alt="placeBet" /></RouletteMainIcon><BalanceDisplayBig balance={balance}/></RouletteMainRow>
@@ -353,6 +433,7 @@ const Roulette = () => {
                         })}
                     </LatestRolls> */}
                 </RouletteTableContainer>
+                <SmallTableColumn></SmallTableColumn>
                 
             
             </BettingColumn>

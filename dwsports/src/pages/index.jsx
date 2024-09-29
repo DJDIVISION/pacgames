@@ -18,6 +18,27 @@ import VolumeDown from '@mui/icons-material/VolumeDown';
 
 
 
+export const BigColumn = styled.div`
+  width: 40vw;
+  height: 100%;
+  position: relative;
+  ${props => props.theme.displayFlexColumn};
+  padding-top: 0px;
+  @media(max-width: 968px){
+    
+  }
+`;
+
+export const SmallColumn = styled.div`
+width: 5vw;
+height: 100%;
+display: flex;
+@media(max-width: 968px){
+  
+}
+`;
+
+
 export const BettingTimer = styled.div`
 width: 50%;
 height: 30vh;

@@ -9,8 +9,7 @@ import { IconButton } from '@mui/material';
 export const SmallColumn = styled.div`
   width: 15%;
   height: 100%;
-  padding-top: 80px;
-  border: 1px solid red;
+  padding-top: 50px;
   ${props => props.theme.displayFlexColumn};
   @media(max-width: 968px){
     padding-top: 30px;
@@ -34,7 +33,7 @@ export const BigColumn = styled.div`
   height: 100%;
   position: relative;
   ${props => props.theme.displayFlexColumn};
-  padding-top: 80px;
+  padding-top: 50px;
   @media(max-width: 968px){
     padding-top: 30px;
   }
@@ -85,7 +84,6 @@ export const BottomContainerRow = styled.div`
 export const SmallIconHolder = styled.div`
   width: 40%;
   height: 100%;
-  border: 1px solid red;
   ${props => props.theme.displayFlexCenter};
   img{
       width: 75%;
@@ -97,7 +95,6 @@ export const SmallIconHolder = styled.div`
 export const BetNumberHolder = styled.div`
   width: 50%;
   height: 100%;
-  border: 1px solid red;
   ${props => props.theme.displayFlexColumn};
   img{
       width: 75%;
@@ -117,7 +114,6 @@ export const BetAmount = styled.div`
 export const BetNumber = styled.div`
   width: 100%;
   height: 50%;
-  border: 1px solid red;
   ${props => props.theme.displayFlexCenter};
 `;
 
@@ -229,10 +225,17 @@ export const IconName = styled.div`
 //************************ */
 
 export const RouletteTableContainer = styled.div`
-  width: 70%;
+  width: 50vw;
   height: 100%;
-  ${props => props.theme.displayFlexCenter}
-  border: 1px solid red;
+  ${props => props.theme.displayFlexCenter};
+  padding: 5px;
+`;
+
+export const SmallTableColumn = styled.div`
+  width: 25vw;
+  height: 100%;
+  ${props => props.theme.displayFlexCenter};
+  padding: 5px;
 `;
 
 export const NumberWrapper = styled.div`
@@ -376,7 +379,6 @@ export const RouletteColumn = styled.div`
 width: 40%;
 height: 100%;
 ${props => props.theme.displayFlexCenter};
-border: 1px solid white;
 padding: 20px;
 `;
 
@@ -393,7 +395,6 @@ export const RouletteRow = styled.div`
   width: 100%;
   height: 60vh;
   ${props => props.theme.displayFlexCenter};
-  border: 1px solid red;
 `;
 
 export const StyledAbsolute = styled(IconButton)`
@@ -455,7 +456,7 @@ export const NumberCard = styled.div`
 export const BettingColumn = styled.div`
 width: 100%;
 height: 40vh;
-${props => props.theme.displayFlexColumnCenter};
+${props => props.theme.displayFlexCenter};
 `;
 
 export const RouletteWrapper = styled.div`
@@ -464,7 +465,6 @@ export const RouletteWrapper = styled.div`
   border-bottom: 1px solid #c3c3c3;
   position: relative;
   overflow: hidden;
-  border: 1px solid red;
 `;
 
 export const ChatRoomIcon = styled(ChatIcon)`

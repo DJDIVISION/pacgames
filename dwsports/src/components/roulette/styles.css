@@ -58,12 +58,28 @@
   left: 0;
   transform: scale(0.8) !important;
 }
+
+.roulette-dropped-chip-small{
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(0.5) !important;
+}
+
 .zero-dropped-chip{
   position: absolute;
   top: 0;
   left: 0;
   width: 30px;
   height: 30px;
+}
+
+.zero-dropped-chip-small{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 15px;
 }
 
 .corner-dropped-chip{
@@ -73,11 +89,25 @@
   
 }
 
+.corner-dropped-chip-small{
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(0.6)
+}
+
 .borderLeft-dropped-chip{
   position: absolute;
   top: 25%;
   left: 0;
   transform: scale(1.2);
+}
+
+.borderLeft-dropped-chip-small{
+  position: absolute;
+  top: 25%;
+  left: 0;
+  transform: scale(0.8);
 }
 
 .borderTop-dropped-chip{
@@ -87,12 +117,28 @@
   transform: scale(0.6) translateY(-60%);
 }
 
+.borderTop-dropped-chip-small{
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(0.3) translateY(-60%);
+}
+
 .first-dropped-chip{
   position: absolute;
   top: 50%;
   left: 50%;
   width: 40px;
   height: 40px;
+  transform: translate(-20px, -20px);
+}
+
+.first-dropped-chip-small{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
   transform: translate(-20px, -20px);
 }
 
