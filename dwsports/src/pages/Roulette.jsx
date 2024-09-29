@@ -3,9 +3,7 @@ import { motion, useAnimation,AnimatePresence } from "framer-motion";
 import { RouletteSection,RouletteColumn,RouletteContainer,BettingColumn,NumberCard,Wheel,Span,SpinButton,Number,NumberSpan,
     RouletteTableContainer,TableItem,RouletteSmallColumn,RouletteRow,ChatRoomIcon,StyledAbsolute,LatestRolls,NumberWrapper,
     BalanceWrapper,RouletteMainRow,RouletteMainIcon,PlayerBetsWrapper,BetNumberHolder,BetAmount,BetNumber,
-    
-    Row,
-    SmallTableColumn
+    BetHolder,Row,SmallTableColumn
  } from './indexTwo'
  import {ButtonHoverAbsoluteLeft,BettingText,SmallColumn,BigColumn} from './index'
 import { io } from "socket.io-client";
@@ -29,7 +27,7 @@ import { ZeroesArea,BetNumbersArea,BetPerColumnsArea,BetPerRowsArea,LastRowArea 
 
 
 
-const socket = io.connect("https://pacgames-roulette-server.onrender.com")
+const socket = io.connect("http://localhost:8080")
 
 const Roulette = () => {
 
@@ -160,7 +158,7 @@ const Roulette = () => {
               sendedBy: sendedBy,
               room_id: activeRoom
             }
-            //sendAmdminMessage(messageToUpdate)
+            sendAmdminMessage(messageToUpdate)
             setTimeout(() => {
                 setPlaceBets(true)
                 setTimeOutStarted(true)
@@ -186,11 +184,27 @@ const Roulette = () => {
                 startCountdown();
             }, 2000)
         });
-        socket?.on('game-started', () => {
+        socket?.on('game-started', (data) => {
+            const room = data.room
             message.success("the game has started")
             setGameStarted(true)
             setTimeOutStarted(false)
             setPlaceBets(false)
+            console.log("hereeeeeeeeeeee",room.allDroppedChips)
+            Object.values(room.allDroppedChips).forEach(betGroup => {
+                Object.values(betGroup).forEach(betArray => {
+                  betArray.forEach(bet => {
+                    // Append each bet to the state
+                    setAllDroppedChips(prevBets => [...prevBets, bet]);
+                  });
+                });
+              });
+            /* setAllDroppedCornerChips(room.allDroppedCornerChips)
+            setAllDroppedRowChips(room.allDroppedRowChips)
+            setAllDroppedLastRowChips(room.allDroppedLastRowChips)
+            setAllDroppedColumnChips(room.allDroppedColumnChips)
+            setAllDroppedBorderLeftChips(room.allDroppedBorderLeftChips)
+            setAllDroppedBorderTopChips(room.allDroppedBorderTopChips) */
         });
         socket?.on('close-betting-table', () => {
             setGameStarted(true)
@@ -203,7 +217,7 @@ const Roulette = () => {
             setWinningNumber(winningNumber)
         });
         socket.on('message-sent', (data) => {
-            const { message, dealer, dealer_avatar, sendedBy, room } = data;
+            const { message, dealer, dealer_avatar, sendedBy } = data;
             const messageToUpdate = {
                 message: message,
                 playerName: dealer,
@@ -211,14 +225,7 @@ const Roulette = () => {
                 sendedBy: sendedBy,
                 room_id: activeRoom
             }
-            setAllDroppedChips(room.allDroppedChips[0])
-            setAllDroppedCornerChips(room.allDroppedCornerChips[0])
-            setAllDroppedRowChips(room.allDroppedRowChips[0])
-            setAllDroppedLastRowChips(room.allDroppedLastRowChips[0])
-            setAllDroppedColumnChips(room.allDroppedColumnChips[0])
-            setAllDroppedBorderLeftChips(room.allDroppedBorderLeftChips[0])
-            setAllDroppedBorderTopChips(room.allDroppedBorderTopChips[0])
-              //sendAmdminMessage(messageToUpdate)
+            sendAmdminMessage(messageToUpdate)
         });
         socket.on('player-lost', (data) => {
             message.error("You have lost this game!!!")
@@ -265,7 +272,7 @@ const Roulette = () => {
         }
     }, [socket]);
 
-
+    console.log(droppedChips)
     const getRotationForNumber = (winningNumber) => {
         const targetIndex = americanRouletteNumbers.findIndex(num => num.number === winningNumber.number);
         const degreesPerNumber = 360 / totalNumbers;
@@ -289,7 +296,6 @@ const Roulette = () => {
         setRotationDegrees(finalRotation);
         setTimeout(() => {setSpinning(false);setRotationDegrees(0)}, 10000); // 10 seconds
     }; 
-
 
     const icon = placeBets ? <UnfoldIcon /> : <FoldIcon />
 
@@ -331,9 +337,19 @@ const Roulette = () => {
             </RouletteColumn>
             <RouletteSmallColumn>
                 <StyledAbsolute onClick={openTable}>{icon}</StyledAbsolute>
-                {timeOutStarted && <BettingText>The game will start in {seconds} seconds!</BettingText>}
-                {gameStarted && <BettingText>The game has started!</BettingText>}
-                {!gameStarted && winningNumber && <BettingText>Winning number is {winningNumber.number}</BettingText>}
+                {allBets && Object.entries(allBets).map(([key, valueArray]) => {
+                            return valueArray.map((bet, index) => (
+                                <BetHolder>
+                                    <BetNumberHolder>
+                                   
+                                    <NumberWrapper style={{background: `${bet.color}`}}>{key}</NumberWrapper>
+                                    
+                                    </BetNumberHolder>
+                                    <BetAmount>${bet.amount}</BetAmount>
+                                    <BetAmount>{bet.typeofBet}</BetAmount>
+                                </BetHolder>
+                            ));
+                        })}
             </RouletteSmallColumn>
             </RouletteRow>
             <BettingColumn>

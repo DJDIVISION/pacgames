@@ -201,12 +201,12 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
 
     const BorderLeftArea = ({ card }) => {
         const { isOver, setNodeRef } = useDroppable({
-          id: `borderLeft-${card.number}`, // Unique ID for the corner area
+          id: `split-${card.number}`, // Unique ID for the corner area
         });
         const borderLeft = card.borderLeft
-        const wrappedId = "borderLeft-"+card.number
+        const wrappedId = "split-"+ card.number
         return (
-            <BorderLeft ref={setNodeRef} id={`borderLeft-${card.number}`} onMouseEnter={() => checkBorderLeft(borderLeft)} onMouseLeave={() => removeBorderLeft(borderLeft)}>
+            <BorderLeft ref={setNodeRef} id={`split-${card.number}`} onMouseEnter={() => checkBorderLeft(borderLeft)} onMouseLeave={() => removeBorderLeft(borderLeft)}>
             {/* Display chips if there are any */}
             {droppedBorderLeftChips[wrappedId]?.length > 0 && (
               <div className="corner-chips">
@@ -375,7 +375,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
                         key={index}
                         src={chip.chipImage}
                         alt={`Chip ${chip.chipValue}`}
-                        className="roulette-dropped-chip"
+                        className="first-dropped-chip"
                         onClick={() => removeBet(chip,droppedColumnChips,setDroppedColumnChips)}
                         />
                     ))}
@@ -558,17 +558,17 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             updateBetFn(numberId, betType, droppedNumberId);
         };
     
-        const updateAllBets = (numberId, betType) => {
+        const updateAllBets = (numberId, betType, color) => {
             setAllBets((prevBets) => {
                 const existingBets = prevBets[numberId] || [];
                 const existingBetIndex = existingBets.findIndex((bet) => bet.typeofBet === betType);
                 let updatedBets;
                 if (existingBetIndex !== -1) {
                     updatedBets = existingBets.map((bet, index) =>
-                        index === existingBetIndex ? { ...bet, amount: bet.amount + chipValue, number: droppedNumberId } : bet
+                        index === existingBetIndex ? { ...bet, amount: bet.amount + chipValue, number: droppedNumberId, color: color } : bet
                     );
                 } else {
-                    updatedBets = [...existingBets, { amount: chipValue, typeofBet: betType, number: droppedNumberId }];
+                    updatedBets = [...existingBets, { amount: chipValue, typeofBet: betType, number: droppedNumberId, color: color }];
                 }
     
                 return {
@@ -580,17 +580,25 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
     
         // Check if the droppedNumberId is a number
         if (!isNaN(droppedNumberId)) {
-            updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight'), 'Straight');
+            const item = allRows.find(el => el.number === droppedNumberId);
+            const color = item.color
+            console.log("item", item)
+            console.log("color", color)
+            updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
         } else if (droppedNumberId.startsWith('corner')) {
             const item = allRows.find(el => el.cornerLeftId === droppedNumberId);
             const numbers = item?.cornerLeft || [];
             if(numbers.length === 4){
                 numbers.forEach((numberId) => {
-                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Corner`), `Corner`);
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Corner`, color), `Corner`);
                 })
             } else if(numbers.length === 6){
                 numbers.forEach((numberId) => {
-                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Six Line`), `Six Line`);
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Six Line`, color), `Six Line`);
                 })
             }
         } else if (droppedNumberId.startsWith('split')) {
@@ -598,7 +606,9 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             const item = allRows.find(el => el.borderLeftId === droppedNumberId);
             const numbers = item?.borderLeft || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderLeftChips, (id) => updateAllBets(id, `Split`), `Split`);
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderLeftChips, (id) => updateAllBets(id, `Split`, color), `Split`);
             })
         } else if (droppedNumberId.startsWith('borderTop')) {
             const item = allRows.find(el => el.borderTopId === droppedNumberId);
@@ -607,60 +617,80 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             console.log(numbers)
             if(numbers.length === 2){
                 numbers.forEach((numberId) => {
-                    updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderTopChips, (id) => updateAllBets(id, `Split`), `Split`);
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderTopChips, (id) => updateAllBets(id, `Split`, color), `Split`);
                 }) 
             } else if(numbers.length === 3){
                 numbers.forEach((numberId) => {
-                    updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderTopChips, (id) => updateAllBets(id, `Street`), `Street`);
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderTopChips, (id) => updateAllBets(id, `Street`, color), `Street`);
                 }) 
             }
         } else if (droppedNumberId.startsWith('1') || droppedNumberId.startsWith('2') || droppedNumberId.startsWith('3')) {
             const item = BetPerRows.find(el => el.name === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedRowChips, (id) => updateAllBets(id, `Dozen`), `Dozen`);
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedRowChips, (id) => updateAllBets(id, `Dozen`, color), `Dozen`);
             })
         } else if (droppedNumberId === "first-18") {
             const item = LastRow.find(el => el.id === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Low (1-18)`), `Low (1-18)`);
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Low (1-18)`, color), `Low (1-18)`);
             })
         } else if (droppedNumberId === "last-18") {
             const item = LastRow.find(el => el.id === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `High (19-36)`), `High (19-36)`);
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `High (19-36)`, color), `High (19-36)`);
             })
         } else if (droppedNumberId === "EVEN") {
             const item = LastRow.find(el => el.id === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Even`), `Even`);
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Even`, color), `Even`);
             })
         } else if (droppedNumberId === "ODD") {
             const item = LastRow.find(el => el.id === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Odd`), `Odd`);
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Odd`, color), `Odd`);
             })
         } else if (droppedNumberId === "blacks") {
             const item = LastRow.find(el => el.id === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Blacks`), `Blacks`);
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Blacks`, color), `Blacks`);
             })
         } else if (droppedNumberId === "reds") {
             const item = LastRow.find(el => el.id === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Reds`), `Reds`);
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Reds`, color), `Reds`);
             })
         } else if (droppedNumberId.startsWith('column')) {
             const item = BetPerColumns.find(el => el.id === droppedNumberId);
             const numbers = item?.numbers || [];
             numbers.forEach((numberId) => {
-                updateChipsAndBets(numberId,droppedNumberId, setDroppedColumnChips, (id) => updateAllBets(id, `Column`), `Column`);
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedColumnChips, (id) => updateAllBets(id, `Column`, color), `Column`);
             })
         }
     }; 

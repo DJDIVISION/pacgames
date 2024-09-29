@@ -93,27 +93,22 @@ export const SmallIconHolder = styled.div`
 `;
 
 export const BetNumberHolder = styled.div`
-  width: 50%;
+  width: 20%;
   height: 100%;
-  ${props => props.theme.displayFlexColumn};
-  img{
-      width: 75%;
-      display: block;
-      object-fit: cover;
-    }
+  ${props => props.theme.displayFlexCenter};
 `;
 
 export const BetAmount = styled.div`
-  width: 100%;
-  height: 25%;
+  width: 40%;
+  height: 100%;
   ${props => props.theme.displayFlexCenter};
   color: ${props => props.theme.text};
   border: 1px solid grey;
 `;
 
 export const BetNumber = styled.div`
-  width: 100%;
-  height: 50%;
+  width: 30px;
+  height: 30px;
   ${props => props.theme.displayFlexCenter};
 `;
 
@@ -239,16 +234,14 @@ export const SmallTableColumn = styled.div`
 `;
 
 export const NumberWrapper = styled.div`
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    background-color: ${props => props.theme.MainAccent};
     border:1px solid orange;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    margin: 0 10px;
     color: ${props => props.theme.text};
 `;
 
@@ -383,11 +376,21 @@ padding: 20px;
 `;
 
 export const RouletteSmallColumn = styled.div`
-width: 30%;
-height: 100%;
-${props => props.theme.displayFlexCenter};
-border: 1px solid white;
-padding: 20px;
+  width: 30%;
+  height: 100%;
+  ${props => props.theme.displayFlexColumn};
+  border: 1px solid white;
+  padding: 20px;
+  overflow-y: scroll;
+`;
+
+export const BetHolder = styled.div`
+  width: 80%;
+  min-height: 40px;
+  border: 1px solid ${props => props.theme.MainAccent};
+  border-radius: 10px;
+  margin: 5px 0;
+  ${props => props.theme.displayFlexCenter};
 `;
 
 

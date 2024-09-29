@@ -51,7 +51,7 @@ const americanRouletteNumbers = [
 
 const app = express();
 app.use(cors({
-  origin: 'https://pacgames-frontend.onrender.com', // Replace with your frontend URL
+  origin: ':http://localhost5173', // Replace with your frontend URL
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -61,7 +61,7 @@ app.get('/', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "https://pacgames-frontend.onrender.com",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]  // Client URL
   },
  });
@@ -136,10 +136,12 @@ function startBettingTimeout(roomId) {
     });
     // Proceed to start the game with players who placed their bets
     if (room.players.length > 0) {
-      io.to(roomId).emit('game-started')
+      console.log(room)
+      console.log("allDroppedBorderLeftChips", room.allDroppedBorderLeftChips)
+      io.to(roomId).emit('game-started', {room})
       declareWinningNumber(roomId);
     }
-  }, 17000);
+  }, 30000);
 }
 
 io.on("connection", (socket) => {
@@ -213,30 +215,41 @@ io.on("connection", (socket) => {
       }
     });
 
-    socket.on('spin-request', () => {
-        console.log('Spin requested');
-        declareWinningNumber();  // Declare and send the winning number
-    });
+    
     socket.on('placeBet', ({playerBets,roomId,playerId,placedBet,droppedChips,droppedCornerChips,droppedRowChips,droppedLastRowChips,
       droppedColumnChips,droppedBorderLeftChips,droppedBorderTopChips
     }) => {
         const room = rooms.find((room) => room.id === roomId);
         const player = room.players.find(p => p.playerId === playerId);
         player.playerBets = playerBets
-        room.allDroppedChips.push(droppedChips)
-        room.allDroppedCornerChips.push(droppedCornerChips)
-        room.allDroppedRowChips.push(droppedRowChips)
-        room.allDroppedLastRowChips.push(droppedLastRowChips)
-        room.allDroppedColumnChips.push(droppedColumnChips)
-        room.allDroppedBorderLeftChips.push(droppedBorderLeftChips)
-        room.allDroppedBorderTopChips.push(droppedBorderTopChips)
+        if(droppedChips !== ""){
+          room.allDroppedChips.push(droppedChips)
+        }
+        if(droppedCornerChips !== ""){
+          room.allDroppedCornerChips.push(droppedCornerChips)
+        }
+        if(droppedRowChips !== ""){
+          room.allDroppedRowChips.push(droppedRowChips)
+        }
+        if(droppedLastRowChips !== ""){
+          room.allDroppedLastRowChips.push(droppedLastRowChips)
+        }
+        if(droppedColumnChips !== ""){
+          room.allDroppedColumnChips.push(droppedColumnChips)
+        }
+        if(droppedBorderLeftChips !== ""){
+          room.allDroppedBorderLeftChips.push(droppedBorderLeftChips)
+        }
+        if(droppedBorderTopChips !== ""){
+          room.allDroppedBorderTopChips.push(droppedBorderTopChips)
+        }
         console.log(room)
+        console.log(droppedBorderTopChips)
         io.to(roomId).emit('message-sent', {
           message: `${player.playerName} has placed a bet of $${placedBet}`,
           dealer: 'Jack',
           dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
           sendedBy: 'ADMIN',
-          room: room
         });
         io.to(player.playerId).emit('update-balance', {
           placedBet: placedBet
@@ -251,7 +264,6 @@ io.on("connection", (socket) => {
       const player = room.players.find(p => p.playerId === playerId)
       const number = room.winningNumber.number
       const playerBets = player.playerBets;
-      console.log("playerBetsssssssssssssssss", playerBets)
       let playerWon = false;
       let winnings
       //console.log("object entriessssssssss",Object.entries(playerBets))

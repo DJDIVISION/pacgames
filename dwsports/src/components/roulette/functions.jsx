@@ -183,7 +183,7 @@ export const LastRowArea = ({card,allDroppedLastRowChips  }) => {
     
     
     return (
-      <LastRowWrapper style={{background: `${card.color}`}} ref={setNodeRef} id={card.id} className="number-inactive"  onMouseEnter={() => checkRowNumbers(numbers)} onMouseLeave={() => removeRowNumbers(numbers)}
+      <LastRowWrapper style={{background: `${card.color}`}} ref={setNodeRef} id={card.id} className="number-inactive" 
        key={card.id}  >
         {
             !allDroppedLastRowChips[card.id] || allDroppedLastRowChips[card.id].length === 0 ? (
