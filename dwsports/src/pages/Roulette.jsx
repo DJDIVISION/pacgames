@@ -435,11 +435,11 @@ const Roulette = () => {
         );
       };
 
-    if (!playOnline) {
+    /* if (!playOnline) {
         return (
             <RouletteTabs socket={socket} rooms={rooms} players={players} playerName={playerName} setPlayerName={setPlayerName} />
         )
-    }
+    } */
 
     return (
         <RouletteSection>

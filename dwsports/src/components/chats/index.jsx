@@ -26,7 +26,7 @@ export const CloseChatRoomIcon = styled(CloseIcon)`
 
 export const MessagesWrapper = styled.div`
   width: 100%;
-  height: 90%;
+  height: 100%;
   padding: 5px 15px;
   overflow-y: scroll;
 `;
@@ -79,7 +79,7 @@ export const MessageText = styled.div`
 `;
 
 export const MessageHolder = styled.div`
-  width: 80%;
+  width: 90%;
   //height: auto;
   border: 1px solid aqua;
   margin: 20px 0;

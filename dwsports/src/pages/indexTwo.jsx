@@ -262,6 +262,10 @@ export const BigNumberHolder = styled.div`
    ${props => props.theme.displayFlexCenter};
    font-weight: bold;
    font-size: 54px;
+   @media(max-width: 968px){
+    width: 75px;
+    height: 75px;
+   }
 `;
 
 export const SmallTableColumnRight = styled.div`
@@ -278,14 +282,17 @@ export const SmallTableColumn = styled.div`
   width: 25vw;
   height: 60%;
   
-  padding: 5px;
+  padding: 10px;
   overflow-y: scroll;
   display: grid;
   place-content: center;
   grid-template-columns: repeat(9, 1fr); /* 10 equal columns */
   column-gap: 1px; /* Column gap (horizontal spacing) */
   row-gap: 5px;
-
+  @media(max-width: 968px){
+    grid-template-columns: repeat(7, 1fr); /* 10 equal columns */
+    transform: translateX(10px);
+  }
 `;
 
 
