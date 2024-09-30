@@ -333,7 +333,6 @@ const Roulette = () => {
         });
         socket.on('player-lost', (data) => {
             setLatestNumbers(prevElements => [...prevElements, data.number]);
-            message.error("You have lost this game!!!")
             setGameStarted(false)
             setSpinning(false)
             setAllBets({})
@@ -356,7 +355,6 @@ const Roulette = () => {
             setDroppedBorderTopChips({})
         });
         socket.on('player-wins', (data) => {
-            message.success("You win!!!")
             const winnings = data.winnings
             setLatestNumbers(prevElements => [...prevElements, data.number]);
             setBalance((prevBalance) => prevBalance + winnings);
