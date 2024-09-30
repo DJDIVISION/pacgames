@@ -263,8 +263,8 @@ export const BigNumberHolder = styled.div`
    font-weight: bold;
    font-size: 54px;
    @media(max-width: 968px){
-    width: 75px;
-    height: 75px;
+    width: 100px;
+    height: 100px;
    }
 `;
 
