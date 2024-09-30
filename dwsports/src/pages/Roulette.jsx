@@ -369,7 +369,7 @@ const Roulette = () => {
         if (spinning === true && activeRoom && myId) {
           setTimeout(() => {
             socket.emit("game-finished", { activeRoom, myId, allBets });
-          }, 100000000)
+          }, 15000)
         }
       }, [spinning, activeRoom, myId]);
 
