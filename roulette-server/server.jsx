@@ -51,7 +51,7 @@ const americanRouletteNumbers = [
 
 const app = express();
 app.use(cors({
-  origin: ':http://localhost5173', // Replace with your frontend URL
+  origin: 'https://pacgames-frontend.onrender.com', // Replace with your frontend URL
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -61,7 +61,7 @@ app.get('/', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://pacgames-frontend.onrender.com",
     methods: ["GET", "POST"]  // Client URL
   },
  });
@@ -72,7 +72,6 @@ const io = new Server(httpServer, {
   gameStarted: false,
   allBets: [],
   room: "",
-  latestNumbers: [],
   winningNumber: null,
   allDroppedChips: [],
   allDroppedCornerChips: [],
@@ -97,7 +96,6 @@ const getAllPlayers = () => {
     const winningNumber = americanRouletteNumbers[winningNumberIndex];
     console.log(winningNumber)
     const room = rooms.find((room) => room.id === roomId);
-    room.latestNumbers.push(winningNumber)
     room.winningNumber = winningNumber
     // Emit the result to all connected clients
     io.emit('winning-number', winningNumber);
@@ -232,7 +230,7 @@ function startBettingTimeout(roomId) {
         declareWinningNumber(roomId);
       }
     
-  }, 30000);
+  }, 20000);
 }
 
 io.on("connection", (socket) => {
@@ -327,7 +325,8 @@ io.on("connection", (socket) => {
           sendedBy: 'ADMIN',
         });
     });
-    socket.on('game-finished', ({activeRoom, myId}) => {
+    socket.on('game-finished', ({activeRoom, myId, allBets}) => {
+      console.log("allBetsssssssssss", allBets)
       const roomId = activeRoom
       const playerId = myId
       console.log(roomId)
@@ -335,7 +334,7 @@ io.on("connection", (socket) => {
       const room = rooms.find((room) => room.id === roomId);
       const player = room.players.find(p => p.playerId === playerId)
       const number = room.winningNumber.number
-      const playerBets = player.playerBets;
+      const playerBets = allBets;
       let playerWon = false;
       let winnings
       //console.log("object entriessssssssss",Object.entries(playerBets))
@@ -362,7 +361,7 @@ io.on("connection", (socket) => {
             winnings = amount * 2
           } else if(typeofBet === "Low (1-18)" || typeofBet === "High (19-36)" || typeofBet === "Even" 
             || typeofBet === "Odd" || typeofBet === "Blacks" || typeofBet === "Reds"){
-            winnings = amount 
+            winnings = amount * 2
           } else if(typeofBet === "Column"){
             winnings = amount * 2
           }
@@ -371,12 +370,26 @@ io.on("connection", (socket) => {
       const latest = room.latestNumbers
       // If no winning bet was found, emit the loss result
       if (playerWon) {
+        const number = room.winningNumber
         console.log("Player wins with winnings:", winnings);
-        io.to(player.playerId).emit("player-wins", { winnings,latest });
+        io.to(player.playerId).emit("player-wins", { winnings, number });
+        io.to(roomId).emit('message-sent', {
+          message: `${player.playerName} wins with $${winnings}.`,
+          dealer: 'Jack',
+          dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+          sendedBy: 'ADMIN'
+        });
         
       } else {
+        const number = room.winningNumber
         console.log("Player has lost");
-        io.to(player.playerId).emit("player-lost", {latest});
+        io.to(player.playerId).emit("player-lost", {number});
+        io.to(roomId).emit('message-sent', {
+          message: `${player.playerName} has lost this round.`,
+          dealer: 'Jack',
+          dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+          sendedBy: 'ADMIN'
+        });
         
       }
       room.gameStarted = false

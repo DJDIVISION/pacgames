@@ -64,14 +64,12 @@ export const BottomContainer = styled.div`
     align-items: center;
     justify-content: space-around;
     border-radius: 10px;
-    border: 1px solid aqua;
 `;
 
 export const BottomContainerColumn = styled.div`
     width: 100%;
     height: 18vh;
     ${props => props.theme.displayFlexColumn};
-    border: 1px solid ${props => props.theme.MainAccent};
     border-radius: 10px;
 `;
 
@@ -119,6 +117,7 @@ export const SmallTextHolder = styled.div`
   font-size: 12px;
   ${props => props.theme.displayFlexCenter};
   font-weight: bold;
+  text-align: center;
   transform: translateX(10px);
   @media(min-width: 968px){
     font-size: 18px;
@@ -197,16 +196,25 @@ export const IconWrapper = styled.div`
 `;
 
 export const IconRound = styled.div`
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  width: 90%;
+  height: 90%;
   ${props => props.theme.displayFlexCenter};
+  position: relative;
   img{
-    position: absolute;
-    right: 3px;
-    bottom: 0px;
-    width: 40%;
+    width: 75%;
+    display: block;
+    object-fit: cover;
   }
+  img:nth-of-type(2) {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    transform: scale(0.8);
+    @media(max-width:968px){
+      transform: scale(0.6);
+    }
+  }
+
 `;
 
 export const IconName = styled.div`
@@ -214,7 +222,11 @@ export const IconName = styled.div`
   height: 30%;
   ${props => props.theme.displayFlexCenter};
   color: ${props => props.theme.text};
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  @media(max-width: 968px){
+    font-size: 12px;
+  }
 `;
 
 //************************ */
@@ -226,12 +238,33 @@ export const RouletteTableContainer = styled.div`
   padding: 5px;
 `;
 
+export const SmallNumberWrapper = styled.div`
+    min-width: 25px;
+    min-height: 25px;
+    margin: 0 2px;
+    border-radius: 50%;
+    ${props => props.theme.displayFlexCenter};
+    color: ${props => props.theme.text};
+    @media(min-width: 968px){
+        width: 30px;
+        height: 30px; 
+    }
+`;
+
 export const SmallTableColumn = styled.div`
   width: 25vw;
-  height: 100%;
-  ${props => props.theme.displayFlexCenter};
+  height: 60%;
+  
   padding: 5px;
+  overflow-y: scroll;
+  display: grid;
+  place-content: center;
+  grid-template-columns: repeat(9, 1fr); /* 10 equal columns */
+  column-gap: 1px; /* Column gap (horizontal spacing) */
+  row-gap: 5px;
+
 `;
+
 
 export const NumberWrapper = styled.div`
     width: 30px;
@@ -304,7 +337,7 @@ export const NumberSpan = styled.div`
 
 export const SpinButton = styled.div`
   position: absolute;
-  inset: 160px;
+  inset: 100px;
   background: ${props => props.theme.MainAccent};
   border-radius: 50%;
   filter: drop-shadow(0 0 5px aqua);
@@ -379,9 +412,25 @@ export const RouletteSmallColumn = styled.div`
   width: 30%;
   height: 100%;
   ${props => props.theme.displayFlexColumn};
-  border: 1px solid white;
-  padding: 20px;
+  //border: 1px solid white;
+  padding: 10px;
   overflow-y: scroll;
+`;
+
+export const BetsWrapper = styled.div`
+  width: 100%;
+  height: 80%;
+  ${props => props.theme.displayFlexColumn};
+  border: 1px solid white;
+  padding: 10px;
+  overflow-y: scroll;
+
+`;
+
+export const BetsBalances = styled.div`
+  width: 100%;
+  height: 20%;
+  ${props => props.theme.displayFlexCenter};
 `;
 
 export const BetHolder = styled.div`
@@ -389,7 +438,7 @@ export const BetHolder = styled.div`
   min-height: 40px;
   border: 1px solid ${props => props.theme.MainAccent};
   border-radius: 10px;
-  margin: 5px 0;
+  margin: 5px 50px 5px 0;
   ${props => props.theme.displayFlexCenter};
 `;
 

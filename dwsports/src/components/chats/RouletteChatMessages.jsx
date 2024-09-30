@@ -22,8 +22,8 @@ const RouletteChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,pl
     }, [rouletteMessages,isExpanded]);
 
   return (
-    <RouletteChatContainer /* id="smallChat" */ initial={{ height: '60vh', width: '30vw'}} // Initial height
-    animate={{ height: isExpanded ? '100vh' : '60vh', width: isExpanded ? '100vw' : '30vw' }} // Height transitions between 100px and 300px
+    <RouletteChatContainer /* id="smallChat" */ initial={{ height: '45vh', width: '30vw'}} // Initial height
+    animate={{ height: isExpanded ? '100vh' : '45vh', width: isExpanded ? '100vw' : '30vw' }} // Height transitions between 100px and 300px
     transition={{ duration: 0.5 }} isExpanded={isExpanded}>
       
        

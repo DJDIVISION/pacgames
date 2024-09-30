@@ -68,8 +68,8 @@ export const RouletteChatContainer = styled(motion.div)`
   background: ${({ isExpanded }) => (isExpanded ? "rgba(0,0,0,0.9)" : "transparent")};
   border: 1px solid ${props => props.theme.MainAccent};
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 10px;
+  left: 10px;
 `;
 
 export const MessageText = styled.div`

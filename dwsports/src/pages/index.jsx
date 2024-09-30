@@ -162,7 +162,7 @@ export const StyledButton = styled(Button)`
     border: 1px solid ${props => props.theme.MainAccent};
     border-radius: 0.58vmin;
     color: ${props => props.theme.MainAccent};
-    padding: 5px 25px;
+    padding: 5px 10px;
     font-size: 20px;
     text-decoration: none;
     text-transform: uppercase;

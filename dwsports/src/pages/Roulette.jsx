@@ -3,7 +3,9 @@ import { motion, useAnimation,AnimatePresence } from "framer-motion";
 import { RouletteSection,RouletteColumn,RouletteContainer,BettingColumn,NumberCard,Wheel,Span,SpinButton,Number,NumberSpan,
     RouletteTableContainer,TableItem,RouletteSmallColumn,RouletteRow,ChatRoomIcon,StyledAbsolute,LatestRolls,NumberWrapper,
     BalanceWrapper,RouletteMainRow,RouletteMainIcon,PlayerBetsWrapper,BetNumberHolder,BetAmount,BetNumber,
-    BetHolder,Row,SmallTableColumn
+    BetHolder,Row,SmallTableColumn,BetsWrapper,BetsBalances,SmallNumberWrapper,
+    BottomContainerRow,
+    SmallIconHolder
  } from './indexTwo'
  import {ButtonHoverAbsoluteLeft,BettingText,SmallColumn,BigColumn} from './index'
 import { io } from "socket.io-client";
@@ -13,7 +15,7 @@ import Ton from '../assets/logos/ton.png'
 import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, LatestNumbers} from './fakeData'
 import RouletteTabs from '../components/roulette/RouletteTabs';
 import RouletteTable from '../components/roulette/RouletteTable';
-import { americanRouletteNumbers } from './functions';
+import { americanRouletteNumbers, BalanceDisplay, NumbersBetDisplay, PlacedBetDisplay } from './functions';
 import RouletteChatMessages from '../components/chats/RouletteChatMessages';
 import { FoldIcon, UnfoldIcon } from '../components/chats';
 import { supabase } from '../supabase/client';
@@ -21,13 +23,14 @@ import { message } from 'antd';
 import { BalanceDisplayBig,PlacedBetDisplayBig,NumbersBetDisplayBig } from './functions';
 import placeBet from '../assets/chips/placeBet.png'
 import balanceIcon from '../assets/chips/balance-bag.png'
+import chips from '../assets/chips/poker-chips.png'
 import roulette from '../assets/chips/roulette.png'
 import { BetState } from '../context/BetsContext';
 import { ZeroesArea,BetNumbersArea,BetPerColumnsArea,BetPerRowsArea,LastRowArea } from '../components/roulette/functions';
 
 
 
-const socket = io.connect("http://localhost:8080")
+const socket = io.connect("https://pacgames-roulette-server.onrender.com")
 
 const Roulette = () => {
 
@@ -50,7 +53,6 @@ const Roulette = () => {
     const intervalRef = useRef(null);
     const [timeOutStarted, setTimeOutStarted] = useState(false)
     const [winningNumber, setWinningNumber] = useState(null)
-    const [latestNumbers, setLatestNumbers] = useState([])
     const [placedBet, setPlacedBet] = useState(null);
     const [allBets, setAllBets] = useState({})
     const [droppedChips, setDroppedChips] = useState({});
@@ -69,6 +71,9 @@ const Roulette = () => {
     const [allDroppedBorderTopChips, setAllDroppedBorderTopChips] = useState({});
     const [lastBet, setLastBet] = useState({});
     const {balance, setBalance} = BetState();
+    const [latestNumbers, setLatestNumbers] = useState(LatestNumbers)
+    const [activeNumbers, setActiveNumbers] = useState([]);
+
 
     console.log(balance)
 
@@ -112,7 +117,89 @@ const Roulette = () => {
                 } else {
                   console.log('User session data saved:', data)
               }
-      }
+    }
+
+    useEffect(() => {
+        if(allDroppedChips){
+            const droppedChipsKeys = Object.keys(allDroppedChips);
+            droppedChipsKeys.forEach((chip) => {
+                const number = parseInt(chip)
+                setActiveNumbers((prevActiveNumbers) => [
+                    ...new Set([...prevActiveNumbers, number]),
+                  ]);
+              
+            })
+        }
+        if(allDroppedCornerChips){
+            const droppedChipsValues = Object.values(allDroppedCornerChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    console.log(number.numberId)
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                      ]);
+                })
+            })
+        }
+        if(allDroppedRowChips){
+            const droppedChipsValues = Object.values(allDroppedRowChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    console.log(number.numberId)
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                      ]);
+                })
+            })
+        }
+        if(allDroppedLastRowChips){
+            const droppedChipsValues = Object.values(allDroppedLastRowChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    console.log(number.numberId)
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                      ]);
+                })
+            })
+        } 
+        if(allDroppedColumnChips){
+            const droppedChipsValues = Object.values(allDroppedColumnChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    console.log(number.numberId)
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                      ]);
+                })
+            })
+        }
+        if(allDroppedBorderLeftChips){
+            const droppedChipsValues = Object.values(allDroppedBorderLeftChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    console.log(number.numberId)
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                      ]);
+                })
+            })
+        }
+        if(allDroppedBorderTopChips){
+            const droppedChipsValues = Object.values(allDroppedBorderTopChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    console.log(number.numberId)
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                      ]);
+                })
+            })
+        }
+
+    }, [allDroppedChips,allDroppedCornerChips,allDroppedRowChips,allDroppedLastRowChips,allDroppedColumnChips,allDroppedBorderLeftChips,allDroppedBorderTopChips])
+
+    console.log(activeNumbers)
 
     useEffect(() => {
         socket.on('connect', () => {
@@ -173,7 +260,7 @@ const Roulette = () => {
               sendedBy: sendedBy,
               room_id: activeRoom
             }
-            //sendAmdminMessage(messageToUpdate)
+            sendAmdminMessage(messageToUpdate)
             setTimeout(() => {
                 setPlaceBets(true)
                 setTimeOutStarted(true)
@@ -185,15 +272,11 @@ const Roulette = () => {
             }, 2000)
         });
         socket?.on('game-started', (data) => {
-            console.log("dataaaaaaaaaaaaaaaa",data)
-            message.success("the game has started")
             setGameStarted(true)
             setTimeOutStarted(false)
             setPlaceBets(false)
             const { allDroppedChips,allDroppedCornerChips,allDroppedRowChips,allDroppedLastRowChips,allDroppedColumnChips,
                 allDroppedBorderLeftChips,allDroppedBorderTopChips } = data;
-           
-          
             setAllDroppedChips(allDroppedChips)  
             setAllDroppedCornerChips(allDroppedCornerChips)
             setAllDroppedRowChips(allDroppedRowChips)
@@ -201,6 +284,7 @@ const Roulette = () => {
             setAllDroppedColumnChips(allDroppedColumnChips)
             setAllDroppedBorderLeftChips(allDroppedBorderLeftChips)
             setAllDroppedBorderTopChips(allDroppedBorderTopChips)
+            
         });
         socket?.on('close-betting-table', () => {
             setGameStarted(true)
@@ -224,11 +308,13 @@ const Roulette = () => {
             sendAmdminMessage(messageToUpdate)
         });
         socket.on('player-lost', (data) => {
+            console.log("data", data)
+            setLatestNumbers(prevElements => [...prevElements, data.number]);
             message.error("You have lost this game!!!")
-            const latest = data.latest
-            setLatestNumbers(latest)
             setGameStarted(false)
             setSpinning(false)
+            setAllBets({})
+            setPlacedBet(null)
             setWinningNumber(null)
             setAllDroppedChips({})
             setAllDroppedCornerChips({})
@@ -241,11 +327,11 @@ const Roulette = () => {
         socket.on('player-wins', (data) => {
             message.success("You win!!!")
             const winnings = data.winnings
-            const latest = data.latest
-            setLatestNumbers(latest)
+            setLatestNumbers(prevElements => [...prevElements, data.number]);
             setBalance((prevBalance) => prevBalance + winnings);
             setGameStarted(false)
             setSpinning(false)
+            setAllBets({})
             setWinningNumber(null)
             setAllDroppedChips({})
             setAllDroppedCornerChips({})
@@ -268,8 +354,8 @@ const Roulette = () => {
         }
     }, [socket]);
 
-    console.log(droppedChips)
-    console.log(droppedLastRowChips)
+    console.log(allDroppedChips)
+    console.log(allDroppedCornerChips)
     const getRotationForNumber = (winningNumber) => {
         const targetIndex = americanRouletteNumbers.findIndex(num => num.number === winningNumber.number);
         const degreesPerNumber = 360 / totalNumbers;
@@ -282,8 +368,8 @@ const Roulette = () => {
     useEffect(() => {
         if (spinning === true && activeRoom && myId) {
           setTimeout(() => {
-            socket.emit("game-finished", { activeRoom, myId });
-          }, 10000)
+            socket.emit("game-finished", { activeRoom, myId, allBets });
+          }, 100000000)
         }
       }, [spinning, activeRoom, myId]);
 
@@ -334,6 +420,7 @@ const Roulette = () => {
             </RouletteColumn>
             <RouletteSmallColumn>
                 <StyledAbsolute onClick={openTable}>{icon}</StyledAbsolute>
+                <BetsWrapper>
                 {allBets && Object.entries(allBets).map(([key, valueArray]) => {
                             return valueArray.map((bet, index) => (
                                 <BetHolder>
@@ -347,10 +434,31 @@ const Roulette = () => {
                                 </BetHolder>
                             ));
                         })}
+                </BetsWrapper>
+                <BetsBalances>
+                        <BottomContainerRow>
+                            <SmallIconHolder><img src={balanceIcon} alt="balance" /></SmallIconHolder>
+                            <BalanceDisplay balance={balance} />
+                        </BottomContainerRow>
+                        <BottomContainerRow>
+                        <SmallIconHolder><img src={chips} alt="balance" /></SmallIconHolder>
+                        <PlacedBetDisplay placedBet={placedBet} />
+                    </BottomContainerRow>
+                    <BottomContainerRow>
+                        <SmallIconHolder><img src={roulette} alt="balance" /></SmallIconHolder>
+                        <NumbersBetDisplay allBets={allBets} />
+                    </BottomContainerRow>
+                </BetsBalances>
             </RouletteSmallColumn>
             </RouletteRow>
             <BettingColumn>
-                <SmallTableColumn></SmallTableColumn>
+                <SmallTableColumn>
+                {latestNumbers.map(el => {
+                            return(
+                                <SmallNumberWrapper style={{background: `${el.color}`}}>{el.number}</SmallNumberWrapper>
+                            )
+                        })}
+                </SmallTableColumn>
                 <RouletteTableContainer>
                     
                     <SmallColumn>
@@ -366,7 +474,7 @@ const Roulette = () => {
                         <Row>
                             {FirstRow.map((card, index) => {
                                 return (
-                                    <BetNumbersArea key={index}
+                                    <BetNumbersArea key={index} activeNumbers={activeNumbers}
                                         card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} 
                                        allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}
                                     />
@@ -376,7 +484,7 @@ const Roulette = () => {
                         <Row>
                             {SecondRow.map((card, index) => {
                                 return (
-                                    <BetNumbersArea key={index} card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} 
+                                    <BetNumbersArea activeNumbers={activeNumbers} key={index} card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} 
                                     allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}
                                     />
                                 )
@@ -385,7 +493,7 @@ const Roulette = () => {
                         <Row>
                             {ThirdRow.map((card, index) => {
                                 return (
-                                    <BetNumbersArea key={index}
+                                    <BetNumbersArea key={index} activeNumbers={activeNumbers}
                                     card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} 
                                        allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}
                                         
@@ -446,12 +554,14 @@ const Roulette = () => {
                         })}
                     </LatestRolls> */}
                 </RouletteTableContainer>
-                <SmallTableColumn></SmallTableColumn>
+                <SmallTableColumn>
+
+                </SmallTableColumn>
                 
             
             </BettingColumn>
             <RouletteTable setPlaceBets={setPlaceBets} placeBets={placeBets} activeRoom={activeRoom} myId={myId} socket={socket}
-            placedBet={placedBet} setPlacedBet={setPlacedBet} allBets={allBets} setAllBets={setAllBets}
+            placedBet={placedBet} setPlacedBet={setPlacedBet} allBets={allBets} setAllBets={setAllBets} latestNumbers={latestNumbers}
             droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips}
             droppedRowChips={droppedRowChips} setDroppedRowChips={setDroppedRowChips} droppedLastRowChips={droppedLastRowChips} setDroppedLastRowChips={setDroppedLastRowChips}
             droppedColumnChips={droppedColumnChips} setDroppedColumnChips={setDroppedColumnChips} droppedBorderLeftChips={droppedBorderLeftChips} lastBet={lastBet} setLastBet={setLastBet}

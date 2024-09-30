@@ -1,5 +1,6 @@
 import React,{useState, useRef, useCallback, useEffect} from 'react';
 import styled from 'styled-components';
+import './styles.css'
 import { useDroppable } from '@dnd-kit/core'; // Assuming you are using @dnd-kit for drag and drop
 import {CornerDropArea,BorderLeftArea,BorderTopArea} from './DroppableAreas';
 import {Number,NumberWrapper,NumberZeroWrapper,Zero} from './index'
@@ -35,18 +36,17 @@ const LastRowWrapper = styled.div`
     }
 `;
 
-export const BetNumbersArea = ({ card,allDroppedChips,allDroppedCornerChips,allDroppedBorderLeftChips,allDroppedBorderTopChips}) => {
+export const BetNumbersArea = ({ card,allDroppedChips,allDroppedCornerChips,allDroppedBorderLeftChips,allDroppedBorderTopChips,activeNumbers}) => {
     const { isOver, setNodeRef } = useDroppable({
         id: card.number,
     });
-
     const number = card.number;
 
     return (
         <Number
             ref={setNodeRef}
             id={card.number}
-            className="number-inactive"
+            className={activeNumbers.includes(number) ? 'number-active' : 'number-inactive'}
 
             key={card.number}
         >

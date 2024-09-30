@@ -4,7 +4,7 @@ import { RouletteSection,BigColumn,SmallColumn,Row,TopRow,BottomRow,BigBottomCol
     BottomContainer,IconHolder,IconWrapper,IconName,IconRound,BottomContainerColumn,RowIcons,BottomContainerRow,
     SmallIconHolder,SmallTextHolder,BettingText
  } from '../../pages/indexTwo'
-import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, LatestNumbers} from '../../pages/fakeData'
+import {FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns} from '../../pages/fakeData'
 import { motion,AnimatePresence  } from 'framer-motion'
 import { DndContext } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
@@ -29,18 +29,42 @@ import { BetState } from '../../context/BetsContext'
 const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,setPlacedBet,
     allBets,setAllBets,droppedChips,setDroppedChips,droppedCornerChips,setDroppedCornerChips,droppedRowChips,setDroppedRowChips,
     droppedLastRowChips,setDroppedLastRowChips,droppedColumnChips,setDroppedColumnChips,droppedBorderLeftChips,setDroppedBorderLeftChips,
-    droppedBorderTopChips,setDroppedBorderTopChips,lastBet,setLastBet
+    droppedBorderTopChips,setDroppedBorderTopChips,lastBet,setLastBet,latestNumbers
 }) => {
 
     
     
     const [selectedId, setSelectedId] = useState(null)
     const [activeContainer, setActiveContainer] = useState(null)
+    const [activeNumbers, setActiveNumbers] = useState([]);
     const [clearBetMenuOpen, setClearBetMenuOpen] = useState(false)
     const [seconds, setSeconds] = useState(null);
     const intervalRef = useRef(null);
     const [dragged, isDragged] = useState(false)
     const {balance, setBalance} = BetState();
+    const scrollableDivRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+
+
+    // useEffect hook to scroll to the end every time the latestNumbers changes
+    const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+
+  // Detect if the user manually scrolls
+  const handleScroll = () => {
+    const { scrollLeft, scrollWidth, clientWidth } = scrollableDivRef.current;
+    const isAtRight = scrollLeft + clientWidth >= scrollWidth - 10; // Checking if near the rightmost position
+
+    // Disable auto-scrolling if the user scrolls away from the end
+    setIsAutoScrolling(isAtRight);
+  };
+
+  useEffect(() => {
+    if (scrollableDivRef.current && isAutoScrolling) {
+      // Scroll to the end (rightmost position) only if auto-scrolling is enabled
+      scrollableDivRef.current.scrollLeft = scrollableDivRef.current.scrollWidth;
+    }
+  }, [latestNumbers, isAutoScrolling]); // 
+    
 
     const startCountdown = () => {
         let countdownTime = 15000;
@@ -64,119 +88,47 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         }
     }, [placeBets])
 
-    const getAllRows = () => {
-        const allRows = FirstRow.concat(SecondRow).concat(ThirdRow)
-        if(droppedChips){
-            const droppedChipsKeys = Object.keys(droppedChips);
-            droppedChipsKeys.forEach(chip => {
-                document.getElementById(chip).style.filter = `drop-shadow(0 0 5px aqua);`
-                
-            })
-        }
-        if(droppedCornerChips){
-            const droppedChipsKeys = Object.keys(droppedCornerChips);
-            droppedChipsKeys.forEach(chip => {
-                const filter = allRows.filter(el => el.cornerLeftId === chip)
-                const numbers = filter[0].cornerLeft
-                numbers.forEach(number => {
-                    document.getElementById(number).classList.add("cell-active");
-                })
-            })
-        }
-        if(droppedBorderLeftChips){
-            const droppedChipsKeys = Object.keys(droppedBorderLeftChips);
-            droppedChipsKeys.forEach(chip => {
-                const filter = allRows.filter(el => el.borderLeftId === chip)
-                const numbers = filter[0].borderLeft
-                numbers.forEach(number => {
-                    document.getElementById(number).classList.add("cell-active");
-                })
-            })
-        }
-        if(droppedBorderTopChips){
-            const droppedChipsKeys = Object.keys(droppedBorderTopChips);
-            droppedChipsKeys.forEach(chip => {
-                console.log(chip)
-                const filter = allRows.filter(el => el.borderTopId === chip)
-                const numbers = filter[0].borderTop
-                numbers.forEach(number => {
-                    document.getElementById(number).classList.add("cell-active");
-                })
-            })
-        }
-        if(droppedRowChips){
-            const droppedChipsKeys = Object.keys(droppedRowChips);
-            droppedChipsKeys.forEach(chip => {
-                const filter = BetPerRows.filter(el => el.name === chip)
-                const numbers = filter[0].numbers
-                numbers.forEach(number => {
-                    document.getElementById(number).classList.add("cell-active");
-                })
-            })
-        }
-        if(droppedLastRowChips){
-            const droppedChipsKeys = Object.keys(droppedLastRowChips);
-            droppedChipsKeys.forEach(chip => {
-                const filter = LastRow.filter(el => el.id === chip)
-                const numbers = filter[0].numbers
-                numbers.forEach(number => {
-                    document.getElementById(number).classList.add("cell-active");
-                })
-            })
-        }
-        if(droppedColumnChips){
-            const droppedChipsKeys = Object.keys(droppedColumnChips);
-            droppedChipsKeys.forEach(chip => {
-                const filter = BetPerColumns.filter(el => el.id === chip)
-                const numbers = filter[0].numbers
-                numbers.forEach(number => {
-                    document.getElementById(number).classList.add("cell-active");
-                })
-            })
-        }
-        if(activeContainer){
-            if(!isNaN(activeContainer)){
-                checkSingleNumber(activeContainer)
-            } else {
-                if (activeContainer.startsWith('corner')){
-                    const filter = allRows.filter(el => el.cornerLeftId === activeContainer);
-                    checkCornerLeft(filter[0].cornerLeft)
-                } else if (activeContainer.startsWith('split')){
-                    const filter = allRows.filter(el => el.borderLeftId === activeContainer);
-                    checkBorderLeft(filter[0].borderLeft)
-                } else if (activeContainer.startsWith('borderT')){
-                    const filter = allRows.filter(el => el.borderTopId === activeContainer);
-                    checkBorderTop(filter[0].borderTop)
-                } else if((activeContainer.startsWith('1') || activeContainer.startsWith('2') || activeContainer.startsWith('3'))){
-                    const filter = BetPerRows.filter(el => el.name === activeContainer);
-                    const numbers = filter[0].numbers
-                    checkRowNumbers(numbers)
-                } else if(['first', 'last', 'EVEN', 'ODD', 'black', 'red'].some(prefix => activeContainer.startsWith(prefix))){
-                    const filter = LastRow.filter(el => el.id === activeContainer);
-                    const numbers = filter[0].numbers
-                    checkRowNumbers(numbers)
-                } else if(activeContainer.startsWith('column')){
-                    const filter = BetPerColumns.filter(el => el.id === activeContainer);
-                    const numbers = filter[0].numbers
-                    checkColumnNumbers(numbers)
-                }
-            }
-        } else if(activeContainer === null){
-            console.log("null")
-            
-        }
-    };
 
     useEffect(() => {
-        getAllRows();
-    }, [droppedChips,droppedCornerChips,droppedBorderLeftChips,droppedBorderTopChips,activeContainer,droppedRowChips,
-        droppedLastRowChips,droppedColumnChips
-    ])
+        console.log(activeNumbers)
+    }, [activeNumbers])
 
+    useEffect(() => {
+        const allRows = FirstRow.concat(SecondRow).concat(ThirdRow)
+        if(activeContainer !== null){
+            if(typeof activeContainer === 'string' && ['first', 'last', 'EVEN', 'ODD', 'black', 'red'].some(prefix => activeContainer.startsWith(prefix))){
+                const filter = LastRow.filter(el => el.id === activeContainer);
+                const numbers = filter[0]?.numbers || [];
+                setActiveNumbers(numbers); 
+            } else if(typeof activeContainer === 'string' && activeContainer.startsWith('column')){
+                const filter = BetPerColumns.filter(el => el.id === activeContainer);
+                const numbers = filter[0]?.numbers || [];
+                setActiveNumbers(numbers); 
+            } else if(typeof activeContainer === 'string' && ['1', '2', '3'].some(prefix => activeContainer.startsWith(prefix))){
+                const filter = BetPerRows.filter(el => el.name === activeContainer);
+                const numbers = filter[0]?.numbers || [];
+                setActiveNumbers(numbers); 
+            }  else if(typeof activeContainer === 'string' && activeContainer.startsWith('border')){
+                const filter = allRows.filter(el => el.borderTopId === activeContainer);
+                const numbers = filter[0]?.borderTop || [];
+                setActiveNumbers(numbers); 
+            }  else if(typeof activeContainer === 'string' && activeContainer.startsWith('split')){
+                const filter = allRows.filter(el => el.borderLeftId === activeContainer);
+                const numbers = filter[0]?.borderLeft || [];
+                setActiveNumbers(numbers); 
+            }  else if(typeof activeContainer === 'string' && activeContainer.startsWith('corner')){
+                const filter = allRows.filter(el => el.cornerLeftId === activeContainer);
+                const numbers = filter[0]?.cornerLeft || [];
+                setActiveNumbers(numbers); 
+            }
+        } else {
+            setActiveNumbers([])
+        }
+    }, [activeContainer])
     
     const CornerDropArea = ({ card }) => {
         const { isOver, setNodeRef } = useDroppable({
-          id: `corner-${card.number}`, // Unique ID for the corner area
+          id: `corner-${card.number}`, 
         });
         const cornerLeft = card.cornerLeft
         return (
@@ -251,7 +203,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         );
       };
 
-      const ZeroesArea = ({card,onLeave  }) => {
+      const ZeroesArea = ({card,onLeave,activeContainer  }) => {
         const { isOver, setNodeRef } = useDroppable({
           id: card.number,
         });
@@ -261,7 +213,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         const borderTop = card.borderTop
         const number = card.number
         return (
-          <Zero ref={setNodeRef} id={card.number} className="number-inactive"  onMouseEnter={() => checkSingleNumber(number)} onMouseLeave={() => removeSingleNumber(number)}
+          <Zero ref={setNodeRef} id={card.number} className={activeContainer === number ? "number-active" : "number-inactive"}  
            key={card.number}  >
             <NumberZeroWrapper style={{background: `${card.color}`}}  >{number}</NumberZeroWrapper>
             {
@@ -295,7 +247,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         const name = card.name
         const numbers = card.numbers
         return (
-          <BetPerRowsWrapper ref={setNodeRef} id={name} className="number-inactive"  onMouseEnter={() => checkRowNumbers(numbers)} onMouseLeave={() => removeRowNumbers(numbers)}
+          <BetPerRowsWrapper ref={setNodeRef} id={name} 
            key={name}  >
             {
                 !droppedRowChips[name] || droppedRowChips[name].length === 0 ? (
@@ -323,12 +275,13 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
           id: card.id,
         });
         if (!isOver && onLeave) {
-            onLeave(card.name);
+            onLeave(card.id);
           }
         const name = card.name
         const numbers = card.numbers
+        
         return (
-          <LastRowWrapper style={{background: `${card.color}`}} ref={setNodeRef} id={card.id} className="number-inactive"  onMouseEnter={() => checkRowNumbers(numbers)} onMouseLeave={() => removeRowNumbers(numbers)}
+          <LastRowWrapper style={{background: `${card.color}`}} ref={setNodeRef} id={card.id} 
            key={card.id}  >
             {
                 !droppedLastRowChips[card.id] || droppedLastRowChips[card.id].length === 0 ? (
@@ -363,7 +316,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         const name = card.name
         const numbers = card.numbers
         return (
-          <Number ref={setNodeRef} id={card.id} className="number-inactive"  onMouseEnter={() => checkColumnNumbers(numbers)} onMouseLeave={() => removeColumnNumbers(numbers)}
+          <Number ref={setNodeRef} id={card.id} className="number-inactive"
            key={card.id}  >
             {
                 !droppedColumnChips[card.id] || droppedColumnChips[card.id].length === 0 ? (
@@ -386,17 +339,25 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         );
     };
 
-    const BetNumbersArea = ({card,onLeave  }) => {
+    const BetNumbersArea = ({card,onLeave,activeContainer  }) => {
         const { isOver, setNodeRef } = useDroppable({
           id: card.number,
         });
         if (!isOver && onLeave) {
             onLeave(card.number);
-          }
-        const borderTop = card.borderTop
+        }
         const number = card.number
+
+        const isActive = 
+        // Check if activeContainer is a number and matches this number's id
+        (typeof activeContainer === 'number' && activeContainer === number) ||
+        // Check if activeContainer is a string and this number is in the activeNumbers array
+        (typeof activeContainer === 'string' && activeNumbers.includes(number));
+    
+        //console.log(activeContainer)
+        const borderTop = card.borderTop
         return (
-          <Number ref={setNodeRef} id={card.number} className="number-inactive"  onMouseEnter={() => checkSingleNumber(number)} onMouseLeave={() => removeSingleNumber(number)}
+          <Number ref={setNodeRef} id={card.number} className={isActive ? 'number-active' : 'number-inactive'}
            key={card.number}  >
             <NumberWrapper style={{background: `${card.color}`}}  >{number}</NumberWrapper>
             <CornerDropArea 
@@ -430,89 +391,13 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
 
     
 
-
+    
     
 
     
 
-    const checkCornerLeft = (cornerLeft) => {
-        cornerLeft.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.add('number-active')
-            
-        })
-    }
-    const removeCornerLeft = (cornerLeft) => {
-        cornerLeft.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.remove('number-active')
-            
-        })
-    }
-    const checkBorderLeft = (borderLeft) => {
-        borderLeft.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.add('number-active')
-            
-        })
-    }
-    const removeBorderLeft = (borderLeft) => {
-        borderLeft.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.remove('number-active')
-            
-        })
-    }
-    const checkBorderTop = (borderTop) => {
-        borderTop.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.add('number-active')
-            
-        })
-    }
-    const removeBorderTop = (borderTop) => {
-        borderTop.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.remove('number-active')
-            
-        })
-    }
-    const checkRowNumbers = (numbers) => {
-        numbers.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.add('number-active')
-            
-        })
-    }
-    const removeRowNumbers = (numbers) => {
-        numbers.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.remove('number-active')
-            
-        })
-    }
-    const checkColumnNumbers = (numbers) => {
-        numbers.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.add('number-active')
-            
-        })
-    }
-    const removeColumnNumbers = (numbers) => {
-        numbers.forEach(el => {
-            const item = document.getElementById(el)
-            item.classList.remove('number-active')
-            
-        })
-    }
-    const checkSingleNumber = (number) => {
-        const item = document.getElementById(number)
-        item.classList.add('number-active')
-    }
-    const removeSingleNumber = (number) => {
-        const item = document.getElementById(number)
-        item.classList.remove('number-active')
-    }
+    
+    
 
     const sensors = useSensors(
         useSensor(MouseSensor),
@@ -523,11 +408,16 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         })
     );
 
+    const handleDragStart = () => {
+        setIsDragging(true);
+    };
+      
     const handleDragOver = (event) => {
-        const { over } = event;
-        console.log(over)
-        if (over) {
-          setActiveContainer(over.id);
+        if (isDragging) {
+            const { over } = event;
+            if (over && over.id !== activeContainer) {
+                setActiveContainer(over.id);
+            }
         }
     };
 
@@ -535,7 +425,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         if (activeContainer === id) {
           setActiveContainer(null); 
         }
-      };
+    };
 
       const handleDragEnd = (event) => {
         const { over, active } = event;
@@ -697,7 +587,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
     
     const clearAllBets = () => {
         setActiveContainer(null)
-        setBalance(balance + placedBet)
+        //setBalance(balance + placedBet)
         setAllBets({})
         setPlacedBet(null)
         setDroppedChips({})
@@ -790,14 +680,14 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             animate="animate"
             exit="exit">  
     <RouletteSection>
-         <DndContext onDragEnd={handleDragEnd} sensors={sensors} onDragOver={handleDragOver}>
+         <DndContext onDragEnd={handleDragEnd} sensors={sensors} onDragOver={handleDragOver} onDragStart={handleDragStart}>
             <TopRow>
       <SmallColumn>
         <div style={{marginLeft: 'auto'}}>
             {Zeroes.map((card,index) => {
                 return(
-                    <ZeroesArea card={card} key={index} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips}
-                    checkSingleNumber={checkSingleNumber} removeSingleNumber={removeSingleNumber} removeBet={removeBet}/>
+                    <ZeroesArea card={card} activeContainer={activeContainer} key={index} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips}
+                    removeBet={removeBet}/>
                 )
             })}
         </div>
@@ -806,11 +696,10 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             <Row>
             {FirstRow.map((card,index) => {  
                 return(
-                    <BetNumbersArea key={index}
+                    <BetNumbersArea key={index} activeContainer={activeContainer}
                         card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
                         droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} 
-                        checkSingleNumber={checkSingleNumber} removeSingleNumber={removeSingleNumber} removeBet={removeBet} checkCornerLeft={checkCornerLeft} removeCornerLeft={removeCornerLeft} 
-                        checkBorderLeft={checkBorderLeft} removeBorderLeft={removeBorderLeft} checkBorderTop={checkBorderTop} removeBorderTop={removeBorderTop}
+                        removeBet={removeBet} 
                     />
                 )
             })}
@@ -818,7 +707,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             <Row>
             {SecondRow.map((card,index) => {
                 return(
-                    <BetNumbersArea key={index}card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} checkSingleNumber={checkSingleNumber} removeSingleNumber={removeSingleNumber} removeBet={removeBet} checkCornerLeft={checkCornerLeft} removeCornerLeft={removeCornerLeft} checkBorderLeft={checkBorderLeft} removeBorderLeft={removeBorderLeft} checkBorderTop={checkBorderTop} removeBorderTop={removeBorderTop} 
+                    <BetNumbersArea key={index}card={card} activeContainer={activeContainer} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} removeBet={removeBet}  
                     />
                 )
             })}
@@ -826,11 +715,10 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             <Row>
             {ThirdRow.map((card,index) => {
                 return(
-                    <BetNumbersArea key={index}
+                    <BetNumbersArea key={index} activeContainer={activeContainer}
                         card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
                         droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} 
-                        checkSingleNumber={checkSingleNumber} removeSingleNumber={removeSingleNumber} removeBet={removeBet} checkCornerLeft={checkCornerLeft} removeCornerLeft={removeCornerLeft} 
-                        checkBorderLeft={checkBorderLeft} removeBorderLeft={removeBorderLeft} checkBorderTop={checkBorderTop} removeBorderTop={removeBorderTop}
+                        removeBet={removeBet} 
                     />
                 )
             })}
@@ -838,16 +726,16 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             <Row>
             {BetPerRows.map((card,index) => {
                 return(
-                    <BetPerRowsArea card={card} onLeave={handleLeave} key={index} droppedRowChips={droppedRowChips} setDroppedRowChips={setDroppedRowChips}
-                    checkRowNumbers={checkRowNumbers} removeRowNumbers={removeRowNumbers} removeBet={removeBet}/>
+                    <BetPerRowsArea activeContainer={activeContainer} card={card} onLeave={handleLeave} key={index} droppedRowChips={droppedRowChips} setDroppedRowChips={setDroppedRowChips}
+                    removeBet={removeBet}/>
                 )
             })}
             </Row>
             <Row>
             {LastRow.map((card,index) => {
                 return(
-                    <LastRowArea card={card} key={index} droppedLastRowChips={droppedLastRowChips} setDroppedLastRowChips={setDroppedLastRowChips}
-                    removeBet={removeBet} activeContainer={activeContainer} checkRowNumbers={checkRowNumbers} removeRowNumbers={removeRowNumbers}/>
+                    <LastRowArea card={card} onLeave={handleLeave} key={index} droppedLastRowChips={droppedLastRowChips} setDroppedLastRowChips={setDroppedLastRowChips}
+                    removeBet={removeBet} activeContainer={activeContainer} />
                 )
             })}
             </Row>
@@ -857,7 +745,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
             {BetPerColumns.map((card,index) => {
                 return(
                     <BetPerColumnsArea card={card} key={index} onLeave={handleLeave} droppedColumnChips={droppedColumnChips} setDroppedColumnChips={setDroppedColumnChips}
-                    checkColumnNumbers={checkColumnNumbers} removeColumnNumbers={removeColumnNumbers} removeBet={removeBet}/>
+                    removeBet={removeBet}/>
                 )
             })}
         </div>
@@ -881,11 +769,13 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
                     </BottomContainerRow>
                     </RowIcons>
                     <RowIcons>
-                        {LatestNumbers.map(el => {
+                        <div  ref={scrollableDivRef}  onScroll={handleScroll}  style={{width: '100%', height: '100%', overflowX:'scroll', display: 'flex'}}>
+                        {latestNumbers.map(el => {
                             return(
                                 <SmallNumberWrapper style={{background: `${el.color}`}}>{el.number}</SmallNumberWrapper>
                             )
                         })}
+                        </div>
                     </RowIcons>
                 </BottomContainerColumn>
             </SmallBottomColumn>
@@ -897,24 +787,20 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
                     <BottomContainer></BottomContainer>
                 ) : (
                     <BottomContainer>
-                        <IconHolder whileTap={{scale: 0.95}} onClick={sendBet}>
-                            <IconWrapper ><IconRound style={{backgroundImage: `url(${placeBet})`, backgroundPosition: 'center',
-                        backgroundSize: 'cover'}}></IconRound></IconWrapper>
+                        <IconHolder whileTap={{scale: 0.95}}  whileHover={{scale: 1.05}} onClick={sendBet}>
+                            <IconWrapper ><IconRound ><img src={placeBet} alt="whatever" /></IconRound></IconWrapper>
                             <IconName >PLACE BET</IconName>
                         </IconHolder>
-                        <IconHolder whileTap={{scale: 0.95}} onClick={repeatBet}>
-                            <IconWrapper ><IconRound style={{backgroundImage: `url(${repeat})`, backgroundPosition: 'center',
-                        backgroundSize: 'cover'}}></IconRound></IconWrapper>
+                        <IconHolder whileTap={{scale: 0.95}}  whileHover={{scale: 1.05}} onClick={repeatBet}>
+                            <IconWrapper ><IconRound><img src={repeat} alt="whatever" /></IconRound></IconWrapper>
                             <IconName>REPEAT</IconName>
                         </IconHolder>
-                        <IconHolder whileTap={{scale: 0.95}}>
-                            <IconWrapper ><IconRound style={{backgroundImage: `url(${x2})`, backgroundPosition: 'center',
-                        backgroundSize: 'cover'}}></IconRound></IconWrapper>
+                        <IconHolder whileTap={{scale: 0.95}} whileHover={{scale: 1.05}} >
+                            <IconWrapper ><IconRound><img src={x2} alt="whatever" /></IconRound></IconWrapper>
                             <IconName>DOUBLE</IconName>
                         </IconHolder>
-                        <IconHolder whileTap={{scale: 0.95}} onClick={clearAllBets}>
-                            <IconWrapper whileTap={{scale: 0.95}}><IconRound style={{backgroundImage: `url(${chips})`, backgroundPosition: 'center',
-                        backgroundSize: 'cover'}}><img src={cross} alt="cross" /></IconRound></IconWrapper>
+                        <IconHolder whileTap={{scale: 0.95}}  whileHover={{scale: 1.05}} onClick={clearAllBets}>
+                            <IconWrapper whileTap={{scale: 0.95}}><IconRound ><img src={chips} alt="whatever" /><img src={cross} alt="cross" /></IconRound></IconWrapper>
                             <IconName>CLEAR ALL</IconName>
                         </IconHolder>
                         {/* <IconHolder >
@@ -1020,6 +906,7 @@ const SmallNumberWrapper = styled.div`
     height: 25px;
     margin: 0 2px;
     border-radius: 50%;
+    flex-shrink: 0;
     ${props => props.theme.displayFlexCenter};
     color: ${props => props.theme.text};
     @media(min-width: 968px){

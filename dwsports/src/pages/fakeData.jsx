@@ -418,6 +418,18 @@ export const LatestNumbers = [
     {
         number: 9,
         color: "red"
+    },
+    {
+        number: 27,
+        color: "red"
+    },
+    {
+        number: 3,
+        color: "red"
+    },
+    {
+        number: 9,
+        color: "red"
     }
 ]
 

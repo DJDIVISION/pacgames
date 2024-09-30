@@ -48,6 +48,10 @@
     color: rgb(22, 235, 22) !important;
   }
 
+  .number-active {
+    background: transparent;
+  }
+
   .cell-active {
     box-shadow: inset 1px 1px 5px 5px #00ff37bd;
   }
