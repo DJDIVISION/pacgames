@@ -196,9 +196,16 @@ function startBettingTimeout(roomId) {
 
     // Check which players haven't placed their bets and disconnect them
     room.players.forEach(player => {
+      console.log("playereeer", player)
       if (player.bet === 0) {
         console.log(`${player.playerName} has not placed any bet`)
-        io.to(player.playerId).emit('close-betting-table');
+        io.to(player.playerId).emit('close-betting-table',{
+          message: `${player.playerName} has not placed any bet!`,
+          dealer: 'Jack',
+          dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+          sendedBy: 'ADMIN',
+        });
+        declareWinningNumber(roomId);
         /* console.log(`Disconnecting player ${player.name} for not betting in time`);
         io.to(player.playerId).emit('disconnected-for-no-bet');
         const socket = io.sockets.sockets.get(player.playerId); // Fetch socket by playerId
@@ -309,7 +316,7 @@ io.on("connection", (socket) => {
       const { droppedChips,droppedCornerChips,droppedRowChips,droppedLastRowChips,droppedColumnChips,droppedBorderLeftChips,droppedBorderTopChips } = allChips;
         const room = rooms.find((room) => room.id === roomId);
         const player = room.players.find(p => p.playerId === playerId);
-        
+        player.bet = placedBet
         player.bets = player.bets || {};
         player.bets.droppedChips = droppedChips || []; // Ensure these are arrays
         player.bets.droppedCornerChips = droppedCornerChips || [];
@@ -374,7 +381,7 @@ io.on("connection", (socket) => {
         console.log("Player wins with winnings:", winnings);
         io.to(player.playerId).emit("player-wins", { winnings, number });
         io.to(roomId).emit('message-sent', {
-          message: `${player.playerName} wins with $${winnings}.`,
+          message: `${player.playerName} wins $${winnings}.`,
           dealer: 'Jack',
           dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
           sendedBy: 'ADMIN'

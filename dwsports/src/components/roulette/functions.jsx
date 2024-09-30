@@ -76,7 +76,7 @@ export const BetNumbersArea = ({ card,allDroppedChips,allDroppedCornerChips,allD
                         {allDroppedChips[number].map((chip, index) => (
                             <img
                                 key={index}
-                                src={chip.chipImage}
+                                src={chip.avatar}
                                 alt={`Chip ${chip.chipValue}`}
                                 className="zero-dropped-chip-small"
                             />
@@ -104,8 +104,8 @@ export const BetPerColumnsArea = ({card,allDroppedColumnChips}) => {
                 {allDroppedColumnChips[card.id].map((chip, index) => (
                     <img
                     key={index}
-                    src={chip.chipImage}
-                    alt={`Chip ${chip.chipValue}`}
+                    src={chip.avatar}
+                    alt={`Chip ${chip.avatar}`}
                     className="roulette-dropped-chip-small"
                     />
                 ))}
@@ -133,8 +133,8 @@ export const ZeroesArea = ({card,allDroppedChips }) => {
                 {allDroppedChips[number].map((chip, index) => (
                     <img
                     key={index}
-                    src={chip.chipImage}
-                    alt={`Chip ${chip.chipValue}`}
+                    src={chip.avatar}
+                    alt={`Chip ${chip.avatar}`}
                     className="zero-dropped-chip-small"
                     />
                 ))}
@@ -162,8 +162,8 @@ export const BetPerRowsArea = ({card,allDroppedRowChips }) => {
                 {allDroppedRowChips[name].map((chip, index) => (
                     <img
                     key={index}
-                    src={chip.chipImage}
-                    alt={`Chip ${chip.chipValue}`}
+                    src={chip.avatar}
+                    alt={`Chip ${chip.avatar}`}
                     className="first-dropped-chip-small"
                     />
                 ))}
@@ -193,8 +193,8 @@ export const LastRowArea = ({card,allDroppedLastRowChips  }) => {
                 {allDroppedLastRowChips[card.id].map((chip, index) => (
                     <img
                     key={index}
-                    src={chip.chipImage}
-                    alt={`Chip ${chip.chipValue}`}
+                    src={chip.avatar}
+                    alt={`Chip ${chip.avatar}`}
                     className="first-dropped-chip-small"
                     />
                 ))}

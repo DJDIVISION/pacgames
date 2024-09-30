@@ -251,6 +251,29 @@ export const SmallNumberWrapper = styled.div`
     }
 `;
 
+export const BigNumberHolder = styled.div`
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 1px solid ${props => props.theme.MainAccent};
+  padding: 30px;
+  background-color: ${(props) => props.bgColor};
+   color:  ${props => props.theme.text};
+   ${props => props.theme.displayFlexCenter};
+   font-weight: bold;
+   font-size: 54px;
+`;
+
+export const SmallTableColumnRight = styled.div`
+  width: 25vw;
+  height: 60%;
+  ${props => props.theme.displayFlexCenter};
+  padding: 5px;
+  
+
+`;
+
+
 export const SmallTableColumn = styled.div`
   width: 25vw;
   height: 60%;

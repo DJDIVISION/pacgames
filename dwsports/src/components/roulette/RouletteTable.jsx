@@ -18,7 +18,7 @@ import repeat from '../../assets/chips/repeat.png'
 import placeBet from '../../assets/chips/placeBet.png'
 import balanceIcon from '../../assets/chips/balance-bag.png'
 import x2 from '../../assets/chips/x2.png'
-import { BalanceDisplay,PlacedBetDisplay,NumbersBetDisplay } from '../../pages/functions';
+import { BalanceDisplay,PlacedBetDisplay,NumbersBetDisplay, useAuth } from '../../pages/functions';
 import { BetState } from '../../context/BetsContext'
 
 
@@ -26,7 +26,7 @@ import { BetState } from '../../context/BetsContext'
 
 
 
-const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,setPlacedBet,
+const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
     allBets,setAllBets,droppedChips,setDroppedChips,droppedCornerChips,setDroppedCornerChips,droppedRowChips,setDroppedRowChips,
     droppedLastRowChips,setDroppedLastRowChips,droppedColumnChips,setDroppedColumnChips,droppedBorderLeftChips,setDroppedBorderLeftChips,
     droppedBorderTopChips,setDroppedBorderTopChips,lastBet,setLastBet,latestNumbers
@@ -40,30 +40,16 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
     const [clearBetMenuOpen, setClearBetMenuOpen] = useState(false)
     const [seconds, setSeconds] = useState(null);
     const intervalRef = useRef(null);
-    const [dragged, isDragged] = useState(false)
     const {balance, setBalance} = BetState();
     const scrollableDivRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
+    const {placedBet, setPlacedBet} = BetState();
+    const { user } = useAuth();
 
-
-    // useEffect hook to scroll to the end every time the latestNumbers changes
-    const [isAutoScrolling, setIsAutoScrolling] = useState(true);
-
-  // Detect if the user manually scrolls
-  const handleScroll = () => {
-    const { scrollLeft, scrollWidth, clientWidth } = scrollableDivRef.current;
-    const isAtRight = scrollLeft + clientWidth >= scrollWidth - 10; // Checking if near the rightmost position
-
-    // Disable auto-scrolling if the user scrolls away from the end
-    setIsAutoScrolling(isAtRight);
-  };
-
-  useEffect(() => {
-    if (scrollableDivRef.current && isAutoScrolling) {
-      // Scroll to the end (rightmost position) only if auto-scrolling is enabled
-      scrollableDivRef.current.scrollLeft = scrollableDivRef.current.scrollWidth;
-    }
-  }, [latestNumbers, isAutoScrolling]); // 
+    useEffect(() => {
+        scrollableDivRef.current?.scrollIntoView({ behavior: 'smooth' });
+    });
+    
     
 
     const startCountdown = () => {
@@ -132,7 +118,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         });
         const cornerLeft = card.cornerLeft
         return (
-            <CornerLeft ref={setNodeRef} id={`corner-${card.number}`} onMouseEnter={() => checkCornerLeft(cornerLeft)} onMouseLeave={() => removeCornerLeft(cornerLeft)}>
+            <CornerLeft ref={setNodeRef} id={`corner-${card.number}`} >
             {/* Display chips if there are any */}
             {droppedCornerChips[card.cornerLeftId]?.length > 0 && (
               <div className="corner-chips">
@@ -158,7 +144,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         const borderLeft = card.borderLeft
         const wrappedId = "split-"+ card.number
         return (
-            <BorderLeft ref={setNodeRef} id={`split-${card.number}`} onMouseEnter={() => checkBorderLeft(borderLeft)} onMouseLeave={() => removeBorderLeft(borderLeft)}>
+            <BorderLeft ref={setNodeRef} id={`split-${card.number}`}>
             {/* Display chips if there are any */}
             {droppedBorderLeftChips[wrappedId]?.length > 0 && (
               <div className="corner-chips">
@@ -184,7 +170,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         const borderTop = card.borderTop
         const wrappedId = "borderTop-"+card.number
         return (
-            <BorderTop ref={setNodeRef} id={`borderTop-${card.number}`} onMouseEnter={() => checkBorderTop(borderTop)} onMouseLeave={() => removeBorderTop(borderTop)}>
+            <BorderTop ref={setNodeRef} id={`borderTop-${card.number}`}>
             {/* Display chips if there are any */}
             {droppedBorderTopChips[wrappedId]?.length > 0 && (
               <div className="corner-chips">
@@ -431,20 +417,25 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
         const { over, active } = event;
         const chipValue = active.data.current.chipValue;
         const chipImage = active.data.current.chipImage;
+        const avatar = user.user_metadata.avatar_url
+        console.log(avatar)
         let droppedNumberId = over?.id;
         const allRows = FirstRow.concat(SecondRow).concat(ThirdRow);
-        const newBalance = balance - chipValue;
-        setBalance(newBalance)
+        if(over){
+            const newBalance = balance - chipValue;
+            setBalance(newBalance)
+        }
         // Function to update the chips and placed bets
         const updateChipsAndBets = (numberId,droppedNumberId, updateChipsFn, updateBetFn, betType) => {
             updateChipsFn((prevChips) => ({
                 ...prevChips,
-                [droppedNumberId]: [...(prevChips[droppedNumberId] || []), { chipValue, chipImage, betType, numberId, droppedNumberId }],
+                [droppedNumberId]: [...(prevChips[droppedNumberId] || []), { chipValue, chipImage, betType, numberId, droppedNumberId, avatar }],
             }));
             console.log("numberId", numberId)
             console.log("droppedNumberId", droppedNumberId)
             const oldValue = placedBet;
             setPlacedBet(oldValue + chipValue);
+            //setPlacedBet((prevBet) => prevBet + chipValue);
             updateBetFn(numberId, betType, droppedNumberId);
         };
     
@@ -769,12 +760,13 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,placedBet,
                     </BottomContainerRow>
                     </RowIcons>
                     <RowIcons>
-                        <div  ref={scrollableDivRef}  onScroll={handleScroll}  style={{width: '100%', height: '100%', overflowX:'scroll', display: 'flex'}}>
+                        <div style={{width: '100%', height: '100%', overflowX:'scroll', display: 'flex'}}>
                         {latestNumbers.map(el => {
                             return(
                                 <SmallNumberWrapper style={{background: `${el.color}`}}>{el.number}</SmallNumberWrapper>
                             )
                         })}
+                        <div ref={scrollableDivRef}></div>
                         </div>
                     </RowIcons>
                 </BottomContainerColumn>

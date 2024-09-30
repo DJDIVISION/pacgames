@@ -19,7 +19,7 @@ export const CornerDropArea = ({ card, allDroppedCornerChips }) => {
                     {allDroppedCornerChips[card.cornerLeftId].map((chip, index) => (
                         <img
                             key={index}
-                            src={chip.chipImage}
+                            src={chip.avatar}
                             alt={`Chip ${chip.chipValue}`}
                             className="corner-dropped-chip-small"
                         />
@@ -44,7 +44,7 @@ export const BorderLeftArea = ({ card,allDroppedBorderLeftChips }) => {
             {allDroppedBorderLeftChips[wrappedId].map((chip, index) => (
               <img
                 key={index}
-                src={chip.chipImage}
+                src={chip.avatar}
                 alt={`Chip ${chip.chipValue}`}
                 className="borderLeft-dropped-chip-small"
               />
@@ -70,7 +70,7 @@ export const BorderTopArea = ({ card, allDroppedBorderTopChips }) => {
                     {allDroppedBorderTopChips[card.borderTopId].map((chip, index) => (
                         <img
                             key={index}
-                            src={chip.chipImage}
+                            src={chip.avatar}
                             alt={`Chip ${chip.chipValue}`}
                             className="borderTop-dropped-chip-small"
                         />

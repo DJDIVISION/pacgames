@@ -10,16 +10,16 @@ import './styles.css'
 
 const RouletteChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId}) => {
 
-    const { rouletteMessages } = useFetchRouletteMessages();
+    /* const { rouletteMessages } = useFetchRouletteMessages(); */
     const [actionMenuOpen, setActionMenuOpen] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [message, setMessage] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const chatEndRef = useRef(null);
     
-    useEffect(() => {
+    /* useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [rouletteMessages,isExpanded]);
+    }, [rouletteMessages,isExpanded]); */
 
   return (
     <RouletteChatContainer /* id="smallChat" */ initial={{ height: '45vh', width: '30vw'}} // Initial height
@@ -31,7 +31,7 @@ const RouletteChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,pl
           message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
         />
         <MessagesWrapper>
-              {rouletteMessages?.map((msg, index) => {
+              {/* {rouletteMessages?.map((msg, index) => {
                   let date = new Date(msg.created_at)
                   let str = date.toLocaleTimeString()
                   str = str.substring(0, str.length - 3);
@@ -45,7 +45,7 @@ const RouletteChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,pl
                           <MessageTime className={`${msg.sendedBy}TIME`}>{str}</MessageTime>
                       </MessageHolder>
                   )
-              })}
+              })} */}
               <div ref={chatEndRef}></div>
         </MessagesWrapper>
         {isExpanded && (
