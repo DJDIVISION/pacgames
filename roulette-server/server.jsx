@@ -237,7 +237,7 @@ function startBettingTimeout(roomId) {
         declareWinningNumber(roomId);
       }
     
-  }, 20000);
+  }, 30000);
 }
 
 io.on("connection", (socket) => {
