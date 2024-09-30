@@ -6,6 +6,7 @@ import sportsIcon from '../assets/sportsIcon.png'
 import lottery from '../assets/bingo.png'
 import chip from '../assets/chip.png'
 import pacton from '../assets/pacton_robot_png.png'
+import roulette from '../assets/chips/roulette.png'
 import axios from 'axios'
 import { message } from 'antd';
 import { BetState } from '../context/BetsContext';
@@ -103,9 +104,9 @@ const NavBar = () => {
         </NavColumn></LinkR> */}
         <LinkR to="/roulette"><NavColumn >
             <NavIcon>
-                <img src={lottery} alt="sports" />
+                <img src={roulette} alt="sports" />
             </NavIcon>
-            <NavText>LOTTERY</NavText>
+            <NavText>ROULETTE</NavText>
         </NavColumn></LinkR>
         <LinkR to="/blackjack"><NavColumn>
             <NavIcon>

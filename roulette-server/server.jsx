@@ -415,6 +415,23 @@ io.on("connection", (socket) => {
       
       
     });
+    socket.on('disconnect', () => {
+      rooms.forEach((room) => {
+        // Remove player from room if they were in one
+        const playerIndex = room.players.findIndex(p => p.playerId === socket.id);
+        if (playerIndex !== -1) {
+          room.players[playerIndex] = {
+            playerId: "",
+            playerName: "",
+            bet: 0,
+            playerBets: [],
+            googleId: "",
+            avatar: "",
+            room: ""
+          };
+        }
+      });
+    })
 })
 
 // Start server
