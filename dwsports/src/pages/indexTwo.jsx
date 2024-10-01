@@ -7,7 +7,7 @@ import BG from '../assets/roulette-bg.png'
 import { IconButton } from '@mui/material';
 
 export const SmallColumn = styled.div`
-  width: 15%;
+  width: 7.5vw;
   height: 100%;
   padding-top: 50px;
   ${props => props.theme.displayFlexColumn};

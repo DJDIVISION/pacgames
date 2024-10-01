@@ -22,7 +22,9 @@ const NavBar = () => {
     const { user } = useAuth();
     const navigate = useNavigate()
 
-    console.log(user)
+    useEffect(() => {
+        console.log(user)
+    }, [user])
 
     const handleLogout = async () => {
         const { error } = await supabase.auth.signOut()

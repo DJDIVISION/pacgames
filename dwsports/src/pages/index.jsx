@@ -24,6 +24,7 @@ export const BigColumn = styled.div`
   position: relative;
   ${props => props.theme.displayFlexColumn};
   padding-top: 0px;
+  
   @media(max-width: 968px){
     
   }
@@ -31,8 +32,8 @@ export const BigColumn = styled.div`
 
 export const SmallColumn = styled.div`
 width: 5vw;
-height: 100%;
-display: flex;
+height: 100%;   
+${props => props.theme.displayFlexColumn};                                                                         
 @media(max-width: 968px){
   
 }

@@ -51,7 +51,7 @@ const americanRouletteNumbers = [
 
 const app = express();
 app.use(cors({
-  origin: 'https://pacgames-frontend.onrender.com', // Replace with your frontend URL
+  origin: "https://pacgames-frontend.onrender.com",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -419,6 +419,7 @@ io.on("connection", (socket) => {
       rooms.forEach((room) => {
         // Remove player from room if they were in one
         const playerIndex = room.players.findIndex(p => p.playerId === socket.id);
+        console.log(`removed player ${playerIndex} from the room ${room}`)
         if (playerIndex !== -1) {
           room.players[playerIndex] = {
             playerId: "",

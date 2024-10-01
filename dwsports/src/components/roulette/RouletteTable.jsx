@@ -45,12 +45,85 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
     const [isDragging, setIsDragging] = useState(false);
     const {placedBet, setPlacedBet} = BetState();
     const { user } = useAuth();
+    const [lastBetAmount,setLastBetAmount] = useState(null)
 
     useEffect(() => {
         scrollableDivRef.current?.scrollIntoView({ behavior: 'smooth' });
     });
     
-    
+    useEffect(() => {
+        if (droppedChips) {
+            const droppedChipsKeys = Object.keys(droppedChips);
+            droppedChipsKeys.forEach((chip) => {
+                const number = parseInt(chip)
+                setActiveNumbers((prevActiveNumbers) => [
+                    ...new Set([...prevActiveNumbers, number]),
+                ]);
+
+            })
+        }
+        if (droppedCornerChips) {
+            const droppedChipsValues = Object.values(droppedCornerChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedRowChips) {
+            const droppedChipsValues = Object.values(droppedRowChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedLastRowChips) {
+            const droppedChipsValues = Object.values(droppedLastRowChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedColumnChips) {
+            const droppedChipsValues = Object.values(droppedColumnChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedBorderLeftChips) {
+            const droppedChipsValues = Object.values(droppedBorderLeftChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedBorderTopChips) {
+            const droppedChipsValues = Object.values(droppedBorderTopChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+
+    }, [droppedChips, droppedCornerChips, droppedRowChips, droppedLastRowChips, droppedColumnChips, droppedBorderLeftChips, droppedBorderTopChips])
 
     const startCountdown = () => {
         let countdownTime = 15000;
@@ -75,9 +148,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
     }, [placeBets])
 
 
-    useEffect(() => {
-        console.log(activeNumbers)
-    }, [activeNumbers])
+    
 
     useEffect(() => {
         const allRows = FirstRow.concat(SecondRow).concat(ThirdRow)
@@ -116,7 +187,11 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
         const { isOver, setNodeRef } = useDroppable({
           id: `corner-${card.number}`, 
         });
+        
         const cornerLeft = card.cornerLeft
+        if(isOver){
+            console.log(cornerLeft)
+        }
         return (
             <CornerLeft ref={setNodeRef} id={`corner-${card.number}`} >
             {/* Display chips if there are any */}
@@ -169,12 +244,15 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
         });
         const borderTop = card.borderTop
         const wrappedId = "borderTop-"+card.number
+        if(isOver){
+            console.log(wrappedId)
+        }
         return (
-            <BorderTop ref={setNodeRef} id={`borderTop-${card.number}`}>
+            <BorderTop ref={setNodeRef} id={wrappedId}>
             {/* Display chips if there are any */}
             {droppedBorderTopChips[wrappedId]?.length > 0 && (
               <div className="corner-chips">
-                {droppedBorderTopChips[`borderTop-${card.number}`].map((chip, index) => (
+                {droppedBorderTopChips[wrappedId].map((chip, index) => (
                   <img
                     key={index}
                     src={chip.chipImage}
@@ -202,6 +280,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
           <Zero ref={setNodeRef} id={card.number} className={activeContainer === number ? "number-active" : "number-inactive"}  
            key={card.number}  >
             <NumberZeroWrapper style={{background: `${card.color}`}}  >{number}</NumberZeroWrapper>
+            <BorderTopArea card={card} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips}/>
             {
                 !droppedChips[number] || droppedChips[number].length === 0 ? (
                     <div></div>
@@ -418,7 +497,6 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
         const chipValue = active.data.current.chipValue;
         const chipImage = active.data.current.chipImage;
         const avatar = user.user_metadata.avatar_url
-        console.log(avatar)
         let droppedNumberId = over?.id;
         const allRows = FirstRow.concat(SecondRow).concat(ThirdRow);
         if(over){
@@ -431,8 +509,6 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
                 ...prevChips,
                 [droppedNumberId]: [...(prevChips[droppedNumberId] || []), { chipValue, chipImage, betType, numberId, droppedNumberId, avatar }],
             }));
-            console.log("numberId", numberId)
-            console.log("droppedNumberId", droppedNumberId)
             const oldValue = placedBet;
             setPlacedBet(oldValue + chipValue);
             //setPlacedBet((prevBet) => prevBet + chipValue);
@@ -458,16 +534,19 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
                 };
             });
         };
-    
+        
         // Check if the droppedNumberId is a number
-        if (!isNaN(droppedNumberId)) {
+        if (!isNaN(droppedNumberId) && droppedNumberId !== 0 && droppedNumberId !== "00") {
             const item = allRows.find(el => el.number === droppedNumberId);
             const color = item.color
-            console.log("item", item)
-            console.log("color", color)
+            updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
+        } else if (droppedNumberId === 0 || droppedNumberId === "00") {
+            const item = allRows.find(el => el.number === droppedNumberId);
+            const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
         } else if (droppedNumberId.startsWith('corner')) {
             const item = allRows.find(el => el.cornerLeftId === droppedNumberId);
+            console.log(item)
             const numbers = item?.cornerLeft || [];
             if(numbers.length === 4){
                 numbers.forEach((numberId) => {
@@ -481,9 +560,20 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
                     const color = item.color
                     updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Six Line`, color), `Six Line`);
                 })
+            } else if(numbers.length === 5){
+                numbers.forEach((numberId) => {
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Basket`, color), `Basket`);
+                })
+            } else if(numbers.length === 3){
+                numbers.forEach((numberId) => {
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Street`, color), `Street`);
+                })
             }
         } else if (droppedNumberId.startsWith('split')) {
-            console.log(droppedNumberId)
             const item = allRows.find(el => el.borderLeftId === droppedNumberId);
             const numbers = item?.borderLeft || [];
             numbers.forEach((numberId) => {
@@ -493,9 +583,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
             })
         } else if (droppedNumberId.startsWith('borderTop')) {
             const item = allRows.find(el => el.borderTopId === droppedNumberId);
-            console.log(item)
             const numbers = item?.borderTop || [];
-            console.log(numbers)
             if(numbers.length === 2){
                 numbers.forEach((numberId) => {
                     const item = allRows.find(el => el.number === numberId);
@@ -631,9 +719,12 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
         exit: { height: 0, opacity: 0, transition: { duration: 0.7 } }
     }
 
+    useEffect(() => {
+        console.log(lastBet)
+        console.log(lastBetAmount)
+    }, [lastBet,lastBetAmount])
     const sendBet =  () => {
       if (placedBet > 0) {
-        console.log("bet sended")
         const allChips = {
             droppedChips,
             droppedCornerChips,
@@ -643,6 +734,8 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
             droppedBorderLeftChips,
             droppedBorderTopChips
         };
+        setLastBet(allChips)
+        setLastBetAmount(placedBet)
         socket?.emit("placeBet", {
             allChips: allChips,
             roomId: activeRoom,
@@ -673,18 +766,10 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
     <RouletteSection>
          <DndContext onDragEnd={handleDragEnd} sensors={sensors} onDragOver={handleDragOver} onDragStart={handleDragStart}>
             <TopRow>
-      <SmallColumn>
-        <div style={{marginLeft: 'auto'}}>
-            {Zeroes.map((card,index) => {
-                return(
-                    <ZeroesArea card={card} activeContainer={activeContainer} key={index} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips}
-                    removeBet={removeBet}/>
-                )
-            })}
-        </div>
-      </SmallColumn>
+      
       <BigColumn>
             <Row>
+                
             {FirstRow.map((card,index) => {  
                 return(
                     <BetNumbersArea key={index} activeContainer={activeContainer}
@@ -704,6 +789,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
             })}
             </Row>
             <Row>
+            <div style={{display: 'flex',transform: 'translateX(calc(70vw/26))'}}>
             {ThirdRow.map((card,index) => {
                 return(
                     <BetNumbersArea key={index} activeContainer={activeContainer}
@@ -713,22 +799,27 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
                     />
                 )
             })}
+            </div>
             </Row>
             <Row>
+            <div style={{display: 'flex',transform: 'translateX(calc(70vw/26))'}}>
             {BetPerRows.map((card,index) => {
                 return(
                     <BetPerRowsArea activeContainer={activeContainer} card={card} onLeave={handleLeave} key={index} droppedRowChips={droppedRowChips} setDroppedRowChips={setDroppedRowChips}
                     removeBet={removeBet}/>
                 )
             })}
+            </div>
             </Row>
             <Row>
+            <div style={{display: 'flex',transform: 'translateX(calc(70vw/26))'}}>
             {LastRow.map((card,index) => {
                 return(
                     <LastRowArea card={card} onLeave={handleLeave} key={index} droppedLastRowChips={droppedLastRowChips} setDroppedLastRowChips={setDroppedLastRowChips}
                     removeBet={removeBet} activeContainer={activeContainer} />
                 )
             })}
+            </div>
             </Row>
       </BigColumn>
       <SmallColumn>
@@ -817,8 +908,9 @@ export default RouletteTable
 
 
 const LastRowWrapper = styled.div`
-    width: calc(70vw * 2/12);
-    height: calc(70vw/12);
+    width: calc(70vw * 2/13);
+    height: calc(70vw/13);
+    //transform: translateX(calc(70vw/26));
     position: relative;
     border: 1px solid ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
@@ -829,8 +921,9 @@ const LastRowWrapper = styled.div`
 `;
 
 const BetPerRowsWrapper = styled.div`
-    width: calc(70vw * 4/12);
-    height: calc(70vw/12);
+    width: calc(70vw * 4/13);
+    height: calc(70vw/13);
+    //transform: translateX(calc(70vw/26));
     position: relative;
     border: 1px solid ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
@@ -860,8 +953,8 @@ const BorderLeft = styled.div`
 
 
 const Number = styled.div`
-    width: calc(70vw/12);
-    height: calc(70vw/12);
+    width: calc(70vw/13);
+    height: calc(70vw/13);
     border: 1px solid ${props => props.theme.text};
     position: relative;
     ${props => props.theme.displayFlexColumnCenter};
@@ -871,8 +964,8 @@ const Number = styled.div`
 `;
 
 const Zero = styled.div`
-    width: calc(70vw/12);
-    height: calc(70vw/12 * 1.5);
+    width: calc(70vw/13);
+    height: calc(70vw/13 * 1.5);
     border: 1px solid ${props => props.theme.text};
     position: relative;
     ${props => props.theme.displayFlexColumnCenter};

@@ -170,8 +170,26 @@
   border: 1px solid orange;
 }
 
+div[id="0"]{
+  height: 150%;
+  transform: translateY(calc(15% + 2px));
+}
+div[id="00"]{
+  height: 150%;
+  transform: translateY(calc(45% + 6px));
+}
+
+
 
 @media screen and (max-width: 968px){
+  div[id="0"]{
+    height: 150%;
+    transform: translateY(calc(15% + 1px));
+  }
+  div[id="00"]{
+    height: 150%;
+    transform: translateY(calc(45% + 4px));
+  }
   .corner-dropped-chip{
     position: absolute;
     top: 0;

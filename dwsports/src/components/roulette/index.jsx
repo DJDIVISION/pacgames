@@ -42,6 +42,7 @@ ${props => props.theme.displayFlexColumnCenter};
 color: white;
 font-size: 12px;
 cursor: pointer;
+margin-left: auto;
 `;
 
 export const CornerLeft = styled(motion.div)`

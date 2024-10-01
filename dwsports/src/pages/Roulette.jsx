@@ -13,7 +13,7 @@ import { io } from "socket.io-client";
 import { RouletteWrapper, Selector } from './indexTwo'
 import { Button } from '@mui/material';
 import Ton from '../assets/logos/ton.png'
-import { FirstRow, SecondRow, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, LatestNumbers } from './fakeData'
+import { FirstRowNoZeroes, SecondRowNoZeroes, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, LatestNumbers } from './fakeData'
 import RouletteTabs from '../components/roulette/RouletteTabs';
 import RouletteTable from '../components/roulette/RouletteTable';
 import { americanRouletteNumbers, BalanceDisplay, NumbersBetDisplay, PlacedBetDisplay } from './functions';
@@ -110,7 +110,7 @@ const Roulette = () => {
         }
     }
 
-    const sendAmdminMessage = async (messageToUpdate) => {
+    const sendAdminMessage = async (messageToUpdate) => {
         const { data, error } = await supabase
             .from('roulette_chat_messages')
             .insert([messageToUpdate])
@@ -194,9 +194,6 @@ const Roulette = () => {
         }
 
     }, [allDroppedChips, allDroppedCornerChips, allDroppedRowChips, allDroppedLastRowChips, allDroppedColumnChips, allDroppedBorderLeftChips, allDroppedBorderTopChips])
-
-    console.log(droppedChips)
-    console.log(droppedCornerChips)
     console.log(droppedBorderTopChips)
     useEffect(() => {
         socket.on('connect', () => {
@@ -242,7 +239,7 @@ const Roulette = () => {
                 sendedBy: sendedBy,
                 room_id: activeRoom
             }
-            sendAmdminMessage(messageToUpdate)
+            //sendAdminMessage(messageToUpdate)
             setTimeout(() => {
                 setPlaceBets(true)
                 setTimeOutStarted(true)
@@ -257,7 +254,7 @@ const Roulette = () => {
                 sendedBy: sendedBy,
                 room_id: activeRoom
             }
-            sendAmdminMessage(messageToUpdate)
+            //sendAdminMessage(messageToUpdate)
             setTimeout(() => {
                 setPlaceBets(true)
                 setTimeOutStarted(true)
@@ -292,7 +289,7 @@ const Roulette = () => {
                 sendedBy: sendedBy,
                 room_id: activeRoom
             }
-            sendAmdminMessage(messageToUpdate)
+            //sendAdminMessage(messageToUpdate)
             setGameStarted(true)
             setTimeOutStarted(false)
             setPlaceBets(false)
@@ -329,7 +326,7 @@ const Roulette = () => {
                 sendedBy: sendedBy,
                 room_id: activeRoom
             }
-            sendAmdminMessage(messageToUpdate)
+            //sendAdminMessage(messageToUpdate)
         });
         socket.on('player-lost', (data) => {
             setLatestNumbers(prevElements => [...prevElements, data.number]);
@@ -525,7 +522,7 @@ const Roulette = () => {
                     </SmallColumn>
                     <BigColumn>
                         <Row>
-                            {FirstRow.map((card, index) => {
+                            {FirstRowNoZeroes.map((card, index) => {
                                 return (
                                     <BetNumbersArea key={index} activeNumbers={activeNumbers}
                                         card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips}
@@ -535,7 +532,7 @@ const Roulette = () => {
                             })}
                         </Row>
                         <Row>
-                            {SecondRow.map((card, index) => {
+                            {SecondRowNoZeroes.map((card, index) => {
                                 return (
                                     <BetNumbersArea activeNumbers={activeNumbers} key={index} card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips}
                                         allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}

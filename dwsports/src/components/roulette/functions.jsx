@@ -118,12 +118,12 @@ export const BetPerColumnsArea = ({card,allDroppedColumnChips}) => {
 
 export const ZeroesArea = ({card,allDroppedChips }) => {
     const { isOver, setNodeRef } = useDroppable({
-      id: card.number,
+      id: card.id,
     });
     
     const number = card.number
     return (
-      <Zero ref={setNodeRef} id={card.number} className="number-inactive" key={card.number}  >
+      <Zero ref={setNodeRef} id={card.id} className="number-inactive" key={card.id}  >
         <NumberZeroWrapper style={{background: `${card.color}`}}  >{number}</NumberZeroWrapper>
         {
             !allDroppedChips[number] || allDroppedChips[number].length === 0 ? (
