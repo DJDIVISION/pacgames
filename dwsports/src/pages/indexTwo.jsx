@@ -257,7 +257,7 @@ export const BigNumberHolder = styled.div`
   border-radius: 50%;
   border: 1px solid ${props => props.theme.MainAccent};
   padding: 30px;
-  background-color: ${(props) => props.bgColor};
+  background-color: ${(props) => props.bgcolor};
    color:  ${props => props.theme.text};
    ${props => props.theme.displayFlexCenter};
    font-weight: bold;

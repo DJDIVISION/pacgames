@@ -20,16 +20,18 @@ import balanceIcon from '../../assets/chips/balance-bag.png'
 import x2 from '../../assets/chips/x2.png'
 import { BalanceDisplay,PlacedBetDisplay,NumbersBetDisplay, useAuth } from '../../pages/functions';
 import { BetState } from '../../context/BetsContext'
+import { RouletteState } from '../../context/RouletteContext'
 
 
 
 
 
 
-const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
-    allBets,setAllBets,droppedChips,setDroppedChips,droppedCornerChips,setDroppedCornerChips,droppedRowChips,setDroppedRowChips,
+
+const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
+    droppedChips,setDroppedChips,droppedCornerChips,setDroppedCornerChips,droppedRowChips,setDroppedRowChips,
     droppedLastRowChips,setDroppedLastRowChips,droppedColumnChips,setDroppedColumnChips,droppedBorderLeftChips,setDroppedBorderLeftChips,
-    droppedBorderTopChips,setDroppedBorderTopChips,lastBet,setLastBet,latestNumbers
+    droppedBorderTopChips,setDroppedBorderTopChips
 }) => {
 
     
@@ -40,10 +42,16 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
     const [clearBetMenuOpen, setClearBetMenuOpen] = useState(false)
     const [seconds, setSeconds] = useState(null);
     const intervalRef = useRef(null);
-    const {balance, setBalance} = BetState();
+    const {lastBet, setLastBet} = RouletteState();
+    const { balance, setBalance } = RouletteState();
+    const {placedBet, setPlacedBet} = RouletteState();
+    const {myId, setMyId} = RouletteState();
+    const {winningNumber, setWinningNumber} = RouletteState();
+    const {latestNumbers, setLatestNumbers} = RouletteState();
+    const {allBets, setAllBets} = RouletteState();
+    const {activeRoom, setActiveRoom} = RouletteState();
     const scrollableDivRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
-    const {placedBet, setPlacedBet} = BetState();
     const { user } = useAuth();
     const [lastBetAmount,setLastBetAmount] = useState(null)
 
@@ -55,6 +63,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
         if (droppedChips) {
             const droppedChipsKeys = Object.keys(droppedChips);
             droppedChipsKeys.forEach((chip) => {
+                console.log(chip)
                 const number = parseInt(chip)
                 setActiveNumbers((prevActiveNumbers) => [
                     ...new Set([...prevActiveNumbers, number]),
@@ -189,9 +198,9 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
         });
         
         const cornerLeft = card.cornerLeft
-        if(isOver){
+        /* if(isOver){
             console.log(cornerLeft)
-        }
+        } */
         return (
             <CornerLeft ref={setNodeRef} id={`corner-${card.number}`} >
             {/* Display chips if there are any */}
@@ -412,6 +421,9 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
             onLeave(card.number);
         }
         const number = card.number
+        if(isOver){
+            console.log(card.number)
+        }
 
         const isActive = 
         // Check if activeContainer is a number and matches this number's id
@@ -502,6 +514,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
         if(over){
             const newBalance = balance - chipValue;
             setBalance(newBalance)
+            playEffect(28)
         }
         // Function to update the chips and placed bets
         const updateChipsAndBets = (numberId,droppedNumberId, updateChipsFn, updateBetFn, betType) => {
@@ -534,7 +547,7 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
                 };
             });
         };
-        
+        console.log("dropppppppppped",droppedNumberId)
         // Check if the droppedNumberId is a number
         if (!isNaN(droppedNumberId) && droppedNumberId !== 0 && droppedNumberId !== "00") {
             const item = allRows.find(el => el.number === droppedNumberId);
@@ -542,11 +555,11 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
         } else if (droppedNumberId === 0 || droppedNumberId === "00") {
             const item = allRows.find(el => el.number === droppedNumberId);
+            console.log("item", item)
             const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
         } else if (droppedNumberId.startsWith('corner')) {
             const item = allRows.find(el => el.cornerLeftId === droppedNumberId);
-            console.log(item)
             const numbers = item?.cornerLeft || [];
             if(numbers.length === 4){
                 numbers.forEach((numberId) => {
@@ -690,7 +703,8 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
 
     // Check if the element was found and removed
     if (removed) {
-        for (let key in allBets) {
+        console.log(removed)
+        /* for (let key in allBets) {
             // Filter out the items where number is "corner-25" and typeofBet is "corner-4-bet"
             allBets[key] = allBets[key].filter(
               (bet) => !(bet.number === id)
@@ -700,12 +714,12 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
             if (allBets[key].length === 0) {
               delete allBets[key];
             }
-          }
+          } */
         
     } else {
         console.log(`No element found with id: ${id}`);
     }
-    updateChipsFn(updatedElements)
+    //updateChipsFn(updatedElements)
 
     }
 
@@ -719,10 +733,10 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
         exit: { height: 0, opacity: 0, transition: { duration: 0.7 } }
     }
 
-    useEffect(() => {
+    /* useEffect(() => {
         console.log(lastBet)
         console.log(lastBetAmount)
-    }, [lastBet,lastBetAmount])
+    }, [lastBet,lastBetAmount]) */
     const sendBet =  () => {
       if (placedBet > 0) {
         const allChips = {
@@ -768,25 +782,28 @@ const RouletteTable = ({setPlaceBets,placeBets,activeRoom,myId,socket,
             <TopRow>
       
       <BigColumn>
-            <Row>
-                
+            <Row >
+            <div style={{display: 'flex',transform: 'translateX(calc(70vw/26))'}}>   
             {FirstRow.map((card,index) => {  
                 return(
-                    <BetNumbersArea key={index} activeContainer={activeContainer}
+                    <BetNumbersArea key={index} activeContainer={activeContainer} 
                         card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
                         droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} 
                         removeBet={removeBet} 
                     />
                 )
             })}
+            </div>
             </Row>
             <Row>
+            <div style={{display: 'flex',transform: 'translateX(calc(70vw/26))'}}>
             {SecondRow.map((card,index) => {
                 return(
                     <BetNumbersArea key={index}card={card} activeContainer={activeContainer} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} removeBet={removeBet}  
                     />
                 )
             })}
+            </div>
             </Row>
             <Row>
             <div style={{display: 'flex',transform: 'translateX(calc(70vw/26))'}}>

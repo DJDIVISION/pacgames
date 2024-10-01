@@ -172,23 +172,28 @@
 
 div[id="0"]{
   height: 150%;
-  transform: translateY(calc(15% + 2px));
 }
 div[id="00"]{
   height: 150%;
-  transform: translateY(calc(45% + 6px));
 }
 
 
 
 @media screen and (max-width: 968px){
+  
   div[id="0"]{
-    height: 150%;
-    transform: translateY(calc(15% + 1px));
+    width: calc(70vw/13);
+    height: calc(70vw/13 *1.5);
+    position: absolute;
+    top: 0;
+    left: calc(-70vw/13);
   }
   div[id="00"]{
-    height: 150%;
-    transform: translateY(calc(45% + 4px));
+    height: 150%;width: calc(70vw/13);
+    height: calc(70vw/13 *1.5);
+    position: absolute;
+    top: calc(70vw/26);
+    left: calc(-70vw/13);
   }
   .corner-dropped-chip{
     position: absolute;
