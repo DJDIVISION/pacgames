@@ -4,6 +4,31 @@ import { supabase } from '../supabase/client';
 import { motion } from 'framer-motion';
 import { SmallTextHolder,BigTextHolder } from './indexTwo';
 
+export const WinningsDisplay = ({ winnings }) => {
+  const [displayWinnings, setDisplayWinnings] = useState(winnings);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayWinnings((prev) => {
+        if (prev < winnings) return Math.min(prev + 1, winnings);
+        if (prev > winnings) return Math.max(prev - 1, winnings);
+        return winnings;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [winnings]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+    >
+     <SmallTextHolder>WINNINGS: ${displayWinnings}</SmallTextHolder>
+    </motion.div>
+  );
+};
+
 export const BalanceDisplay = ({ balance }) => {
   const [displayBalance, setDisplayBalance] = useState(balance);
 

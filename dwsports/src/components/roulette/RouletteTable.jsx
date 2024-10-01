@@ -514,7 +514,7 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
         if(over){
             const newBalance = balance - chipValue;
             setBalance(newBalance)
-            playEffect(28)
+            playEffect(39)
         }
         // Function to update the chips and placed bets
         const updateChipsAndBets = (numberId,droppedNumberId, updateChipsFn, updateBetFn, betType) => {
@@ -868,14 +868,14 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
                     </BottomContainerRow>
                     </RowIcons>
                     <RowIcons>
-                        <div style={{width: '100%', height: '100%', overflowX:'scroll', display: 'flex'}}>
+                        {/* <div style={{width: '100%', height: '100%', overflowX:'scroll', display: 'flex'}}>
                         {latestNumbers.map(el => {
                             return(
                                 <SmallNumberWrapper style={{background: `${el.color}`}}>{el.number}</SmallNumberWrapper>
                             )
                         })}
                         <div ref={scrollableDivRef}></div>
-                        </div>
+                        </div> */}
                     </RowIcons>
                 </BottomContainerColumn>
             </SmallBottomColumn>

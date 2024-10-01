@@ -379,7 +379,7 @@ io.on("connection", (socket) => {
       if (playerWon) {
         const number = room.winningNumber
         console.log("Player wins with winnings:", winnings);
-        io.to(player.playerId).emit("player-wins", { winnings, number });
+        io.to(player.playerId).emit("player-wins", { winnings });
         io.to(roomId).emit('message-sent', {
           message: `${player.playerName} wins $${winnings}.`,
           dealer: 'Jack',

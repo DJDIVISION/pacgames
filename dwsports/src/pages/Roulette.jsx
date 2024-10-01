@@ -6,7 +6,9 @@ import {
     SmallTableColumnRight, RouletteMainRow, RouletteMainIcon, PlayerBetsWrapper, BetNumberHolder, BetAmount, BetNumber,
     BetHolder, Row, SmallTableColumn, BetsWrapper, BetsBalances, SmallNumberWrapper,
     BottomContainerRow,
-    SmallIconHolder
+    SmallIconHolder,
+    BigNumberContainer,
+    BigWinningsContainer
 } from './indexTwo'
 import { ButtonHoverAbsoluteLeft, BettingText, SmallColumn, BigColumn } from './index'
 import { io } from "socket.io-client";
@@ -16,7 +18,7 @@ import Ton from '../assets/logos/ton.png'
 import { FirstRowNoZeroes, SecondRowNoZeroes, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns } from './fakeData'
 import RouletteTabs from '../components/roulette/RouletteTabs';
 import RouletteTable from '../components/roulette/RouletteTable';
-import { americanRouletteNumbers, BalanceDisplay, NumbersBetDisplay, PlacedBetDisplay } from './functions';
+import { americanRouletteNumbers, BalanceDisplay, NumbersBetDisplay, PlacedBetDisplay, WinningsDisplay } from './functions';
 import RouletteChatMessages from '../components/chats/RouletteChatMessages';
 import { FoldIcon, UnfoldIcon } from '../components/chats';
 import { supabase } from '../supabase/client';
@@ -30,6 +32,7 @@ import { ZeroesArea, BetNumbersArea, BetPerColumnsArea, BetPerRowsArea, LastRowA
 import spin1 from '../assets/sounds/spin2.ogg'
 import noMoreBets from '../assets/sounds/noMoreBets.ogg'
 import chipSound from '../assets/sounds/chipSound.ogg'
+import S0 from '../assets/sounds/0.ogg'
 import S1 from '../assets/sounds/1.ogg'
 import S2 from '../assets/sounds/2.ogg'
 import S3 from '../assets/sounds/3.ogg'
@@ -56,6 +59,20 @@ import S23 from '../assets/sounds/23.ogg'
 import S24 from '../assets/sounds/24.ogg'
 import S25 from '../assets/sounds/25.ogg'
 import S26 from '../assets/sounds/26.ogg'
+import S27 from '../assets/sounds/27.ogg'
+import S28 from '../assets/sounds/28.ogg'
+import S29 from '../assets/sounds/29.ogg'
+import S30 from '../assets/sounds/30.ogg'
+import S31 from '../assets/sounds/31.ogg'
+import S32 from '../assets/sounds/32.ogg'
+import S33 from '../assets/sounds/33.ogg'
+import S34 from '../assets/sounds/34.ogg'
+import S35 from '../assets/sounds/35.ogg'
+import S36 from '../assets/sounds/36.ogg'
+import S00 from '../assets/sounds/00.ogg'
+import youWin from '../assets/sounds/youWin.ogg'
+import youLose from '../assets/sounds/youLose.ogg'
+import placeYourBet from '../assets/sounds/placeYourBet.ogg'
 import { RouletteState } from '../context/RouletteContext';
 
 
@@ -116,7 +133,7 @@ const Roulette = () => {
 
     useEffect(() => {
         soundEffectsRef.current = [
-          new Audio(noMoreBets), 
+          new Audio(S0), 
           new Audio(S1),
           new Audio(S2),
           new Audio(S3),
@@ -143,8 +160,23 @@ const Roulette = () => {
           new Audio(S24),
           new Audio(S25),
           new Audio(S26),
+          new Audio(S27),
+          new Audio(S28),
+          new Audio(S29),
+          new Audio(S30),
+          new Audio(S31),
+          new Audio(S32),
+          new Audio(S33),
+          new Audio(S34),
+          new Audio(S35),
+          new Audio(S36),
+          new Audio(noMoreBets),
           new Audio(spin1),
           new Audio(chipSound),
+          new Audio(youWin),
+          new Audio(youLose),
+          new Audio(placeYourBet),
+          new Audio(S00),
         ];
         
         // Apply the initial volume
@@ -299,11 +331,12 @@ const Roulette = () => {
     useEffect(() => {
         if(winningNumber){
             spinRoulette();
+            setWinnings(null)
             console.log("allbets", allBets)
             console.log("activeRoom", activeRoom)
             console.log("myId", myId)
-            playEffect(0)
-            playEffect(27)
+            playEffect(37)
+            playEffect(38)
             /* socket.emit("game-finished", { activeRoom, myId, allBets });
                 const sound = (winningNumber.number)
                 if (sound > 0 && sound <= 16) {
@@ -317,8 +350,10 @@ const Roulette = () => {
             
             socket.emit("game-finished", { activeRoom, myId, allBets });
                 const sound = (winningNumber.number)
-                if (sound > 0 && sound <= 26) {
+                if (sound > 0 && sound <= 36) {
                     playEffect(sound)
+                }else if (sound === "00") {
+                    playEffect(43)
                 }
         } 
     }, [showMotionDiv])
@@ -355,6 +390,7 @@ const Roulette = () => {
             //sendAdminMessage(messageToUpdate)
             setTimeout(() => {
                 setPlaceBets(true)
+                playEffect(42)
                 setTimeOutStarted(true)
             }, 2000)
         });
@@ -426,7 +462,6 @@ const Roulette = () => {
             setAllDroppedBorderTopChips({})
         });
         socket.on('winning-number', (winningNumber) => {
-            console.log("winningNumber", winningNumber)
             setWinningNumber(winningNumber)
             //startRoulette();
         });
@@ -443,6 +478,7 @@ const Roulette = () => {
         });
         socket.on('player-lost', (data) => {
             setLatestNumbers(prevElements => [...prevElements, data.number]);
+            //playEffect(41)
             setGameStarted(false)
             setSpinning(false)
             setAllBets({})
@@ -465,8 +501,11 @@ const Roulette = () => {
             setDroppedBorderTopChips({})
         });
         socket.on('player-wins', (data) => {
-            //const winnings = data.winnings
-            setWinnings(data.winings)
+            const winnings = data.winnings
+            console.log("winnininings", winnings)
+            //setWinnings(data.winings)
+            //playEffect(40)
+            setWinnings((prevWinnings) => prevWinnings + winnings);
             setLatestNumbers(prevElements => [...prevElements, data.number]);
             setBalance((prevBalance) => prevBalance + winnings);
             setGameStarted(false)
@@ -503,9 +542,7 @@ const Roulette = () => {
         }
     }, [socket]);
 
-        console.log("allbets", allBets)
-            console.log("activeRoom", activeRoom)
-            console.log("myId", myId)
+    console.log("winnings", winnings);
 
     const getRotationForNumber = (winningNumber) => {
         const targetIndex = americanRouletteNumbers.findIndex(num => num.number === winningNumber.number);
@@ -525,26 +562,9 @@ const Roulette = () => {
 
     }, [spinning, activeRoom, myId]);
 
-    /* useEffect(() => {
-        if(showMotionDiv){
-            socket.emit("game-finished", { activeRoom, myId, allBets });
-                const sound = (winningNumber.number)
-                if (sound > 0 && sound <= 16) {
-                    playEffect(sound)
-                }
-        } else{
-            console.log("what the fuck!!!")
-        }
-    }, [showMotionDiv,activeRoom,myId,allBets]) */
-
-    
-
+   
 
     const spinRoulette = () => {
-        console.log("winningNumber on spin", winningNumber)
-        console.log("allbets", allBets)
-        console.log("activeRoom", activeRoom)
-        console.log("myId", myId)
         setSpinning(true);
         const finalRotation = getRotationForNumber(winningNumber);
         setRotationDegrees(finalRotation);
@@ -561,9 +581,13 @@ const Roulette = () => {
 
     const NumberCircle = ({ color, number }) => {
         return (
-          <BigNumberHolder bgcolor={color}>
-            {number}
-          </BigNumberHolder>
+            
+                <BigNumberContainer>
+                    <BigNumberHolder bgcolor={color}>
+                        {number}
+                    </BigNumberHolder>
+                </BigNumberContainer>
+          
         );
       };
 
@@ -640,11 +664,11 @@ const Roulette = () => {
             </RouletteRow>
             <BettingColumn>
                 <SmallTableColumn>
-                    {latestNumbers.map(el => {
+                    {/* {latestNumbers?.map(el => {
                         return (
                             <SmallNumberWrapper style={{ background: `${el.color}` }}>{el.number}</SmallNumberWrapper>
                         )
-                    })}
+                    })} */}
                 </SmallTableColumn>
                 <RouletteTableContainer>
 
@@ -747,8 +771,12 @@ const Roulette = () => {
                             <motion.div variants={item}
                             initial="initial"
                             animate="animate"
-                            exit="exit">
-                                ${winnings}
+                            exit="exit" style={{border: '1px solid white'}}>
+                                {winnings && (
+                                    <BigWinningsContainer>
+                                        <WinningsDisplay winnings={winnings} />
+                                    </BigWinningsContainer>
+                                )}   
                             <NumberCircle color={winningNumber.color} number={winningNumber.number} />
                             {/* {Object.values(winningNumber).map((item) => {
                                 console.log(item)

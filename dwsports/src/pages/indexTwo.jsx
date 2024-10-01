@@ -251,6 +251,22 @@ export const SmallNumberWrapper = styled.div`
     }
 `;
 
+export const BigWinningsContainer = styled.div`
+  width: 100%;
+  height: 30%;
+  border: 1px solid blue;
+  ${props => props.theme.displayFlexCenter};
+
+`;
+
+export const BigNumberContainer = styled.div`
+  width: 100%;
+  height: 70%;
+  border: 1px solid green;
+  ${props => props.theme.displayFlexCenter};
+
+`;
+
 export const BigNumberHolder = styled.div`
   width: 150px;
   height: 150px;
@@ -273,8 +289,6 @@ export const SmallTableColumnRight = styled.div`
   height: 60%;
   ${props => props.theme.displayFlexCenter};
   padding: 5px;
-  
-
 `;
 
 
