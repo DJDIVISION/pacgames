@@ -795,7 +795,7 @@ const Roulette = () => {
                                     animate="animate"
                                     exit="exit">
                                     <BigNumberContainer>
-                                        <BigNumberHolder style={{background: 'grey'}}>
+                                        <BigNumberHolder style={{ background: seconds > 3 ? 'green' : 'red' }}>
                                             {seconds}
                                         </BigNumberHolder>
                                     </BigNumberContainer>
