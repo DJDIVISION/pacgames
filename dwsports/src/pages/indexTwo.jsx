@@ -453,7 +453,8 @@ export const Selector = styled.div`
 
 export const RouletteSection = styled.div`
 width: 100vw;
-height: 100vh;
+max-height: 100vh;
+overflow: hidden;
 background: ${props => props.theme.body};
 ${props => props.theme.displayFlexColumn};
 `;
