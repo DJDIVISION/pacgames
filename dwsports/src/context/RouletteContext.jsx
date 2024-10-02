@@ -17,12 +17,34 @@ const RouletteContext = ({children}) => {
     const [lastBet, setLastBet] = useState({});
     const [showMotionDiv, setShowMotionDiv] = useState(false);
     const [winnings, setWinnings] = useState(null)
+    const [droppedChips, setDroppedChips] = useState({});
+    const [droppedCornerChips, setDroppedCornerChips] = useState({});
+    const [droppedRowChips, setDroppedRowChips] = useState({});
+    const [droppedLastRowChips, setDroppedLastRowChips] = useState({});
+    const [droppedColumnChips, setDroppedColumnChips] = useState({});
+    const [droppedBorderLeftChips, setDroppedBorderLeftChips] = useState({});
+    const [droppedBorderTopChips, setDroppedBorderTopChips] = useState({});
+
+    const [droppedChipsLast, setDroppedChipsLast] = useState({});
+    const [droppedCornerChipsLast, setDroppedCornerChipsLast] = useState({});
+    const [droppedRowChipsLast, setDroppedRowChipsLast] = useState({});
+    const [droppedLastRowChipsLast, setDroppedLastRowChipsLast] = useState({});
+    const [droppedColumnChipsLast, setDroppedColumnChipsLast] = useState({});
+    const [droppedBorderLeftChipsLast, setDroppedBorderLeftChipsLast] = useState({});
+    const [droppedBorderTopChipsLast, setDroppedBorderTopChipsLast] = useState({});
+
+
 
     
     return(
         <Roulette.Provider value = {{
             balance,setBalance,placedBet,setPlacedBet,myId,setMyId,latestNumbers,setLatestNumbers,winningNumber,setWinningNumber,
-            allBets,setAllBets,activeRoom,setActiveRoom,lastBet,setLastBet,showMotionDiv,setShowMotionDiv,winnings,setWinnings
+            allBets,setAllBets,activeRoom,setActiveRoom,lastBet,setLastBet,showMotionDiv,setShowMotionDiv,winnings,setWinnings,
+            droppedChips,setDroppedChips,droppedCornerChips,setDroppedCornerChips,droppedRowChips,setDroppedRowChips,droppedLastRowChips,setDroppedLastRowChips,
+            droppedColumnChips,setDroppedColumnChips,droppedBorderLeftChips,setDroppedBorderLeftChips,droppedBorderTopChips,setDroppedBorderTopChips,
+            droppedChipsLast,setDroppedChipsLast,droppedCornerChipsLast,setDroppedCornerChipsLast,droppedRowChipsLast,setDroppedRowChipsLast,
+            droppedLastRowChipsLast,setDroppedLastRowChipsLast,droppedColumnChipsLast,setDroppedColumnChipsLast,droppedBorderLeftChipsLast,
+            setDroppedBorderLeftChipsLast,droppedBorderTopChipsLast,setDroppedBorderTopChipsLast
         }}>
             {children}
         </Roulette.Provider>

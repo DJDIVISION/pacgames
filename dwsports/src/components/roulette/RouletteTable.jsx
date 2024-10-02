@@ -28,11 +28,7 @@ import { RouletteState } from '../../context/RouletteContext'
 
 
 
-const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
-    droppedChips,setDroppedChips,droppedCornerChips,setDroppedCornerChips,droppedRowChips,setDroppedRowChips,
-    droppedLastRowChips,setDroppedLastRowChips,droppedColumnChips,setDroppedColumnChips,droppedBorderLeftChips,setDroppedBorderLeftChips,
-    droppedBorderTopChips,setDroppedBorderTopChips
-}) => {
+const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect}) => {
 
     
     
@@ -50,6 +46,21 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
     const {latestNumbers, setLatestNumbers} = RouletteState();
     const {allBets, setAllBets} = RouletteState();
     const {activeRoom, setActiveRoom} = RouletteState();
+    const {droppedChips, setDroppedChips} = RouletteState();
+    const {droppedCornerChips, setDroppedCornerChips} = RouletteState();
+    const {droppedRowChips, setDroppedRowChips} = RouletteState();
+    const {droppedLastRowChips, setDroppedLastRowChips} = RouletteState();
+    const {droppedColumnChips, setDroppedColumnChips} = RouletteState();
+    const {droppedBorderLeftChips, setDroppedBorderLeftChips} = RouletteState();
+    const {droppedBorderTopChips, setDroppedBorderTopChips} = RouletteState();
+
+    const {droppedChipsLast, setDroppedChipsLast} = RouletteState();
+    const {droppedCornerChipsLast, setDroppedCornerChipsLast} = RouletteState();
+    const {droppedRowChipsLast, setDroppedRowChipsLast} = RouletteState();
+    const {droppedLastRowChipsLast, setDroppedLastRowChipsLast} = RouletteState();
+    const {droppedColumnChipsLast, setDroppedColumnChipsLast} = RouletteState();
+    const {droppedBorderLeftChipsLast, setDroppedBorderLeftChipsLast} = RouletteState();
+    const {droppedBorderTopChipsLast, setDroppedBorderTopChipsLast} = RouletteState();
     const scrollableDivRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const { user } = useAuth();
@@ -63,7 +74,6 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
         if (droppedChips) {
             const droppedChipsKeys = Object.keys(droppedChips);
             droppedChipsKeys.forEach((chip) => {
-                console.log(chip)
                 const number = parseInt(chip)
                 setActiveNumbers((prevActiveNumbers) => [
                     ...new Set([...prevActiveNumbers, number]),
@@ -421,9 +431,9 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
             onLeave(card.number);
         }
         const number = card.number
-        if(isOver){
+        /* if(isOver){
             console.log(card.number)
-        }
+        } */
 
         const isActive = 
         // Check if activeContainer is a number and matches this number's id
@@ -547,16 +557,16 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
                 };
             });
         };
-        console.log("dropppppppppped",droppedNumberId)
-        // Check if the droppedNumberId is a number
+/*         console.log("dropppppppppped",droppedNumberId)
+ */        // Check if the droppedNumberId is a number
         if (!isNaN(droppedNumberId) && droppedNumberId !== 0 && droppedNumberId !== "00") {
             const item = allRows.find(el => el.number === droppedNumberId);
             const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
         } else if (droppedNumberId === 0 || droppedNumberId === "00") {
             const item = allRows.find(el => el.number === droppedNumberId);
-            console.log("item", item)
-            const color = item.color
+/*             console.log("item", item)
+ */            const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
         } else if (droppedNumberId.startsWith('corner')) {
             const item = allRows.find(el => el.cornerLeftId === droppedNumberId);
@@ -704,7 +714,7 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
     // Check if the element was found and removed
     if (removed) {
         console.log(removed)
-        /* for (let key in allBets) {
+        for (let key in allBets) {
             // Filter out the items where number is "corner-25" and typeofBet is "corner-4-bet"
             allBets[key] = allBets[key].filter(
               (bet) => !(bet.number === id)
@@ -714,12 +724,12 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
             if (allBets[key].length === 0) {
               delete allBets[key];
             }
-          } */
+          }
         
     } else {
         console.log(`No element found with id: ${id}`);
     }
-    //updateChipsFn(updatedElements)
+    updateChipsFn(updatedElements)
 
     }
 
@@ -733,10 +743,7 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
         exit: { height: 0, opacity: 0, transition: { duration: 0.7 } }
     }
 
-    /* useEffect(() => {
-        console.log(lastBet)
-        console.log(lastBetAmount)
-    }, [lastBet,lastBetAmount]) */
+    
     const sendBet =  () => {
       if (placedBet > 0) {
         const allChips = {
@@ -748,7 +755,14 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
             droppedBorderLeftChips,
             droppedBorderTopChips
         };
-        setLastBet(allChips)
+        setDroppedChipsLast(droppedChips)
+        setDroppedCornerChipsLast(droppedCornerChips)
+        setDroppedRowChipsLast(droppedRowChips)
+        setDroppedLastRowChipsLast(droppedLastRowChips)
+        setDroppedColumnChipsLast(droppedColumnChips)
+        setDroppedBorderLeftChipsLast(droppedBorderLeftChips)
+        setDroppedBorderTopChipsLast(droppedBorderTopChips)
+        setLastBet(allBets)
         setLastBetAmount(placedBet)
         socket?.emit("placeBet", {
             allChips: allChips,
@@ -767,8 +781,21 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
 
     const repeatBet = () => {
         setAllBets(lastBet)
+        setPlacedBet(lastBetAmount)
+        setBalance((prevBalance) => prevBalance - lastBetAmount);
+        setDroppedChips(droppedChipsLast)
+        setDroppedCornerChips(droppedCornerChipsLast)
+        setDroppedRowChips(droppedRowChipsLast)
+        setDroppedLastRowChips(droppedLastRowChipsLast)
+        setDroppedColumnChips(droppedColumnChipsLast)
+        setDroppedBorderLeftChips(droppedBorderLeftChipsLast)
+        setDroppedBorderTopChips(droppedBorderTopChipsLast)
     }
-    
+
+    useEffect(() => {
+        console.log(lastBet)
+        console.log(lastBetAmount)
+    }, [lastBet,lastBetAmount])    
 
   return (
     <AnimatePresence>
@@ -868,14 +895,14 @@ const RouletteTable = ({setPlaceBets,placeBets,socket,playEffect,
                     </BottomContainerRow>
                     </RowIcons>
                     <RowIcons>
-                        {/* <div style={{width: '100%', height: '100%', overflowX:'scroll', display: 'flex'}}>
-                        {latestNumbers.map(el => {
+                        <div style={{width: '100%', height: '100%', overflowX:'scroll', display: 'flex'}}>
+                        {latestNumbers?.map(el => {
                             return(
                                 <SmallNumberWrapper style={{background: `${el.color}`}}>{el.number}</SmallNumberWrapper>
                             )
                         })}
                         <div ref={scrollableDivRef}></div>
-                        </div> */}
+                        </div>
                     </RowIcons>
                 </BottomContainerColumn>
             </SmallBottomColumn>

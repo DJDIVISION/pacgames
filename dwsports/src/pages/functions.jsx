@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef}from 'react'
 import { toast } from 'react-toastify';
 import { supabase } from '../supabase/client';
 import { motion } from 'framer-motion';
-import { SmallTextHolder,BigTextHolder } from './indexTwo';
+import { SmallTextHolder,BigTextHolder, BigTextWinnings } from './indexTwo';
 
 export const WinningsDisplay = ({ winnings }) => {
   const [displayWinnings, setDisplayWinnings] = useState(winnings);
@@ -24,7 +24,7 @@ export const WinningsDisplay = ({ winnings }) => {
       animate={{ opacity: [0, 1] }}
       transition={{ duration: 0.5 }}
     >
-     <SmallTextHolder>WINNINGS: ${displayWinnings}</SmallTextHolder>
+     <BigTextWinnings>WINNINGS: {`$${displayWinnings}`}</BigTextWinnings>
     </motion.div>
   );
 };

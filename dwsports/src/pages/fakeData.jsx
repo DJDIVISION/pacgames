@@ -680,20 +680,20 @@ export const LatestNumbers = [
         color: "red"
     },
     {
-        number: 9,
+        number: 34,
         color: "red"
     },
     {
-        number: 27,
+        number: 20,
+        color: "black"
+    },
+    {
+        number: 19,
         color: "red"
     },
     {
-        number: 3,
-        color: "red"
-    },
-    {
-        number: 9,
-        color: "red"
+        number: 11,
+        color: "black"
     }
 ]
 

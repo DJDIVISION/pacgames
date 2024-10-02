@@ -110,6 +110,20 @@ export const BetNumber = styled.div`
   ${props => props.theme.displayFlexCenter};
 `;
 
+export const BigTextWinnings = styled.div`
+  width: 100%;
+  height: 100%;
+  color: ${props => props.theme.text};
+  font-size: 20px;
+  ${props => props.theme.displayFlexCenter};
+  font-weight: bold;
+  text-align: center;
+  //transform: translateY(-30px);
+  @media(min-width: 968px){
+    font-size: 18px;
+  }
+`;
+
 export const SmallTextHolder = styled.div`
   width: 60%;
   height: 100%;
@@ -254,7 +268,6 @@ export const SmallNumberWrapper = styled.div`
 export const BigWinningsContainer = styled.div`
   width: 100%;
   height: 30%;
-  border: 1px solid blue;
   ${props => props.theme.displayFlexCenter};
 
 `;
@@ -262,7 +275,6 @@ export const BigWinningsContainer = styled.div`
 export const BigNumberContainer = styled.div`
   width: 100%;
   height: 70%;
-  border: 1px solid green;
   ${props => props.theme.displayFlexCenter};
 
 `;
@@ -287,8 +299,9 @@ export const BigNumberHolder = styled.div`
 export const SmallTableColumnRight = styled.div`
   width: 25vw;
   height: 60%;
-  ${props => props.theme.displayFlexCenter};
+  ${props => props.theme.displayFlexColumnCenter};
   padding: 5px;
+  position: relative;
 `;
 
 

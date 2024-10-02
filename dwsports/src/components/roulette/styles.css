@@ -171,10 +171,18 @@
 }
 
 div[id="0"]{
-  height: 150%;
+  width: calc(70vw/13);
+  height: calc(70vw/13 *1.5);
+  position: absolute;
+  top: 0;
+  left: calc(-70vw/13);
 }
 div[id="00"]{
-  height: 150%;
+  height: 150%;width: calc(70vw/13);
+  height: calc(70vw/13 *1.5);
+  position: absolute;
+  top: calc(70vw/26);
+  left: calc(-70vw/13);
 }
 
 

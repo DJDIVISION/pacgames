@@ -51,7 +51,7 @@ const americanRouletteNumbers = [
 
 const app = express();
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://pacgames-frontend.onrender.com",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -61,7 +61,7 @@ app.get('/', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://pacgames-frontend.onrender.com",
     methods: ["GET", "POST"]  // Client URL
   },
  });
@@ -379,7 +379,7 @@ io.on("connection", (socket) => {
       if (playerWon) {
         const number = room.winningNumber
         console.log("Player wins with winnings:", winnings);
-        io.to(player.playerId).emit("player-wins", { winnings });
+        io.to(player.playerId).emit("player-wins", { winnings,number });
         io.to(roomId).emit('message-sent', {
           message: `${player.playerName} wins $${winnings}.`,
           dealer: 'Jack',
