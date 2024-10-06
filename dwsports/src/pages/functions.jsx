@@ -2,7 +2,8 @@ import React, {useState, useEffect, useRef}from 'react'
 import { toast } from 'react-toastify';
 import { supabase } from '../supabase/client';
 import { motion } from 'framer-motion';
-import { SmallTextHolder,BigTextHolder, BigTextWinnings } from './indexTwo';
+import { SmallTextHolder,BigTextHolder, BigTextWinnings, EurosTextHolder } from './indexTwo';
+import { FantasyState } from '../context/FantasyContext';
 
 export const WinningsDisplay = ({ winnings }) => {
   const [displayWinnings, setDisplayWinnings] = useState(winnings);
@@ -75,6 +76,58 @@ export const BalanceDisplayBig = ({ balance }) => {
       transition={{ duration: 0.5 }}
     >
      <BigTextHolder>BALANCE: ${displayBalance}</BigTextHolder>
+    </motion.div>
+  );
+};
+
+export const EuroBalanceDisplay = ({ balance }) => {
+  const [displayBalance, setDisplayBalance] = useState(balance);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayBalance((prev) => {
+        if (prev < balance) return Math.min(prev + 1, balance);
+        if (prev > balance) return Math.max(prev - 1, balance);
+        return balance;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [balance]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+    >
+     <EurosTextHolder>BALANCE: {parseFloat(displayBalance).toFixed(2)}M €</EurosTextHolder>
+    </motion.div>
+  );
+};
+
+export const AverageDisplay = ({ balance }) => {
+  const [displayBalance, setDisplayBalance] = useState(balance);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayBalance((prev) => {
+        if (prev < balance) return Math.min(prev + 1, balance);
+        if (prev > balance) return Math.max(prev - 1, balance);
+        return balance;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [balance]);
+
+  const average = parseFloat(displayBalance).toFixed(2)
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+    >
+     <EurosTextHolder style={{color: average > 7 ? "green" : "yellow"}}>TEAM AVERAGE: {parseFloat(displayBalance).toFixed(2)}</EurosTextHolder>
     </motion.div>
   );
 };
@@ -413,5 +466,77 @@ export const useAuth = () => {
   return { user, loading }; // Return user and loading state
 };
 
+
+export const useGetTeams = () => {
+  const [teams, setTeams] = useState([]); // Stores the list of teams
+  const [loadingTeams, setLoadingTeams] = useState(false); // Loading state for teams
+  const [loadingPlayers, setLoadingPlayers] = useState(false); // Loading state for players
+  const { activeLeague, setActiveLeague } = FantasyState(); // Active league state
+  const { activeTeamId, setActiveTeamId } = FantasyState(); // Active team ID state
+  const [players, setPlayers] = useState([]); // Stores the list of players for the active team
+
+  // Function to fetch teams from Supabase
+  const getTeams = async () => {
+    setLoadingTeams(true);
+    const { data, error } = await supabase
+      .from('teams')
+      .select('*')
+      .eq("league", activeLeague)
+      .order('teamName', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching teams:', error.message);
+      setLoadingTeams(false);
+      return;
+    }
+
+    if (data && data.length > 0) {
+      setTeams(data);
+      setActiveTeamId(data[0].teamId); // Set the first team as active
+      getPlayers(data[0].teamId); // Fetch players for the first team
+    }
+
+    setLoadingTeams(false);
+  };
+
+  // Function to fetch players for a given team from Supabase
+  const getPlayers = async (teamId) => {
+    setLoadingPlayers(true);
+    const { data, error } = await supabase
+      .from('footballPlayers')
+      .select('*')
+      .eq("teamId", teamId)
+      .eq("topPlayer", true)
+      .order('position', { ascending: true }); // Fetch players by teamId
+
+    if (error) {
+      console.error('Error fetching players:', error.message);
+      setLoadingPlayers(false);
+      return;
+    }
+
+    if (data) {
+      setPlayers(data); // Update the players for the active team
+    }
+
+    setLoadingPlayers(false);
+  };
+
+  // Function to handle team selection by user
+  const handleTeamChange = (teamId) => {
+    setActiveTeamId(teamId); // Update active team
+    getPlayers(teamId); // Fetch players for the new team
+  };
+
+  return { 
+    teams, 
+    getTeams, 
+    loadingTeams, 
+    players, 
+    loadingPlayers, 
+    handleTeamChange,
+    setPlayers // Expose handleTeamChange for use in UI
+  };
+};
 
 

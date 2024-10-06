@@ -771,6 +771,53 @@ export const BetPerColumns = [
     }
 ]
 
+export const PlayerDroppingAreas = [
+    {
+        id: 1,
+        name: "player1"
+    },
+    {
+        id: 2,
+        name: "player2"
+    },
+    {
+        id: 2,
+        name: "player3"
+    },
+    {
+        id: 4,
+        name: "player4"
+    },
+    {
+        id: 5,
+        name: "player5"
+    },
+    {
+        id: 6,
+        name: "player6"
+    },
+    {
+        id: 7,
+        name: "player7"
+    },
+    {
+        id: 8,
+        name: "player8"
+    },
+    {
+        id: 9,
+        name: "player9"
+    },
+    {
+        id: 10,
+        name: "player10"
+    },
+    {
+        id: 11,
+        name: "player11"
+    }
+]
+
 
 
 

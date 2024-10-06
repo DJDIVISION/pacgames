@@ -6,6 +6,7 @@ import BetsContext from './context/BetsContext.jsx'
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import SocketsContext from './context/SocketsContext.jsx'
 import RouletteContext from './context/RouletteContext.jsx'
+import FantasyContext from './context/FantasyContext.jsx'
 
 console.log('Manifest URL:', `${window.location.origin}/tonconnect-manifest.json`);
 
@@ -15,7 +16,9 @@ createRoot(document.getElementById('root')).render(
     <BetsContext>
       <SocketsContext>
         <RouletteContext>
+          <FantasyContext>
         <App />
+        </FantasyContext>
         </RouletteContext>
       </SocketsContext>
     </BetsContext>

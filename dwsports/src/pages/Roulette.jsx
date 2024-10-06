@@ -79,7 +79,7 @@ import { RouletteState } from '../context/RouletteContext';
 
 
 
-const socket = io.connect("https://pacgames-roulette-server.onrender.com")
+const socket = io.connect("http://localhost:8080")
 
 const Roulette = () => {
 

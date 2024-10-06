@@ -70,6 +70,327 @@ a{
   justify-content: center;
 }
 
+.menu-container-one{
+  position:fixed;
+  width:100vw;
+  height:100vh;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  display:flex;
+  background-color:rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  align-items: center;
+  z-index: 6000;
+  justify-content: center;
+}
+
+#area1{
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translate(-25%, -50%);
+}
+#area2{
+  position: absolute;
+}
+
+.layout1 #area2{
+  top: 15%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area2{
+  top: 15%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area2{
+  top: 15%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area2{
+  top: 20%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area2{
+  top: 20%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+
+#area3{
+  position: absolute;
+}
+
+.layout1 #area3{
+  top: 37.5%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area3{
+  top: 37.5%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area3{
+  top: 37.5%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area3{
+  top: 50%;
+  left: 27.5%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area3{
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+
+
+
+#area4{
+  position: absolute;
+}
+.layout1 #area4{
+  top: 60%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area4{
+  top: 60%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area4{
+  top: 60%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area4{
+  top: 80%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area4{
+  top: 80%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+
+
+#area5{
+  position: absolute;
+}
+.layout1 #area5{
+  top: 80%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area5{
+  top: 85%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area5{
+  top: 80%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area5{
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area5{
+  top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+#area6{
+  position: absolute;
+}
+.layout1 #area6{
+  top: 22.5%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area6{
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area6{
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area6{
+  top: 50%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area6{
+  top: 50%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+}
+
+#area7{
+  position: absolute;
+}
+.layout1 #area7{
+  top: 49%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area7{
+  top: 50%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area7{
+  top: 50%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area7{
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area7{
+  top: 85%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+#area8{
+  position: absolute;
+}
+.layout1 #area8{
+  top: 77.5%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area8{
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area8{
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area8{
+  top: 15%;
+  left: 70%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area8{
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+}
+
+
+#area9{
+  position: absolute;
+}
+.layout1 #area9 {
+  top: 25%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area9 {
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area9 {
+  top: 35%;
+  left: 65%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area9 {
+  top: 37.5%;
+  left: 65%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area9 {
+  top: 20%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+
+
+#area10{
+  position: absolute;
+}
+.layout1 #area10 {
+  top: 49%;
+  left: 85%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area10 {
+  top: 35%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area10 {
+  top: 62.5%;
+  left: 65%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area10 {
+  top: 62.5%;
+  left: 65%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area10 {
+  top: 50%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+}
+
+
+#area11{
+  position: absolute;
+}
+.layout1 #area11{
+  top: 75%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+.layout2 #area11{
+  top: 65%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+.layout3 #area11{
+  top: 50%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+}
+.layout4 #area11{
+  top: 85%;
+  left: 70%;
+  transform: translate(-50%, -50%);
+}
+.layout5 #area11{
+  top: 80%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+
 
 
 .menu-container-seven{
@@ -392,6 +713,12 @@ p {
   color: aqua;
   font-weight: bold;
 }
+
+.ball.active{
+  transform: scale(0.8);
+  transition: 1 all ease-in-out;
+}
+
 
 
 /***********************************************/

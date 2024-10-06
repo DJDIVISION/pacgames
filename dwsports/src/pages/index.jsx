@@ -15,8 +15,359 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeDown from '@mui/icons-material/VolumeDown';
 
+export const BallColumn = styled.div`
+    width: 20%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumn};
+    position: relative;
+`;
+
+export const CountryBall = styled(motion.div)`
+    width: 80%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const CountryBallText = styled(motion.div)`
+    width: 80%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    color: ${props => props.theme.text};
+    font-weight: bold;
+    text-transform: uppercase;
+`;
+
+export const PlayersContainer = styled.div`
+    height: 75vh;
+    width: 100%;
+    border: 1px solid blue;
+    ${props => props.theme.displayFlexColumnCenter};
+    overflow-y: scroll;
+`;
+
+export const PokerNavBar = styled.div`
+    height: 10vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+`;
+
+export const TopPokerNavBar = styled.div`
+    height: 15vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+`;
+
+export const PlayerDroppingArea = styled.div`
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2cf5fcac;
+    @media(max-width: 968px){
+        width: 40px;
+        height: 40px; 
+    }
+`;
+
+export const DraggContainer = styled.div`
+    height: 75vh;
+    width: 100%;
+    ${props => props.theme.displayFlexCenter};
+    position: relative;
+`;
+
+export const TeamsCarousel = styled(motion.div)`
+  cursor: grab;
+  height: 95%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+`;
+
+export const InnerTeamsCarousel = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  height: 95%;
+  width: 100%;
+  overflow-x: scroll;
+`;
+
+export const TeamWrapper = styled.div`
+    width: auto;
+    height: 50px;
+    border: 0.5px solid white;
+    border-radius: 10px;
+    margin: 5px 10px;
+    padding: 5px 15px 5px 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    @media(max-width:968px){
+        height: 40px;
+    }
+`;
+
+export const ArrowWrapper = styled.div`
+    width: 100%;
+    height: 7.5%;
+    ${props => props.theme.displayFlex};
+`;
+
+export const ArrowWrapperColumn = styled.div`
+    width: 15%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+`;
+export const ArrowWrapperColumnSmall = styled.div`
+    width: 7.5%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const PlayerWrapper = styled(motion.div)`
+    width: 95%;
+    min-height: 80px;
+    border: 0.5px solid white;
+    border-radius: 10px;
+    margin: 10px 15px;
+    ${props => props.theme.displayFlexCenter};
+    align-items: center;
+    padding: 5px;
+    @media(max-width:968px){
+        min-height: 40px;
+    }
+`;
+
+export const PlayerAvatar = styled.div`
+    width: 15%;
+    position: relative;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const PlayerShirtHolder = styled.div`
+    width: 15%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    color: white;
+    font-weight: bold;
+    @media(max-width:968px){
+        font-size: 14px;
+    }
+`;
+
+export const EditPlayerShirtHolder = styled.div`
+    width: 10%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    @media(max-width:968px){
+        font-size: 14px;
+    }
+`;
+
+export const PlayerValue = styled.div`
+    width: 20%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    color: gold;
+    font-weight: bold;
+    @media(max-width:968px){
+        font-size: 14px;
+    }
+`;
+
+export const PlayerInput = styled.input`
+    width: 20%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const PlayerShirt = styled.div`
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    ${props => props.theme.displayFlexCenter};
+    background: lightblue;
+    z-index: 1000;
+    position: absolute; 
+    top: 0;
+    left: 0;
+    transform: translate(-20%,-20%);
+    color: ${props => props.theme.body};
+    font-size: 12px;
+    font-weight: bold;
+`;
+
+export const PlayerTeamLogo = styled.div`
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    ${props => props.theme.displayFlexCenter};
+    z-index: 1000;
+    position: absolute; 
+    top: 0;
+    left: 0;
+`;
+export const PlayerTeamCross = styled.div`
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    ${props => props.theme.displayFlexCenter};
+    z-index: 1000;
+    position: absolute; 
+    top: 0%;
+    right: 0%;
+`;
 
 
+export const PlayerRating = styled.div`
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    color: black;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const PlayerName = styled.div`
+    width: 25%;
+    padding: 5px;
+    height: 100%;
+    ${props => props.theme.displayFlex};
+    color: ${props => props.theme.text};
+    font-size: 18px;
+    @media(max-width:968px){
+        font-size: 14px;
+    }
+`;
+
+export const PlayerPosition = styled.div`
+    width: 20%;
+    padding: 5px;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    color: ${props => props.theme.text};
+    font-size: 18px;
+    @media(max-width:968px){
+        font-size: 14px;
+    }
+`;
+
+export const TeamLogo = styled.div`
+    min-width: 40px;
+    height: 100%;
+`;
+export const TeamName = styled.div`
+    width: fit-content;
+    padding: 0 5px;
+    height: 100%;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    ${props => props.theme.displayFlexCenter};
+    @media(max-width:968px){
+        font-size: 14px;
+    }
+`;
+
+export const TopPlayerHolder = styled.div`
+    width: calc(100% / 11);
+    height: 100%;
+    position: relative;
+    ${props => props.theme.displayFlexColumn};
+`;
+
+export const TopPlayerText = styled.div`
+    width: 100%;
+    height: 40%;
+    position: relative;
+    color: white;
+    font-size: 14px;
+    ${props => props.theme.displayFlexCenter};
+    text-align: center;
+    line-height: 0.9;
+    @media(max-width: 968px){
+        font-size: 12px;
+    }
+`;
+
+export const Formation = styled.div`
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 12.5%;
+    height: 7.5%;
+    ${props => props.theme.displayFlexCenter};
+    color: ${props => props.theme.text};
+    font-size: 32px;
+    font-weight: bold;
+    @media(max-width: 968px){
+        font-size: 24px;
+    }
+`;
+
+
+export const LeftPokerColumn = styled.div`
+  width: 65vw;
+  height: 100%;
+  ${props => props.theme.displayFlexColumn};
+  padding-top: 0px;
+  position: relative;
+  overflow: visible; 
+  z-index: 1;
+`;
+
+export const TopPokerColumn = styled.div`
+  width: 65vw;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px;
+  position: relative;
+  overflow: visible; 
+  z-index: 1;
+`;
+
+export const WrapperLeftColumn = styled.div`
+  width: 65vw;
+  height: 75vh;
+  ${props => props.theme.displayFlexColumn};
+  padding-top: 0px;
+  position: relative;
+  overflow: visible; 
+  z-index: 1;
+`;
+
+export const WrapperRightColumn = styled.div`
+  width: 35vw;
+  height: 75vh;
+  ${props => props.theme.displayFlexColumn};
+  padding-top: 0px;
+  position: relative;
+  overflow: visible; 
+  z-index: 1;
+`;
+
+export const RightPokerColumn = styled.div`
+  width: 65vw;
+  height: 100%;
+  ${props => props.theme.displayFlexCenter};
+  padding-top: 0px;
+  border: 1px solid white;
+  border-top: none;
+  overflow-y: scroll;
+  position: relative;
+  z-index: 1;
+`;
 
 export const BigColumn = styled.div`
   width: 40vw;
@@ -24,7 +375,7 @@ export const BigColumn = styled.div`
   position: relative;
   ${props => props.theme.displayFlexColumn};
   padding-top: 0px;
-  
+  border: 1px solid white;
   @media(max-width: 968px){
     
   }
@@ -281,6 +632,18 @@ export const ArrowDown = styled(KeyboardArrowDownIcon)`
         position: absolute;
         top: 30px;
         left: 20px;
+    }
+`;
+
+export const ArrowDownRelative = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 1.5;
+        transform: translateY(10%);
+        &:hover{
+            color: gold;
+            transition: 0.6 all ease-in-out;
+        }
     }
 `;
 

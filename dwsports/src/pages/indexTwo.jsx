@@ -159,6 +159,20 @@ export const BigTextHolder = styled.div`
   }
 `;
 
+export const EurosTextHolder = styled.div`
+  width: 250px;
+  height: 10vh;
+  padding: 0 10px;
+  color: gold;
+  font-size: 18px;
+  ${props => props.theme.displayFlexCenter};
+  font-weight: bold;
+  @media(min-width: 968px){
+    font-size: 24px;
+    
+  }
+`;
+
 export const RouletteMainIcon = styled.div`
   width: 20%;
   height: 10vh;

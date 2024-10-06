@@ -38,21 +38,21 @@ const NavBar = () => {
         }
       }
 
-    const options = {
+      const options = {
         method: 'GET',
         url: 'https://api-football-v1.p.rapidapi.com/v3/players/squads',
-        params: {team: '45'},
+        params: {team: '106'},
         headers: {
           'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
           'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
         }
-    }; 
+      };
 
     const fetchData = async () => {
         try {
             const response = await axios.request(options);
             console.log(response.data);
-            localStorage.setItem("everton", JSON.stringify(response.data))
+            localStorage.setItem("brest", JSON.stringify(response.data))
             message.success("data fetched!")
         } catch (error) {
             console.error(error);
@@ -92,7 +92,7 @@ const NavBar = () => {
         ): (
             <div></div>
         )}
-        <LinkR to="/bets"><NavColumn>
+        <LinkR to="/poker"><NavColumn>
             <NavIcon>
                 <img src={sportsIcon} alt="sports" />
             </NavIcon>
@@ -104,7 +104,7 @@ const NavBar = () => {
             </NavIcon>
             <NavText>AIRDROP</NavText>
         </NavColumn></LinkR> */}
-        <LinkR to="/roulette"><NavColumn >
+        <LinkR to="/roulette"><NavColumn /* onClick={fetchData} */>
             <NavIcon>
                 <img src={roulette} alt="sports" />
             </NavIcon>
