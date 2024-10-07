@@ -7,10 +7,40 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { BetState } from '../context/BetsContext'
 import { useAuth, useFetchMessages } from './functions'
+import { Button } from '@mui/material'
+import { message } from 'antd'
 
 
 
 const Home = () => {
+
+  const fetchData =  () => {
+    const data = localStorage.getItem("barcelonaStats")
+    const json = JSON.parse(data)
+    const stats = (json.response[0].statistics)
+    stats.forEach(async (stat) => {
+      if(stat.team.name === 'Barcelona'){
+        if(stat.league.name === 'UEFA Champions League'){
+          console.log(stat)
+          const updatedData = [
+            stat
+          ]
+          console.log(updatedData)
+          const json = JSON.stringify(stat)
+          const { data, error } = await supabase
+            .from('footballPlayers')
+            .update([{championsStats: updatedData}])
+            .eq("id", 521)
+          if (error) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            console.log('User session data saved:', data)
+            message.success("Your bet has been registered")
+          }
+        }
+      }
+    })
+  }
 
     const navigate = useNavigate()
     /* const { messages } = useFetchMessages(); */
@@ -41,6 +71,7 @@ const Home = () => {
     <motion.div initial="out" animate="in" variants={animationTwo} transition={transition}>
     <HomeSection>
       <NavBar />
+      <Button onClick={fetchData} variant="contained">FETCH DATA</Button>
     </HomeSection>
     </motion.div>
   )

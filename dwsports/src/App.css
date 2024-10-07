@@ -120,6 +120,16 @@ a{
   left: 25%;
   transform: translate(-50%, -50%);
 }
+.layout6 #area2{
+  top: 20%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area2{
+  top: 10%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+}
 
 #area3{
   position: absolute;
@@ -147,6 +157,16 @@ a{
 }
 .layout5 #area3{
   top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout6 #area3{
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area3{
+  top: 27.5%;
   left: 25%;
   transform: translate(-50%, -50%);
 }
@@ -181,13 +201,23 @@ a{
   left: 25%;
   transform: translate(-50%, -50%);
 }
+.layout6 #area4{
+  top: 80%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area4{
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+}
 
 
 #area5{
   position: absolute;
 }
 .layout1 #area5{
-  top: 80%;
+  top: 85%;
   left: 30%;
   transform: translate(-50%, -50%);
 }
@@ -197,7 +227,7 @@ a{
   transform: translate(-50%, -50%);
 }
 .layout3 #area5{
-  top: 80%;
+  top: 85%;
   left: 30%;
   transform: translate(-50%, -50%);
 }
@@ -209,6 +239,16 @@ a{
 .layout5 #area5{
   top: 15%;
   left: 50%;
+  transform: translate(-50%, -50%);
+}
+.layout6 #area5{
+  top: 15%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area5{
+  top: 72.5%;
+  left: 25%;
   transform: translate(-50%, -50%);
 }
 
@@ -241,6 +281,16 @@ a{
   left: 40%;
   transform: translate(-50%, -50%);
 }
+.layout6 #area6{
+  top: 32.5%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area6{
+  top: 90%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+}
 
 #area7{
   position: absolute;
@@ -268,6 +318,16 @@ a{
 .layout5 #area7{
   top: 85%;
   left: 50%;
+  transform: translate(-50%, -50%);
+}
+.layout6 #area7{
+  top: 65%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area7{
+  top: 15%;
+  left: 60%;
   transform: translate(-50%, -50%);
 }
 
@@ -300,6 +360,16 @@ a{
   left: 60%;
   transform: translate(-50%, -50%);
 }
+.layout6 #area8{
+  top: 85%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area8{
+  top: 49%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 
 #area9{
@@ -328,6 +398,16 @@ a{
 .layout5 #area9 {
   top: 20%;
   left: 75%;
+  transform: translate(-50%, -50%);
+}
+.layout6 #area9 {
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area9 {
+  top: 85%;
+  left: 60%;
   transform: translate(-50%, -50%);
 }
 
@@ -360,6 +440,16 @@ a{
   left: 80%;
   transform: translate(-50%, -50%);
 }
+.layout6 #area10 {
+  top:32.5%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area10 {
+  top:32.5%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
 
 
 #area11{
@@ -390,8 +480,20 @@ a{
   left: 75%;
   transform: translate(-50%, -50%);
 }
+.layout6 #area11{
+  top: 65%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+.layout7 #area11{
+  top: 65%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
 
-
+.player-selected{
+  border: 3px solid yellow;
+}
 
 .menu-container-seven{
   position:fixed;

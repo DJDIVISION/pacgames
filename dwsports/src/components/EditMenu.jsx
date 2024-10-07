@@ -62,7 +62,7 @@ const EditMenu = ({openEditMenu,setOpenEditMenu}) => {
 
     const initialValues = {
       id: playerToUpdate.id,
-      leagueName: "Ligue 1",
+      leagueName: "Bundesliga",
       name: playerToUpdate.name,
       height: playerToUpdate.height,
       number: playerToUpdate.number,

@@ -40,19 +40,25 @@ const NavBar = () => {
 
       const options = {
         method: 'GET',
-        url: 'https://api-football-v1.p.rapidapi.com/v3/players/squads',
-        params: {team: '106'},
+        url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+        params: {
+          id: '521',
+          season: '2024'
+        },
         headers: {
           'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
           'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
         }
       };
+      
+      
+      
 
     const fetchData = async () => {
         try {
             const response = await axios.request(options);
             console.log(response.data);
-            localStorage.setItem("brest", JSON.stringify(response.data))
+            localStorage.setItem("barcelonaStats", JSON.stringify(response.data))
             message.success("data fetched!")
         } catch (error) {
             console.error(error);
@@ -104,12 +110,12 @@ const NavBar = () => {
             </NavIcon>
             <NavText>AIRDROP</NavText>
         </NavColumn></LinkR> */}
-        <LinkR to="/roulette"><NavColumn /* onClick={fetchData} */>
+        {/* <LinkR to="/roulette"> */}<NavColumn onClick={fetchData}>
             <NavIcon>
                 <img src={roulette} alt="sports" />
             </NavIcon>
             <NavText>ROULETTE</NavText>
-        </NavColumn></LinkR>
+        </NavColumn>{/* </LinkR> */}
         <LinkR to="/blackjack"><NavColumn>
             <NavIcon>
                 <img src={chip} alt="sports" />

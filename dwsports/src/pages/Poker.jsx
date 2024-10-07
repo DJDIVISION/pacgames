@@ -8,12 +8,14 @@ import {motion, AnimatePresence} from 'framer-motion'
 import axios from 'axios';
 import { RightPokerColumn,LeftPokerColumn,PokerNavBar,CountryBall,CountryBallText,BallColumn,TeamsCarousel,TeamWrapper,InnerTeamsCarousel,
   TeamLogo,TeamName,PlayersContainer,PlayerWrapper,PlayerAvatar,PlayerName,PlayerPosition,PlayerShirt,PlayerShirtHolder,
-  PlayerInput,PlayerRating,PlayerValue,EditPlayerShirtHolder,PlayerDroppingArea,TopPokerNavBar,
+  PlayerInput,PlayerRating,PlayerValue,PlayerDroppingArea,TopPokerNavBar,
   DraggContainer,PlayerTeamLogo,TopPlayerHolder,TopPlayerText,TopPokerColumn,PlayerTeamCross,
-  ArrowLeftMiddle,ArrowRightMiddle,Formation,ArrowWrapper,ArrowWrapperColumn,
+  ArrowLeftMiddle,ArrowRightMiddle,Formation,ArrowWrapper,ArrowWrapperColumn,Search,
   ArrowDown,
   ArrowDownRelative,
-  ArrowWrapperColumnSmall} from './index';
+  ArrowWrapperColumnSmall,
+  ArrowBar,
+  SearchBar} from './index';
 import england from '../assets/logos/england.png'
 import spain from '../assets/logos/spain.png'
 import italy from '../assets/logos/italy.png' 
@@ -22,7 +24,7 @@ import france from '../assets/logos/france.png'
 import field from '../assets/lineups/field.jpg' 
 import cross from '../assets/chips/delete.png'
 
-import { AverageDisplay, EuroBalanceDisplay, useGetTeams } from './functions';
+import { AverageDisplay, EuroBalanceDisplay, useAuth, useGetTeams } from './functions';
 import { FantasyState } from '../context/FantasyContext';
 import { Row } from './indexTwo';
 import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
@@ -67,6 +69,7 @@ const Poker = () => {
 
   const [activeBall, setActiveBall] = useState(1)
   const carroussel = useRef();
+  const {user} = useAuth();
   const [width, setWidth] = useState(0);
   const { 
     teams, 
@@ -74,12 +77,14 @@ const Poker = () => {
     loadingTeams, 
     players, 
     loadingPlayers, 
-    handleTeamChange,setPlayers // Expose handleTeamChange for use in UI
+    handleTeamChange,setPlayers,getPlayers // Expose handleTeamChange for use in UI
   } = useGetTeams();
   const {activeLeague, setActiveLeague} = FantasyState();
   const {activeTeamName, setActiveTeamName} = FantasyState();
   const {activeTeamId, setActiveTeamId} = FantasyState();
   const {playerToUpdate, setPlayerToUpdate} = FantasyState();
+  const {playersSelected, setPlayersSelected} = FantasyState();
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false)
   const [playerValue, setPlayerValue] = useState(null)
   const [nationality, setNationality] = useState(null)
   const [height, setHeight] = useState(null)
@@ -93,6 +98,7 @@ const Poker = () => {
   const [teamAverage, setTeamAverage] = useState(0)
   const [allPlayersData, setAllPlayersData] = useState([])
   const [formation, setFormation] = useState("4-3-3")
+  const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
   const [droppedPlayers, setDroppedPlayers] = useState({
     area1: [],
     area2: [],
@@ -176,10 +182,18 @@ const Poker = () => {
     setOpenEditMenu(true)
   }
 
+
+  
+
   const Player = ({ player }) => {
+    const playerIsDropped = Object.values(droppedPlayers).some(area =>
+      area.find(droppedPlayer => droppedPlayer.id === player.id)
+    );
+    console.log("playerISdrops", playerIsDropped)
     const { attributes, listeners, setNodeRef, transform, isDragging  } = useDraggable({
-      id: `player-${player.id}`,
-      data: { value: player.value, image: player.photo, position: player.position, name: player.name, teamLogo: player.teamLogo, rating: player.rating },  // Passing chip value through drag data
+      id: `${player.id}`,
+      disabled: playerIsDropped,  
+      data: { value: player.value, image: player.photo, position: player.position, name: player.name, teamLogo: player.teamLogo, rating: player.rating, id: player.id },  // Passing chip value through drag data
     });
   
     // Apply transform styles during drag
@@ -239,9 +253,10 @@ const Poker = () => {
     const id = player.overId
     const value = player.value
     const playerId = player.id
-    console.log(id)
-    console.log(droppedPlayers)
+    console.log(playerId)
+    console.log(playerId)
     setBalance((prevBalance) => prevBalance + value);
+
     
     setDroppedPlayers((prev) => ({
       ...prev,
@@ -254,27 +269,33 @@ const Poker = () => {
     setTeamAverage(getAveragePlayerRating())
   }
 
-
   const handleDragEnd = (event) => {
     const { over, active } = event;
-    console.log(active)
+    
     if (over) {
-      const { value, image, position, name, teamLogo, rating } = active.data.current; // Accessing the passed data (value, image)
-      console.log('Player Data:', { value, image });
-      if (value && image) {
+      const { value, image, position, name, teamLogo, rating, id } = active.data.current;
+      const fakeBalance = balance - value
+      console.log(fakeBalance)
+      if (value && image && fakeBalance > 0) {
+        /* const item = document.getElementById(id)
+        item.style.display = 'none' */
+        setPlayersSelected((prev) => [...prev, id])
         setBalance((prevBalance) => prevBalance - value);
         setDroppedPlayers((prev) => ({
           ...prev,
-          [over.id]: [{ id: active.id, value, image, teamLogo, overId: over.id, rating: rating }], // Replace the existing player
+          [over.id]: [{ id: id, value, image, teamLogo, overId: over.id, rating: rating, isDropped: true }], // Replace the existing player
         }));
         setActivePlayer(null);
-        const newPlayer = { id: active.id, value: value, image: image, position: position, name: name, teamLogo: teamLogo, rating: rating, overId: over.id };
+        const newPlayer = { id: id, value: value, image: image, position: position, name: name, teamLogo: teamLogo, rating: rating, overId: over.id };
 
         setAllPlayersData((prev) => ({
           ...prev,
           [over.id]: [newPlayer], // Replace with the new player
         }));
         
+      } else if(fakeBalance < 0){
+        message.error("You can not run out of balance. Try with a cheaper player!")
+        return
       }
     }
     
@@ -302,6 +323,12 @@ const Poker = () => {
     }
     if(activeClassName === 5){
       setFormation("3-4-3")
+    }
+    if(activeClassName === 6){
+      setFormation("3-5-2")
+    }
+    if(activeClassName === 7){
+      setFormation("5-3-2")
     }
   }, [activeClassName])
 
@@ -331,8 +358,50 @@ const Poker = () => {
     }
   }
 
-  const saveTeam = () => {
-  
+
+  const saveTeam = async () => {
+    const allPlayers = Object.values(droppedPlayers).flat(); 
+    const id = user.id
+    const updatedData = {
+      players: allPlayers,
+      playerName: user.user_metadata.name,
+      playerId: user.id,
+      formation: formation,
+      teamPower: teamAverage,
+      balanceRemaining: balance
+    }
+    
+    if(allPlayers.length < 11){
+      message.error("You don't have a complete team to save. Add more players!")
+    } else {
+      const { data, error } = await supabase
+      .from("fantasyFootball").select('playerId').eq('playerId', user.id)
+      if(error){
+        console.log(error)
+      } 
+      if(data && data.length === 0){
+        const { data2, error2 } = await supabase
+          .from('fantasyFootball')
+          .insert([updatedData])
+        if (error2) {
+          console.error('Error inserting/updating user session data:', error2.message)
+        } else {
+          console.log('User session data saved:', data2)
+          message.success("Your bet has been registered")
+        }
+      } else {
+        const { data2, error2 } = await supabase
+          .from('fantasyFootball')
+          .update([updatedData])
+          .eq("playerId", user.id)
+        if (error2) {
+          console.error('Error inserting/updating user session data:', error2.message)
+        } else {
+          console.log('User session data saved:', data2)
+          message.success("Your bet has been registered")
+        }
+      }
+    } 
   }
 
   const sortByRating = () =>{
@@ -350,14 +419,33 @@ const Poker = () => {
     setPlayers(sortedPlayers); // Update the state with sorted players
   };
 
+  const positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Attacker' ];
+
   const sortByPosition = () => {
-    const sortedPlayers = [...players].sort((a, b) => a.position.localeCompare(b.position));
-    setPlayers(sortedPlayers); // Update the state with sorted players
+    const currentPosition = positions[currentPositionIndex];
+
+    // Sort players by bringing the current position to the top
+    const sortedPlayers = [...players].sort((a, b) => {
+      if (a.position === currentPosition && b.position !== currentPosition) {
+        return -1; // Move a to top
+      }
+      if (a.position !== currentPosition && b.position === currentPosition) {
+        return 1; // Move b to top
+      }
+      return 0; // Keep their order the same otherwise
+    });
+
+    setPlayers(sortedPlayers); // Update the players state with the sorted players
+
+    // Move to the next position for the next button click (cycle through)
+    setCurrentPositionIndex((prevIndex) => (prevIndex + 1) % positions.length);
   };
   const sortByNationality = () => {
     const sortedPlayers = [...players].sort((a, b) => a.nationality.localeCompare(b.nationality));
     setPlayers(sortedPlayers); // Update the state with sorted players
   };
+
+  
 
    
   return ( 
@@ -386,10 +474,10 @@ const Poker = () => {
             return(
               <BallColumn key={ball.id}>
               <CountryBall initial={{ height: activeBall === ball.id ? '70%' : '100%'}}
-              animate={{ height: activeBall === ball.id ? '70%' : '100%', transform: activeBall === ball.id ? 'translateY(5px) scale(0.8)' : '' }} 
+              animate={{ height: activeBall === ball.id ? '70%' : '100%', transform: activeBall === ball.id ? 'translateY(10px) scale(0.9)' : '' }} 
               transition={{ duration: 0.3 }} ><img onClick={() => {setActiveLeague(ball.league); setActiveBall(ball.id)}} src={ball.logo} alt="england" /></CountryBall>
-              <CountryBallText initial={{fontSize: activeBall === ball.id ? '16px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%'}} 
-              animate={{fontSize: activeBall === ball.id ? '16px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%' }} 
+              <CountryBallText initial={{fontSize: activeBall === ball.id ? '20px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%'}} 
+              animate={{fontSize: activeBall === ball.id ? '20px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%', transform: activeBall === ball.id ? 'translateY(-5px)' : ''  }} 
               transition={{ duration: 0.3 }}>{ball.name}</CountryBallText>
               </BallColumn>
             )
@@ -400,7 +488,7 @@ const Poker = () => {
       <TopPokerColumn>
         <EuroBalanceDisplay balance={balance} />
         <AverageDisplay balance={teamAverage} />
-        <StyledButton onClick={saveTeam()}>SAVE TEAM</StyledButton>
+        <StyledButton onClick={() => saveTeam()}>SAVE TEAM</StyledButton>
       </TopPokerColumn>
       <RightPokerColumn>
       <TeamsCarousel ref={carroussel}>
@@ -567,31 +655,38 @@ const Poker = () => {
               },
             }} style={{width: '100%', height: '100%'}}>
               <ArrowWrapper>
-                <ArrowWrapperColumn></ArrowWrapperColumn>
+                <SearchBar initial={{ width: '45%'}} 
+                animate={{ width: isSearchExpanded ? '100%' : '45%' }}
+                transition={{ duration: 0.3 }} onClick={() => setIsSearchExpanded(!isSearchExpanded)}>
+                  <Search />
+                </SearchBar>
+                <ArrowBar initial={{ width: '55%'}}
+                animate={{ width: isSearchExpanded ? '0' : '55%' }}
+                transition={{ duration: 0.3 }} >FUCKERS</ArrowBar>
+                {/* <ArrowWrapperColumn></ArrowWrapperColumn>
                 <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByName()}/></ArrowWrapperColumn>
                 <ArrowWrapperColumnSmall></ArrowWrapperColumnSmall>
                 <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByPosition()}/></ArrowWrapperColumn>
                 <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByNationality()}/></ArrowWrapperColumn>
                 <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByValue()}/></ArrowWrapperColumn>
-                <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByRating()}/></ArrowWrapperColumn>
+                <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByRating()}/></ArrowWrapperColumn> */}
               </ArrowWrapper>
               {players?.map((player, index) => {
+                const playerIsDropped = Object.values(droppedPlayers).some(area =>
+                  area.find(droppedPlayer => droppedPlayer.id === player.id)
+                );
                 return (
                   <PlayerWrapper key={player.photo} initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.15 }} >
+                  transition={{ delay: index * 0.15 }} id={player.id} style={{border: playerIsDropped ? `3px solid green` : '2px solid white'}}>
                     <PlayerAvatar>
                     <PlayerShirt>{player.number}</PlayerShirt>
-                    <Player player={player} />
+                    <Player key={player.id} player={player} />
                     </PlayerAvatar>
-                    {/* <EditPlayerShirtHolder>{player.name}</EditPlayerShirtHolder>
-                    <EditPlayerShirtHolder>H: {player.height}</EditPlayerShirtHolder>
-                    <EditPlayerShirtHolder>{player.nationality}</EditPlayerShirtHolder>
-                    <EditPlayerShirtHolder>{player.preferredFoot}</EditPlayerShirtHolder>
-                    <EditPlayerShirtHolder>{player.value}M €</EditPlayerShirtHolder> */}
                     <PlayerName>{player.name}</PlayerName>
-                    <PlayerPosition>{player.position}</PlayerPosition>
                     <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
+                    <PlayerPosition>{player.position}</PlayerPosition>
+                    
                     <PlayerValue>{player.value}M €</PlayerValue>
                     <PlayerShirtHolder onClick={() => handleUpdate(player)}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
                   </PlayerWrapper>
@@ -617,77 +712,6 @@ const Poker = () => {
       {openEditMenu && (
         <EditMenu openEditMenu={openEditMenu} setOpenEditMenu={setOpenEditMenu}/>
       )}
-      {/* <DndContext>
-      <RightPokerColumn></RightPokerColumn>
-      <LeftPokerColumn>
-        <PokerNavBar>
-          {balls.map((ball) => {
-            return(
-              <BallColumn key={ball.id}>
-              <CountryBall initial={{ height: activeBall === ball.id ? '70%' : '100%'}}
-              animate={{ height: activeBall === ball.id ? '70%' : '100%', transform: activeBall === ball.id ? 'translateY(5px) scale(0.8)' : '' }} 
-              transition={{ duration: 0.3 }} ><img onClick={() => {setActiveLeague(ball.league); setActiveBall(ball.id)}} src={ball.logo} alt="england" /></CountryBall>
-              <CountryBallText initial={{fontSize: activeBall === ball.id ? '16px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%'}} 
-              animate={{fontSize: activeBall === ball.id ? '16px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%' }} 
-              transition={{ duration: 0.3 }}>{ball.name}</CountryBallText>
-              </BallColumn>
-            )
-          })}
-        </PokerNavBar>
-        <TeamsCarousel ref={carroussel}>
-          <InnerTeamsCarousel drag="x" dragConstraints={{right: 0, left: -width}} whileTap={{cursor: 'grabbing'}}>
-          {loadingTeams ? (
-            <CircularProgress sx={{width: 80, height: 80, margin: 'auto'}} />
-          ) : (
-            <Row>
-              {teams?.map((team) => {
-                return (
-                  <TeamWrapper onClick={() => handleTeam(team)} key={team.id}>
-                    <TeamLogo style={{backgroundImage: `url(${team.teamLogo})`, backgroundSize: '75%',backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}}></TeamLogo>
-                    <TeamName>{team.teamName}</TeamName>
-                  </TeamWrapper>
-                )
-              })}
-            </Row>
-          )}
-          </InnerTeamsCarousel>
-        </TeamsCarousel>
-        <PlayersContainer>
-        {loadingPlayers ? (
-            <CircularProgress sx={{width: 80, height: 80}} />
-          ) : (
-            <motion.div initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { staggerChildren: 0.3 },
-              },
-            }} style={{width: '100%', height: '100%'}}>
-              {players?.map((player, index) => {
-                return (
-                  <PlayerWrapper key={player.photo} initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.15 }} >
-                    <PlayerAvatar>
-                    <PlayerShirt>{player.number}</PlayerShirt>
-                    <Avatar alt="Image" src={player.photo} sx={{ width: { xs: 10, sm: 10, md: 40, lg: 50, xl: 50 }, 
-                      height: { xs: 10, sm: 10, md: 40, lg: 50, xl: 50 }, }} />
-                    </PlayerAvatar>
-                    <PlayerName>{player.name}</PlayerName>
-                    <PlayerPosition>{player.position}</PlayerPosition>
-                    <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
-                    <PlayerValue>{player.value}M €</PlayerValue>
-                    <PlayerShirtHolder><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
-                  </PlayerWrapper>
-                )
-              })}
-            </motion.div>
-          )}
-        </PlayersContainer>
-      </LeftPokerColumn>
-      </DndContext> */}
     </Section>
   )
 }

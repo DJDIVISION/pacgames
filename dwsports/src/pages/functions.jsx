@@ -472,7 +472,7 @@ export const useGetTeams = () => {
   const [loadingTeams, setLoadingTeams] = useState(false); // Loading state for teams
   const [loadingPlayers, setLoadingPlayers] = useState(false); // Loading state for players
   const { activeLeague, setActiveLeague } = FantasyState(); // Active league state
-  const { activeTeamId, setActiveTeamId } = FantasyState(); // Active team ID state
+  const { activeTeamId, setActiveTeamId } = FantasyState(); 
   const [players, setPlayers] = useState([]); // Stores the list of players for the active team
 
   // Function to fetch teams from Supabase
@@ -501,6 +501,7 @@ export const useGetTeams = () => {
 
   // Function to fetch players for a given team from Supabase
   const getPlayers = async (teamId) => {
+    console.log(teamId)
     setLoadingPlayers(true);
     const { data, error } = await supabase
       .from('footballPlayers')
@@ -516,7 +517,8 @@ export const useGetTeams = () => {
     }
 
     if (data) {
-      setPlayers(data); // Update the players for the active team
+      setPlayers(data);
+      
     }
 
     setLoadingPlayers(false);
@@ -535,7 +537,8 @@ export const useGetTeams = () => {
     players, 
     loadingPlayers, 
     handleTeamChange,
-    setPlayers // Expose handleTeamChange for use in UI
+    setPlayers,
+    getPlayers // Expose handleTeamChange for use in UI
   };
 };
 

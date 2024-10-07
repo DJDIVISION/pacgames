@@ -14,6 +14,31 @@ import ChatIcon from '@mui/icons-material/Chat';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeDown from '@mui/icons-material/VolumeDown';
+import {  styled as styledTwo, alpha } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
+import InputBase from '@mui/material/InputBase';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+
+
+export const SearchIconButton = styled(SearchIcon)`
+    &&&{
+        color: ${props =>props.theme.text}
+    }
+`;
+
+export const Search = () => {
+    return(
+        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', width: '100%' }}>
+        <SearchIconButton/>
+        <TextField id="input-with-sx" label="Search by name" variant="filled" InputProps={{
+
+        }}/>
+      </Box>
+    )
+}
+  
+
 
 export const BallColumn = styled.div`
     width: 20%;
@@ -116,8 +141,22 @@ export const TeamWrapper = styled.div`
 
 export const ArrowWrapper = styled.div`
     width: 100%;
-    height: 7.5%;
+    height: 10%;
     ${props => props.theme.displayFlex};
+    
+`;
+
+export const SearchBar = styled(motion.div)`
+    width: 45%;
+    height: 100%;
+    border: 1px solid blue;
+    padding: 10px;
+`;
+
+export const ArrowBar = styled(motion.div)`
+    width: 55%;
+    height: 100%;
+    border: 1px solid orange;
 `;
 
 export const ArrowWrapperColumn = styled.div`
@@ -132,7 +171,7 @@ export const ArrowWrapperColumnSmall = styled.div`
 `;
 
 export const PlayerWrapper = styled(motion.div)`
-    width: 95%;
+    width: 87.5%;
     min-height: 80px;
     border: 0.5px solid white;
     border-radius: 10px;
@@ -162,17 +201,6 @@ export const PlayerShirtHolder = styled.div`
     }
 `;
 
-export const EditPlayerShirtHolder = styled.div`
-    width: 10%;
-    height: 100%;
-    ${props => props.theme.displayFlexCenter};
-    color: white;
-    font-weight: bold;
-    font-size: 20px;
-    @media(max-width:968px){
-        font-size: 14px;
-    }
-`;
 
 export const PlayerValue = styled.div`
     width: 20%;
@@ -358,7 +386,7 @@ export const WrapperRightColumn = styled.div`
 `;
 
 export const RightPokerColumn = styled.div`
-  width: 65vw;
+  width: 40vw;
   height: 100%;
   ${props => props.theme.displayFlexCenter};
   padding-top: 0px;
@@ -640,6 +668,7 @@ export const ArrowDownRelative = styled(KeyboardArrowDownIcon)`
         color: ${props => props.theme.text};
         scale: 1.5;
         transform: translateY(10%);
+        cursor: pointer;
         &:hover{
             color: gold;
             transition: 0.6 all ease-in-out;
@@ -668,7 +697,7 @@ export const MiniArrowup = styled(KeyboardArrowDownIcon)`
 
 export const ArrowLeft = styled(KeyboardArrowDownIcon)`
     &&&{
-        color: ${props => props.theme.text};
+        color: ${props => props.theme.body};
         scale: 2;
         position: absolute;
         top: 30px;
@@ -750,6 +779,7 @@ export const LeftColumn = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    border: 1px solid red;
 `;
 
 export const RightColumn = styled.div`
