@@ -1,3 +1,69 @@
+
+
+
+
+
+const updatedDataTwo = [
+  {
+    "main stats": {
+      "goals": one,
+      "assists": two,
+      "appearences": three,
+      "lineups": four,
+      "minutes played": five,
+      "yellow cards": six,
+      "red cards": seven
+    },
+    "shots": {
+      "goals": eight,
+      "expected goals": nine,
+      "total shots": ten,
+      "shots on target": eleven
+    },
+    "passes": {
+      "assists": twelve,
+      "expected assists": thirteen,
+      "successfull passes": fourteen,
+      "passes accuracy": fifteen,
+      "long balls": sixteen,
+      "long balls accuracy": seventeen,
+      "big chances created": eighteen,
+      "crosses": nineteen,
+      "crosses accuracy": twenty
+    },
+    "possession": {
+      "dribbles": twentyone,
+      "dribbles accuracy": twentytwo,
+      "touches": twentythree,
+      "touches opposite half": twentyfour,
+      "possession lost": twentyfive,
+      "was fouled": twentysix,
+      "penalty won": twentyseven
+    },
+    "defense": {
+      "penalties commited": twentyeight,
+      "tackles": twentynine,
+      "tackles accuracy": thrity,
+      "won duels": thirtyone,
+      "won duels accuracy": thirtytwo,
+      "aerial duels won": thirtythree,
+      "aerial duels accuracy": thirtyfour,
+      "interceptions": thrityfive,
+      "blocked": thritysix,
+      "fouls commited": thrityseven,
+      "balls recovered": thrityeight,
+      "possession won opp. half": thritynine,
+      "dribbled": fourty
+    },
+    "discipline": {
+      "yellow cards": fourtyo,
+      "red cards": thrityfive
+    }
+  }
+]
+
+
+
 [
     {
         "age": 32,

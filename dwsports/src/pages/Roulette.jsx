@@ -74,6 +74,7 @@ import youWin from '../assets/sounds/youWin.ogg'
 import youLose from '../assets/sounds/youLose.ogg'
 import placeYourBet from '../assets/sounds/placeYourBet.ogg'
 import { RouletteState } from '../context/RouletteContext';
+import { animationFive,transition as transitionMain } from '../animations';
 
 
 
@@ -608,6 +609,7 @@ const Roulette = () => {
     }
 
     return (
+        <motion.div initial="out" animate="in" variants={animationFive} transition={transitionMain}>
         <RouletteSection>
             <RouletteRow>
                 <RouletteSmallColumn>
@@ -814,6 +816,7 @@ const Roulette = () => {
             </BettingColumn>
             <RouletteTable setPlaceBets={setPlaceBets} placeBets={placeBets}  socket={socket} playEffect={playEffect}/>
         </RouletteSection>
+        </motion.div>
     );
 }
 

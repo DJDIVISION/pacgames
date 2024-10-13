@@ -11,6 +11,7 @@ import io from 'socket.io-client';
 import { Avatar } from '@mui/material';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../pages/functions';
+import { animationFive, transition } from '../../animations';
 
 
 const takePlayerName = async () => {
@@ -77,7 +78,7 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
   }
 
   return (
-    <>
+    <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
     <BlackSection>
       <WelcomeTitle>American Roulette</WelcomeTitle>
       <Tabs>
@@ -142,7 +143,7 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
       </Tabs>
     </BlackSection>
     <BlackSectionSmart>TURN YOUR DEVICE FOR A BETTER PLAY</BlackSectionSmart>
-    </>
+    </motion.div>
   )
 }
 

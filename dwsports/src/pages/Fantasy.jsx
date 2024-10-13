@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback  } from 'react';
+import { debounce } from 'lodash';
 import io from 'socket.io-client';
 import styled from 'styled-components';
 import { supabase } from '../supabase/client';
@@ -15,7 +16,8 @@ import { RightPokerColumn,LeftPokerColumn,PokerNavBar,CountryBall,CountryBallTex
   ArrowDownRelative,
   ArrowWrapperColumnSmall,
   ArrowBar,
-  SearchBar} from './index';
+  SearchBar,
+  PlayerSettingsIcon} from './index';
 import england from '../assets/logos/england.png'
 import spain from '../assets/logos/spain.png'
 import italy from '../assets/logos/italy.png' 
@@ -28,9 +30,11 @@ import { AverageDisplay, EuroBalanceDisplay, useAuth, useGetTeams } from './func
 import { FantasyState } from '../context/FantasyContext';
 import { Row } from './indexTwo';
 import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
-import EditMenu from '../components/EditMenu';
+import EditMenu from '../components/menus/EditMenu';
 import { PlayerDroppingAreas } from './fakeData';
 import { StyledButton } from '../components';
+import { StyledIconButtonHover } from '../components/chats';
+import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 
 const balls = [
   {
@@ -65,7 +69,7 @@ const balls = [
   }
 ]
 
-const Poker = () => {
+const Fantasy = () => {
 
   const [activeBall, setActiveBall] = useState(1)
   const carroussel = useRef();
@@ -80,10 +84,13 @@ const Poker = () => {
     handleTeamChange,setPlayers,getPlayers // Expose handleTeamChange for use in UI
   } = useGetTeams();
   const {activeLeague, setActiveLeague} = FantasyState();
+  const [loading, setLoading] = useState(false); 
   const {activeTeamName, setActiveTeamName} = FantasyState();
   const {activeTeamId, setActiveTeamId} = FantasyState();
   const {playerToUpdate, setPlayerToUpdate} = FantasyState();
   const {playersSelected, setPlayersSelected} = FantasyState();
+  const [playerToFind, setPlayerToFind] = useState("")
+  const [searchedPlayers, setSearchedPlayers] = useState([])
   const [isSearchExpanded, setIsSearchExpanded] = useState(false)
   const [playerValue, setPlayerValue] = useState(null)
   const [nationality, setNationality] = useState(null)
@@ -93,6 +100,7 @@ const Poker = () => {
   const [rating, setRating] = useState(null)
   const [openEditMenu, setOpenEditMenu] = useState(false)
   const [activePlayer, setActivePlayer] = useState(null); 
+  const [selectedPlayerMenu, setSelectedPlayerMenu] = useState(false)
   const [activeClassName, setActiveClassName] = useState(1)
   const [balance, setBalance] = useState(300)
   const [teamAverage, setTeamAverage] = useState(0)
@@ -112,17 +120,42 @@ const Poker = () => {
     area10: [],
     area11: []
   });
-  
+
+  const fetchPlayers = useCallback(debounce(async (searchTerm) => {
+    if (!searchTerm) {
+      setSearchedPlayers([]);  // Reset players when input is empty
+      return;
+    }
+    console.log(searchTerm)
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from('footballPlayers')  // Replace with your actual table name
+      .select('*')
+      .ilike('name', `%${searchTerm}%`);  // Use ilike for case-insensitive search
+
+    if (error) {
+      console.error('Error fetching players:', error);
+    } else {
+      setSearchedPlayers(data);  // Update the players state with fetched data
+    }
+
+    setLoading(false);
+  }, 500), []);  // Debounce with a delay of 500ms
+
+  // Fetch players when the input value changes
   useEffect(() => {
-    setWidth(carroussel.current.scrollWidth - carroussel.current.offsetWidth);
-  })
+    fetchPlayers(playerToFind);  // Call the debounced function
+  }, [playerToFind, fetchPlayers]);
+
+  
+  
 
   useEffect(() => {
     getTeams();
   }, [activeLeague])
 
-  
-  
+
 
   const sendData = async (player) => {
     console.log(playerValue)
@@ -189,7 +222,6 @@ const Poker = () => {
     const playerIsDropped = Object.values(droppedPlayers).some(area =>
       area.find(droppedPlayer => droppedPlayer.id === player.id)
     );
-    console.log("playerISdrops", playerIsDropped)
     const { attributes, listeners, setNodeRef, transform, isDragging  } = useDraggable({
       id: `${player.id}`,
       disabled: playerIsDropped,  
@@ -277,8 +309,9 @@ const Poker = () => {
       const fakeBalance = balance - value
       console.log(fakeBalance)
       if (value && image && fakeBalance > 0) {
-        /* const item = document.getElementById(id)
-        item.style.display = 'none' */
+        setIsSearchExpanded(false)
+        setPlayerToFind("")
+        setSearchedPlayers([])
         setPlayersSelected((prev) => [...prev, id])
         setBalance((prevBalance) => prevBalance - value);
         setDroppedPlayers((prev) => ({
@@ -414,43 +447,59 @@ const Poker = () => {
     setPlayers(sortedPlayers);
   }
 
-  const sortByName = () => {
-    const sortedPlayers = [...players].sort((a, b) => a.name.localeCompare(b.name));
-    setPlayers(sortedPlayers); // Update the state with sorted players
-  };
-
   const positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Attacker' ];
 
   const sortByPosition = () => {
     const currentPosition = positions[currentPositionIndex];
-
-    // Sort players by bringing the current position to the top
     const sortedPlayers = [...players].sort((a, b) => {
       if (a.position === currentPosition && b.position !== currentPosition) {
-        return -1; // Move a to top
+        return -1; 
       }
       if (a.position !== currentPosition && b.position === currentPosition) {
-        return 1; // Move b to top
+        return 1; 
       }
-      return 0; // Keep their order the same otherwise
+      return 0; 
     });
-
-    setPlayers(sortedPlayers); // Update the players state with the sorted players
-
-    // Move to the next position for the next button click (cycle through)
+    setPlayers(sortedPlayers); 
     setCurrentPositionIndex((prevIndex) => (prevIndex + 1) % positions.length);
   };
-  const sortByNationality = () => {
-    const sortedPlayers = [...players].sort((a, b) => a.nationality.localeCompare(b.nationality));
-    setPlayers(sortedPlayers); // Update the state with sorted players
-  };
 
-  
+  useEffect(() => {
+    if(searchedPlayers.length === 0){
+      setIsSearchExpanded(false)
+    }
+  }, [searchedPlayers])
+
+  const openPlayerMenu = (player) => {
+    setPlayerToUpdate(player)
+    setSelectedPlayerMenu(true)
+  }
 
    
   return ( 
     <Section>
       <TopPokerNavBar>
+        <TopPokerColumn>
+          <EuroBalanceDisplay balance={balance} />
+          <AverageDisplay balance={teamAverage} />
+          <StyledButton onClick={() => saveTeam()}>SAVE TEAM</StyledButton>
+        </TopPokerColumn>
+      <RightPokerColumn>
+      {balls.map((ball) => {
+            return(
+              <BallColumn key={ball.id}>
+              <CountryBall initial={{ height: activeBall === ball.id ? '70%' : '100%'}}
+              animate={{ height: activeBall === ball.id ? '70%' : '100%', transform: activeBall === ball.id ? 'translateY(10px) scale(0.9)' : '' }} 
+              transition={{ duration: 0.3 }} ><img onClick={() => {setActiveLeague(ball.league); setActiveBall(ball.id)}} src={ball.logo} alt="england" /></CountryBall>
+              <CountryBallText initial={{fontSize: activeBall === ball.id ? '20px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%'}} 
+              animate={{fontSize: activeBall === ball.id ? '20px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%', transform: activeBall === ball.id ? 'translateY(-5px)' : ''  }} 
+              transition={{ duration: 0.3 }}>{ball.name}</CountryBallText>
+              </BallColumn>
+            )
+          })}
+      </RightPokerColumn>
+      </TopPokerNavBar>
+      <PokerNavBar>
       <TopPokerColumn>
       {Object.entries(allPlayersData).map(([area, players]) => (
        <>
@@ -470,29 +519,8 @@ const Poker = () => {
       ))}
       </TopPokerColumn>
       <RightPokerColumn>
-      {balls.map((ball) => {
-            return(
-              <BallColumn key={ball.id}>
-              <CountryBall initial={{ height: activeBall === ball.id ? '70%' : '100%'}}
-              animate={{ height: activeBall === ball.id ? '70%' : '100%', transform: activeBall === ball.id ? 'translateY(10px) scale(0.9)' : '' }} 
-              transition={{ duration: 0.3 }} ><img onClick={() => {setActiveLeague(ball.league); setActiveBall(ball.id)}} src={ball.logo} alt="england" /></CountryBall>
-              <CountryBallText initial={{fontSize: activeBall === ball.id ? '20px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%'}} 
-              animate={{fontSize: activeBall === ball.id ? '20px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%', transform: activeBall === ball.id ? 'translateY(-5px)' : ''  }} 
-              transition={{ duration: 0.3 }}>{ball.name}</CountryBallText>
-              </BallColumn>
-            )
-          })}
-      </RightPokerColumn>
-      </TopPokerNavBar>
-      <PokerNavBar>
-      <TopPokerColumn>
-        <EuroBalanceDisplay balance={balance} />
-        <AverageDisplay balance={teamAverage} />
-        <StyledButton onClick={() => saveTeam()}>SAVE TEAM</StyledButton>
-      </TopPokerColumn>
-      <RightPokerColumn>
-      <TeamsCarousel ref={carroussel}>
-          <InnerTeamsCarousel /* drag="x" dragConstraints={{right: 0, left: -width}} */ whileTap={{cursor: 'grabbing'}}>
+      {/* <TeamsCarousel ref={carroussel}> */}
+          <InnerTeamsCarousel /* drag="x" dragConstraints={{right: 0, left: -width}} */>
           {loadingTeams ? (
             <CircularProgress sx={{width: 80, height: 80, margin: 'auto'}} />
           ) : (
@@ -508,7 +536,7 @@ const Poker = () => {
             </Row>
           )}
           </InnerTeamsCarousel>
-        </TeamsCarousel>
+        {/* </TeamsCarousel> */}
       </RightPokerColumn>
       </PokerNavBar>
       <DraggContainer>
@@ -657,25 +685,49 @@ const Poker = () => {
               <ArrowWrapper>
                 <SearchBar initial={{ width: '45%'}} 
                 animate={{ width: isSearchExpanded ? '100%' : '45%' }}
-                transition={{ duration: 0.3 }} onClick={() => setIsSearchExpanded(!isSearchExpanded)}>
-                  <Search />
+                transition={{ duration: 0.3 }} isSearchExpanded={isSearchExpanded}>
+                  <Search playerToFind={playerToFind} setPlayerToFind={setPlayerToFind} setIsSearchExpanded={setIsSearchExpanded} isSearchExpanded={isSearchExpanded}/>
                 </SearchBar>
                 <ArrowBar initial={{ width: '55%'}}
                 animate={{ width: isSearchExpanded ? '0' : '55%' }}
-                transition={{ duration: 0.3 }} >FUCKERS</ArrowBar>
-                {/* <ArrowWrapperColumn></ArrowWrapperColumn>
-                <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByName()}/></ArrowWrapperColumn>
-                <ArrowWrapperColumnSmall></ArrowWrapperColumnSmall>
-                <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByPosition()}/></ArrowWrapperColumn>
-                <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByNationality()}/></ArrowWrapperColumn>
+                transition={{ duration: 0.3 }} >
+                  <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByPosition()}/></ArrowWrapperColumn>
                 <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByValue()}/></ArrowWrapperColumn>
-                <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByRating()}/></ArrowWrapperColumn> */}
+                <ArrowWrapperColumn><ArrowDownRelative onClick={() => sortByRating()}/></ArrowWrapperColumn>
+                </ArrowBar>
               </ArrowWrapper>
-              {players?.map((player, index) => {
+              {isSearchExpanded === true && (
+                searchedPlayers?.map((player, index) => {
+                  const playerIsDropped = Object.values(droppedPlayers).some(area =>
+                    area.find(droppedPlayer => droppedPlayer.id === player.id)
+                  );
+                  return (
+                    <>
+                    <PlayerWrapper key={player.photo} initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.15 }} id={player.id} style={{border: playerIsDropped ? `3px solid green` : '2px solid white'}}>
+                      <PlayerAvatar>
+                      <PlayerShirt>{player.number}</PlayerShirt>
+                      <Player key={player.id} player={player} />
+                      </PlayerAvatar>
+                      <PlayerName>{player.name}</PlayerName>
+                      <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
+                      <PlayerPosition>{player.position}</PlayerPosition>
+                      
+                      <PlayerValue>{player.value}M €</PlayerValue>
+                      <PlayerShirtHolder onClick={() => /* handleUpdate(player) */{setOpenEditMenu(true); setPlayerToUpdate(player)}}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
+                    </PlayerWrapper>
+                    <PlayerSettingsIcon />
+                    </>
+                  )
+                })
+              )}
+              {(isSearchExpanded === false || searchedPlayers.length === 0) && players?.map((player, index) => {
                 const playerIsDropped = Object.values(droppedPlayers).some(area =>
                   area.find(droppedPlayer => droppedPlayer.id === player.id)
                 );
                 return (
+                  <div style={{display: 'flex', alignItems:'center'}}>
                   <PlayerWrapper key={player.photo} initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.15 }} id={player.id} style={{border: playerIsDropped ? `3px solid green` : '2px solid white'}}>
@@ -688,8 +740,10 @@ const Poker = () => {
                     <PlayerPosition>{player.position}</PlayerPosition>
                     
                     <PlayerValue>{player.value}M €</PlayerValue>
-                    <PlayerShirtHolder onClick={() => handleUpdate(player)}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
+                    <PlayerShirtHolder onClick={() => /* handleUpdate(player) */{setOpenEditMenu(true); setPlayerToUpdate(player)}}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
                   </PlayerWrapper>
+                  <StyledIconButtonHover style={{transform: 'translateX(-5px)'}} onClick={() => openPlayerMenu(player)}><PlayerSettingsIcon /></StyledIconButtonHover>
+                  </div>
                 )
               })}
               <DragOverlay>
@@ -712,11 +766,14 @@ const Poker = () => {
       {openEditMenu && (
         <EditMenu openEditMenu={openEditMenu} setOpenEditMenu={setOpenEditMenu}/>
       )}
+      {selectedPlayerMenu && (
+        <PlayerStatsMenu selectedPlayerMenu={selectedPlayerMenu} setSelectedPlayerMenu={setSelectedPlayerMenu} />
+      )}
     </Section>
   )
 }
 
-export default Poker
+export default Fantasy
 
 const Section = styled.div`
   width: 100vw;

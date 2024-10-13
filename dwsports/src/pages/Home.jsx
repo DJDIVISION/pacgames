@@ -19,8 +19,8 @@ const Home = () => {
     const json = JSON.parse(data)
     const stats = (json.response[0].statistics)
     stats.forEach(async (stat) => {
-      if(stat.team.name === 'Barcelona'){
-        if(stat.league.name === 'UEFA Champions League'){
+      if(stat.team.name === 'Arsenal'){
+        if(stat.league.name === 'Premier League'){
           console.log(stat)
           const updatedData = [
             stat
@@ -29,8 +29,8 @@ const Home = () => {
           const json = JSON.stringify(stat)
           const { data, error } = await supabase
             .from('footballPlayers')
-            .update([{championsStats: updatedData}])
-            .eq("id", 521)
+            .update([{laLigaStats: updatedData}])
+            .eq("id", 643)
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
@@ -68,7 +68,7 @@ const Home = () => {
 
 
   return (
-    <motion.div initial="out" animate="in" variants={animationTwo} transition={transition}>
+    <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
     <HomeSection>
       <NavBar />
       <Button onClick={fetchData} variant="contained">FETCH DATA</Button>

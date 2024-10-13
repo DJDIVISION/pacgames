@@ -13,9 +13,12 @@ import Home from './pages/Home';
 import PlayerStats from './pages/PlayerStats';
 import TeamStats from './pages/TeamStats';
 import Login from './pages/Login';
-import Poker from './pages/Poker';
+import Fantasy from './pages/Fantasy';
 import BlackJack from './pages/BlackJack';
 import Roulette from './pages/Roulette';
+import Casino from './pages/Casino';
+import Texas from './pages/Texas';
+import Slots from './pages/Slots';
 
 function App() {
 
@@ -33,8 +36,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/bets" element={<ProtectedRoute><Bets /></ProtectedRoute>} />
+        <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />
+        <Route path="/fantasy" element={<ProtectedRoute><Fantasy /></ProtectedRoute>} />
         <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />
-        <Route path="/poker" element={<ProtectedRoute><Poker /></ProtectedRoute>} />
+        <Route path="/texas" element={<ProtectedRoute><Texas /></ProtectedRoute>} />
+        <Route path="/slots" element={<ProtectedRoute><Slots /></ProtectedRoute>} />
         <Route path="/roulette" element={<ProtectedRoute><Roulette /></ProtectedRoute>} />
         <Route path="/player/:id" element={<ProtectedRoute><PlayerStats /></ProtectedRoute>} />
         <Route path="/team/:id" element={<ProtectedRoute><TeamStats /></ProtectedRoute>} />

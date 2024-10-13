@@ -1,13 +1,14 @@
 import React,{useEffect, useState, useRef} from 'react'
 import styled from 'styled-components'
 import { motion,AnimatePresence } from 'framer-motion'
-import { FantasyState } from '../context/FantasyContext';
-import { ButtonAbsolute, CloseChatRoomIcon } from './chats';
-import { StyledAbsolute } from '../pages/indexTwo';
+import { FantasyState } from '../../context/FantasyContext';
+import { ButtonAbsolute, CloseChatRoomIcon } from '../chats';
+import { StyledAbsolute } from '../../pages/indexTwo';
 import { Formik } from "formik";
 import { TextField, Box, Button } from '@mui/material';
-import { supabase } from '../supabase/client';
+import { supabase } from '../../supabase/client';
 import { message } from 'antd';
+import axios from 'axios'
 
 
 const EditMenu = ({openEditMenu,setOpenEditMenu}) => {
@@ -27,23 +28,45 @@ const EditMenu = ({openEditMenu,setOpenEditMenu}) => {
       const id = document.getElementById('idField').value
       const leagueName = document.getElementById('leagueNameField').value
       const name = document.getElementById('nameField').value
-      const height = document.getElementById('heightField').value
+      const position = document.getElementById('positionField').value
+      //const height = document.getElementById('heightField').value
       const nationality = document.getElementById('nationalityField').value
       const photo = document.getElementById('photoField').value
       const preferredFoot = document.getElementById('preferredFootField').value
       const value = document.getElementById('valueField').value
       const rating = document.getElementById('ratingField').value
       const topPlayer = document.getElementById('topPlayerField').value
+      /* const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+        params: {
+          id: id,
+          season: '2024'
+        },
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+      try {
+        const response = await axios.request(options);
+        console.log(response.data);
+        localStorage.setItem("barcelonaStats", JSON.stringify(response.data))
+        message.success("data fetched!")
+      } catch (error) {
+        console.error(error);
+      } */
       const updatedData = {
-        leagueName: leagueName,
         name: name,
-        height: height,
+        position: position
+        /* height: height,
         nationality: nationality,
         photo: photo,
         preferredFoot: preferredFoot,
         value: value,
         rating: rating,
-        topPlayer: topPlayer
+        topPlayer: topPlayer,
+        leagueName: leagueName, */
       }
       console.log(updatedData)
       const { data, error } = await supabase
@@ -55,30 +78,49 @@ const EditMenu = ({openEditMenu,setOpenEditMenu}) => {
       } else {
         console.log('User session data saved:', data)
         message.success("Your bet has been registered")
+        
+        setOpenEditMenu(false)   
+        setPlayerToUpdate({}) 
       }
-      setPlayerToUpdate({})
-      setOpenEditMenu(false)
+      
     }
 
     const initialValues = {
       id: playerToUpdate.id,
-      leagueName: "Bundesliga",
       name: playerToUpdate.name,
-      height: playerToUpdate.height,
+      position: playerToUpdate.position
+      /* height: playerToUpdate.height,
       number: playerToUpdate.number,
       nationality: playerToUpdate.nationality,
       preferredFoot: playerToUpdate.preferredFoot,
       value: playerToUpdate.value,
       photo: playerToUpdate.photo,
       rating: playerToUpdate.rating,
-      topPlayer: playerToUpdate.topPlayer
+      topPlayer: playerToUpdate.topPlayer,
+      leagueName: "Bundesliga", */
     };
 
     console.log(initialValues)
 
+    const fetchData =  async () => {
+      const id = document.getElementById('idField').value
+      const name = document.getElementById('nameField').value
+      const position = document.getElementById('positionField').value
+      const { data, error } = await supabase
+              .from('footballPlayers')
+              .update({name: name, position: position})
+              .eq("id", id)
+            if (error) {
+              console.error('Error inserting/updating user session data:', error.message)
+            } else {
+              console.log('User session data saved:', data)
+              message.success("Your bet has been registered")
+            }
+    }
+
   return (
     <AnimatePresence>
-          <motion.div className="menu-container-one" variants={item}
+          <motion.div className="menu-container-two" variants={item}
               initial="initial"
               animate="animate"
               exit="exit">
@@ -147,12 +189,12 @@ const EditMenu = ({openEditMenu,setOpenEditMenu}) => {
                   <TextField
                     variant="outlined"
                     type="text"
-                    label="height"
+                    label="position"
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     onChange={handleChange}
-                    value={values.height}
-                    name="height"
-                    id="heightField"
+                    value={values.position}
+                    name="position"
+                    id="positionField"
                     slotProps={{
                       style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
                     }}
@@ -264,8 +306,12 @@ const EditMenu = ({openEditMenu,setOpenEditMenu}) => {
                     }
                  }} style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
                 <Button id="sendEditProducts" variant="contained" /* type="submit" */ onClick={handleEditFormSubmit} style={{marginTop: "10px"}}>
-                EDIT
-                  </Button></motion.div>
+                FETCH DATA
+                  </Button>
+                  <Button id="sendEditProducts" variant="contained" /* type="submit" */ onClick={fetchData} style={{marginTop: "10px"}}>
+                SEND DATA
+                  </Button>
+                  </motion.div>
                 </Box>
                     </form>
                   )}

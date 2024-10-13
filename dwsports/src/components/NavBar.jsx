@@ -7,10 +7,11 @@ import lottery from '../assets/bingo.png'
 import chip from '../assets/chip.png'
 import pacton from '../assets/pacton_robot_png.png'
 import roulette from '../assets/chips/roulette.png'
+import fantasy from '../assets/fantasy.png'
 import axios from 'axios'
 import { message } from 'antd';
 import { BetState } from '../context/BetsContext';
-import { Avatar } from '@mui/material';
+import { Avatar, Fab } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client';
 import { useAuth } from '../pages/functions'
@@ -42,7 +43,7 @@ const NavBar = () => {
         method: 'GET',
         url: 'https://api-football-v1.p.rapidapi.com/v3/players',
         params: {
-          id: '521',
+          id: '643',
           season: '2024'
         },
         headers: {
@@ -98,11 +99,17 @@ const NavBar = () => {
         ): (
             <div></div>
         )}
-        <LinkR to="/poker"><NavColumn>
+        <LinkR to="/slots"><NavColumn>
             <NavIcon>
                 <img src={sportsIcon} alt="sports" />
             </NavIcon>
             <NavText>SPORTS</NavText>
+        </NavColumn></LinkR>
+        <LinkR to="/fantasy"><NavColumn>
+            <NavIcon>
+                <img src={fantasy} alt="fantasy" />
+            </NavIcon>
+            <NavText>FANTASY</NavText>
         </NavColumn></LinkR>
         {/* <LinkR to="/airdrop"><NavColumn>
             <NavIcon>
@@ -112,13 +119,13 @@ const NavBar = () => {
         </NavColumn></LinkR> */}
         {/* <LinkR to="/roulette"> */}<NavColumn onClick={fetchData}>
             <NavIcon>
-                <img src={roulette} alt="sports" />
+                <img src={roulette} alt="roulette" />
             </NavIcon>
             <NavText>ROULETTE</NavText>
         </NavColumn>{/* </LinkR> */}
-        <LinkR to="/blackjack"><NavColumn>
+        <LinkR to="/casino"><NavColumn>
             <NavIcon>
-                <img src={chip} alt="sports" />
+                <img src={chip} alt="casino" />
             </NavIcon>
             <NavText>CASINO</NavText>
         </NavColumn></LinkR>

@@ -19,7 +19,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 
+export const PlayerSettingsIcon = styled(DisplaySettingsIcon)`
+    &&&{
+            color: ${props =>props.theme.text}
+        }
+`;
 
 export const SearchIconButton = styled(SearchIcon)`
     &&&{
@@ -27,12 +33,21 @@ export const SearchIconButton = styled(SearchIcon)`
     }
 `;
 
-export const Search = () => {
+export const Search = ({setIsSearchExpanded,isSearchExpanded,playerToFind,setPlayerToFind}) => {
     return(
         <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', width: '100%' }}>
         <SearchIconButton/>
-        <TextField id="input-with-sx" label="Search by name" variant="filled" InputProps={{
-
+        <TextField autoComplete='off' onChange={(e) => {setIsSearchExpanded(true);setPlayerToFind(e.target.value)}} value={playerToFind} fullWidth id="input-with-sx" label="Search by name" variant="filled" slotProps={{
+            input: {
+                style: {
+                    color: 'white'
+                }
+            },
+            inputLabel: {
+                style: {
+                    color: 'white'
+                }
+            }
         }}/>
       </Box>
     )
@@ -71,7 +86,7 @@ export const PlayersContainer = styled.div`
 `;
 
 export const PokerNavBar = styled.div`
-    height: 10vh;
+    height: 15vh;
     width: 100%;
     display: flex;
     align-items: center;
@@ -79,7 +94,7 @@ export const PokerNavBar = styled.div`
 `;
 
 export const TopPokerNavBar = styled.div`
-    height: 15vh;
+    height: 10vh;
     width: 100%;
     display: flex;
     align-items: center;
@@ -108,7 +123,7 @@ export const DraggContainer = styled.div`
 `;
 
 export const TeamsCarousel = styled(motion.div)`
-  cursor: grab;
+  
   height: 95%;
   width: 100%;
   overflow: hidden;
@@ -128,6 +143,7 @@ export const TeamWrapper = styled.div`
     width: auto;
     height: 50px;
     border: 0.5px solid white;
+    cursor: pointer;
     border-radius: 10px;
     margin: 5px 10px;
     padding: 5px 15px 5px 5px;
@@ -148,19 +164,18 @@ export const ArrowWrapper = styled.div`
 
 export const SearchBar = styled(motion.div)`
     width: 45%;
-    height: 100%;
-    border: 1px solid blue;
+    height: 10;
     padding: 10px;
+    padding-right: ${({ isSearchExpanded }) => (isSearchExpanded ? "70px" : "10px")};
 `;
 
 export const ArrowBar = styled(motion.div)`
     width: 55%;
     height: 100%;
-    border: 1px solid orange;
+    ${props => props.theme.displayFlex};
 `;
-
 export const ArrowWrapperColumn = styled.div`
-    width: 15%;
+    width: 28%;
     height: 100%;
     ${props => props.theme.displayFlexCenter};
 `;
@@ -390,8 +405,6 @@ export const RightPokerColumn = styled.div`
   height: 100%;
   ${props => props.theme.displayFlexCenter};
   padding-top: 0px;
-  border: 1px solid white;
-  border-top: none;
   overflow-y: scroll;
   position: relative;
   z-index: 1;
