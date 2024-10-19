@@ -176,7 +176,7 @@ export const BigTextHolderSlots = styled.div`
 `;
 
 export const EurosTextHolder = styled.div`
-  width: 250px;
+  width: 200px;
   height: 10vh;
   padding: 0 10px;
   color: gold;

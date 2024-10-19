@@ -98,7 +98,7 @@ export const TopPokerNavBar = styled.div`
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    //justify-content: space-around;
 `;
 
 export const PlayerDroppingArea = styled.div`
@@ -279,6 +279,10 @@ export const PlayerTeamCross = styled.div`
     position: absolute; 
     top: 0%;
     right: 0%;
+    @media(max-width: 968px){
+        top: 40%;
+        right: -10%;
+    }
 `;
 
 

@@ -610,8 +610,8 @@ useEffect(() => {
               <CountryBall initial={{ height: activeBall === ball.id ? '70%' : '100%'}}
               animate={{ height: activeBall === ball.id ? '70%' : '100%', transform: activeBall === ball.id ? 'translateY(10px) scale(0.9)' : '' }} 
               transition={{ duration: 0.3 }} ><img onClick={() => {setActiveLeague(ball.league); setActiveBall(ball.id)}} src={ball.logo} alt="england" /></CountryBall>
-              <CountryBallText initial={{fontSize: activeBall === ball.id ? '20px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%'}} 
-              animate={{fontSize: activeBall === ball.id ? '20px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%', transform: activeBall === ball.id ? 'translateY(-5px)' : ''  }} 
+              <CountryBallText initial={{fontSize: activeBall === ball.id ? '18px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%'}} 
+              animate={{fontSize: activeBall === ball.id ? '18px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%', transform: activeBall === ball.id ? 'translateY(-5px)' : ''  }} 
               transition={{ duration: 0.3 }}>{ball.name}</CountryBallText>
               </BallColumn>
             )
@@ -626,8 +626,8 @@ useEffect(() => {
             return(
               <TopPlayerHolder>
                 <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                <Avatar alt="Image" src={player.image} sx={{ width: { xs: 10, sm: 10, md: 40, lg: 50, xl: 50 }, 
-                  height: { xs: 10, sm: 10, md: 40, lg: 50, xl: 50 },}} />
+                <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 50, xl: 50 }, 
+                  height: { xs: 30, sm: 30, md: 40, lg: 50, xl: 50 },}} />
                   <TopPlayerText>{player.name}</TopPlayerText>
                   <TopPlayerText style={{color: 'gold', transform: 'translateY(5px)'}}>{player.value}M €</TopPlayerText>
                   <PlayerTeamCross onClick={() => removePlayer(player)}><img src={cross} alt="cross" /></PlayerTeamCross>
