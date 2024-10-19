@@ -420,6 +420,7 @@ export const RightPokerColumn = styled.div`
   ${props => props.theme.displayFlexCenter};
   padding-top: 0px;
   overflow-y: scroll;
+  overflow-x: hidden;
   position: relative;
   z-index: 1;
 `;

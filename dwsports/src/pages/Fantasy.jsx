@@ -826,8 +826,8 @@ useEffect(() => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.15 }} id={player.id} style={{border: playerIsDropped ? `3px solid green` : '2px solid white'}}>
                       <PlayerAvatar>
-                    <Avatar alt="Image" src={player.teamLogo} sx={{ width: { xs: 10, sm: 10, md: 20, lg: 30, xl: 30 }, 
-                      height: { xs: 10, sm: 10, md: 20, lg: 30, xl: 30 }, }} />
+                    <Avatar alt="Image" src={player.teamLogo} sx={{ width: { xs: 30, sm: 30, md: 30, lg: 30, xl: 30 }, 
+                      height: { xs: 30, sm: 30, md: 30, lg: 30, xl: 30 }, }} />
                       </PlayerAvatar>
                       <PlayerAvatar>
                       <PlayerShirt>{player.number}</PlayerShirt>
