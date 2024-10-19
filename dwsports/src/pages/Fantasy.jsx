@@ -30,6 +30,7 @@ import { AverageDisplay, EuroBalanceDisplay, useAuth, useGetTeams } from './func
 import { FantasyState } from '../context/FantasyContext';
 import { Row } from './indexTwo';
 import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
+import { TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
 import EditMenu from '../components/menus/EditMenu';
 import { PlayerDroppingAreas } from './fakeData';
 import { StyledButton } from '../components';
@@ -120,6 +121,15 @@ const Fantasy = () => {
     area10: [],
     area11: []
   });
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 10, // Start dragging after 10px of movement
+      },
+    })
+  );
 
 
   const getDroppedPlayers = async () => {
@@ -615,7 +625,7 @@ useEffect(() => {
           {players.map((player) => {
             return(
               <TopPlayerHolder>
-                <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover', width: '20px', height: '20px', left: '10%'}}></PlayerTeamLogo>
+                <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                 <Avatar alt="Image" src={player.image} sx={{ width: { xs: 10, sm: 10, md: 40, lg: 50, xl: 50 }, 
                   height: { xs: 10, sm: 10, md: 40, lg: 50, xl: 50 },}} />
                   <TopPlayerText>{player.name}</TopPlayerText>
@@ -649,7 +659,7 @@ useEffect(() => {
       </RightPokerColumn>
       </PokerNavBar>
       <DraggContainer>
-          <DndContext onDragEnd={handleDragEnd} onDragStart={(event) => {
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={(event) => {
               setActivePlayer(event.active.data.current);  // Set the active player when dragging starts
             }}>
           <LeftPokerColumn id="droppable-container" className='layout1' style={{backgroundImage: `url(${field})`, backgroundSize: `90%`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', position: 'relative'}}>

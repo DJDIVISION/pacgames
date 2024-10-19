@@ -178,7 +178,7 @@ export const ArrowWrapperColumn = styled.div`
     width: 25%;
     height: 100%;
     ${props => props.theme.displayFlexCenter};
-    transform: translateX(25px);
+    transform: translateX(20px);
 `;
 export const ArrowWrapperColumnSmall = styled.div`
     width: 7.5%;
@@ -249,6 +249,10 @@ export const PlayerShirt = styled.div`
     color: ${props => props.theme.body};
     font-size: 12px;
     font-weight: bold;
+    @media(max-width: 968px){
+        width: 15px;
+        height: 15px;
+    }
 `;
 
 export const PlayerTeamLogo = styled.div`
@@ -260,6 +264,11 @@ export const PlayerTeamLogo = styled.div`
     position: absolute; 
     top: 0;
     left: 0;
+    @media(max-width: 968px){
+        
+        width: 15px;
+        height: 15px;
+    }
 `;
 export const PlayerTeamCross = styled.div`
     width: 30px;
