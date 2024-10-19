@@ -38,7 +38,18 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
+@keyframes heavyShake {
+  0% { transform: translateY(0); }
+  20% { transform: translateY(-5px); }
+  40% { transform: translateY(5px); }
+  60% { transform: translateY(-5px); }
+  80% { transform: translateY(5px); }
+  100% { transform: translateY(0); }
+}
 
+.shake {
+  animation: heavyShake 0.5s ease-in-out;
+}
 
 .menu-container-four{
   position:absolute;

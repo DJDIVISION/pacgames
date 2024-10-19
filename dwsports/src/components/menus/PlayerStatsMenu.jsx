@@ -7,7 +7,7 @@ import { StyledAbsolute } from '../../pages/indexTwo';
 import { supabase } from '../../supabase/client';
 import {Section, Holder, Title, ListItemWrapper,ListWrapper,ListItemSpan,PlayerDataWrapper,PlayerLogo,PlayerStatsWrapper,
     PlayerStatsName,PlayerStatCountry,StatsCountryLocation,PlayerStatsRating,TeamRatingTitle,TeamRating,PlayerStatsNameSmall,
-    RatingsContainer,RatingWrapper
+    RatingsContainer,RatingWrapper,HolderRow
 } from './index'
 import { Avatar, Button, TextField } from '@mui/material';
 import CountUp from '../../animations/CountUp';
@@ -109,7 +109,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
         const twentyfive = parseFloat(document.getElementById("twentyfive").value)
         const twentysix = parseFloat(document.getElementById("twentysix").value)
         const twentyseven = parseFloat(document.getElementById("twentyseven").value)
-        const twentyeight = parseFloat(document.getElementById("twentyeight").value)
+        /* const twentyeight = parseFloat(document.getElementById("twentyeight").value)
         const twentynine = parseFloat(document.getElementById("twentynine").value)
         const thirty = parseFloat(document.getElementById("thirty").value)
         const thirtyone = parseFloat(document.getElementById("thirtyone").value)
@@ -123,9 +123,9 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
         const thirtynine = parseFloat(document.getElementById("thirtynine").value)
         const fourty = parseFloat(document.getElementById("fourty").value)
         const fourtyone = parseFloat(document.getElementById("fourtyone").value)
-        const fourtytwo = parseFloat(document.getElementById("fourtytwo").value)
+        const fourtytwo = parseFloat(document.getElementById("fourtytwo").value) */
 
-        const updatedDataTwo = [
+        /* const updatedDataTwo = [
             {
               "main stats": {
                 "goals": one,
@@ -182,16 +182,58 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                 "red cards": fourtytwo
               }
             }
+          ] */
+
+          const updatedDataGoalkeepers = [
+            {
+              "main stats": {
+                "clean sheets": one,
+                "goals conceded": two,
+                "saved penalties": three,
+                "faced penalties": twentyfive,
+                "matches": four,
+                "minutes played": five,
+                "yellow cards": six,
+                "red cards": seven
+              },
+              "shots": {
+                "shots faced": eight,
+                "set piece": twentysix,
+                "free kick": twentyseven,
+                "from corner": nine,
+                "shots inside box": ten,
+                "shots outside box": eleven
+              },
+              "saves": {
+                "saves": twelve,
+                "save percentage": thirteen,
+                "goals conceded": fourteen,
+                "goals prevented": fifteen,
+                "clean sheets": sixteen,
+                "error lead to goal": seventeen,
+                "acted as sweeper": eighteen,
+                "high claim": nineteen
+              },
+              "distribution": {
+                "passes accuracy": twenty,
+                "accurate long balls": twentyone,
+                "long balls accuracy": twentytwo
+              },
+              "discipline": {
+                "yellow cards": twentythree,
+                "red cards": twentyfour
+              }
+            }
           ]
 
-        console.log(updatedDataTwo)
+        //console.log(updatedDataTwo)
         /* console.log(updatedData)
         const dataThree = [
             updatedData
         ]*/
         const { data, error } = await supabase
           .from('footballPlayers') // replace with your table name
-          .update([{laLigaStats: updatedDataTwo}])
+          .update([{laLigaStats: updatedDataGoalkeepers}])
           .eq('id', playerToUpdate.id); // replace with the specific record identifier
     
         if (error) {
@@ -204,11 +246,11 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
         } 
     };
 
-    const fetchData = async () => {
+    /* const fetchData = async () => {
         const item = localStorage.getItem("mainStats")
         const json = JSON.parse(item)
         setPlayerLeagueData(json)
-    }
+    } */
 
     useEffect(() => {
         fetchData();
@@ -275,7 +317,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
         return 'white'; // Default background color if number is out of range
     };
 
-    /* const fetchData = async () => {
+    const fetchData = async () => {
         const { data, error } = await supabase
         .from('footballPlayers')
         .select('*')
@@ -288,7 +330,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
             localStorage.setItem("mainStats", str);
             setPlayerChampionsData(data[0].championsStats[0])            
         }
-    } */
+    }
 
     console.log(latestRatings)
     console.log(playerToUpdate)
@@ -322,6 +364,12 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     <Avatar alt="Image" src={playerToUpdate.teamLogo} sx={{ width: 90, height: 90, border: '4px solid aqua' }}/>
                     </PlayerLogo>
                 </PlayerDataWrapper>
+                {playerToUpdate.injuryType !== null && (
+                  <Holder style={{border: '3px solid red'}}>
+                    <HolderRow>{playerToUpdate.injuryType}</HolderRow>
+                    <HolderRow>{playerToUpdate.injuryReason}</HolderRow>
+                  </Holder>
+                )}
                 <Holder>
                 <h3>RATINGS</h3>
                 <RatingsContainer>
@@ -330,17 +378,545 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                             <RatingWrapper key={el} style={{background: getBackgroundColor(el)}}>{el}</RatingWrapper>
                         )
                     })}
-                    {latestRatings?.map((el) => {
+                    {/* {latestRatings?.map((el) => {
                         return(
                             <RatingWrapper key={el}  style={{background: getBackgroundColor(el)}}>{el}</RatingWrapper>
                         )
-                    })}
+                    })} */}
                 </RatingsContainer>
-                <input type="number" style={{width: '200px', height: '50px'}} onChange={((e) => setNewRating(e.target.value))}></input>
+                {/* <input type="number" style={{width: '200px', height: '50px'}} onChange={((e) => setNewRating(e.target.value))}></input>
                 <Button variant="contained" onClick={updatePlayerRatings}>ADD</Button>
-                <Button variant="contained" onClick={sendPlayerRatings}>SEND</Button>
+                <Button variant="contained" onClick={sendPlayerRatings}>SEND</Button> */}
                 </Holder>
-                <Holder>
+                {/* <Holder>
+                <h3>MAIN STATS</h3>
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="clean sheets"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="clean sheets"
+                    id="one"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="goals conceded"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="goals conceded"
+                    id="two"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="saved penalties"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="saved penalties"
+                    id="three"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="received penalties"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="received penalties"
+                    id="twentyfive"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="matches"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="matches"
+                    id="four"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="minutes played"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="minutes played"
+                    id="five"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="YELLOW"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="goles"
+                    id="six"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="RED"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="goles"
+                    id="seven"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  </Holder>
+                  <Holder>
+                <h3>SHOTS</h3>
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="shots faced"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="shots faced"
+                    id="eight"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="set piece"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="saves"
+                    id="twentysix"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="from corner"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="from corner"
+                    id="nine"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="free kick"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="from corner"
+                    id="twentyseven"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="shots inside box"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="shots inside box"
+                    id="ten"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="shots outside box"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="shots outside box"
+                    id="eleven"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  </Holder>
+                  <Holder>
+                  <h3>SAVES</h3>
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="saves"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="saves"
+                    id="twelve"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="save percentage"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="save percentage"
+                    id="thirteen"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="goals conceded"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="goals conceded"
+                    id="fourteen"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="goals prevented"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="goals prevented"
+                    id="fifteen"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="clean sheets"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="clean sheets"
+                    id="sixteen"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="error lead to goal"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="error lead to goal"
+                    id="seventeen"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="acted as sweeper"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="acted as sweeper"
+                    id="eighteen"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="high claim"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="high claim"
+                    id="nineteen"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  </Holder>
+                  <Holder>
+                  <h3>DISTRIBUTION</h3>
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="pass accuracy"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="goles"
+                    id="twenty"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="accurate long balls"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="goles"
+                    id="twentyone"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                <TextField
+                    variant="outlined"
+                    type="number"
+                    label="long ball accuracy"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="long ball accuracy"
+                    id="twentytwo"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  </Holder>
+                  <Holder>
+                  <h3>DISCIPLINE</h3>
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="yellow cards"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="goles"
+                    id="twentythree"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    label="red cards"
+                    sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
+                    name="goles"
+                    id="twentyfour"
+                    //defaultValue='0'
+                    slotProps={{
+                        input:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        },
+                        helperText:{
+                          style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
+                        }
+                      }}
+
+                    style={{ width: '200px', borderRadius: '5px' }}
+                  />
+                  </Holder> */}
+                {/* <Holder>
                 <h3>MAIN STATS</h3>
                 <TextField
                     variant="outlined"
@@ -349,7 +925,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="one"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -368,7 +944,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="two"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -387,7 +963,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="four"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -406,7 +982,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="three"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -426,7 +1002,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="five"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -445,7 +1021,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="six"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -464,7 +1040,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="seven"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -485,7 +1061,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="eight"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -504,7 +1080,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="nine"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -523,7 +1099,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="ten"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -542,7 +1118,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="eleven"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -564,7 +1140,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twelve"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -583,7 +1159,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirteen"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -602,7 +1178,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="fourteen"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -621,7 +1197,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="fifteen"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -640,7 +1216,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="sixteen"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -659,7 +1235,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="seventeen"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -678,7 +1254,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="eighteen"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -697,7 +1273,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="nineteen"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -716,7 +1292,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twenty"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -738,7 +1314,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="regates"
                     id="twentyone"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -757,7 +1333,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twentytwo"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -776,7 +1352,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twentythree"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -795,7 +1371,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twentyfour"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -814,7 +1390,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twentyfive"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -833,7 +1409,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twentysix"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -852,7 +1428,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twentyseven"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -875,7 +1451,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twentyeight"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -894,7 +1470,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="twentynine"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -913,7 +1489,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirty"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -932,7 +1508,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirtyone"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -951,7 +1527,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirtytwo"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -970,7 +1546,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirtythree"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -988,7 +1564,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirtyfour"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -1007,7 +1583,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirtyfive"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -1026,7 +1602,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirtysix"
-                    defaultValue='0'
+                    //defaultValue='0'
                     
                     slotProps={{
                       input:{
@@ -1046,7 +1622,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirtyseven"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -1065,7 +1641,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirtyeight"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -1084,7 +1660,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="thirtynine"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -1103,7 +1679,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="fourty"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -1125,7 +1701,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="fourtyone"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: { fontFamily: "Quicksand", textTransform: "uppercase", color: "white" }
@@ -1144,7 +1720,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     sx={{ border: '1px solid white', margin: '0px 0px 10px 0', color: 'white' }}
                     name="goles"
                     id="fourtytwo"
-                    defaultValue='0'
+                    //defaultValue='0'
                     slotProps={{
                         input:{
                           style: {  color: "white" }
@@ -1156,8 +1732,10 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
 
                     style={{ width: '200px', borderRadius: '5px' }}
                   />
-                  </Holder>
-                  {/* {Object.entries(playerLeagueData).filter(([key, _]) => key !== 'team' && key !== 'league' && key !== "substitutes").map(([key, value]) => (
+                  </Holder> */}
+                  
+                  {Object.entries(playerLeagueData).filter(([key, _]) => key !== 'team' && key !== 'league' && key !== "substitutes").map(([key, value]) => (
+                    
                       <Holder key={key} style={{ marginBottom: '20px' }}>
                           <h3>{key.toUpperCase()}</h3>
                           <ListWrapper style={{width: '100%'}}>
@@ -1170,7 +1748,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                                       </ListItemWrapper>
                                       
                                     
-                                    {innerKey !== "captain" && (
+                                    {/* {innerKey !== "captain" && (
                                         <>
                                     <button variant="contained"
                                         onClick={() => handleAction(key, innerKey, 'decrement-10')}
@@ -1233,7 +1811,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                                     +100
                                 </button>
                                 </>
-                                    )}
+                                    )} */}
                                     </div>
                                   ))
                               ) : (
@@ -1242,7 +1820,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                               )}
                           </ListWrapper>
                       </Holder>
-                  ))} */}
+                  ))}
                         <Button variant="contained" onClick={() => saveDataToSupabase(playerLeagueData)}>Save Changes</Button>
 
                 </Section>

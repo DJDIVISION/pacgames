@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef}from 'react'
 import { toast } from 'react-toastify';
 import { supabase } from '../supabase/client';
 import { motion } from 'framer-motion';
-import { SmallTextHolder,BigTextHolder, BigTextWinnings, EurosTextHolder } from './indexTwo';
+import { SmallTextHolder,BigTextHolder, BigTextWinnings, EurosTextHolder, BigTextHolderSlots } from './indexTwo';
 import { FantasyState } from '../context/FantasyContext';
 
 export const WinningsDisplay = ({ winnings }) => {
@@ -76,6 +76,31 @@ export const BalanceDisplayBig = ({ balance }) => {
       transition={{ duration: 0.5 }}
     >
      <BigTextHolder>BALANCE: ${displayBalance}</BigTextHolder>
+    </motion.div>
+  );
+};
+
+export const BalanceDisplaySlots = ({ balance }) => {
+  const [displayBalance, setDisplayBalance] = useState(balance);
+
+  useEffect(() => {
+    const controls = setInterval(() => {
+      setDisplayBalance((prev) => {
+        if (prev < balance) return Math.min(prev + 1, balance);
+        if (prev > balance) return Math.max(prev - 1, balance);
+        return balance;
+      });
+    }, 5); // Speed of counting, adjust as necessary
+
+    return () => clearInterval(controls);
+  }, [balance]);
+
+  return (
+    <motion.div
+      animate={{ opacity: [0, 1] }}
+      transition={{ duration: 0.5 }}
+    >
+     <BigTextHolderSlots>BALANCE: ${displayBalance}</BigTextHolderSlots>
     </motion.div>
   );
 };

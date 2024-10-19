@@ -175,9 +175,10 @@ export const ArrowBar = styled(motion.div)`
     ${props => props.theme.displayFlex};
 `;
 export const ArrowWrapperColumn = styled.div`
-    width: 28%;
+    width: 25%;
     height: 100%;
     ${props => props.theme.displayFlexCenter};
+    transform: translateX(25px);
 `;
 export const ArrowWrapperColumnSmall = styled.div`
     width: 7.5%;

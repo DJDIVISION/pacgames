@@ -159,6 +159,22 @@ export const BigTextHolder = styled.div`
   }
 `;
 
+export const BigTextHolderSlots = styled.div`
+  width: 18vw;
+  height: 10vh;
+  padding: 0 10px;
+  border: 1px solid aqua;
+  color: ${props => props.theme.text};
+  border-radius: 10px;
+  font-size: 22px;
+  ${props => props.theme.displayFlexCenter};
+  font-weight: bold;
+  @media(min-width: 968px){
+    font-size: 22px;
+    
+  }
+`;
+
 export const EurosTextHolder = styled.div`
   width: 250px;
   height: 10vh;

@@ -121,6 +121,90 @@ const Fantasy = () => {
     area11: []
   });
 
+
+  const getDroppedPlayers = async () => {
+  const { data, error } = await supabase
+    .from('fantasyFootball')
+    .select('*')
+    .eq("playerId", user.id);
+
+  if (error) {
+    console.error('Error fetching players:', error);
+    return [];
+  }
+  console.log(data);
+  setFormation(data[0].formation)
+  setBalance(data[0].balanceRemaining)
+  return data; // This should be the array of player objects
+};
+
+// Adjusted unflatPlayers function to group by 'overId'
+const unflatPlayers = (flatPlayers) => {
+  return flatPlayers.reduce((acc, player) => {
+    const { overId, id, value, image, teamLogo, rating, isDropped } = player;
+
+    // If there is no entry for this 'overId' yet, create one as an array
+    if (!acc[overId]) {
+      acc[overId] = [];
+    }
+
+    // Push player data into the respective 'overId' group
+    acc[overId].push({
+      id,
+      value,
+      image,
+      teamLogo,
+      rating,
+      isDropped,
+      overId,
+    });
+
+    return acc;
+  }, {}); // Start with an empty object
+};
+
+const unflatPlayersTwo = (flatPlayers) => {
+  return flatPlayers.reduce((acc, player) => {
+    const { id, value, image, position, name, teamLogo, rating, overId } = player;
+
+    // Create newPlayer object with the desired structure
+    const newPlayer = {
+      id,
+      value,
+      image,
+      position,
+      name,
+      teamLogo,
+      rating,
+      overId, // Same as player.overId
+    };
+
+    // Update acc (accumulated object) using overId as key
+    acc[overId] = [newPlayer]; // Replaces the existing entry with this new player
+
+    return acc;
+  }, {});
+};
+
+useEffect(() => {
+  const fetchAndUnflatPlayers = async () => {
+    const flatPlayers = await getDroppedPlayers();
+    const players = (flatPlayers[0].players)
+    const unflat = unflatPlayers(players);
+    const structuredPlayers = unflatPlayersTwo(players);
+    console.log(unflat);
+
+    // Setting the unflattened players into state
+    setDroppedPlayers(unflat);
+    setAllPlayersData((prev) => ({
+      ...prev,
+      ...structuredPlayers, // Merge the new players into the existing state
+    }));
+  };
+
+  fetchAndUnflatPlayers();
+}, [user]);
+
   const fetchPlayers = useCallback(debounce(async (searchTerm) => {
     if (!searchTerm) {
       setSearchedPlayers([]);  // Reset players when input is empty
@@ -148,11 +232,50 @@ const Fantasy = () => {
     fetchPlayers(playerToFind);  // Call the debounced function
   }, [playerToFind, fetchPlayers]);
 
+  const setSata = async () => {
+    const str = localStorage.getItem("injured");
+    const json = JSON.parse(str);
+    //console.log(json.response);
+    
+    for (const player of json.response) {
+      console.log(player.player.id);
+      
+      // Check if the player exists
+      const { data, error: fetchError } = await supabase
+        .from('footballPlayers')
+        .select('*')
+        .eq("id", player.player.id);
+        
+      if (fetchError) {
+        console.error('Error fetching player:', fetchError);
+        continue; // Skip to the next player if there's an error
+      }
   
+      if (data.length > 0) {
+        // If the player exists, update their data
+        const { error: updateError } = await supabase
+          .from('footballPlayers')
+          .update({
+            injuryReason: player.player.reason,
+            injuryType: player.player.type
+          })
+          .eq("id", player.player.id);
+          
+        if (updateError) {
+          console.error('Error updating player:', updateError);
+        } else {
+          console.log(`Updated player: ${player.player.id}`);
+        }
+      } else {
+        console.log(`Player with ID ${player.player.id} does not exist.`);
+      }
+    }
+  };
   
 
   useEffect(() => {
     getTeams();
+    
   }, [activeLeague])
 
 
@@ -190,25 +313,7 @@ const Fantasy = () => {
     handleTeamChange(team.teamId)
   }
 
-  const PlayerImage = ({ player }) => {
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
-      id: `drag-${player.id}`,
-      data: { player },  // Passing chip value through drag data
-    });
   
-    // Apply transform styles during drag
-    const style = {
-      transform: transform
-        ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-        : undefined,
-    };
-  
-    return (
-      <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-        <img src={image} alt={`Chip ${player.id}`}  />
-      </div>
-    );
-  };
 
   const handleUpdate = (player) => {
     setPlayerToUpdate(player)
@@ -222,9 +327,11 @@ const Fantasy = () => {
     const playerIsDropped = Object.values(droppedPlayers).some(area =>
       area.find(droppedPlayer => droppedPlayer.id === player.id)
     );
+    const playerIsInjured = player.injuryType !== null && player.injuryType !== "Questionable";
+    const isDraggingDisabled = playerIsDropped || playerIsInjured;
     const { attributes, listeners, setNodeRef, transform, isDragging  } = useDraggable({
       id: `${player.id}`,
-      disabled: playerIsDropped,  
+      disabled: isDraggingDisabled,  
       data: { value: player.value, image: player.photo, position: player.position, name: player.name, teamLogo: player.teamLogo, rating: player.rating, id: player.id },  // Passing chip value through drag data
     });
   
@@ -280,6 +387,8 @@ const Fantasy = () => {
     }
   }, [droppedPlayers])
 
+  
+
   const removePlayer = (player) => {
     console.log(player)
     const id = player.overId
@@ -316,7 +425,7 @@ const Fantasy = () => {
         setBalance((prevBalance) => prevBalance - value);
         setDroppedPlayers((prev) => ({
           ...prev,
-          [over.id]: [{ id: id, value, image, teamLogo, overId: over.id, rating: rating, isDropped: true }], // Replace the existing player
+          [over.id]: [{ id: id, value, image, teamLogo, overId: over.id, rating: rating, isDropped: true, name: name }], // Replace the existing player
         }));
         setActivePlayer(null);
         const newPlayer = { id: id, value: value, image: image, position: position, name: name, teamLogo: teamLogo, rating: rating, overId: over.id };
@@ -391,7 +500,7 @@ const Fantasy = () => {
     }
   }
 
-
+  
   const saveTeam = async () => {
     const allPlayers = Object.values(droppedPlayers).flat(); 
     const id = user.id
@@ -707,10 +816,15 @@ const Fantasy = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.15 }} id={player.id} style={{border: playerIsDropped ? `3px solid green` : '2px solid white'}}>
                       <PlayerAvatar>
+                    <Avatar alt="Image" src={player.teamLogo} sx={{ width: { xs: 10, sm: 10, md: 20, lg: 30, xl: 30 }, 
+                      height: { xs: 10, sm: 10, md: 20, lg: 30, xl: 30 }, }} />
+                      </PlayerAvatar>
+                      <PlayerAvatar>
                       <PlayerShirt>{player.number}</PlayerShirt>
                       <Player key={player.id} player={player} />
                       </PlayerAvatar>
                       <PlayerName>{player.name}</PlayerName>
+                      <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
                       <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
                       <PlayerPosition>{player.position}</PlayerPosition>
                       
@@ -726,16 +840,30 @@ const Fantasy = () => {
                 const playerIsDropped = Object.values(droppedPlayers).some(area =>
                   area.find(droppedPlayer => droppedPlayer.id === player.id)
                 );
+                const playerIsInjured = player.injuryType === 'Missing Fixture';
+                const playerIsQuestionable = player.injuryType === 'Questionable';
+                const borderStyle = playerIsDropped 
+                  ? '3px solid green' 
+                  : playerIsInjured 
+                  ? '3px solid red' 
+                  : playerIsQuestionable 
+                  ? '3px solid orange' 
+                  : '2px solid white'; 
                 return (
                   <div style={{display: 'flex', alignItems:'center'}}>
                   <PlayerWrapper key={player.photo} initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.15 }} id={player.id} style={{border: playerIsDropped ? `3px solid green` : '2px solid white'}}>
+                  transition={{ delay: index * 0.15 }} id={player.id} style={{border: `${borderStyle}`}}>
+                    <PlayerAvatar>
+                    <Avatar alt="Image" src={player.teamLogo} sx={{ width: { xs: 10, sm: 10, md: 20, lg: 30, xl: 30 }, 
+                      height: { xs: 10, sm: 10, md: 20, lg: 30, xl: 30 }, }} />
+                      </PlayerAvatar>
                     <PlayerAvatar>
                     <PlayerShirt>{player.number}</PlayerShirt>
                     <Player key={player.id} player={player} />
                     </PlayerAvatar>
                     <PlayerName>{player.name}</PlayerName>
+                    
                     <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
                     <PlayerPosition>{player.position}</PlayerPosition>
                     
@@ -785,8 +913,8 @@ const Section = styled.div`
 
 const options = {
   method: 'GET',
-  url: 'https://api-football-v1.p.rapidapi.com/v3/players/squads',
-  params: {team: '77'},
+  url: 'https://api-football-v1.p.rapidapi.com/v3/injuries',
+  params: {date: '2024-10-20'},
   headers: {
     'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
     'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
@@ -798,7 +926,7 @@ const fetchData = async () => {
   try {
       const response = await axios.request(options);
       console.log(response.data);
-      localStorage.setItem("villa", JSON.stringify(response.data))
+      localStorage.setItem("injured", JSON.stringify(response.data))
       message.success("data fetched!")
   } catch (error) {
       console.error(error);

@@ -50,8 +50,16 @@ export const RatingWrapper = styled.div`
     margin: 0 10px;
 `;
 
+export const HolderRow = styled.div`
+    width: 80%;
+    height: 40px;
+    color: ${props => props.theme.MainAccent};
+    font-size: 24px;
+    text-align: center;
+`;
+
 export const Holder = styled.div`
-    width: 90vw;
+    width: 50vw;
     height: auto;
     border: 2px solid black;
     padding: 20px;
