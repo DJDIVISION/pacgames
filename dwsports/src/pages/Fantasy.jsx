@@ -17,7 +17,8 @@ import { RightPokerColumn,LeftPokerColumn,PokerNavBar,CountryBall,CountryBallTex
   ArrowWrapperColumnSmall,
   ArrowBar,
   SearchBar,
-  PlayerSettingsIcon} from './index';
+  PlayerSettingsIcon,
+  ArrowLeft} from './index';
 import england from '../assets/logos/england.png'
 import spain from '../assets/logos/spain.png'
 import italy from '../assets/logos/italy.png' 
@@ -25,7 +26,7 @@ import germany from '../assets/logos/germany.png'
 import france from '../assets/logos/france.png' 
 import field from '../assets/lineups/field.jpg' 
 import cross from '../assets/chips/delete.png'
-
+import {Link as LinkR} from 'react-router-dom'
 import { AverageDisplay, EuroBalanceDisplay, useAuth, useGetTeams } from './functions';
 import { FantasyState } from '../context/FantasyContext';
 import { Row } from './indexTwo';
@@ -597,6 +598,7 @@ useEffect(() => {
    
   return ( 
     <Section>
+      <LinkR to="/"><ArrowLeft></ArrowLeft></LinkR>
       <TopPokerNavBar>
         <TopPokerColumn>
           <EuroBalanceDisplay balance={balance} />
@@ -626,8 +628,8 @@ useEffect(() => {
             return(
               <TopPlayerHolder>
                 <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 50, xl: 50 }, 
-                  height: { xs: 30, sm: 30, md: 40, lg: 50, xl: 50 },}} />
+                <Avatar alt="Image" src={player.image} sx={{ width: { xs: 20, sm: 20, md: 40, lg: 50, xl: 50 }, 
+                  height: { xs: 20, sm: 20, md: 40, lg: 50, xl: 50 },}} />
                   <TopPlayerText>{player.name}</TopPlayerText>
                   <TopPlayerText style={{color: 'gold', transform: 'translateY(5px)'}}>{player.value}M €</TopPlayerText>
                   <PlayerTeamCross onClick={() => removePlayer(player)}><img src={cross} alt="cross" /></PlayerTeamCross>

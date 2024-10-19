@@ -4,7 +4,7 @@ import {BlackSection,WelcomeTitle,Tabs,TabsContainer,TabWrapper,Tab,FilterContai
   GameProgressText,GameProgressRound,GameProgressCircle,VolumeIcon,ButtonHoverAbsolute,BlackSectionSmart
 } from '../blackjack/index'
 import { motion, useAnimate, stagger } from "framer-motion";
-import { StyledButton } from '../../pages';
+import { ArrowLeft, StyledButton } from '../../pages';
 import { BetState } from '../../context/BetsContext';
 import Swal from "sweetalert2";
 import io from 'socket.io-client';
@@ -12,6 +12,7 @@ import { Avatar } from '@mui/material';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../pages/functions';
 import { animationFive, transition } from '../../animations';
+import {Link as LinkR} from 'react-router-dom'
 
 
 const takePlayerName = async () => {
@@ -80,6 +81,7 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
     <BlackSection>
+      <LinkR to="/"><ArrowLeft></ArrowLeft></LinkR>
       <WelcomeTitle>American Roulette</WelcomeTitle>
       <Tabs>
         <TabsContainer>

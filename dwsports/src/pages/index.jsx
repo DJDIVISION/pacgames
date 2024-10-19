@@ -80,13 +80,12 @@ export const CountryBallText = styled(motion.div)`
 export const PlayersContainer = styled.div`
     height: 75vh;
     width: 100%;
-    border: 1px solid blue;
     ${props => props.theme.displayFlexColumnCenter};
     overflow-y: scroll;
 `;
 
 export const PokerNavBar = styled.div`
-    height: 15vh;
+    height: 17.5vh;
     width: 100%;
     display: flex;
     align-items: center;
@@ -116,10 +115,12 @@ export const PlayerDroppingArea = styled.div`
 `;
 
 export const DraggContainer = styled.div`
-    height: 75vh;
+    height: 70vh;
     width: 100%;
+    
     ${props => props.theme.displayFlexCenter};
     position: relative;
+    @media(max-width: 968px){}
 `;
 
 export const TeamsCarousel = styled(motion.div)`
@@ -352,7 +353,7 @@ export const TopPlayerText = styled.div`
     text-align: center;
     line-height: 0.9;
     @media(max-width: 968px){
-        font-size: 12px;
+        font-size: 10px;
     }
 `;
 
@@ -725,12 +726,13 @@ export const MiniArrowup = styled(KeyboardArrowDownIcon)`
 
 export const ArrowLeft = styled(KeyboardArrowDownIcon)`
     &&&{
-        color: ${props => props.theme.body};
+        color: ${props => props.theme.text};
         scale: 2;
         position: absolute;
         top: 30px;
         left: 20px;
         transform: rotate(90deg);
+        z-index: 5000;
     }
 `;
 

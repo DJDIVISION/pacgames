@@ -71,7 +71,7 @@ const Home = () => {
     <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
     <HomeSection>
       <NavBar />
-      <Button onClick={fetchData} variant="contained">FETCH DATA</Button>
+      {/* <Button onClick={fetchData} variant="contained">FETCH DATA</Button> */}
     </HomeSection>
     </motion.div>
   )

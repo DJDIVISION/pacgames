@@ -10,7 +10,7 @@ import {
     BigNumberContainer,
     BigWinningsContainer
 } from './indexTwo'
-import { ButtonHoverAbsoluteLeft, BettingText, SmallColumn, BigColumn } from './index'
+import { ButtonHoverAbsoluteLeft, BettingText, SmallColumn, BigColumn, ArrowLeft } from './index'
 import { io } from "socket.io-client";
 import { RouletteWrapper, Selector } from './indexTwo'
 import { Button } from '@mui/material';
@@ -611,6 +611,7 @@ const Roulette = () => {
     return (
         <motion.div initial="out" animate="in" variants={animationFive} transition={transitionMain}>
         <RouletteSection>
+            
             <RouletteRow>
                 <RouletteSmallColumn>
                     <ButtonHoverAbsoluteLeft onClick={closeChat}><ChatRoomIcon /></ButtonHoverAbsoluteLeft>

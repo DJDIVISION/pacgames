@@ -117,12 +117,12 @@ const NavBar = () => {
             </NavIcon>
             <NavText>AIRDROP</NavText>
         </NavColumn></LinkR> */}
-        {/* <LinkR to="/roulette"> */}<NavColumn onClick={fetchData}>
+        <LinkR to="/roulette"><NavColumn /* onClick={fetchData} */>
             <NavIcon>
                 <img src={roulette} alt="roulette" />
             </NavIcon>
             <NavText>ROULETTE</NavText>
-        </NavColumn>{/* </LinkR> */}
+        </NavColumn></LinkR>
         <LinkR to="/casino"><NavColumn>
             <NavIcon>
                 <img src={chip} alt="casino" />
