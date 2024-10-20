@@ -99,7 +99,7 @@ const NavBar = () => {
         ): (
             <div></div>
         )}
-        <LinkR to="/slots"><NavColumn>
+        <LinkR to="/bets"><NavColumn>
             <NavIcon>
                 <img src={sportsIcon} alt="sports" />
             </NavIcon>

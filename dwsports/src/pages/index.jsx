@@ -271,6 +271,25 @@ export const PlayerTeamLogo = styled.div`
         height: 15px;
     }
 `;
+
+export const PlayerTeamRating = styled.div`
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    ${props => props.theme.displayFlexCenter};
+    z-index: 1000;
+    position: absolute; 
+    bottom: 0;
+    right: 0;
+    font-size: 16px;
+    font-weight: bold;
+    @media(max-width: 968px){
+        
+        width: 15px;
+        height: 15px;
+    }
+`;
+
 export const PlayerTeamCross = styled.div`
     width: 30px;
     height: 30px;
@@ -421,7 +440,7 @@ export const RightPokerColumn = styled.div`
   ${props => props.theme.displayFlexCenter};
   padding-top: 0px;
   overflow-y: scroll;
-  overflow-x: hidden;
+  //overflow-x: hidden;
   position: relative;
   z-index: 1;
 `;
@@ -650,7 +669,7 @@ export const TeamMembers = styled(GroupsIcon)`
 
 export const Row = styled.div`
     width: 100%;
-    height: 50%;
+    height: 100%;
     display: flex;
 `;
 
@@ -804,21 +823,100 @@ export const Match = styled.div`
 `;
 
 export const LeftColumn = styled.div`
-    width: 70%;
+    width: 50%;
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid red;
 `;
 
 export const RightColumn = styled.div`
-    width: 30%;
+    width: 50%;
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 0;
+`;
+
+export const TitleRow = styled.div`
+    width: 100%;
+    height: 250px;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const TitleColumn = styled.div`
+    width: 50%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    font-size: 32px;
+    color: ${props => props.theme.MainAccent};
+`;
+
+
+export const TeamsLogo = styled.div`
+    width: 25%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumn};
+`;
+
+export const TeamLogoWrapper = styled.div`
+    width: 100%;
+    height: 70%;
+    ${props => props.theme.displayFlexCenter};
+`;
+export const TeamLogoText = styled.div`
+    width: 100%;
+    height: 30%;
+    ${props => props.theme.displayFlexCenter};
+    color: ${props => props.theme.text};
+    font-size: 18px;
+`;
+
+export const TeamsResult = styled.div`
+    width: 50%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumn};
+`;
+export const NewHolder = styled.div`
+    width: 40vw;
+    height: auto;
+    border: 2px solid black;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 10px 0;
+    ${props => props.theme.displayFlexColumnCenter};
+    background: rgba(170, 167, 167, 0.1);
+    backdrop-filter: blur(10px);
+    h3{
+        font-size: 22px;
+        margin: 5px 0 15px 0;
+        color: aqua;
+        text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
+    }
+    span{
+        color: ${props => props.theme.text};
+    }
+`;
+export const DateRow = styled.div`
+    width: 100%;
+    height: 20%;
+    font-size: 16px;
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const ResultRow = styled.div`
+    width: 100%;
+    height: 40%;
+    
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexCenter};
+    
+    h2{
+        font-size: 42px;
+        font-weight: bold;
+        margin: 10px;
+    }
 `;
 
 export const AccordionTitle = styled.div`
@@ -1162,11 +1260,9 @@ export const HomeSection = styled.div`
 
 export const TeamStatsSection = styled.div`
     width: 100vw;
-    min-height: 100vh;
+    height: auto;
     background: ${props => props.theme.body};
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    ${props => props.theme.displayFlexColumn};
 `;
 
 export const BlackJackTitle = styled.div`

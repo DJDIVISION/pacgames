@@ -6,7 +6,8 @@ import {BetSection,ArrowUp,SportsButtonRow,item,BorderedMatch,BetWrapper,MatchCo
   MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft,MiniArrowDown,MiniArrowup,TeamStatsSection,LeftColumn,
   RightColumn,TeamStatsWrapper,TeamStatsName,TeamStatCountry,StatsCountryAvatar,StatsCountryLocation,TeamStatsRating,
   TeamRatingTitle,TeamRating,AccordionTitle,SmallBorderedMatch,TeamMembers,Row,Column,ColumnIcon,SmallColumnText,BigColumnText,
-  Stadium,Capacity,Coach,Foundation,RecentForm,TeamStatsRow,SmallBorderedMatchRight,ArrivalsText,ArrivalsTitle,ReadMore
+  Stadium,Capacity,Coach,Foundation,RecentForm,TeamStatsRow,SmallBorderedMatchRight,ArrivalsText,ArrivalsTitle,ReadMore,
+  TitleRow,TitleColumn,TeamsLogo,TeamsResult,DateRow,ResultRow,TeamLogoWrapper,TeamLogoText,NewHolder
 } from './index'
 import {CloseStats,StatsSection,StatsWrapper,StatsStadium,StatsStadiumCapacity,MatchLineUp,
   StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Wrapper,PlayerDisplay,PlayerBigPicture
@@ -19,435 +20,314 @@ import CountUp from '../animations/CountUp';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom'
 import {Link as LinkR} from 'react-router-dom'
+import { FantasyState } from '../context/FantasyContext';
 
 
-const TeamStats = () => {
 
-  const {activeTeam, setActiveTeam} = BetState();
-  const {activeCountry, setActiveCountry} = BetState();
-  const [summary, setSummary] = useState([])
-  const [attacking, setAttacking] = useState([])
-  const [defense, setDefense] = useState([])
-  const [passes, setPasses] = useState([])
-  const [other, setOther] = useState([])
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [isAttackExpanded, setIsAttackExpanded] = useState(false)
-  const [isDefenseExpanded, setIsDefenseExpanded] = useState(false)
-  const [isPassesExpanded, setIsPassesExpanded] = useState(false)
-  const [isOtherExpanded, setIsOtherExpanded] = useState(false)
-  const [isPlayerExpanded, setIsPlayerExpanded] = useState(false)
-  const {homeTeamPlayers, setHomeTeamPlayers} = BetState()
-  const {awayTeamPlayers, setAwayTeamPlayers} = BetState()
-  const {activeLeague, setActiveLeague} = BetState();
-  const {activePlayer, setActivePlayer} = BetState();
+const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
+
   const navigate = useNavigate()
+  const {activeLeague, setActiveLeague} = FantasyState();
+  const {activeTeamId, setActiveTeamId} = FantasyState();
+  const [homeMatches, setHomeMatches] = useState([]);
+  const [awayMatches, setAwayMatches] = useState([]);
+  const [teamData, setTeamData] = useState([])
+  const [lineUps, setLineUps] = useState([])
+  const [cleanSheets, setCleanSheets] = useState([])
+  const [failedToScore, setFailedToScore] = useState([])
+  const [draws, setDraws] = useState([])
+  const [loses, setLoses] = useState([])
+  const [wins, setWins] = useState([])
+  const [played, setPlayed] = useState([])
+  const [penaltyMissed, setPenaltyMissed] = useState([])
+  const [penaltyScored, setPenaltyScored] = useState([])
+  const [goalsAgainst, setGoalsAgainst] = useState([])
+  const [goalsFor, setGoalsFor] = useState([])
+  const [form, setForm] = useState([])
 
-  console.log(activeCountry)
-  console.log(activeLeague)
-
-  const letterColors = {
-    'W': 'green',
-    'E': 'grey',
-    'L': 'red',
+  const BarGraph = ({ results }) => {
+    // Function to calculate bar properties based on result
+    const validResults = typeof results === 'string' ? results : '';
+    const getBarProperties = (result) => {
+      switch (result) {
+        case 'W':
+          return { height: '80px', backgroundColor: 'green', marginTop: '0' }; // Win: bar goes up
+        case 'L':
+          return { height: '80px', backgroundColor: 'red', marginTop: '160px', marginBottom: '20px' }; // Loss: bar goes down
+        case 'D':
+          return { height: '40px', backgroundColor: 'grey', marginTop: '80px' }; // Draw: stays at the center
+        default:
+          return { height: '0px', backgroundColor: 'grey', marginTop: '100px' }; // Default (draw)
+      }
+    };
+  
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', height: '200px' }}>
+        {validResults.split('').map((result, index) => (
+          <div
+            key={index}
+            style={{
+              width: '30px',
+              margin: '0 5px',
+              ...getBarProperties(result), // Apply calculated styles
+              transition: '0.3s ease',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-end',
+            }}
+          ></div>
+        ))}
+        {validResults.length === 0 && <p>No results available</p>} {/* Display a message if no results */}
+      </div>
+    );
   };
 
+  
   const fetchData = async () => {
-    console.log(activeTeam)
-    const sum = activeTeam.Summary
-    const att = activeTeam.Attacking
-    const deff = activeTeam.Defending
-    const pass = activeTeam.Passes
-    const oth = activeTeam.Other
-    const home = activeTeam.name.replace(/\s+/g, '');
-    setSummary(sum[0])
-    setAttacking(att[0])
-    setDefense(deff[0])
-    setPasses(pass[0])
-    setOther(oth[0])
-    const { data, error } = await supabase.from("premierLeague").select(home).eq("id", 1);
-        if(error){
-          console.log(error)
-        }
-        if(data){
-          console.log(data[0])
-          setHomeTeamPlayers(data[0][home][0].players)
-        }
+    const str = localStorage.getItem(activeLeague);
+    const json = JSON.parse(str);
+    const str2 = localStorage.getItem(activeTeamId);
+    if(str2 !== null){
+      const json2 = JSON.parse(str2);
+      setTeamData(json2.response)
+      setLineUps(json2.response.lineups)
+      setCleanSheets(json2.response.clean_sheet)
+      setFailedToScore(json2.response.failed_to_score)
+      setDraws(json2.response.fixtures.draws)
+      setLoses(json2.response.fixtures.loses)
+      setWins(json2.response.fixtures.wins)
+      setForm(json2.response.form)
+      setPlayed(json2.response.fixtures.played)
+      setPenaltyMissed(json2.response.penalty.missed)
+      setPenaltyScored(json2.response.penalty.scored)
+      setGoalsAgainst(json2.response.goals.against.total)
+      setGoalsFor(json2.response.goals.for.total)
+    } else {
+      setTeamData([])
+    }
+    const homeMatches = []
+    const awayMatches = []
+    json.response.forEach((el) => {
+      if(el.teams.home.id === activeTeamId && el.goals.home !== null){
+        homeMatches.push(el)
+      } else if(el.teams.away.id === activeTeamId && el.fixture.referee !== null){
+        awayMatches.push(el)
+      }
+    })
+    setHomeMatches(homeMatches)
+    setAwayMatches(awayMatches)
   }
 
-  console.log(homeTeamPlayers)
+  console.log(teamData)
+  console.log(activeTeamId) 
 
   useEffect(() => {
     fetchData();
   }, [])
-
-  const togglePlayerExpand = () => {
-    if(!isPlayerExpanded){
-      setIsPlayerExpanded(true)
-    } else {
-      setIsPlayerExpanded(false)
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded)
-    setIsAttackExpanded(false)
-    setIsDefenseExpanded(false)
-    setIsPassesExpanded(false)
-    setIsOtherExpanded(false)
-  }
-
-  const toggleAttackExpand = () => {
-    if(!isAttackExpanded){
-      setIsAttackExpanded(true)
-      setIsExpanded(false)
-      setIsDefenseExpanded(false)
-      setIsPassesExpanded(false)
-      setIsOtherExpanded(false)
-    } else {
-      setIsAttackExpanded(false)
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
-
-  const toggleDefenseExpand = () => {
-    if(!isDefenseExpanded){
-      setIsAttackExpanded(false)
-      setIsExpanded(false)
-      setIsDefenseExpanded(true)
-      setIsPassesExpanded(false)
-      setIsOtherExpanded(false)
-    } else {
-      setIsDefenseExpanded(false)
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
-
-  const togglePassesExpand = () => {
-    if(!isPassesExpanded){
-      setIsAttackExpanded(false)
-      setIsExpanded(false)
-      setIsDefenseExpanded(false)
-      setIsPassesExpanded(true)
-      setIsOtherExpanded(false)
-    } else {
-      setIsPassesExpanded(false)
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
-
-  const toggleOtherExpand = () => {
-    if(!isOtherExpanded){
-      setIsAttackExpanded(false)
-      setIsExpanded(false)
-      setIsDefenseExpanded(false)
-      setIsPassesExpanded(false)
-      setIsOtherExpanded(true)
-    } else {
-      setIsOtherExpanded(false)
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
-  
-
-  const goBack = () => {
-    setHomeTeamPlayers([])
-    navigate("/bets")
-  }
-
-  const setPlayer = async (player) => {
-    setActivePlayer(player)
-    console.log(player)
-    const id = player.player_id.toString
-    const home = activeTeam.name.replace(/\s+/g, '');
-    const { data, error } = await supabase.from(home).select(id).eq("id", 1);
-        if(error){
-          console.log(error)
-        }
-        if(data){
-          console.log(data[0])
-          //setHomeTeamPlayers(data[0][home][0].players)
-        }
-    /* navigate(`/player/${player.player_id}`) */
-  }
   
 
   return (
+    <motion.div className="menu-container-one" variants={item}
+              initial="initial"
+              animate="animate"
+              exit="exit">
     <TeamStatsSection>
-      <LeftColumn>
-        <ArrowLeft onClick={goBack}/>
-        <RecentForm>
-          {activeTeam.recentForm.map((letter, index) => {
+      <CloseStats onClick={() => setSelectedTeamMenu(false)}/>
+      <TitleRow>
+        <TitleColumn>HOME</TitleColumn>
+        <TitleColumn>AWAY</TitleColumn>
+        </TitleRow>
+        <Row>
+        <LeftColumn>
+          {homeMatches.map((match) => {
+            const date = new Date(match.fixture.date).toLocaleString();
             return(
-            <div
-              key={index}
-              style={{
-                width: '30px',
-                height: '30px',
-                borderRadius: '50%',
-                backgroundColor: letterColors[letter],
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontWeight: 'bold',
-              }}
-            >
-                {letter}
-            </div>
+              <StatsWrapper>
+                <TeamsLogo>
+                  <TeamLogoWrapper>
+                  <Avatar alt="Image" src={match.teams.home.logo} sx={{
+                    width: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 },
+                    height: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 }, transform: 'translateY(5px)'
+                  }} />
+                  </TeamLogoWrapper>
+                  <TeamLogoText>{match.teams.home.name}</TeamLogoText>
+                </TeamsLogo>
+                <TeamsResult>
+                    <DateRow>{date}</DateRow>
+                    <ResultRow><h2 style={{color: match.teams.home.winner === true ? "lime" : "white"}}>{match.score.fulltime.home}</h2> - <h2 style={{color: match.teams.away.winner === true ? "lime" : "white"}}>{match.score.fulltime.away}</h2></ResultRow>
+                    <DateRow>( {match.score.halftime.home} - {match.score.halftime.away} )</DateRow>
+                    <DateRow style={{fontSize: '12px'}}>{match.fixture.venue.name}, {match.fixture.venue.city}</DateRow>
+                </TeamsResult>
+                <TeamsLogo>
+                <TeamLogoWrapper>
+                  <Avatar alt="Image" src={match.teams.away.logo} sx={{
+                    width: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 },
+                    height: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 }, transform: 'translateY(5px)'
+                  }} />
+                  </TeamLogoWrapper>
+                  <TeamLogoText>{match.teams.away.name}</TeamLogoText>
+                </TeamsLogo>
+              </StatsWrapper>
             )
           })}
-        </RecentForm>
-      <BorderedMatch style={{border: '1px solid white'}}>
-        <TeamStatsLogo>
-        <Avatar alt="Image" src={activeTeam.logo} sx={{ width: 120, height: 120, border: '1px solid gold' }}/>
-      </TeamStatsLogo>
-          <TeamStatsWrapper>
-              <TeamStatsName>{activeTeam.name}</TeamStatsName>
-              <TeamStatCountry>
-                <StatsCountryAvatar>
-                {activeCountry === "England" && <Avatar alt="Image" src={england} sx={{ width: 30, height: 30}}/>}
-                </StatsCountryAvatar>
-                <StatsCountryLocation>{activeTeam.city}</StatsCountryLocation>
-              </TeamStatCountry>
-              <TeamStatsRating>
-              <TeamRatingTitle>TEAM RATING:</TeamRatingTitle> <TeamRating><strong><CountUp endValue={activeTeam.teamRating} duration={500}/></strong></TeamRating><span></span>
-              </TeamStatsRating>
-              
-          </TeamStatsWrapper> 
-      </BorderedMatch>
-      <TeamStatsRow>
-      <SmallBorderedMatch style={{border: '1px solid #c2c2c2'}}>
-              <Row>
-                <Column><ColumnIcon><Stadium /></ColumnIcon><SmallColumnText>STADIUM</SmallColumnText><BigColumnText>{activeTeam.stadium}</BigColumnText></Column>
-                <Column><ColumnIcon><Capacity /></ColumnIcon><SmallColumnText>CAPACITY</SmallColumnText><BigColumnText>{activeTeam.stadiumCapacity}</BigColumnText></Column>
-              </Row>
-              <Row>
-                <Column><ColumnIcon><Coach/></ColumnIcon><SmallColumnText>COACH</SmallColumnText><BigColumnText>{activeTeam.coach}</BigColumnText></Column>
-                <Column><ColumnIcon><Foundation/></ColumnIcon><SmallColumnText>FUNDATION DATE</SmallColumnText><BigColumnText>{activeTeam.foundationDate}</BigColumnText></Column>
-              </Row>
-      </SmallBorderedMatch>
-      <SmallBorderedMatch style={{border: '1px solid #c2c2c2'}}>
-              <Row>
-                <Column><ColumnIcon><TeamMembers /></ColumnIcon><SmallColumnText>TOTAL PLAYERS</SmallColumnText><BigColumnText>{activeTeam.totalPlayers}</BigColumnText></Column>
-                <Column><ColumnIcon><AgeAverage /></ColumnIcon><SmallColumnText>AVERAGE PLAYER AGE</SmallColumnText><BigColumnText>{activeTeam.averagePlayerAge}</BigColumnText></Column>
-              </Row>
-              <Row>
-                <Column><ColumnIcon><CircularProgress variant="determinate" value={(activeTeam.nationalTeamPlayers * 100)/(activeTeam.totalPlayers)} sx={{ width: 30, height: 30 }}/></ColumnIcon><SmallColumnText>NATIONAL PLAYERS</SmallColumnText><BigColumnText>{activeTeam.nationalTeamPlayers}</BigColumnText></Column>
-                <Column><ColumnIcon><CircularProgress variant="determinate" value={(activeTeam.foreignPlayers * 100)/(activeTeam.totalPlayers)} sx={{ width: 30, height: 30 }}/></ColumnIcon><SmallColumnText>FOREIGN PLAYERS</SmallColumnText><BigColumnText>{activeTeam.foreignPlayers}</BigColumnText></Column>
-              </Row>
-      </SmallBorderedMatch>
-      </TeamStatsRow>
-      <motion.div
-                initial={{ height: 50, border: '1px solid white', borderRadius: '10px'}} // Initial height
-                animate={{ height: isPlayerExpanded ? 'auto' : 50 }} // Height transitions between 100px and 300px
-                transition={{ duration: 0.3 }} // Duration of the animation
-                className="expandable-smalldiv"
-                style={{
-                  overflow: 'hidden',
-                  position: 'relative',
-                  border: '1px solid white',
-                  marginTop: '40px'
-                }}
-              >
-                {!isPlayerExpanded && <MiniArrowDown onClick={togglePlayerExpand}></MiniArrowDown>}
-                {isPlayerExpanded && <MiniArrowup onClick={togglePlayerExpand}></MiniArrowup>}
-                <AccordionTitle>PLAYERS</AccordionTitle>
-                {isPlayerExpanded && <div className="hidden-content2">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%' }}>
-                  {homeTeamPlayers?.map(player => {
-                return(
-                  <StatPlayer key={player.name}>
-                    <PlayerPicture style={{backgroundImage: `url(${player.photo})`, backgroundPosition: 'center',
-                  backgroundSize: 'cover'}}>
-                    </PlayerPicture>
-                    <PlayerName>{player.name}</PlayerName>
-                    <PlayerBigPicture><PlayerDisplay>{player.number}</PlayerDisplay></PlayerBigPicture>
-                    <PlayerPosition>{player.position}</PlayerPosition>
-                    <PlayerBigPicture>{player.yellow}</PlayerBigPicture>
-                    <PlayerBigPicture>{player.red}</PlayerBigPicture>
-                    <PlayerBigPicture>{player.goals}</PlayerBigPicture>
-                    <PlayerBigPicture>{player.assists}</PlayerBigPicture>
-                    <PlayerBigPicture>{player.rating}</PlayerBigPicture>
-                    <PlayerBigPicture>{player.available}</PlayerBigPicture>
-                    <PlayerBigPicture><ReadMore onClick={() => setPlayer(player)}/></PlayerBigPicture>
-                  </StatPlayer>
-                )
-              })}
-                </div>
-                              </div>}
-            </motion.div>
+        </LeftColumn>
+        <RightColumn>
+        {awayMatches.map((match) => {
+          const date = new Date(match.fixture.date).toLocaleString();
+            return(
+              <StatsWrapper>
+                <TeamsLogo>
+                  <TeamLogoWrapper>
+                  <Avatar alt="Image" src={match.teams.home.logo} sx={{
+                    width: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 },
+                    height: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 }, transform: 'translateY(5px)'
+                  }} />
+                  </TeamLogoWrapper>
+                  <TeamLogoText>{match.teams.home.name}</TeamLogoText>
+                </TeamsLogo>
+                <TeamsResult>
+                    <DateRow>{date}</DateRow>
+                    <ResultRow><h2 style={{color: match.teams.home.winner === true ? "lime" : "white"}}>{match.score.fulltime.home}</h2> - <h2 style={{color: match.teams.away.winner === true ? "lime" : "white"}}>{match.score.fulltime.away}</h2></ResultRow>
+                    <DateRow>( {match.score.halftime.home} - {match.score.halftime.away} )</DateRow>
+                    <DateRow style={{fontSize: '12px'}}>{match.fixture.venue.name}, {match.fixture.venue.city}</DateRow>
+                </TeamsResult>
+                <TeamsLogo>
+                <TeamLogoWrapper>
+                  <Avatar alt="Image" src={match.teams.away.logo} sx={{
+                    width: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 },
+                    height: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 }, transform: 'translateY(5px)'
+                  }} />
+                  </TeamLogoWrapper>
+                  <TeamLogoText>{match.teams.away.name}</TeamLogoText>
+                </TeamsLogo>
+              </StatsWrapper>
+            )
+          })}
+        </RightColumn>
+        </Row>
+      <NewHolder>
+      <h3>RECENT FORM</h3>
+      <BarGraph results={form} />
+      </NewHolder>
+      
+      <Row>
+      <LeftColumn>
+      <NewHolder>
+      <h3>GAMES PLAYED</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(played).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
+      <NewHolder>
+      <h3>GAMES LOST</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(loses).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
+      <NewHolder>
+      <h3>GOALS SCORED</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(goalsFor).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
+      <NewHolder>
+      <h3>CLEAN SHEETS</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(cleanSheets).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
+      <NewHolder>
+      <h3>SCORED PENALTIES</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(penaltyScored).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
       </LeftColumn>
       <RightColumn>
-              <motion.div
-                initial={{ height: 50, border: '1px solid white', borderRadius: '10px' }} // Initial height
-                animate={{ height: isExpanded ? 220 : 50 }} // Height transitions between 100px and 300px
-                transition={{ duration: 0.3 }} // Duration of the animation
-                className="expandable-smalldiv"
-                style={{
-                  overflow: 'hidden',
-                  position: 'relative',
-                  border: '1px solid white'
-                }}
-              >
-                {!isExpanded && <MiniArrowDown onClick={toggleExpand}></MiniArrowDown>}
-                {isExpanded && <MiniArrowup onClick={toggleExpand}></MiniArrowup>}
-                <AccordionTitle>SUMMARY</AccordionTitle>
-                {isExpanded && <div className="hidden-content2">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%' }}>
-                  {Object.entries(summary).map(([key, value], index) => (
-                    <React.Fragment key={index}>
-                      <div style={{ flex: '1 1 90%', padding: '5px', fontWeight: 'bold', color: 'white' }}>
-                        {key}
-                      </div>
-                      <div style={{ flex: '1 1 10%', padding: '5px', color: 'white', textAlign: 'right' }}>
-                        {value}
-                      </div>
-                    </React.Fragment>
-                  ))}
-                </div>
-                              </div>}
-            </motion.div>
-            <motion.div
-                initial={{ height: 50, border: '1px solid white', borderRadius: '10px'}} // Initial height
-                animate={{ height: isAttackExpanded ? 700 : 50 }} // Height transitions between 100px and 300px
-                transition={{ duration: 0.3 }} // Duration of the animation
-                className="expandable-smalldiv"
-                style={{
-                  overflow: 'hidden',
-                  position: 'relative',
-                  border: '1px solid white'
-                }}
-              >
-                {!isAttackExpanded && <MiniArrowDown onClick={toggleAttackExpand}></MiniArrowDown>}
-                {isAttackExpanded && <MiniArrowup onClick={toggleAttackExpand}></MiniArrowup>}
-                <AccordionTitle>ATTACKING</AccordionTitle>
-                {isAttackExpanded && <div className="hidden-content2">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%' }}>
-                    {Object.entries(attacking).map(([key, value], index) => (
-                      <React.Fragment key={index}>
-                        <div style={{ flex: '1 1 85%', padding: '5px', fontWeight: 'bold', color: 'white' }}>
-                          {key}
-                        </div>
-                        <div style={{ flex: '1 1 15%', padding: '5px', color: 'white', textAlign: 'right' }}>
-                          {value}
-                        </div>
-                      </React.Fragment>
-                    ))}
-                  </div>
-                </div>}
-            </motion.div>
-            <motion.div
-                initial={{ height: 50, border: '1px solid white', borderRadius: '10px'}} // Initial height
-                animate={{ height: isDefenseExpanded ? 500 : 50 }} // Height transitions between 100px and 300px
-                transition={{ duration: 0.3 }} // Duration of the animation
-                className="expandable-smalldiv"
-                style={{
-                  overflow: 'hidden',
-                  position: 'relative',
-                  border: '1px solid white'
-                }}
-              >
-                {!isDefenseExpanded && <MiniArrowDown onClick={toggleDefenseExpand}></MiniArrowDown>}
-                {isDefenseExpanded && <MiniArrowup onClick={toggleDefenseExpand}></MiniArrowup>}
-                <AccordionTitle>DEFENSE</AccordionTitle>
-                {isDefenseExpanded && <div className="hidden-content2">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%' }}>
-                  {Object.entries(defense).map(([key, value], index) => (
-                    <React.Fragment key={index}>
-                      <div style={{ flex: '1 1 85%', padding: '5px', fontWeight: 'bold', color: 'white' }}>
-                        {key}
-                      </div>
-                      <div style={{ flex: '1 1 15%', padding: '5px', color: 'white', textAlign: 'right' }}>
-                        {value}
-                      </div>
-                    </React.Fragment>
-                  ))}
-                </div>
-                              </div>}
-            </motion.div>
-            <motion.div
-                initial={{ height: 50, border: '1px solid white', borderRadius: '10px'}} // Initial height
-                animate={{ height: isPassesExpanded ? 280 : 50 }} // Height transitions between 100px and 300px
-                transition={{ duration: 0.3 }} // Duration of the animation
-                className="expandable-smalldiv"
-                style={{
-                  overflow: 'hidden',
-                  position: 'relative',
-                  border: '1px solid white'
-                }}
-              >
-                {!isPassesExpanded && <MiniArrowDown onClick={togglePassesExpand}></MiniArrowDown>}
-                {isPassesExpanded && <MiniArrowup onClick={togglePassesExpand}></MiniArrowup>}
-                <AccordionTitle>PASSES</AccordionTitle>
-                {isPassesExpanded && <div className="hidden-content2">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%' }}>
-                  {Object.entries(passes).map(([key, value], index) => (
-                    <React.Fragment key={index}>
-                      <div style={{ flex: '1 1 70%', padding: '5px', fontWeight: 'bold', color: 'white' }}>
-                        {key}
-                      </div>
-                      <div style={{ flex: '1 1 30%', padding: '5px', color: 'white', textAlign: 'right' }}>
-                        {value}
-                      </div>
-                    </React.Fragment>
-                  ))}
-                </div>
-                              </div>}
-            </motion.div>
-            <motion.div
-                initial={{ height: 50, border: '1px solid white', borderRadius: '10px'}} // Initial height
-                animate={{ height: isOtherExpanded ? 400 : 50 }} // Height transitions between 100px and 300px
-                transition={{ duration: 0.3 }} // Duration of the animation
-                className="expandable-smalldiv"
-                style={{
-                  overflow: 'hidden',
-                  position: 'relative',
-                  border: '1px solid white'
-                }}
-              >
-                {!isOtherExpanded && <MiniArrowDown onClick={toggleOtherExpand}></MiniArrowDown>}
-                {isOtherExpanded && <MiniArrowup onClick={toggleOtherExpand}></MiniArrowup>}
-                <AccordionTitle>OTHER</AccordionTitle>
-                {isOtherExpanded && <div className="hidden-content2">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', width: '100%' }}>
-                  {Object.entries(other).map(([key, value], index) => (
-                    <React.Fragment key={index}>
-                      <div style={{ flex: '1 1 70%', padding: '5px', fontWeight: 'bold', color: 'white' }}>
-                        {key}
-                      </div>
-                      <div style={{ flex: '1 1 30%', padding: '5px', color: 'white', textAlign: 'right' }}>
-                        {value}
-                      </div>
-                    </React.Fragment>
-                  ))}
-                </div>
-                              </div>}
-            </motion.div>
-            <SmallBorderedMatchRight style={{border: '1px solid #c2c2c2'}}>
-              <Column>
-              <ArrivalsTitle>ARRIVALS</ArrivalsTitle>
-              <ArrivalsText>
-                {activeTeam.Arrivals.map(player => {
-                  return(
-                    <div style={{flex: '1 1 33%', textAlign: 'center'}}>{player}</div>
-                  )
-                })}
-              </ArrivalsText>
-              </Column>
-              <Column>
-              <ArrivalsTitle>DEPARTURES</ArrivalsTitle>
-              <ArrivalsText>
-                {activeTeam.Departures.map(player => {
-                  return(
-                    <div style={{flex: '1 1 33%', textAlign: 'center'}}>{player}</div>
-                  )
-                })}
-              </ArrivalsText>
-              </Column>
-            </SmallBorderedMatchRight>
+      <NewHolder>
+      <h3>GAMES WON</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(wins).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
+      <NewHolder>
+      <h3>DRAW GAMES</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(draws).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
+      <NewHolder>
+      <h3>GOALS RECEIVED</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(goalsAgainst).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
+      <NewHolder>
+      <h3>FAILED TO SCORE</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(failedToScore).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
+      <NewHolder>
+      <h3>MISSED PENALTIES</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        {Object.entries(penaltyMissed).map(([key, value]) => (
+          <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+            <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+            <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+          </div>
+        ))}
+      </div>
+      </NewHolder>
       </RightColumn>
+      </Row>
     </TeamStatsSection>
+    </motion.div>
   )
 }
 

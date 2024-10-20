@@ -268,6 +268,7 @@ const Bets = () => {
                 <MatchStats matchStatsMenu={matchStatsMenu} setMatchStatsMenu={setMatchStatsMenu}/>
             )}
             
+            
         </BetSection>
         </motion.div>
     );

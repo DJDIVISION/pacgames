@@ -526,7 +526,7 @@ export const useGetTeams = () => {
 
   // Function to fetch players for a given team from Supabase
   const getPlayers = async (teamId) => {
-    console.log(teamId)
+    /* console.log(teamId) */
     setLoadingPlayers(true);
     const { data, error } = await supabase
       .from('footballPlayers')

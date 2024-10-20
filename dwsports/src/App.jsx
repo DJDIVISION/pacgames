@@ -43,7 +43,7 @@ function App() {
         <Route path="/slots" element={<ProtectedRoute><Slots /></ProtectedRoute>} />
         <Route path="/roulette" element={<ProtectedRoute><Roulette /></ProtectedRoute>} />
         <Route path="/player/:id" element={<ProtectedRoute><PlayerStats /></ProtectedRoute>} />
-        <Route path="/team/:id" element={<ProtectedRoute><TeamStats /></ProtectedRoute>} />
+        <Route path="/team/:teamId" element={<ProtectedRoute><TeamStats /></ProtectedRoute>} />
       </Routes>
     </Router>
     </ThemeProvider>

@@ -575,8 +575,10 @@ export const CloseStats = styled(HighlightOffIcon)`
     background: transparent;
     z-index: 9999;
     outline: none;
+    color: ${props => props.theme.text};
   }
 `;
+
 
 export const StatsSection = styled.div`
     width: 100vw;
@@ -590,13 +592,20 @@ export const StatsSection = styled.div`
 `;
 
 export const StatsWrapper = styled.div`
-    width: 95%;
-    height: 80%;
+    width: 80%;
+    min-height: 130px;
     border: 1px solid white;
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
-    overflow-y: scroll;
+    margin: 10px 0;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const TeamLogo = styled.div`
+    width: 30%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
 `;
 
 export const StatsPlayers = styled.div`

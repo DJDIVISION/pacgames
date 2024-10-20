@@ -11,7 +11,7 @@ import { RightPokerColumn,LeftPokerColumn,PokerNavBar,CountryBall,CountryBallTex
   TeamLogo,TeamName,PlayersContainer,PlayerWrapper,PlayerAvatar,PlayerName,PlayerPosition,PlayerShirt,PlayerShirtHolder,
   PlayerInput,PlayerRating,PlayerValue,PlayerDroppingArea,TopPokerNavBar,
   DraggContainer,PlayerTeamLogo,TopPlayerHolder,TopPlayerText,TopPokerColumn,PlayerTeamCross,
-  ArrowLeftMiddle,ArrowRightMiddle,Formation,ArrowWrapper,ArrowWrapperColumn,Search,
+  ArrowLeftMiddle,ArrowRightMiddle,Formation,ArrowWrapper,ArrowWrapperColumn,Search,PlayerTeamRating,
   ArrowDown,
   ArrowDownRelative,
   ArrowWrapperColumnSmall,
@@ -37,6 +37,7 @@ import { PlayerDroppingAreas } from './fakeData';
 import { StyledButton } from '../components';
 import { StyledIconButtonHover } from '../components/chats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
+import TeamStats from './TeamStats';
 
 const balls = [
   {
@@ -103,12 +104,14 @@ const Fantasy = () => {
   const [openEditMenu, setOpenEditMenu] = useState(false)
   const [activePlayer, setActivePlayer] = useState(null); 
   const [selectedPlayerMenu, setSelectedPlayerMenu] = useState(false)
+  const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
   const [activeClassName, setActiveClassName] = useState(1)
   const [balance, setBalance] = useState(300)
   const [teamAverage, setTeamAverage] = useState(0)
   const [allPlayersData, setAllPlayersData] = useState([])
   const [formation, setFormation] = useState("4-3-3")
   const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
+  const [activeMatch, setActiveMatch] = useState([])
   const [droppedPlayers, setDroppedPlayers] = useState({
     area1: [],
     area2: [],
@@ -132,6 +135,69 @@ const Fantasy = () => {
     })
   );
 
+  const getAllIds = (data) => {
+    let ids = [];
+  
+    // Iterate over the values in the object
+    Object.values(data).forEach((areaArray) => {
+      // For each array, iterate over the objects and collect the ids
+      areaArray.forEach((player) => {
+        ids.push(player.id);
+      });
+    });
+  
+    return ids;
+  };
+
+  const getPlayerRating = async () => {
+    const allIds = getAllIds(droppedPlayers); // Get all player IDs
+    console.log(allIds);
+  
+    allIds.forEach(async (id) => {
+      const idOnDB = localStorage.getItem(`player${id}`); // Check local storage
+      let rating;
+  
+      // If the player rating is not in local storage, fetch it from the database
+      if (idOnDB === null) {
+        const { data, error } = await supabase
+          .from('footballPlayers')
+          .select('latestMatches')
+          .eq('id', id);
+  
+        if (error) {
+          console.log(error);
+        }
+  
+        if (data) {
+          rating = data[0]?.latestMatches[0]?.games?.rating || null;
+          if (rating) {
+            localStorage.setItem(`player${id}`, rating); // Store in local storage
+          }
+        }
+      } else {
+        rating = idOnDB; // Retrieve the rating from local storage
+      }
+  
+      console.log(`Rating for player ${id}:`, rating); // Check if the rating is correct
+  
+      if (rating) {
+        // Now, update the correct player's lastMatchRating
+        Object.values(droppedPlayers).forEach((areaArray) => {
+          areaArray.forEach((player) => {
+            if (player.id === parseInt(id)) {  // Check if the player's ID matches
+              player.lastMatchRating = rating;  // Set the specific rating
+              console.log(`Updated player ${player.id} with rating ${rating}`);
+            }
+          });
+        });
+      }
+    });
+  };
+  /* useEffect(() => {
+    getPlayerRating()
+  }, [droppedPlayers]) */
+
+ 
 
   const getDroppedPlayers = async () => {
   const { data, error } = await supabase
@@ -143,7 +209,7 @@ const Fantasy = () => {
     console.error('Error fetching players:', error);
     return [];
   }
-  console.log(data);
+  
   setFormation(data[0].formation)
   setBalance(data[0].balanceRemaining)
   return data; // This should be the array of player objects
@@ -152,7 +218,7 @@ const Fantasy = () => {
 // Adjusted unflatPlayers function to group by 'overId'
 const unflatPlayers = (flatPlayers) => {
   return flatPlayers.reduce((acc, player) => {
-    const { overId, id, value, image, teamLogo, rating, isDropped } = player;
+    const { overId, id, value, image, teamLogo, rating, isDropped, position, lastMatchRating } = player;
 
     // If there is no entry for this 'overId' yet, create one as an array
     if (!acc[overId]) {
@@ -168,6 +234,8 @@ const unflatPlayers = (flatPlayers) => {
       rating,
       isDropped,
       overId,
+      position,
+      lastMatchRating,
     });
 
     return acc;
@@ -176,7 +244,7 @@ const unflatPlayers = (flatPlayers) => {
 
 const unflatPlayersTwo = (flatPlayers) => {
   return flatPlayers.reduce((acc, player) => {
-    const { id, value, image, position, name, teamLogo, rating, overId } = player;
+    const { id, value, image, position, name, teamLogo, rating, overId, lastMatchRating } = player;
 
     // Create newPlayer object with the desired structure
     const newPlayer = {
@@ -187,7 +255,8 @@ const unflatPlayersTwo = (flatPlayers) => {
       name,
       teamLogo,
       rating,
-      overId, // Same as player.overId
+      overId,
+      lastMatchRating, // Same as player.overId
     };
 
     // Update acc (accumulated object) using overId as key
@@ -203,7 +272,6 @@ useEffect(() => {
     const players = (flatPlayers[0].players)
     const unflat = unflatPlayers(players);
     const structuredPlayers = unflatPlayersTwo(players);
-    console.log(unflat);
 
     // Setting the unflattened players into state
     setDroppedPlayers(unflat);
@@ -221,7 +289,7 @@ useEffect(() => {
       setSearchedPlayers([]);  // Reset players when input is empty
       return;
     }
-    console.log(searchTerm)
+    
     setLoading(true);
 
     const { data, error } = await supabase
@@ -243,45 +311,6 @@ useEffect(() => {
     fetchPlayers(playerToFind);  // Call the debounced function
   }, [playerToFind, fetchPlayers]);
 
-  const setSata = async () => {
-    const str = localStorage.getItem("injured");
-    const json = JSON.parse(str);
-    //console.log(json.response);
-    
-    for (const player of json.response) {
-      console.log(player.player.id);
-      
-      // Check if the player exists
-      const { data, error: fetchError } = await supabase
-        .from('footballPlayers')
-        .select('*')
-        .eq("id", player.player.id);
-        
-      if (fetchError) {
-        console.error('Error fetching player:', fetchError);
-        continue; // Skip to the next player if there's an error
-      }
-  
-      if (data.length > 0) {
-        // If the player exists, update their data
-        const { error: updateError } = await supabase
-          .from('footballPlayers')
-          .update({
-            injuryReason: player.player.reason,
-            injuryType: player.player.type
-          })
-          .eq("id", player.player.id);
-          
-        if (updateError) {
-          console.error('Error updating player:', updateError);
-        } else {
-          console.log(`Updated player: ${player.player.id}`);
-        }
-      } else {
-        console.log(`Player with ID ${player.player.id} does not exist.`);
-      }
-    }
-  };
   
 
   useEffect(() => {
@@ -427,7 +456,7 @@ useEffect(() => {
     if (over) {
       const { value, image, position, name, teamLogo, rating, id } = active.data.current;
       const fakeBalance = balance - value
-      console.log(fakeBalance)
+      
       if (value && image && fakeBalance > 0) {
         setIsSearchExpanded(false)
         setPlayerToFind("")
@@ -436,10 +465,10 @@ useEffect(() => {
         setBalance((prevBalance) => prevBalance - value);
         setDroppedPlayers((prev) => ({
           ...prev,
-          [over.id]: [{ id: id, value, image, teamLogo, overId: over.id, rating: rating, isDropped: true, name: name }], // Replace the existing player
+          [over.id]: [{ id: id, value, image, teamLogo, overId: over.id, rating: rating, isDropped: true, name: name, lastMatchRating: null, position: position }], // Replace the existing player
         }));
         setActivePlayer(null);
-        const newPlayer = { id: id, value: value, image: image, position: position, name: name, teamLogo: teamLogo, rating: rating, overId: over.id };
+        const newPlayer = { id: id, value: value, image: image, position: position, name: name, teamLogo: teamLogo, rating: rating, overId: over.id, lastMatchRating: null };
 
         setAllPlayersData((prev) => ({
           ...prev,
@@ -461,7 +490,7 @@ useEffect(() => {
   }
 
   useEffect(() => {
-    console.log(activeClassName)
+    
     if(activeClassName === 1){
       setFormation("4-3-3")
     }
@@ -594,7 +623,25 @@ useEffect(() => {
     setPlayerToUpdate(player)
     setSelectedPlayerMenu(true)
   }
+  const openTeamMenu = (player) => {
+    console.log("lcicked")
+    setActiveTeamId(player.teamId)
+    setSelectedTeamMenu(true)
+  }
 
+  const getFixture = () => {
+    const str = localStorage.getItem("Ligue 1");
+    const json = JSON.parse(str);
+    json.response.forEach((el) => {
+      if(el.teams.home.name === "Toulouse" && el.teams.away.name === "Angers"){
+        console.log(el)
+      }
+    })
+  }
+  
+  useEffect(() => {
+    getFixture();
+  }, [])
    
   return ( 
     <Section>
@@ -603,7 +650,7 @@ useEffect(() => {
         <TopPokerColumn>
           <EuroBalanceDisplay balance={balance} />
           <AverageDisplay balance={teamAverage} />
-          <StyledButton onClick={() => saveTeam()}>SAVE TEAM</StyledButton>
+          <StyledButton onClick={() => fetchData()}>SAVE TEAM</StyledButton>
         </TopPokerColumn>
       <RightPokerColumn>
       {balls.map((ball) => {
@@ -675,6 +722,7 @@ useEffect(() => {
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 },}} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -686,6 +734,7 @@ useEffect(() => {
                   <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -697,6 +746,7 @@ useEffect(() => {
                   <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>  
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -708,6 +758,7 @@ useEffect(() => {
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -719,6 +770,7 @@ useEffect(() => {
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -730,6 +782,7 @@ useEffect(() => {
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -741,6 +794,7 @@ useEffect(() => {
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -752,6 +806,7 @@ useEffect(() => {
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -763,6 +818,7 @@ useEffect(() => {
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -774,6 +830,7 @@ useEffect(() => {
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -785,6 +842,7 @@ useEffect(() => {
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                   <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
                   height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
               })}
@@ -824,7 +882,7 @@ useEffect(() => {
                   );
                   return (
                     <>
-                    <PlayerWrapper key={player.photo} initial={{ opacity: 0, y: 20 }}
+                    <PlayerWrapper key={player.photo} initial={{ opacity: 0, y: 20 }} onClick={() => openPlayerMenu(player)}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.15 }} id={player.id} style={{border: playerIsDropped ? `3px solid green` : '2px solid white'}}>
                       <PlayerAvatar>
@@ -837,13 +895,13 @@ useEffect(() => {
                       </PlayerAvatar>
                       <PlayerName>{player.name}</PlayerName>
                       <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
-                      <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
+                      <PlayerShirtHolder>{player.preferredFoot}</PlayerShirtHolder>
                       <PlayerPosition>{player.position}</PlayerPosition>
                       
                       <PlayerValue>{player.value}M €</PlayerValue>
                       <PlayerShirtHolder onClick={() => /* handleUpdate(player) */{setOpenEditMenu(true); setPlayerToUpdate(player)}}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
                     </PlayerWrapper>
-                    <PlayerSettingsIcon />
+                    <StyledIconButtonHover style={{transform: 'translateX(-5px)'}} onClick={() => openPlayerMenu(player)}><PlayerSettingsIcon /></StyledIconButtonHover>
                     </>
                   )
                 })
@@ -867,7 +925,7 @@ useEffect(() => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.15 }} id={player.id} style={{border: `${borderStyle}`}}>
                     <PlayerAvatar>
-                    <Avatar alt="Image" src={player.teamLogo} sx={{ width: { xs: 30, sm: 30, md: 20, lg: 30, xl: 30 }, 
+                    <Avatar onClick={() => openTeamMenu(player)} alt="Image" src={player.teamLogo} sx={{ width: { xs: 30, sm: 30, md: 20, lg: 30, xl: 30 }, 
                       height: { xs: 30, sm: 30, md: 20, lg: 30, xl: 30 }, }} />
                       </PlayerAvatar>
                     <PlayerAvatar>
@@ -909,6 +967,9 @@ useEffect(() => {
       {selectedPlayerMenu && (
         <PlayerStatsMenu selectedPlayerMenu={selectedPlayerMenu} setSelectedPlayerMenu={setSelectedPlayerMenu} />
       )}
+      {selectedTeamMenu && (
+        <TeamStats selectedTeamMenu={selectedTeamMenu} setSelectedTeamMenu={setSelectedTeamMenu} />
+      )}
     </Section>
   )
 }
@@ -926,25 +987,107 @@ const Section = styled.div`
 
 const options = {
   method: 'GET',
-  url: 'https://api-football-v1.p.rapidapi.com/v3/injuries',
-  params: {date: '2024-10-20'},
+  url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures/players',
+  params: {fixture: '1213811'},
   headers: {
     'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
     'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
   }
 };
 
+const optionsTwo = {
+  method: 'GET',
+  url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+  params: {
+    league: '78',
+    season: '2024'
+  },
+  headers: {
+    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+  }
+};
+
+const optionsThree = {
+  method: 'GET',
+  url: 'https://api-football-v1.p.rapidapi.com/v3/teams/statistics',
+  params: {
+    league: '39',
+    season: '2024',
+    team: '39'
+  },
+  headers: {
+    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+  }
+};
+
+const optionsFour = {
+  method: 'GET',
+  url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+  params: {
+    id: '471035',
+    season: '2024'
+  },
+  headers: {
+    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+  }
+};
 
 const fetchData = async () => {
   try {
-      const response = await axios.request(options);
+      const response = await axios.request(optionsTwo);
       console.log(response.data);
-      localStorage.setItem("injured", JSON.stringify(response.data))
+      localStorage.setItem("Bundesliga", JSON.stringify(response.data))
       message.success("data fetched!")
   } catch (error) {
       console.error(error);
   }
 }
+
+const setSata = async () => {
+  const str = localStorage.getItem("update");
+  const json = JSON.parse(str);
+  //console.log(json.response);
+  
+  for (const player of json.response[1].players) {
+    console.log(player.player.id);
+    console.log(player.statistics);
+    
+    // Check if the player exists
+    const { data, error: fetchError } = await supabase
+      .from('footballPlayers')
+      .select('*')
+      .eq("id", player.player.id);
+      
+    if (fetchError) {
+      console.error('Error fetching player:', fetchError);
+      continue; // Skip to the next player if there's an error
+    }
+
+    if (data.length > 0) {
+      // If the player exists, update their data
+      const { error: updateError } = await supabase
+        .from('footballPlayers')
+        .update({
+          latestMatches: player.statistics
+        })
+        .eq("id", player.player.id);
+        
+      if (updateError) {
+        console.error('Error updating player:', updateError);
+      } else {
+        console.log(`Updated player: ${player.player.id}`);
+      }
+    } else {
+      console.log(`Player with ID ${player.player.id} does not exist.`);
+    }
+  }
+};
+
+
+
 const sendTeam = () => {
   const str = localStorage.getItem("brest")
   const barcelona = JSON.parse(str)

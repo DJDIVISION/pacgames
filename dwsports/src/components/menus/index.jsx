@@ -8,6 +8,13 @@ export const Section = styled.div`
     padding: 30px;
 `;
 
+export const Column = styled.div`
+    width: 50%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumn};
+    margin: 1vw;
+`;
+
 export const ListItemWrapper = styled.li`
     font-size: 24px;
     color: ${props => props.theme.text};
@@ -27,6 +34,16 @@ export const ListItemSpan = styled.span`
     color: ${props => props.theme.text};
     margin: 0 10px;
     font-size: 16px;
+    font-weight: bold;
+    text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
+
+`;
+
+
+export const ListItemTitle = styled.span`
+    color: ${props => props.theme.MainAccent};
+    margin: 10px 0px;
+    font-size: 24px;
     font-weight: bold;
     text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
 
@@ -59,7 +76,7 @@ export const HolderRow = styled.div`
 `;
 
 export const Holder = styled.div`
-    width: 50vw;
+    width: 48vw;
     height: auto;
     border: 2px solid black;
     padding: 20px;
@@ -74,6 +91,8 @@ export const Holder = styled.div`
         text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
     }
 `;
+
+
 
 export const Title = styled.div`
     width: 100%;
