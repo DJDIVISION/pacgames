@@ -11,7 +11,7 @@ import { SmallStatsWrapper, SportIcon, SportName, SportWrapper, BetConatiner } f
 import { Avatar, CircularProgress } from '@mui/material'
 import { supabase } from '../supabase/client'
 import premier from '../assets/premier.png'
-import laLiga from '../assets/laLiga.png'
+import laLiga from '../assets/laliga.png'
 import serieA from '../assets/serieA.png'
 import ligue1 from '../assets/ligue1.png'
 import bundesliga from '../assets/bundesliga.png'
