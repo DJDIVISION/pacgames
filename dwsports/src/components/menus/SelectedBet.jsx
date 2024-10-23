@@ -44,7 +44,7 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
 
   const closeBetsMenu = () => {
       setSelectedBetMenu(false)
-      setSelectedBet(null)
+      setSelectedBet([])
   }
 
   console.log(betAmounts)
