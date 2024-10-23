@@ -150,7 +150,7 @@ export const item={
 
 
 export const SportWrapper = styled(motion.div)`
-    width: 150px;
+    width: fit-content;
     height: 50px;
     border: 1px solid ${props => props.theme.text};
     color: ${props => props.theme.text};
@@ -163,20 +163,20 @@ export const SportWrapper = styled(motion.div)`
 `;
 
 export const SportIcon = styled.div`
-    width: 20%;
+    width: 40px;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     img{
         display: block;
-        width: 120%;
-        object-fit: contain;
+        width: 75%;
+        object-fit: cover;
     }
 `;
 
 export const SportName = styled.div`
-    width: 80%;
+    margin: 0 5px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -232,38 +232,57 @@ export const SportsContainer = styled(motion.div)`
 
 export const MatchHolder = styled.div`
     width: 70%;
-    height: 60%;
+    height: 40%;
     border: 1px solid ${props => props.theme.text};
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 auto;
+    margin: 10px auto;
     border-radius: 10px;
 `;
 
 export const BetTeams = styled.div`
     width: 100%;
-    height: 40%;
+    height: 60%;
     display: flex;
 `;
 
 export const BetTeamsLogo = styled.div`
-    width: 100%;
+    width: 50%;
     height: 75%;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+`;
+
+export const BetTeamsLogoAway = styled.div`
+    width: 50%;
+    height: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+`;
+
+export const BetTeamsHolder = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 `;
 
 export const BetTeamsColumn = styled.div`
-    width: 50%;
-    height: 100%;
+    width: 30%;
     display: flex;
     flex-direction: column;
+    align-items: center;
 `;
 
 export const BetTeamsLogoHolder = styled.div`
-    width: 100px;
-    height: 100px;
+    width: 75px;
+    height: 75px;
     border-radius: 50%;
     border: 1px solid ${props => props.theme.text};
     display: grid;
@@ -276,12 +295,15 @@ export const BetTeamsLogoHolder = styled.div`
 `;
 
 export const BetTeamsName = styled.div`
-    width: 100%;
+    width: 50%;
     height: 25%;
-    display: grid;
-    place-items: center;
-    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 20px;
     color: ${props => props.theme.text};
+    transform: translateY(5px);
 `;
 
 export const BetBet = styled.div`
@@ -293,7 +315,7 @@ export const BetBet = styled.div`
     font-size: 24px;
     color: ${props => props.theme.text};
     span{
-        margin: 20px;
+        margin: 10px;
     }
 `;
 
@@ -386,7 +408,7 @@ export const StyledButton = styled(Button)`
     border: 1px solid ${props => props.theme.MainAccent};
     border-radius: 0.58vmin;
     color: ${props => props.theme.MainAccent};
-    padding: 10px 20px;
+    padding: 5px 20px;
     font-size: 1.9vmin;
     text-decoration: none;
     text-transform: uppercase;
@@ -535,11 +557,29 @@ export const Switcher = styled.div`
 
 export const BetAmount = styled.div`
     width: 100%;
-    height: 20%;
+    height: 75px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
+    color: ${props => props.theme.text};
+`;
+
+export const PossibleWinningsAmount = styled.div`
+    width: 100%;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: ${props => props.theme.text};
+    span{
+        color: green;
+        font-weight: bold;
+        margin: 10px;
+        font-size: 32px;
+        transform: translateY(-2px);
+    }
 `;
 
 export const BetInput = styled.input.attrs({ type: 'number' })`
@@ -602,6 +642,24 @@ export const StatsWrapper = styled.div`
     ${props => props.theme.displayFlexCenter};
 `;
 
+export const BetConatiner = styled.div`
+    width: 100%;
+    height: calc(85vh - 80px);
+    ${props => props.theme.displayFlexColumn};
+    overflow-y: scroll;
+`;
+
+export const SmallStatsWrapper = styled.div`
+    width: 60%;
+    min-height: 130px;
+    border: 1px solid white;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    margin: 10px 0;
+    ${props => props.theme.displayFlexCenter};
+`;
+
 export const TeamLogo = styled.div`
     width: 30%;
     height: 100%;
@@ -623,7 +681,7 @@ export const Wrapper = styled.div`
 
 export const StatsStadium = styled.div`
     width: 100%;
-    height: 10%;
+    height: 15%;
     color: ${props => props.theme.text};
     font-size: 22px;
     display: grid;

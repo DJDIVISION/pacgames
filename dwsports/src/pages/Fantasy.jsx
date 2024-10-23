@@ -9,9 +9,9 @@ import {motion, AnimatePresence} from 'framer-motion'
 import axios from 'axios';
 import { RightPokerColumn,LeftPokerColumn,PokerNavBar,CountryBall,CountryBallText,BallColumn,TeamsCarousel,TeamWrapper,InnerTeamsCarousel,
   TeamLogo,TeamName,PlayersContainer,PlayerWrapper,PlayerAvatar,PlayerName,PlayerPosition,PlayerShirt,PlayerShirtHolder,
-  PlayerInput,PlayerRating,PlayerValue,PlayerDroppingArea,TopPokerNavBar,
-  DraggContainer,PlayerTeamLogo,TopPlayerHolder,TopPlayerText,TopPokerColumn,PlayerTeamCross,
-  ArrowLeftMiddle,ArrowRightMiddle,Formation,ArrowWrapper,ArrowWrapperColumn,Search,PlayerTeamRating,
+  PlayerInput,PlayerRating,PlayerValue,PlayerDroppingArea,TopPokerNavBar,BottomPokerColumn,TopPokerColumnLeft,
+  DraggContainer,PlayerTeamLogo,TopPlayerHolder,TopPlayerText,TopPokerColumn,PlayerTeamCross,BigPokerColumnLeft,
+  ArrowLeftMiddle,ArrowRightMiddle,Formation,ArrowWrapper,ArrowWrapperColumn,Search,PlayerTeamRating,BottomPokerColumnLeft,
   ArrowDown,
   ArrowDownRelative,
   ArrowWrapperColumnSmall,
@@ -77,6 +77,7 @@ const Fantasy = () => {
   const [activeBall, setActiveBall] = useState(1)
   const carroussel = useRef();
   const {user} = useAuth();
+  const [gameStarted, setGameStarted] = useState(false)
   const [width, setWidth] = useState(0);
   const { 
     teams, 
@@ -95,6 +96,7 @@ const Fantasy = () => {
   const [playerToFind, setPlayerToFind] = useState("")
   const [searchedPlayers, setSearchedPlayers] = useState([])
   const [isSearchExpanded, setIsSearchExpanded] = useState(false)
+  const [isColumnExpanded, setIsColumnExpanded] = useState(false)
   const [playerValue, setPlayerValue] = useState(null)
   const [nationality, setNationality] = useState(null)
   const [height, setHeight] = useState(null)
@@ -126,6 +128,12 @@ const Fantasy = () => {
     area11: []
   });
 
+  useEffect(() => {
+    if(gameStarted === true){
+      setIsColumnExpanded(true)
+    }
+  }, [gameStarted])
+
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor, {
@@ -153,6 +161,10 @@ const Fantasy = () => {
     const allIds = getAllIds(droppedPlayers); // Get all player IDs
     console.log(allIds);
   
+    let totalRating = 0;  // Variable to accumulate the total ratings
+    let ratingCount = 0;  // Variable to keep track of how many ratings were found
+  
+    // Iterate over all player IDs
     allIds.forEach(async (id) => {
       const idOnDB = localStorage.getItem(`player${id}`); // Check local storage
       let rating;
@@ -169,18 +181,21 @@ const Fantasy = () => {
         }
   
         if (data) {
-          rating = data[0]?.latestMatches[0]?.games?.rating || null;
+          rating = parseFloat(data[0]?.latestMatches[0]?.games?.rating || null);
           if (rating) {
             localStorage.setItem(`player${id}`, rating); // Store in local storage
           }
         }
       } else {
-        rating = idOnDB; // Retrieve the rating from local storage
+        rating = parseFloat(idOnDB); // Retrieve the rating from local storage
       }
   
       console.log(`Rating for player ${id}:`, rating); // Check if the rating is correct
   
       if (rating) {
+        totalRating += rating;  // Add the rating to the total
+        ratingCount++;          // Increment the rating count
+  
         // Now, update the correct player's lastMatchRating
         Object.values(droppedPlayers).forEach((areaArray) => {
           areaArray.forEach((player) => {
@@ -191,8 +206,15 @@ const Fantasy = () => {
           });
         });
       }
+  
+      // After processing all players, calculate and log the average rating
+      if (ratingCount > 0 && ratingCount === allIds.length) {
+        const averageRating = totalRating / ratingCount;
+        setTeamAverage(averageRating.toFixed(2))
+      }
     });
   };
+  
   /* useEffect(() => {
     getPlayerRating()
   }, [droppedPlayers]) */
@@ -385,8 +407,8 @@ useEffect(() => {
   
     return (
       <div className="dragged-player" ref={setNodeRef} style={style} {...listeners} {...attributes}>
-        <Avatar alt="Image" src={player.photo} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 50, xl: 50 }, 
-                      height: { xs: 30, sm: 30, md: 40, lg: 50, xl: 50 }, }} />
+        <Avatar alt="Image" src={player.photo} sx={{ width: { xs: 20, sm: 20, md: 30, lg: 50, xl: 50 }, 
+                      height: { xs: 20, sm: 20, md: 30, lg: 50, xl: 50 }, }} />
       </div>
     );
   };
@@ -415,7 +437,7 @@ useEffect(() => {
   };
 
   useEffect(() => {
-    if (droppedPlayers) {
+    if (droppedPlayers && gameStarted === false) {
 
       const allPlayers = Object.values(droppedPlayers).flat();
       
@@ -630,87 +652,52 @@ useEffect(() => {
   }
 
   const getFixture = () => {
-    const str = localStorage.getItem("Ligue 1");
+    const str = localStorage.getItem("Serie A");
     const json = JSON.parse(str);
     json.response.forEach((el) => {
-      if(el.teams.home.name === "Toulouse" && el.teams.away.name === "Angers"){
+      if(el.teams.home.name === "AS Roma" && el.teams.away.name === "Inter"){
         console.log(el)
       }
     })
   }
   
-  useEffect(() => {
+  /* useEffect(() => {
     getFixture();
-  }, [])
+  }, []) */
+
+  const expandDiv = () => {
+    setIsColumnExpanded(!isColumnExpanded)
+  }
    
   return ( 
     <Section>
-      <LinkR to="/"><ArrowLeft></ArrowLeft></LinkR>
-      <TopPokerNavBar>
-        <TopPokerColumn>
-          <EuroBalanceDisplay balance={balance} />
-          <AverageDisplay balance={teamAverage} />
-          <StyledButton onClick={() => fetchData()}>SAVE TEAM</StyledButton>
-        </TopPokerColumn>
-      <RightPokerColumn>
-      {balls.map((ball) => {
-            return(
-              <BallColumn key={ball.id}>
-              <CountryBall initial={{ height: activeBall === ball.id ? '70%' : '100%'}}
-              animate={{ height: activeBall === ball.id ? '70%' : '100%', transform: activeBall === ball.id ? 'translateY(10px) scale(0.9)' : '' }} 
-              transition={{ duration: 0.3 }} ><img onClick={() => {setActiveLeague(ball.league); setActiveBall(ball.id)}} src={ball.logo} alt="england" /></CountryBall>
-              <CountryBallText initial={{fontSize: activeBall === ball.id ? '18px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%'}} 
-              animate={{fontSize: activeBall === ball.id ? '18px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%', transform: activeBall === ball.id ? 'translateY(-5px)' : ''  }} 
-              transition={{ duration: 0.3 }}>{ball.name}</CountryBallText>
-              </BallColumn>
-            )
-          })}
-      </RightPokerColumn>
-      </TopPokerNavBar>
-      <PokerNavBar>
-      <TopPokerColumn>
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={(event) => {
+              setActivePlayer(event.active.data.current);  // Set the active player when dragging starts
+            }}>
+      <ArrowRightMiddle onClick={expandDiv} style={{transform: isColumnExpanded ? 'rotate(90deg)' : "", top: '35%', display: gameStarted ? "none" : 'flex'}}></ArrowRightMiddle>
+      <LeftPokerColumn initial={{ width: '60vw'}} 
+    animate={{ width: isColumnExpanded ? '100vw' : '60vw' }} 
+    transition={{ duration: 0.5 }} >
+      <TopPokerColumnLeft>
       {Object.entries(allPlayersData).map(([area, players]) => (
        <>
           {players.map((player) => {
             return(
-              <TopPlayerHolder>
+              <TopPlayerHolder isColumnExpanded={isColumnExpanded}>
                 <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
                 <Avatar alt="Image" src={player.image} sx={{ width: { xs: 20, sm: 20, md: 40, lg: 50, xl: 50 }, 
                   height: { xs: 20, sm: 20, md: 40, lg: 50, xl: 50 },}} />
                   <TopPlayerText>{player.name}</TopPlayerText>
-                  <TopPlayerText style={{color: 'gold', transform: 'translateY(5px)'}}>{player.value}M €</TopPlayerText>
-                  <PlayerTeamCross onClick={() => removePlayer(player)}><img src={cross} alt="cross" /></PlayerTeamCross>
+                  <TopPlayerText style={{color: 'gold'}}>{player.value}M €</TopPlayerText>
+                  <PlayerTeamCross style={{display: gameStarted ? "none" : 'flex'}} onClick={() => removePlayer(player)}><img src={cross} alt="cross" /></PlayerTeamCross>
               </TopPlayerHolder>
             )
           })}
         </>
       ))}
-      </TopPokerColumn>
-      <RightPokerColumn>
-      {/* <TeamsCarousel ref={carroussel}> */}
-          <InnerTeamsCarousel /* drag="x" dragConstraints={{right: 0, left: -width}} */>
-          {loadingTeams ? (
-            <CircularProgress sx={{width: 80, height: 80, margin: 'auto'}} />
-          ) : (
-            <Row>
-              {teams?.map((team) => {
-                return (
-                  <TeamWrapper onClick={() => handleTeam(team)} key={team.teamId}>
-                    <TeamLogo style={{backgroundImage: `url(${team.teamLogo})`, backgroundSize: '75%',backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}}></TeamLogo>
-                    <TeamName>{team.teamName}</TeamName>
-                  </TeamWrapper>
-                )
-              })}
-            </Row>
-          )}
-          </InnerTeamsCarousel>
-        {/* </TeamsCarousel> */}
-      </RightPokerColumn>
-      </PokerNavBar>
-      <DraggContainer>
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={(event) => {
-              setActivePlayer(event.active.data.current);  // Set the active player when dragging starts
-            }}>
+      </TopPokerColumnLeft>
+      <BigPokerColumnLeft>
+      
           <LeftPokerColumn id="droppable-container" className='layout1' style={{backgroundImage: `url(${field})`, backgroundSize: `90%`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', position: 'relative'}}>
             <ArrowLeftMiddle onClick={() => lowClassName()}></ArrowLeftMiddle>
             <ArrowRightMiddle onClick={() => raiseClassName()}></ArrowRightMiddle>
@@ -848,8 +835,54 @@ useEffect(() => {
               })}
             </BetArea>
           </LeftPokerColumn>
-          <RightPokerColumn>
-          {loadingPlayers ? (
+          
+           
+          
+      </BigPokerColumnLeft>
+      <BottomPokerColumnLeft>
+          <EuroBalanceDisplay balance={balance} />
+          {!gameStarted && <StyledButton onClick={() => fetchData()}>SAVE TEAM</StyledButton>}
+          <AverageDisplay balance={teamAverage} />
+          
+      </BottomPokerColumnLeft>
+    </LeftPokerColumn>
+      <RightPokerColumn initial={{ width: '40vw'}} 
+    animate={{ width: isColumnExpanded ? '0vw' : '40vw' }} 
+    transition={{ duration: 0.5 }}>
+      <TopPokerColumn>
+      {balls.map((ball) => {
+            return(
+              <BallColumn key={ball.id}>
+              <CountryBall initial={{ height: activeBall === ball.id ? '70%' : '100%'}}
+              animate={{ height: activeBall === ball.id ? '70%' : '100%', transform: activeBall === ball.id ? 'translateY(10px) scale(0.9)' : '' }} 
+              transition={{ duration: 0.3 }} ><img onClick={() => {setActiveLeague(ball.league); setActiveBall(ball.id)}} src={ball.logo} alt="england" /></CountryBall>
+              <CountryBallText initial={{fontSize: activeBall === ball.id ? '18px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%'}} 
+              animate={{fontSize: activeBall === ball.id ? '18px' : '0', display: activeBall === ball.id ? 'flex' : 'none', height: activeBall === ball.id ? '30%' : '0%', transform: activeBall === ball.id ? 'translateY(-5px)' : ''  }} 
+              transition={{ duration: 0.3 }}>{ball.name}</CountryBallText>
+              </BallColumn>
+            )
+          })}
+        </TopPokerColumn>
+        <TopPokerColumn>
+        <InnerTeamsCarousel>
+          {loadingTeams ? (
+            <CircularProgress sx={{width: 80, height: 80, margin: 'auto'}} />
+          ) : (
+            <Row>
+              {teams?.map((team) => {
+                return (
+                  <TeamWrapper onClick={() => handleTeam(team)} key={team.teamId}>
+                    <TeamLogo style={{backgroundImage: `url(${team.teamLogo})`,backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}}></TeamLogo>
+                    <TeamName>{team.teamName}</TeamName>
+                  </TeamWrapper>
+                )
+              })}
+            </Row>
+          )}
+          </InnerTeamsCarousel>
+        </TopPokerColumn>
+        <BottomPokerColumn>
+        {loadingPlayers ? (
             <CircularProgress sx={{width: 80, height: 80}} />
           ) : (
             <motion.div initial="hidden"
@@ -881,28 +914,26 @@ useEffect(() => {
                     area.find(droppedPlayer => droppedPlayer.id === player.id)
                   );
                   return (
-                    <>
+                    <div style={{display: 'flex', alignItems:'center'}}>
                     <PlayerWrapper key={player.photo} initial={{ opacity: 0, y: 20 }} onClick={() => openPlayerMenu(player)}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.15 }} id={player.id} style={{border: playerIsDropped ? `3px solid green` : '2px solid white'}}>
                       <PlayerAvatar>
                     <Avatar alt="Image" src={player.teamLogo} sx={{ width: { xs: 30, sm: 30, md: 30, lg: 30, xl: 30 }, 
-                      height: { xs: 30, sm: 30, md: 30, lg: 30, xl: 30 }, }} />
+                      height: { xs: 30, sm: 30, md: 30, lg: 30, xl: 30 }, transform: 'translateX(-50%)'}} />
                       </PlayerAvatar>
                       <PlayerAvatar>
                       <PlayerShirt>{player.number}</PlayerShirt>
                       <Player key={player.id} player={player} />
                       </PlayerAvatar>
                       <PlayerName>{player.name}</PlayerName>
-                      <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
-                      <PlayerShirtHolder>{player.preferredFoot}</PlayerShirtHolder>
                       <PlayerPosition>{player.position}</PlayerPosition>
                       
                       <PlayerValue>{player.value}M €</PlayerValue>
-                      <PlayerShirtHolder onClick={() => /* handleUpdate(player) */{setOpenEditMenu(true); setPlayerToUpdate(player)}}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
+                      <PlayerShirtHolder onClick={() => {setOpenEditMenu(true); setPlayerToUpdate(player)}}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
                     </PlayerWrapper>
                     <StyledIconButtonHover style={{transform: 'translateX(-5px)'}} onClick={() => openPlayerMenu(player)}><PlayerSettingsIcon /></StyledIconButtonHover>
-                    </>
+                    </div>
                   )
                 })
               )}
@@ -926,19 +957,17 @@ useEffect(() => {
                   transition={{ delay: index * 0.15 }} id={player.id} style={{border: `${borderStyle}`}}>
                     <PlayerAvatar>
                     <Avatar onClick={() => openTeamMenu(player)} alt="Image" src={player.teamLogo} sx={{ width: { xs: 30, sm: 30, md: 20, lg: 30, xl: 30 }, 
-                      height: { xs: 30, sm: 30, md: 20, lg: 30, xl: 30 }, }} />
+                      height: { xs: 30, sm: 30, md: 20, lg: 30, xl: 30 }, transform: 'translateX(-10%)'}} />
                       </PlayerAvatar>
                     <PlayerAvatar>
                     <PlayerShirt>{player.number}</PlayerShirt>
                     <Player key={player.id} player={player} />
                     </PlayerAvatar>
                     <PlayerName>{player.name}</PlayerName>
-                    
-                    <PlayerShirtHolder>{player.nationality}</PlayerShirtHolder>
                     <PlayerPosition>{player.position}</PlayerPosition>
                     
                     <PlayerValue>{player.value}M €</PlayerValue>
-                    <PlayerShirtHolder onClick={() => /* handleUpdate(player) */{setOpenEditMenu(true); setPlayerToUpdate(player)}}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
+                    <PlayerShirtHolder onClick={() => {setOpenEditMenu(true); setPlayerToUpdate(player)}}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
                   </PlayerWrapper>
                   <StyledIconButtonHover style={{transform: 'translateX(-5px)'}} onClick={() => openPlayerMenu(player)}><PlayerSettingsIcon /></StyledIconButtonHover>
                   </div>
@@ -958,18 +987,18 @@ useEffect(() => {
               </DragOverlay>
             </motion.div>
           )}
-          </RightPokerColumn>
-          </DndContext>
-      </DraggContainer>
-      {openEditMenu && (
+          </BottomPokerColumn>
+    </RightPokerColumn>
+    {/* {openEditMenu && (
         <EditMenu openEditMenu={openEditMenu} setOpenEditMenu={setOpenEditMenu}/>
-      )}
+      )} */}
       {selectedPlayerMenu && (
         <PlayerStatsMenu selectedPlayerMenu={selectedPlayerMenu} setSelectedPlayerMenu={setSelectedPlayerMenu} />
       )}
       {selectedTeamMenu && (
         <TeamStats selectedTeamMenu={selectedTeamMenu} setSelectedTeamMenu={setSelectedTeamMenu} />
       )}
+      </DndContext>
     </Section>
   )
 }
@@ -980,7 +1009,7 @@ const Section = styled.div`
   width: 100vw;
   height: 100vh;
   background: ${props => props.theme.body};
-  ${props => props.theme.displayFlexColumn};
+  ${props => props.theme.displayFlex};
   overflow-x: hidden;
 `;
 
@@ -988,7 +1017,7 @@ const Section = styled.div`
 const options = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures/players',
-  params: {fixture: '1213811'},
+  params: {fixture: '1223673'},
   headers: {
     'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
     'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
@@ -999,7 +1028,7 @@ const optionsTwo = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
   params: {
-    league: '78',
+    league: '135',
     season: '2024'
   },
   headers: {
@@ -1012,9 +1041,9 @@ const optionsThree = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/teams/statistics',
   params: {
-    league: '39',
+    league: '78',
     season: '2024',
-    team: '39'
+    team: '191'
   },
   headers: {
     'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
@@ -1024,26 +1053,43 @@ const optionsThree = {
 
 const optionsFour = {
   method: 'GET',
-  url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+  url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
   params: {
-    id: '471035',
-    season: '2024'
+    league: '140',
+    season: '2024',
+    round: 'Regular Season - 1'
   },
   headers: {
-    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+    'x-rapidapi-key': /*  */'5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
     'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
   }
 };
 
+
+
+
 const fetchData = async () => {
-  try {
-      const response = await axios.request(optionsTwo);
-      console.log(response.data);
-      localStorage.setItem("Bundesliga", JSON.stringify(response.data))
-      message.success("data fetched!")
-  } catch (error) {
-      console.error(error);
-  }
+  const str = localStorage.getItem("round")
+  const json = JSON.parse(str)
+  console.log(json.response)
+  const { data, error } = await supabase
+          .from('fixtures')
+          .update([{"1": json.response}])
+          .eq("id", 140)
+          if (error) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            console.log('User session data saved:', data)
+            message.success("data written")
+          }
+        /* try {
+          const response = await axios.request(optionsFour);
+          console.log(response.data);
+          localStorage.setItem("round", JSON.stringify(response.data))
+          message.success("data fetched!")
+        } catch (error) {
+          console.error(error);
+        } */
 }
 
 const setSata = async () => {
@@ -1051,7 +1097,7 @@ const setSata = async () => {
   const json = JSON.parse(str);
   //console.log(json.response);
   
-  for (const player of json.response[1].players) {
+  for (const player of json.response[0].players) {
     console.log(player.player.id);
     console.log(player.statistics);
     

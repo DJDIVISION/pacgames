@@ -1,4 +1,73 @@
 import styled from "styled-components";
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+
+export const AvatarHolder = styled.div`
+    width: 100%;
+    height: 40px;
+    ${props => props.theme.displayFlexCenter};
+    text-align: center;
+`;
+
+export const TeamsLogo = styled.div`
+    width: 10%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumnCenter};
+`;
+
+export const TeamsName = styled.div`
+    width: 25%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumnCenter};
+    text-align: center;
+    color: ${props => props.theme.text};
+    font-size: 20px;
+`;
+
+export const HalfColumn = styled.div`
+    width: 100%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumnCenter};
+    color: ${props => props.theme.text};
+    font-size: 20px;
+    text-align: center;
+    span{
+        font-size: 30px;
+        color: green;
+        margin: 10px;
+    }
+    strong{
+        color: aqua;
+        margin: 10px;
+    }
+`;
+
+export const TypeofBet = styled.div`
+    width: 12.5%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumnCenter};
+    font-size: 20px;
+`;
+
+export const StatsWrapper = styled.div`
+    width: 80%;
+    height: auto;
+    border: 1px solid white;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    margin: 10px 0;
+    ${props => props.theme.displayFlex};
+    padding: 10px;
+`;
+
+export const BetSection = styled.div`
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    ${props => props.theme.displayFlexColumn};
+    //background: ${props => props.theme.body};
+    padding: 30px;
+`;
 
 export const Section = styled.div`
     width: 100%;
@@ -91,7 +160,18 @@ export const Holder = styled.div`
         text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
     }
 `;
-
+export const CloseStats = styled(HighlightOffIcon)`
+  &&&{
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    transform: scale(1.8);
+    background: transparent;
+    z-index: 9999;
+    outline: none;
+    color: ${props => props.theme.text};
+  }
+`;
 
 
 export const Title = styled.div`

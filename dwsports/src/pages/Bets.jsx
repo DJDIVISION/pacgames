@@ -1,20 +1,26 @@
 import React, {useState,useEffect,useRef} from 'react'
 import Sports from '../components/Sports'
 import {BetSection,ArrowUp,SportsButtonRow,item,Match,BetWrapper,MatchColumn,MatchDate,MatchLogo,MatchTime,
-    MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft,MiniArrowDown,MiniArrowup
+    MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft,MiniArrowDown,MiniArrowup,
+    TeamsLogo,
+    TeamLogoWrapper,
+    TeamLogoText,
+    TeamsResult,
+    DateRow,
+    ArrowRight,
+    BetTitleRow
 } from './index'
-import {CloseStats,StatsSection,StatsWrapper,StatsStadium,StatsStadiumCapacity,MatchLineUp,
+import {CloseStats,StatsSection,SmallStatsWrapper,StatsStadium,StatsStadiumCapacity,MatchLineUp,
     StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Column,Wrapper,PlayerDisplay
   } from '../components/index'
 import Countries from '../components/Countries'
 import { BetState } from '../context/BetsContext'
 import Leagues from '../components/Leagues'
 import { motion } from 'framer-motion'
-import {CircularProgress,IconButton} from '@mui/material';
-import {premierLeague,laLiga, serieA} from '../data/sportsData'
-import {premierMatches,laLigaMatches} from '../data/nextMatches'
+import {Avatar, Button, CircularProgress,IconButton} from '@mui/material';
+
 import MatchStats from '../components/MatchStats'
-import SelectedBet from '../components/SelectedBet'
+import SelectedBet from '../components/menus/SelectedBet'
 import {Link as LinkR} from 'react-router-dom'
 import { animationOne, animationTwo, transition, transitionLong } from '../animations'
 import SpeedDial from '@mui/material/SpeedDial';
@@ -23,6 +29,8 @@ import SpeedDialAction from '@mui/material/SpeedDialAction';
 import { supabase } from '../supabase/client'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from './functions'
+import { FantasyState } from '../context/FantasyContext'
+import { message } from 'antd'
 
 const Bets = () => {
 
@@ -35,7 +43,9 @@ const Bets = () => {
     const {activeCountry, setActiveCountry} = BetState();
     const {activeLeague, setActiveLeague} = BetState();
     const {activeTeam, setActiveTeam} = BetState();
-    const {activeMatches, setActiveMatches} = BetState();
+    const {activeMatches, setActiveMatches} = FantasyState();
+    const {activeLeagueId, setActiveLeagueId} = FantasyState();
+    const {activeRound,setActiveRound} = FantasyState();
     const {homeTeam, setHomeTeam} = BetState([])
     const {awayTeam, setAwayTeam} = BetState([])
     const {matchToBet, setMatchToBet} = BetState([])
@@ -49,8 +59,11 @@ const Bets = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const { user } = useAuth();
+    const [one, setOne] = useState(null)
+    const [two, setTwo] = useState(null)
+    const [draw, setDraw] = useState(null)
     
-
+    console.log(activeMatches)
     const toggleExpand = async (match) => {
         setLoading(true)
         setExpandedId(expandedId === match.id ? null : match.id)
@@ -85,7 +98,6 @@ const Bets = () => {
         setBetsMenu(false)
     }
 
-    console.log(user)
 
     const openHomeTeam = async (match) => {
         const home = match.home.replace(/\s+/g, '');
@@ -132,6 +144,45 @@ const Bets = () => {
         // Perform additional actions if needed, such as updating the state elsewhere or logging
     };
 
+    const sendOdds = async (match) => {
+        console.log(activeMatches)
+        if(one === null || draw === null || two === null){
+            message.error("Some data missing")
+            return
+        }
+        const odds = {
+            home: one,
+            draw: draw,
+            away: two
+        }
+        
+       
+        const game = activeMatches.filter((el) => el.fixture.id === match.fixture.id)
+        console.log(game[0])
+        game[0].odds = odds
+        console.log(activeMatches)
+        const { data, error } = await supabase
+          .from('fixtures')
+          .update([{"nextRound": activeMatches}])
+          .eq("id", activeLeagueId)
+          if (error) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            console.log('User session data saved:', data)
+            message.success("data inserted!")
+          }
+        //console.log(updatedData)
+        setOne(null)
+        setDraw(null)
+        setTwo(null)
+    }
+    console.log(activeLeagueId)
+    const sendMatches = async () => {
+        
+    }
+
+    
+
     return (
         <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
         <BetSection>
@@ -161,7 +212,64 @@ const Bets = () => {
                 <>
                 {!selectedBetMenu && <ArrowUp onClick={Switch} />}
                 <BetWrapper>
-                <motion.div  variants={item}
+                  <BetTitleRow>
+                    <ArrowLeft onClick={lowRound}></ArrowLeft>
+                  <h2>Round: {activeRound}</h2>
+                    <ArrowRight onClick={raiseRound}></ArrowRight>
+                  </BetTitleRow>
+                    {activeMatches && activeMatches.map((match) => {
+                        const date = new Date(match.fixture.date).toLocaleString();
+                        return(
+                            <SmallStatsWrapper>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar alt="Image" src={match.teams.home.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.home.name}</TeamLogoText>
+                        </TeamsLogo>
+                        <TeamsResult>
+                          <DateRow>{date}</DateRow>
+                          {match.odds ? (
+                          <>
+                          {/* <div style={{display: 'flex'}}>
+                            <input type='number' onChange={(e) => setOne(e.target.value)} style={{width: '40px', height: '40px'}}></input>
+                            <input type='number' onChange={(e) => setDraw(e.target.value)} style={{width: '40px', height: '40px'}}></input>
+                            <input type='number' onChange={(e) => setTwo(e.target.value)} style={{width: '40px', height: '40px'}}></input>
+                            <button onClick={() => sendOdds(match)}>SEND</button>
+                          </div> */}
+                            <MatchOdds>
+                                <OddsColumn>{match.odds.home}</OddsColumn>
+                                <OddsColumn>{match.odds.draw}</OddsColumn>
+                                <OddsColumn>{match.odds.away}</OddsColumn>
+                            </MatchOdds>
+                            </>
+                          ) : (
+                            <div style={{display: 'flex'}}>
+                            <input type='number' onChange={(e) => setOne(e.target.value)} style={{width: '40px', height: '40px'}}></input>
+                            <input type='number' onChange={(e) => setDraw(e.target.value)} style={{width: '40px', height: '40px'}}></input>
+                            <input type='number' onChange={(e) => setTwo(e.target.value)} style={{width: '40px', height: '40px'}}></input>
+                            <button onClick={() => sendOdds(match)}>SEND</button>
+                          </div>
+                          )}
+                          <DateRow style={{ fontSize: '12px' }}>{match.fixture.venue.name}, {match.fixture.venue.city}</DateRow>
+                        </TeamsResult>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar alt="Image" src={match.teams.away.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.away.name}</TeamLogoText>
+                        </TeamsLogo>
+                      </SmallStatsWrapper>
+                        )
+                    })}
+                    {/* <Button onClick={sendMatches}>SEND MATCHES</Button> */}
+                {/* <motion.div  variants={item}
                 initial={{height:0,opacity:0}}
                 animate={{height: '100%', opacity:1}}
                 transition={{duration:.5}}
@@ -256,11 +364,11 @@ const Bets = () => {
                             
                             </div>
                         )}
-                        {/* <StatsIcon onClick={() => setHomes(match)}/> */}
+                        <StatsIcon onClick={() => setHomes(match)}/>
                         </motion.div>
                         )
                     })}
-                </motion.div>
+                </motion.div> */}
                 </BetWrapper>
                 </>
             )}

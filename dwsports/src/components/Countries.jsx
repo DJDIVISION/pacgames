@@ -1,62 +1,38 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {LeaguesButtonRow,SportWrapper,SportIcon,SportName,item} from './index'
 import axios from 'axios'
-import UK from '../assets/england.png'
-import SPAIN from '../assets/spainFlag.png'
-import italy from '../assets/italy.png'
+import premier from '../assets/premier.png'
+import laLiga from '../assets/laLiga.png'
+import serieA from '../assets/serieA.png'
+import ligue1 from '../assets/ligue1.png'
+import bundesliga from '../assets/bundesliga.png'
 import nba from '../assets/nba.png'
 import US from '../assets/usopen.png'
 import icc from '../assets/usopen.png'
 import { motion } from 'framer-motion'
 import { BetState } from '../context/BetsContext'
-import {premierLeague} from '../data/sportsData'
+
 import {premierMatches,laLigaMatches,serieAMatches} from '../data/nextMatches'
 import { supabase } from '../supabase/client'
+import { FantasyState } from '../context/FantasyContext'
+import { ArrowLeft, ArrowRight, BetTitleRow } from '../pages'
 
-const Countries = ({activeSportMenu,setActiveSportMenu,activeCountryMenu,setActiveCountryMenu,activeLeaguesMenu,setActiveLeaguesMenu,
+const Countries = ({loading,setLoading,activeCountryMenu,setActiveCountryMenu,activeLeaguesMenu,setActiveLeaguesMenu,
     betsMenu,setBetsMenu
 }) => {
 
     
     const {activeSport, setActiveSport} = BetState();
     const {activeCountry, setActiveCountry} = BetState();
-    const {activeLeague, setActiveLeague} = BetState();
-    const {activeMatches, setActiveMatches} = BetState();
+    const {activeMatches, setActiveMatches} = FantasyState();
+    const {activeLeague, setActiveLeague} = FantasyState();
+    const {activeLeagueId, setActiveLeagueId} = FantasyState();
+    const {activeRound,setActiveRound} = FantasyState();
+    
 
-    //setLaLiga(premierMatches)
+    
 
-    const setSpain = () => {
-        setActiveCountryMenu(false)
-        setActiveLeaguesMenu(true)
-        setActiveCountry("Spain")
-        setActiveMatches(laLigaMatches)
-        setBetsMenu(true)
-    }
-
-    const setUK = async () => {
-        setActiveCountryMenu(false)
-        setActiveLeaguesMenu(true)
-        setActiveCountry("England")
-        const { data, error } = await supabase.from('premierLeague').select('nextMatches').eq("id", 1);
-          if(error){
-            console.log(error)
-          }
-          if(data){
-            console.log(data[0])
-            setActiveMatches(data[0].nextMatches)
-          }
-          setBetsMenu(true)
-        
-    }
-
-    const setItaly = () => {
-        setActiveCountryMenu(false)
-        setActiveLeaguesMenu(true)
-        setActiveCountry("Italy")
-        setActiveMatches(serieAMatches)
-        setBetsMenu(true)
-        
-    }
+    
 
   return (
     <motion.div className="menu-container-four" variants={item}
@@ -65,25 +41,10 @@ const Countries = ({activeSportMenu,setActiveSportMenu,activeCountryMenu,setActi
           transition={{duration:.5}}
           exit="exit">
     
-        {activeSport === "Soccer" && (
-            <>
-            <SportWrapper onClick={setItaly}>
-                <SportIcon><img src={italy} alt="UK" /></SportIcon>
-                <SportName>ITALY</SportName>
-            </SportWrapper>
-            <SportWrapper onClick={setUK}>
-                <SportIcon><img src={UK} alt="UK" /></SportIcon>
-                <SportName>ENGLAND</SportName>
-            </SportWrapper>
-            <SportWrapper onClick={setSpain}>
-                <SportIcon><img src={SPAIN} alt="Spain" /></SportIcon>
-                <SportName>SPAIN</SportName>
-            </SportWrapper>
-            </>
-        )}
+            
         {activeSport === "Basketball" && (
             <>
-            <SportWrapper onClick={setSpain}>
+            <SportWrapper /* onClick={setSpain} */>
             <SportIcon><img src={nba} alt="Spain" /></SportIcon>
             <SportName>NBA</SportName>
             </SportWrapper>
@@ -91,7 +52,7 @@ const Countries = ({activeSportMenu,setActiveSportMenu,activeCountryMenu,setActi
         )}
         {activeSport === "Tennis" && (
             <>
-            <SportWrapper onClick={setSpain}>
+            <SportWrapper /* onClick={setSpain} */>
             <SportIcon><img src={US} alt="Spain" /></SportIcon>
             <SportName>US OPEN</SportName>
             </SportWrapper>
@@ -99,13 +60,13 @@ const Countries = ({activeSportMenu,setActiveSportMenu,activeCountryMenu,setActi
         )}
         {activeSport === "Cricket" && (
             <>
-            <SportWrapper onClick={setSpain}>
+            <SportWrapper /* onClick={setSpain} */>
             <SportIcon><img src={icc} alt="Spain" /></SportIcon>
             <SportName>ICC</SportName>
             </SportWrapper>
             </>
         )}
-    
+          
     </motion.div>
   )
 }

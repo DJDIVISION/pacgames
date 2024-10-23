@@ -152,15 +152,18 @@ export const TeamWrapper = styled.div`
     align-items: center;
     justify-content: center;
     @media(max-width:968px){
-        height: 40px;
+        height: calc(15vh - 25px);
+        //padding: 5px 20px 5px 5px;
     }
 `;
 
 export const ArrowWrapper = styled.div`
     width: 100%;
-    height: 10%;
+    height: 15%;
     ${props => props.theme.displayFlex};
-    
+    @media(max-width:968px){
+        width: 90%;
+    }
 `;
 
 export const SearchBar = styled(motion.div)`
@@ -202,14 +205,14 @@ export const PlayerWrapper = styled(motion.div)`
 `;
 
 export const PlayerAvatar = styled.div`
-    width: 15%;
+    width: 10%;
     position: relative;
     ${props => props.theme.displayFlexCenter};
 `;
 
 export const PlayerShirtHolder = styled.div`
-    width: 15%;
-    height: 100%;
+    width: 10%;
+    height: 80%;
     ${props => props.theme.displayFlexCenter};
     color: white;
     font-weight: bold;
@@ -237,8 +240,8 @@ export const PlayerInput = styled.input`
 `;
 
 export const PlayerShirt = styled.div`
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     ${props => props.theme.displayFlexCenter};
     background: lightblue;
@@ -251,8 +254,9 @@ export const PlayerShirt = styled.div`
     font-size: 12px;
     font-weight: bold;
     @media(max-width: 968px){
-        width: 15px;
-        height: 15px;
+        width: 12.5px;
+        height: 12.5px;
+        font-size: 10px;
     }
 `;
 
@@ -297,7 +301,7 @@ export const PlayerTeamCross = styled.div`
     ${props => props.theme.displayFlexCenter};
     z-index: 1000;
     position: absolute; 
-    top: 0%;
+    top: 25%;
     right: 0%;
     @media(max-width: 968px){
         top: 40%;
@@ -315,7 +319,7 @@ export const PlayerRating = styled.div`
 `;
 
 export const PlayerName = styled.div`
-    width: 25%;
+    width: 40%;
     padding: 5px;
     height: 100%;
     ${props => props.theme.displayFlex};
@@ -327,7 +331,7 @@ export const PlayerName = styled.div`
 `;
 
 export const PlayerPosition = styled.div`
-    width: 20%;
+    width: 15%;
     padding: 5px;
     height: 100%;
     ${props => props.theme.displayFlexCenter};
@@ -341,6 +345,10 @@ export const PlayerPosition = styled.div`
 export const TeamLogo = styled.div`
     min-width: 40px;
     height: 100%;
+    background-size: 75%;
+    @media(max-width: 968px){
+        background-size: 50%;
+    }
 `;
 export const TeamName = styled.div`
     width: fit-content;
@@ -356,7 +364,7 @@ export const TeamName = styled.div`
 `;
 
 export const TopPlayerHolder = styled.div`
-    width: calc(100% / 11);
+    width: ${({ isColumnExpanded }) => (isColumnExpanded ? "calc(100vw/18)" : "calc(70vw/11)")};
     height: 100%;
     position: relative;
     ${props => props.theme.displayFlexColumn};
@@ -392,8 +400,8 @@ export const Formation = styled.div`
 `;
 
 
-export const LeftPokerColumn = styled.div`
-  width: 65vw;
+export const LeftPokerColumn = styled(motion.div)`
+  width: 60vw;
   height: 100%;
   ${props => props.theme.displayFlexColumn};
   padding-top: 0px;
@@ -403,14 +411,70 @@ export const LeftPokerColumn = styled.div`
 `;
 
 export const TopPokerColumn = styled.div`
-  width: 65vw;
-  height: 100%;
+  width: 100%;
+  height: 15vh;
   display: flex;
   align-items: center;
   justify-content: space-around;
   padding: 10px;
   position: relative;
   overflow: visible; 
+  z-index: 1;
+`;
+
+export const TopPokerColumnLeft = styled.div`
+  width: 100%;
+  height: 17.5vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px;
+  position: relative;
+  overflow: visible; 
+  z-index: 1;
+  @media(max-width: 968px){
+    height: 20vh;
+  }
+`;
+
+export const BigPokerColumnLeft = styled.div`
+  width: 100%;
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  position: relative;
+  overflow: visible; 
+  z-index: 1;
+  /* @media(max-width: 968px){
+    height: 60vh;
+  } */
+`;
+
+export const BottomPokerColumnLeft = styled.div`
+  width: 100%;
+  height: 12.5vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px;
+  position: relative;
+  overflow: visible; 
+  z-index: 1;
+  @media(max-width: 968px){
+    height: 10vh;
+  }
+`;
+
+
+export const BottomPokerColumn = styled.div`
+  width: 100%;
+  height: 70vh;
+  ${props => props.theme.displayFlexColumn};
+  padding: 10px;
+  position: relative;
+  overflow-y: scroll; 
   z-index: 1;
 `;
 
@@ -434,15 +498,16 @@ export const WrapperRightColumn = styled.div`
   z-index: 1;
 `;
 
-export const RightPokerColumn = styled.div`
+export const RightPokerColumn = styled(motion.div)`
   width: 40vw;
   height: 100%;
-  ${props => props.theme.displayFlexCenter};
+  ${props => props.theme.displayFlexColumn};
   padding-top: 0px;
   overflow-y: scroll;
   //overflow-x: hidden;
   position: relative;
   z-index: 1;
+  border-left: 1px solid aqua;
 `;
 
 export const BigColumn = styled.div`
@@ -673,6 +738,19 @@ export const Row = styled.div`
     display: flex;
 `;
 
+export const BetTitleRow = styled.div`
+    width: 50%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: relative;
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 20px;
+    }
+`;
+
 export const TeamStatsRow = styled.div`
     width: 100%;
     height: 200px;
@@ -690,14 +768,44 @@ export const StatsIcon = styled(AnalyticsIcon)`
     }
 `;
 
+export const AllBets = styled.div`
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    img{
+        width: 100%;
+        display: block;
+        object-fit: cover;
+    }
+`;
 
+export const AllBetsText = styled.div`
+    width: 80px;
+    height: 10px;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    color: ${props => props.theme.text};
+    font-size: 16px;
+`;
 
 export const BetSection = styled.div`
     width: 100vw;
-    height: 100vh;
+    max-height: 100vh;
     background: ${props => props.theme.body};
     display: flex;
     flex-direction: column;
+    align-items: center;
+`;
+
+export const LoadingSection = styled.div`
+    width: 100vw;
+    height: 85vh;
+    background: ${props => props.theme.body};
+    display: flex;
+    justify-content: center;
     align-items: center;
 `;
 
@@ -751,7 +859,21 @@ export const ArrowLeft = styled(KeyboardArrowDownIcon)`
         top: 30px;
         left: 20px;
         transform: rotate(90deg);
-        z-index: 5000;
+        z-index: 1000;
+        cursor: pointer;
+    }
+`;
+
+export const ArrowRight = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 2;
+        position: absolute;
+        top: 30px;
+        right: 20px;
+        transform: rotate(270deg);
+        z-index: 1000;
+        cursor: pointer;
     }
 `;
 
@@ -761,7 +883,7 @@ export const ArrowLeftMiddle = styled(KeyboardArrowDownIcon)`
         scale: 2;
         position: absolute;
         top: 50%;
-        left: 20px;
+        left: 10px;
         transform: rotate(90deg);
     }
 `;
@@ -772,8 +894,9 @@ export const ArrowRightMiddle = styled(KeyboardArrowDownIcon)`
         scale: 2;
         position: absolute;
         top: 50%;
-        right: 20px;
+        right: 10px;
         transform: rotate(270deg);
+        z-index: 9000;
     }
 `;
 
@@ -789,12 +912,13 @@ export const ArrowUp = styled(KeyboardArrowDownIcon)`
 `;
 
 export const SportsButtonRow = styled(motion.div)`
-    width: 90%;
+    width: 95%;
     height: 15vh;
     border: 1px solid ${props => props.theme.text};
     display: flex;
     align-items: center;
     justify-content: space-evenly;
+    position: relative;
 `;
 
 export const item={
@@ -813,9 +937,11 @@ export const MatchWrapper = styled.div`
 
 export const Match = styled.div`
     width: 70%;
-    height: ${({ expandedId }) => (expandedId ? 'auto' : '150px')};
-    
+    /* height: ${({ expandedId }) => (expandedId ? 'auto' : '150px')}; */
+    height: 100px;
     display: flex;
+    margin: 10px 0;
+    border: 1px solid white;
     border-radius: 10px;
     margin-left: auto;
     margin-right: auto;
@@ -874,7 +1000,7 @@ export const TeamLogoText = styled.div`
 
 export const TeamsResult = styled.div`
     width: 50%;
-    height: 100%;
+    height: 130px;
     ${props => props.theme.displayFlexColumn};
 `;
 export const NewHolder = styled.div`
@@ -905,15 +1031,33 @@ export const DateRow = styled.div`
     ${props => props.theme.displayFlexCenter};
 `;
 
-export const ResultRow = styled.div`
+export const BigDateRow = styled.div`
     width: 100%;
-    height: 40%;
-    
+    height: 30%;
+    font-size: 16px;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
-    
+`;
+
+export const ResultRow = styled.div`
+    width: 100%;
+    height: 30%;
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexCenter};
     h2{
         font-size: 42px;
+        font-weight: bold;
+        margin: 10px;
+    }
+`;
+
+export const NotStartedRow = styled.div`
+    width: 100%;
+    height: 40%;
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        font-size: 24px;
         font-weight: bold;
         margin: 10px;
     }
@@ -1050,12 +1194,14 @@ export const BetWrapper = styled.div`
     position: absolute;
     top: 15vh;
     background-color: ${props => props.theme.body};
-    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `;
 
 export const OddsColumn = styled.div`
     width: 33%;
-    height: 100%;
+    height: 50%;
     display: flex;
     border: 1px solid ${props => props.theme.text};
     background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
@@ -1071,9 +1217,7 @@ export const OddsColumn = styled.div`
         margin-right: 5px;
         background: transparent;
     }
-    &:last-child {
-        border-right: none;
-    }
+    
 `;
 
 
@@ -1121,9 +1265,9 @@ export const MatchTime = styled.div`
 `;
 export const MatchOdds = styled.div`
     width: 100%;
-    height: 30%;
+    height: 60%;
     color: ${props => props.theme.text};
-    border-right: 1px solid ${props => props.theme.text};
+
     font-size: 32px;
     display: flex;
     align-items: center;

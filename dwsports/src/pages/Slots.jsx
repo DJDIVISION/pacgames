@@ -3,18 +3,13 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Import images
-import wolves from '../assets/wolves.png';
-import arsenal from '../assets/arsenal.png';
-import chelsea from '../assets/chelsea.png';
-import barça from '../assets/barça.png';
-import napoli from '../assets/napoli.png';
-import girona from '../assets/girona.png';
+
 import { message } from 'antd';
 import { StyledButton } from '../components';
 import { BalanceDisplay, BalanceDisplayBig, BalanceDisplaySlots } from './functions';
 
 // Sample images with id, src, and value
-const symbols = [
+/* const symbols = [
   { id: 1, src: wolves, value: 10 },
   { id: 2, src: arsenal, value: 20 },
   { id: 3, src: chelsea, value: 30 },
@@ -22,7 +17,7 @@ const symbols = [
   { id: 5, src: napoli, value: 50 },
   { id: 6, src: girona, value: 60 },
 ];
-
+ */
 // Grid Container
 const SlotGrid = styled.div`
   display: grid;
