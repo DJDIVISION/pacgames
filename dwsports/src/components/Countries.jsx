@@ -1,11 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {LeaguesButtonRow,SportWrapper,SportIcon,SportName,item} from './index'
 import axios from 'axios'
-import premier from '../assets/premier.png'
-import laLiga from '../assets/laLiga.png'
-import serieA from '../assets/serieA.png'
-import ligue1 from '../assets/ligue1.png'
-import bundesliga from '../assets/bundesliga.png'
+
 import nba from '../assets/nba.png'
 import US from '../assets/usopen.png'
 import icc from '../assets/usopen.png'
