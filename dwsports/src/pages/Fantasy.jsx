@@ -646,7 +646,7 @@ useEffect(() => {
     setSelectedPlayerMenu(true)
   }
   const openTeamMenu = (player) => {
-    console.log("lcicked")
+    
     setActiveTeamId(player.teamId)
     setSelectedTeamMenu(true)
   }
@@ -841,7 +841,8 @@ useEffect(() => {
       </BigPokerColumnLeft>
       <BottomPokerColumnLeft>
           <EuroBalanceDisplay balance={balance} />
-          {!gameStarted && <StyledButton onClick={() => fetchData()}>SAVE TEAM</StyledButton>}
+          {!gameStarted && <StyledButton onClick={() => saveTeam()}>SAVE TEAM</StyledButton>}
+          {/* {!gameStarted && <StyledButton onClick={() => fetchData()}>SEND DATA</StyledButton>} */}
           <AverageDisplay balance={teamAverage} />
           
       </BottomPokerColumnLeft>
@@ -1037,19 +1038,7 @@ const optionsTwo = {
   }
 };
 
-const optionsThree = {
-  method: 'GET',
-  url: 'https://api-football-v1.p.rapidapi.com/v3/teams/statistics',
-  params: {
-    league: '78',
-    season: '2024',
-    team: '191'
-  },
-  headers: {
-    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-  }
-};
+
 
 const optionsFour = {
   method: 'GET',
@@ -1065,7 +1054,19 @@ const optionsFour = {
   }
 };
 
-
+const optionsThree = {
+  method: 'GET',
+  url: 'https://api-football-v1.p.rapidapi.com/v3/teams/statistics',
+  params: {
+    league: '135',
+    season: '2024',
+    team: '1579'
+  },
+  headers: {
+    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+  }
+};
 
 
 const fetchData = async () => {
@@ -1073,9 +1074,9 @@ const fetchData = async () => {
   const json = JSON.parse(str)
   console.log(json.response)
   const { data, error } = await supabase
-          .from('fixtures')
-          .update([{"1": json.response}])
-          .eq("id", 140)
+          .from('teams')
+          .update([{"stats": json.response}])
+          .eq("teamId", 1579)
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
@@ -1083,7 +1084,7 @@ const fetchData = async () => {
             message.success("data written")
           }
         /* try {
-          const response = await axios.request(optionsFour);
+          const response = await axios.request(optionsThree);
           console.log(response.data);
           localStorage.setItem("round", JSON.stringify(response.data))
           message.success("data fetched!")
@@ -1093,7 +1094,15 @@ const fetchData = async () => {
 }
 
 const setSata = async () => {
-  const str = localStorage.getItem("update");
+  try {
+    const response = await axios.request(optionsThree);
+    console.log(response.data);
+    localStorage.setItem("round", JSON.stringify(response.data))
+    message.success("data fetched!")
+  } catch (error) {
+    console.error(error);
+  }
+  /* const str = localStorage.getItem("update");
   const json = JSON.parse(str);
   //console.log(json.response);
   
@@ -1129,7 +1138,7 @@ const setSata = async () => {
     } else {
       console.log(`Player with ID ${player.player.id} does not exist.`);
     }
-  }
+  } */
 };
 
 
