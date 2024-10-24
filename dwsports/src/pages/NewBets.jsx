@@ -2,22 +2,27 @@ import React, {useState, useEffect} from 'react'
 import { motion } from 'framer-motion'
 import { animationOne, transition } from '../animations'
 import { ArrowLeft, ArrowRight, BetSection, BetTitleRow, DateRow, MatchOdds, OddsColumn, SportsButtonRow, TeamLogoText, TeamLogoWrapper, TeamsLogo, TeamsResult,
-    LoadingSection,AllBets,AllBetsText,
+    LoadingSection,AllBets,AllBetsText,AllBetsBadge,
     ResultRow,BigDateRow
  } from './index'
+import Stack from '@mui/material/Stack';
 import allBets from '../assets/allBets.png'
 import { FantasyState } from '../context/FantasyContext'
-import { SmallStatsWrapper, SportIcon, SportName, SportWrapper, BetConatiner } from '../components'
-import { Avatar, CircularProgress } from '@mui/material'
+import { SmallStatsWrapper, SportIcon, SportName, SportWrapper, BetConatiner, StyledButtonBets } from '../components'
+import { Avatar, Button, CircularProgress } from '@mui/material'
 import { supabase } from '../supabase/client'
 import premier from '../assets/premier.png'
 import laLiga from '../assets/laliga.png'
 import serieA from '../assets/serieA.png'
 import ligue1 from '../assets/ligue1.png'
+import aaa from '../assets/aaa.png'
 import bundesliga from '../assets/bundesliga.png'
 import { message } from 'antd'
 import SelectedBet from '../components/menus/SelectedBet'
 import AllBetsMenu from '../components/menus/AllBetsMenu'
+import { useAuth } from './functions';
+import Badge from '@mui/material/Badge';
+import TeamStats from './TeamStats';
 
 const NewBets = () => {
 
@@ -30,8 +35,13 @@ const NewBets = () => {
     const [two, setTwo] = useState(null)
     const [draw, setDraw] = useState(null)
     const {selectedBet, setSelectedBet} = FantasyState();
+    const {activeTeamId, setActiveTeamId} = FantasyState();
     const [selectedBetMenu, setSelectedBetMenu] = useState(false);
     const [allBetsMenu, setAllBetsMenu] = useState(false);
+    const [disabledButton, setDisabledButton] = useState("Premier League");
+    const { user } = useAuth();
+    const {pendingBets, setPendingBets} = FantasyState();
+    const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
 
     const raiseRound = () => {
         setActiveRound((prevRound) => prevRound + 1)
@@ -98,42 +108,7 @@ const NewBets = () => {
             fetchMatchesForRound(activeRound); // Fetch matches for the active round
         }
     }, [activeRound]);
-
-    const setSpain = () => {
-        setActiveMatches([])
-        setActiveRound(null)
-        setActiveLeague("La Liga")
-        setActiveLeagueId(140)
-    }
-
-    const setUK = async () => {
-        setActiveMatches([])
-        setActiveRound(null)
-        setActiveLeagueId(39)
-        setActiveLeague("Premier League")
-    }
-
-    const setItaly = () => {
-        setActiveMatches([])
-        setActiveRound(null)
-        setActiveLeagueId(135)
-        setActiveLeague("Serie A")
-    }
-
-    const setFrance = () => {
-        setActiveMatches([])
-        setActiveRound(null)
-        setActiveLeagueId(61)
-        setActiveLeague("Ligue 1")
-    }
-
-    const setGermany = () => {
-        setActiveMatches([])
-        setActiveRound(null)
-        setActiveLeagueId(78)
-        setActiveLeague("Bundesliga")
-    }
-
+   
     const sendOdds = async (match) => {
         console.log(activeMatches)
         if(one === null || draw === null || two === null){
@@ -184,30 +159,96 @@ const NewBets = () => {
         });
       };
     console.log(selectedBet)
+
+    const handleButtonClick = (league) => {
+        setDisabledButton(league.name);
+        if(league.name === 'Premier League'){
+            setActiveMatches([])
+            setActiveRound(null)
+            setActiveLeagueId(39)
+            setActiveLeague("Premier League")
+        }
+        if(league.name === 'La Liga'){
+            setActiveMatches([])
+            setActiveRound(null)
+            setActiveLeagueId(140)
+            setActiveLeague("La Liga")
+        }
+        if(league.name === 'Serie A'){
+            setActiveMatches([])
+            setActiveRound(null)
+            setActiveLeagueId(135)
+            setActiveLeague("Serie A")
+        }
+        if(league.name === 'Bundesliga'){
+            setActiveMatches([])
+            setActiveRound(null)
+            setActiveLeagueId(78)
+            setActiveLeague("Bundesliga")
+        }
+        if(league.name === 'Ligue 1'){
+            setActiveMatches([])
+            setActiveRound(null)
+            setActiveLeagueId(61)
+            setActiveLeague("Ligue 1")
+        }
+      };
+
+    const leagues = [
+        { name: 'Premier League', logo: premier },
+        { name: 'La Liga', logo: laLiga },
+        { name: 'Serie A', logo: serieA },
+        { name: 'Bundesliga', logo: bundesliga },
+        { name: 'Ligue 1', logo: ligue1 }
+      ];
+
+      const fetchPendingYourBets = async () => {
+        const { data, error } = await supabase
+              .from('bets')
+              .select('*')
+              .eq('status', 'Pending')
+              .eq('user_id', user.id)
+              .order('id', { ascending: true });
+              if (error) {
+                console.error('Error inserting/updating user session data:', error.message)
+              } else {
+                setPendingBets(data.length)
+                
+        }
+      }
+
+      useEffect(() => {
+        fetchPendingYourBets();
+      }, [user])
+
+      const openTeamMenu = (id) => {
+        setActiveTeamId(id)
+        setSelectedTeamMenu(true)
+      }
+
   return (
       <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
           <BetSection>
             <SportsButtonRow>
-            <SportWrapper onClick={setUK}>
-                <SportIcon><img src={premier} alt="premier" /></SportIcon>
-                <SportName>PREMIER LEAGUE</SportName>
-            </SportWrapper>
-            <SportWrapper onClick={setSpain}>
-                <SportIcon><img src={laLiga} alt="laLiga" /></SportIcon>
-                <SportName>LA LIGA</SportName>
-            </SportWrapper>
-            <SportWrapper onClick={setItaly}>
-                <SportIcon><img src={serieA} alt="serieA" /></SportIcon>
-                <SportName>SERIE A</SportName>
-            </SportWrapper>
-            <SportWrapper onClick={setFrance}>
-                <SportIcon><img src={ligue1} alt="ligue1" /></SportIcon>
-                <SportName>LIGUE 1</SportName>
-            </SportWrapper>
-            <SportWrapper onClick={setGermany}>
-                <SportIcon><img src={bundesliga} alt="bundesliga" /></SportIcon>
-                <SportName>BUNDESLIGA</SportName>
-            </SportWrapper>
+            {leagues.map((league, index) => (
+        <StyledButtonBets
+          key={index}
+          variant="outlined"
+          startIcon={<img src={league.logo} alt={league.name} style={{ width: 24, height: 24 }} />}
+          onClick={() => handleButtonClick(league)}
+          disabled={disabledButton === league.name}
+          style={{
+            marginRight: '10px',
+            backgroundColor: disabledButton === league.name ? 'aqua' : 'transparent',
+            color: disabledButton === league.name ? '#f8452e' : 'white',
+            borderColor: disabledButton === league.name ? '#f8452e' : '#ccc',
+            boxShadow: disabledButton === league.name ? '0 0 5px aqua, 0 0 25px aqua' : '',
+            fontWeight: disabledButton === league.name ? 'bold' : ''
+          }}
+        >
+          {league.name}
+        </StyledButtonBets>
+      ))}
             </SportsButtonRow>
             <BetTitleRow>
               <ArrowLeft onClick={lowRound}></ArrowLeft>
@@ -227,9 +268,9 @@ const NewBets = () => {
                 <SmallStatsWrapper key={index}>
                     <TeamsLogo>
                         <TeamLogoWrapper>
-                            <Avatar alt="Home Team Logo" src={match.teams.home.logo} sx={{
+                            <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{
                                 width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
-                                height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(-5px)'
+                                height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
                             }} />
                         </TeamLogoWrapper>
                         <TeamLogoText>{match.teams.home.name}</TeamLogoText>
@@ -287,9 +328,9 @@ const NewBets = () => {
         </TeamsResult>
         <TeamsLogo>
           <TeamLogoWrapper>
-            <Avatar alt="Away Team Logo" src={match.teams.away.logo} sx={{
+            <Avatar onClick={() => openTeamMenu(match.teams.away.id)} alt="Away Team Logo" src={match.teams.away.logo} sx={{
                       width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
-                      height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(-5px)'}} />
+                      height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'}} />
           </TeamLogoWrapper>
           <TeamLogoText>{match.teams.away.name}</TeamLogoText>
         </TeamsLogo>
@@ -298,17 +339,20 @@ const NewBets = () => {
   })
 ) : (
   <LoadingSection>No matches found</LoadingSection>
-)}
+)}           
             </BetConatiner>
           )}
-          <AllBets onClick={() => setAllBetsMenu(true)}><img src={allBets} alt='betsLogo' /></AllBets>
-          <AllBetsText>YOUR BETS</AllBetsText>
+          <AllBetsBadge>{pendingBets}</AllBetsBadge>
+          <AllBetsText onClick={() => setAllBetsMenu(true)}><img src={aaa} alt="" /></AllBetsText>
           </BetSection>
           {selectedBetMenu && (
                 <SelectedBet selectedBetMenu={selectedBetMenu} setSelectedBetMenu={setSelectedBetMenu} />
             )}
             {allBetsMenu && (
                 <AllBetsMenu allBetsMenu={allBetsMenu} setAllBetsMenu={setAllBetsMenu} />
+            )}
+            {selectedTeamMenu && (
+                <TeamStats selectedTeamMenu={selectedTeamMenu} setSelectedTeamMenu={setSelectedTeamMenu} />
             )}
       </motion.div>
   )

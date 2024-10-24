@@ -17,11 +17,13 @@ const FantasyContext = ({children}) => {
     const [activeRound,setActiveRound] = useState(null)
     const [selectedBet, setSelectedBet] = useState([]);
     const [betAmounts, setBetAmounts] = useState({});
+    const [pendingBets, setPendingBets] = useState(null)
     
     return(
         <Fantasy.Provider value = {{activeLeague,setActiveLeague,activeTeamName,setActiveTeamName,activeTeamId,setActiveTeamId,
             playerToUpdate,setPlayerToUpdate,playersSelected,setPlayersSelected,selectedPlayer,setSelectedPlayer,activeMatches,setActiveMatches,
-            activeLeagueId,setActiveLeagueId,activeRound,setActiveRound,selectedBet,setSelectedBet,betAmounts,setBetAmounts
+            activeLeagueId,setActiveLeagueId,activeRound,setActiveRound,selectedBet,setSelectedBet,betAmounts,setBetAmounts,
+            pendingBets,setPendingBets
         }}>
             {children}
         </Fantasy.Provider>

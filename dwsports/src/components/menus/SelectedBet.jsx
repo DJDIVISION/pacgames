@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
-import { motion } from 'framer-motion'
-import {item,CloseStats,MatchHolder,StatsStadium,StatsStadiumCapacity,BetTeams,BetTeamsLogo,BetTeamsName,PossibleWinningsAmount,
+import { motion,AnimatePresence } from 'framer-motion'
+import {CloseStats,MatchHolder,StatsStadium,StatsStadiumCapacity,BetTeams,BetTeamsLogo,BetTeamsName,PossibleWinningsAmount,
   BetTeamsLogoHolder,BetTeamsColumn,BetBet,BetAmount,BetInput,AntSwitch,Switcher,BetTeamsLogoAway,BetTeamsHolder
 } from '../index'
 import { BetState } from '../../context/BetsContext'
@@ -20,9 +20,25 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
   const [multipleBets, setMultipleBets] = useState([])
   const {selectedBet, setSelectedBet} = FantasyState();
   const {betAmounts, setBetAmounts} = FantasyState();
+  const {pendingBets, setPendingBets} = FantasyState();
   const { user } = useAuth();
 
   console.log(user)
+
+  const fetchPendingYourBets = async () => {
+    const { data, error } = await supabase
+          .from('bets')
+          .select('*')
+          .eq('status', 'Pending')
+          .eq('user_id', user.id)
+          .order('id', { ascending: true });
+          if (error) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            setMyBets(data)
+            
+    }
+  }
 
   const calculateTotalWinnings = () => {
     return selectedBet.reduce((total, bet) => {
@@ -43,12 +59,13 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
   console.log("Selected Bet:", selectedBet);
 
   const closeBetsMenu = () => {
-      setSelectedBetMenu(false)
       setSelectedBet([])
+      setSelectedBetMenu(false)
   }
 
   console.log(betAmounts)
   const handleSwitchSendBet = async (event) => {
+    setPendingBets((prevBets) => prevBets + 1)
     const winnings = calculateTotalWinnings();
     console.log(winnings)
     setChecked(event.target.checked);
@@ -84,12 +101,18 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
 
   console.log(selectedBet)
 
+  const item={
+    initial: { height: 0, opacity: 0 },
+    animate: { height: "100vh", opacity: 1, transition: { duration: 0.5 } },
+    exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
+}
+
   return (
+    <AnimatePresence>
     <motion.div className="menu-container-six" variants={item}
-    initial={{opacity:0, height: 0}}
-    animate={{ opacity:1, height: "100vh"}}
-    transition={{duration:.5}}
-    exit="exit">
+    initial='initial'
+    animate='animate'
+    exit='exit' layout style={{ overflow: 'hidden' }}>
       <CloseStats onClick={closeBetsMenu} />
       {selectedBet.length > 0 ? (
       selectedBet.map((selectedBet, index) => (
@@ -162,6 +185,7 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
       </Switcher>
       
     </motion.div>
+    </AnimatePresence>
   )
 }
 

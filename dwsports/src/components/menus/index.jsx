@@ -1,5 +1,33 @@
 import styled from "styled-components";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { motion } from "framer-motion";
+import FilterListIcon from '@mui/icons-material/FilterList';
+
+export const FilterContainer = styled(motion.div)`
+    width: 90%;
+    height: 120px;
+    //border: 1px solid white;
+    position: relative;
+    justify-content: space-around;
+    border-radius: 10px;
+    //background: rgba(0, 0, 0, 0.8);
+    //backdrop-filter: blur(10px);
+    //margin: 20px 0;
+    ${props => props.theme.displayFlex};
+    //padding: 10px;
+`;
+
+export const AbsoluteAvatar = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    border: 1px solid white;
+    border-radius: 50%;
+    ${props => props.theme.displayFlexCenter};
+    transform: translate(-50%,-50%);
+`;
 
 export const AvatarHolder = styled.div`
     width: 100%;
@@ -9,7 +37,7 @@ export const AvatarHolder = styled.div`
 `;
 
 export const TeamsLogo = styled.div`
-    width: 10%;
+    width: 7.5%;
     height: 100%;
     ${props => props.theme.displayFlexColumnCenter};
 `;
@@ -26,14 +54,16 @@ export const TeamsName = styled.div`
 export const HalfColumn = styled.div`
     width: 100%;
     height: 100%;
-    ${props => props.theme.displayFlexColumnCenter};
+    ${props => props.theme.displayFlexColumn};
+    justify-content: flex-end;
     color: ${props => props.theme.text};
     font-size: 20px;
     text-align: center;
     span{
         font-size: 30px;
         color: green;
-        margin: 10px;
+        
+        
     }
     strong{
         color: aqua;
@@ -42,20 +72,22 @@ export const HalfColumn = styled.div`
 `;
 
 export const TypeofBet = styled.div`
-    width: 12.5%;
+    width: 10%;
     height: 100%;
     ${props => props.theme.displayFlexColumnCenter};
     font-size: 20px;
+    text-align: center;
 `;
 
 export const StatsWrapper = styled.div`
-    width: 80%;
+    width: 90%;
     height: auto;
     border: 1px solid white;
+    position: relative;
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
-    margin: 10px 0;
+    margin: 20px 0;
     ${props => props.theme.displayFlex};
     padding: 10px;
 `;
@@ -165,6 +197,19 @@ export const CloseStats = styled(HighlightOffIcon)`
     position: fixed;
     top: 30px;
     left: 30px;
+    transform: scale(1.8);
+    background: transparent;
+    z-index: 9999;
+    outline: none;
+    color: ${props => props.theme.text};
+  }
+`;
+
+export const CloseFilter = styled(FilterListIcon)`
+  &&&{
+    position: fixed;
+    top: 30px;
+    right: 30px;
     transform: scale(1.8);
     background: transparent;
     z-index: 9999;

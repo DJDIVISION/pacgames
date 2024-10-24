@@ -137,16 +137,10 @@ export const MatchColorCircle = styled.div`
 `;
 
 export const item={
-    exit:{
-      opacity:0,
-      height:0,
-      transition:{
-        ease:"easeInOut",
-        duration:0.3,
-        delay:1
-      }
-    }
-  }
+    initial: { height: 0, opacity: 0 },
+    animate: { height: "100vh", opacity: 1, transition: { duration: 0.5 } },
+    exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
+}
 
 
 export const SportWrapper = styled(motion.div)`
@@ -423,6 +417,37 @@ export const StyledButton = styled(Button)`
     }
 `;
 
+export const StyledButtonBets = styled(Button)`
+    &&&{
+        align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    cursor: pointer;
+    border: 1px solid ${props => props.theme.text};
+    border-radius: 10px;
+    color: ${props => props.theme.text};
+    padding: 10px 20px;
+    font-size: 16px;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: 0.5s;
+    img{
+        width: 50%;
+        display: block;
+        object-fit: cover;
+    }
+    &:hover {
+        background: ${props => props.theme.MainAccent};
+        color: #fff;
+        box-shadow: 0 0 5px ${props => props.theme.MainAccent}, 0 0 25px ${props => props.theme.MainAccent},
+        0 0 50px ${props => props.theme.MainAccent}, 0 0 100px ${props => props.theme.MainAccent};
+    }
+    }
+`;
+
 export const StyledButtonYellow = styled(Button)`
     &&&{
         align-self: center;
@@ -647,6 +672,7 @@ export const BetConatiner = styled.div`
     height: calc(85vh - 80px);
     ${props => props.theme.displayFlexColumn};
     overflow-y: scroll;
+    position: relative;
 `;
 
 export const SmallStatsWrapper = styled.div`

@@ -782,13 +782,41 @@ export const AllBets = styled.div`
 `;
 
 export const AllBetsText = styled.div`
-    width: 80px;
-    height: 10px;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
     position: absolute;
-    bottom: 30px;
+    bottom: 20px;
     right: 30px;
     color: ${props => props.theme.text};
     font-size: 16px;
+    ${props => props.theme.displayFlexCenter};
+    cursor: pointer;
+    /* img{
+        width: 100%;
+        display: block;
+        object-fit: cover;
+    } */
+`;
+
+export const AllBetsBadge = styled.div`
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff2600;
+    position: absolute;
+    bottom: 60px;
+    right: 40px;
+    color: ${props => props.theme.text};
+    font-size: 16px;
+    ${props => props.theme.displayFlexCenter};
+    cursor: pointer;
+    z-index: 1000;
+    /* img{
+        width: 100%;
+        display: block;
+        object-fit: cover;
+    } */
 `;
 
 export const BetSection = styled.div`
@@ -802,7 +830,7 @@ export const BetSection = styled.div`
 
 export const LoadingSection = styled.div`
     width: 100vw;
-    height: 85vh;
+    height: calc(85vh - 80px);
     background: ${props => props.theme.body};
     display: flex;
     justify-content: center;
@@ -914,7 +942,7 @@ export const ArrowUp = styled(KeyboardArrowDownIcon)`
 export const SportsButtonRow = styled(motion.div)`
     width: 95%;
     height: 15vh;
-    border: 1px solid ${props => props.theme.text};
+    //border: 1px solid ${props => props.theme.text};
     display: flex;
     align-items: center;
     justify-content: space-evenly;
