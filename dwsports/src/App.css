@@ -80,7 +80,7 @@ input::-webkit-inner-spin-button {
   max-height:100vh;
   top: 0;
   left: 0;
-  
+  padding: 30px;
   overflow-y: scroll;
   display:flex;
   background-color:rgba(0, 0, 0, 0.8);
@@ -131,6 +131,10 @@ input::-webkit-inner-spin-button {
   align-items: center;
   z-index: 6000;
   justify-content: center;
+}
+
+.css-vt112j-MuiSwitch-root .MuiSwitch-track{
+  background: #c2c2c2 !important;
 }
 
 #area1{
@@ -901,4 +905,10 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media screen and (max-width: 698px){
+  .menu-container-six{
+    padding-top: 80px;
+  }
 }

@@ -749,6 +749,9 @@ export const BetTitleRow = styled.div`
         color: ${props => props.theme.text};
         font-size: 20px;
     }
+    @media(max-width: 968px){
+        height: 10vh;
+    }
 `;
 
 export const TeamStatsRow = styled.div`
@@ -792,6 +795,10 @@ export const AllBetsText = styled.div`
     font-size: 16px;
     ${props => props.theme.displayFlexCenter};
     cursor: pointer;
+    @media(max-width:968px){
+        bottom: 10px;
+        right: 10px;  
+    }
     /* img{
         width: 100%;
         display: block;
@@ -812,6 +819,10 @@ export const AllBetsBadge = styled.div`
     ${props => props.theme.displayFlexCenter};
     cursor: pointer;
     z-index: 1000;
+    @media(max-width:968px){
+        bottom: 50px;
+        right: 20px;  
+    }
     /* img{
         width: 100%;
         display: block;
@@ -835,6 +846,9 @@ export const LoadingSection = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    @media(max-width: 968px){
+        height: 80vh;
+    }
 `;
 
 export const ArrowDown = styled(KeyboardArrowDownIcon)`
@@ -884,9 +898,9 @@ export const ArrowLeft = styled(KeyboardArrowDownIcon)`
         color: ${props => props.theme.text};
         scale: 2;
         position: absolute;
-        top: 30px;
-        left: 20px;
-        transform: rotate(90deg);
+        top: 50%;
+        left: 10%;
+        transform: rotate(90deg) translate(-25%,-25%);
         z-index: 1000;
         cursor: pointer;
     }
@@ -897,9 +911,9 @@ export const ArrowRight = styled(KeyboardArrowDownIcon)`
         color: ${props => props.theme.text};
         scale: 2;
         position: absolute;
-        top: 30px;
-        right: 20px;
-        transform: rotate(270deg);
+        top: 50%;
+        right: 10%;
+        transform: rotate(270deg) translate(25%,25%);
         z-index: 1000;
         cursor: pointer;
     }
@@ -947,6 +961,13 @@ export const SportsButtonRow = styled(motion.div)`
     align-items: center;
     justify-content: space-evenly;
     position: relative;
+    padding: 30px;
+    @media(max-width: 698px){
+        overflow-x: scroll;
+        overflow-y: hidden;
+        width: 100vw;
+        height: 10vh;
+    }
 `;
 
 export const item={
@@ -1024,6 +1045,13 @@ export const TeamLogoText = styled.div`
     ${props => props.theme.displayFlexCenter};
     color: ${props => props.theme.text};
     font-size: 18px;
+    text-align: center;
+    @media(max-width: 968px){
+        font-size: 16px;
+    }
+    @media(max-width: 698px){
+        font-size: 14px;
+    }
 `;
 
 export const TeamsResult = styled.div`
@@ -1057,7 +1085,28 @@ export const DateRow = styled.div`
     font-size: 16px;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
+    text-align: center;
 `;
+
+export const VenueRow = styled.div`
+    width: 300px;
+    height: 20%;
+    font-size: 16px;
+    color: ${props => props.theme.text};
+    text-align: center;
+    //${props => props.theme.displayFlexCenter};
+    white-space: nowrap;      /* Prevents text from wrapping to the next line */
+    overflow: hidden;         /* Ensures content that overflows the container is hidden */
+    text-overflow: ellipsis;
+    @media(max-width: 968px){
+        font-size: 14px;
+    }
+    @media(max-width: 698px){
+        font-size: 12px;
+        width: 150px;
+    }
+`;
+
 
 export const BigDateRow = styled.div`
     width: 100%;

@@ -65,6 +65,10 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
 
   console.log(betAmounts)
   const handleSwitchSendBet = async (event) => {
+    if(amount === null){
+      message.error("You must enter the amount of the bet!")
+      return
+    }
     setPendingBets((prevBets) => prevBets + 1)
     const winnings = calculateTotalWinnings();
     console.log(winnings)
@@ -103,16 +107,16 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
 
   const item={
     initial: { height: 0, opacity: 0 },
-    animate: { height: "100vh", opacity: 1, transition: { duration: 0.5 } },
-    exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
+    animate: { height: "100vh", opacity: 1, transition: { duration: 0.7 } },
+    exit: { height: 0, opacity: 0, transition: { duration: 0.7 } }
 }
 
   return (
-    <AnimatePresence>
+    
     <motion.div className="menu-container-six" variants={item}
     initial='initial'
     animate='animate'
-    exit='exit' layout style={{ overflow: 'hidden' }}>
+    exit='exit' >
       <CloseStats onClick={closeBetsMenu} />
       {selectedBet.length > 0 ? (
       selectedBet.map((selectedBet, index) => (
@@ -171,13 +175,13 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
       </BetAmount>
       <PossibleWinningsAmount>POSSIBLE WINNINGS: <span>${calculateTotalWinnings()}</span> </PossibleWinningsAmount>
       <Switcher>
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center', margin: '0 50px' }}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center', margin: '0 30px' }}>
         <Typography style={{color: 'white'}}>SIGN BET</Typography>
         <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleSwitchSendBet}/>
         <Typography></Typography>
       </Stack>
       
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center', margin: '0 50px' }}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center', margin: '0 30px' }}>
         <Typography style={{color: 'white'}}>MULTIPLE BET</Typography>
         <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checkedMultiple} onChange={handleSwitchMultiple}/>
         <Typography></Typography>
@@ -185,7 +189,6 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
       </Switcher>
       
     </motion.div>
-    </AnimatePresence>
   )
 }
 

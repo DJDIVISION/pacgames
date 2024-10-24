@@ -225,8 +225,8 @@ export const SportsContainer = styled(motion.div)`
 `;
 
 export const MatchHolder = styled.div`
-    width: 70%;
-    height: 40%;
+    width: 80%;
+    height: 130px;
     border: 1px solid ${props => props.theme.text};
     display: flex;
     flex-direction: column;
@@ -286,18 +286,30 @@ export const BetTeamsLogoHolder = styled.div`
         display: block;
         object-fit: cover;
     }
+    @media(max-width: 968px){
+        width: 60px;
+        height: 60px;
+    }
+    @media(max-width: 698px){
+        width: 40px;
+        height: 40px;
+    }
 `;
 
 export const BetTeamsName = styled.div`
-    width: 50%;
+    width: 100%;
     height: 25%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
     font-size: 20px;
+    white-space: nowrap;      /* Prevents text from wrapping to the next line */
+  overflow: hidden;         /* Ensures content that overflows the container is hidden */
+  text-overflow: ellipsis;
     color: ${props => props.theme.text};
     transform: translateY(5px);
+    @media(max-width: 968px){
+        font-size: 16px;
+        transform: translateY(0px);
+    }
 `;
 
 export const BetBet = styled.div`
@@ -310,6 +322,9 @@ export const BetBet = styled.div`
     color: ${props => props.theme.text};
     span{
         margin: 10px;
+    }
+    @media(max-width: 968px){
+        font-size: 14px;
     }
 `;
 
@@ -445,7 +460,17 @@ export const StyledButtonBets = styled(Button)`
         box-shadow: 0 0 5px ${props => props.theme.MainAccent}, 0 0 25px ${props => props.theme.MainAccent},
         0 0 50px ${props => props.theme.MainAccent}, 0 0 100px ${props => props.theme.MainAccent};
     }
+    @media(max-width: 968px){
+        padding: 5px 10px;
+        font-size: 10px;
     }
+    @media(max-width: 698px){
+        padding: 10px 10px;
+        font-size: 14px;
+        min-width: 200px;
+    }
+    }
+    
 `;
 
 export const StyledButtonYellow = styled(Button)`
@@ -578,16 +603,23 @@ export const Switcher = styled.div`
     margin-top: 50px;
     align-items: center;
     justify-content: center;
+    padding: 20px;
+    @media(max-width:698px){
+        margin-top: 0px;
+    }
 `;
 
 export const BetAmount = styled.div`
     width: 100%;
-    height: 75px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
     color: ${props => props.theme.text};
+    @media(max-width: 698px){
+        height: 40px;
+    }
 `;
 
 export const PossibleWinningsAmount = styled.div`
@@ -673,6 +705,9 @@ export const BetConatiner = styled.div`
     ${props => props.theme.displayFlexColumn};
     overflow-y: scroll;
     position: relative;
+    @media(max-width: 968px){
+        height: 80vh;
+    }
 `;
 
 export const SmallStatsWrapper = styled.div`
@@ -684,6 +719,12 @@ export const SmallStatsWrapper = styled.div`
     backdrop-filter: blur(10px);
     margin: 10px 0;
     ${props => props.theme.displayFlexCenter};
+    @media(max-width:968px){
+        width: 70%; 
+    }
+    @media(max-width:698px){
+        width: 90%; 
+    }
 `;
 
 export const TeamLogo = styled.div`
@@ -713,6 +754,12 @@ export const StatsStadium = styled.div`
     display: grid;
     place-items: center;
     background: transparent;
+    @media(max-width: 968px){
+        font-size: 18px;
+    }
+    @media(max-width: 698px){
+        font-size: 16px;
+    }
 `;
 
 export const StatsStadiumCapacity = styled.div`
@@ -723,6 +770,9 @@ export const StatsStadiumCapacity = styled.div`
     display: grid;
     place-items: center;
     background: transparent;
+    @media(max-width: 698px){
+        font-size: 12px;
+    }
 `;
 
 export const StatPlayer = styled.div`

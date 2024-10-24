@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { animationOne, transition } from '../animations'
 import { ArrowLeft, ArrowRight, BetSection, BetTitleRow, DateRow, MatchOdds, OddsColumn, SportsButtonRow, TeamLogoText, TeamLogoWrapper, TeamsLogo, TeamsResult,
     LoadingSection,AllBets,AllBetsText,AllBetsBadge,
-    ResultRow,BigDateRow
+    ResultRow,BigDateRow,VenueRow
  } from './index'
 import Stack from '@mui/material/Stack';
 import allBets from '../assets/allBets.png'
@@ -14,7 +14,7 @@ import { supabase } from '../supabase/client'
 import premier from '../assets/premier.png'
 import laLiga from '../assets/laliga.png'
 import serieA from '../assets/serieA.png'
-import ligue1 from '../assets/ligue1.png'
+import ligue1 from '../assets/ligue1.jpg'
 import aaa from '../assets/aaa.png'
 import bundesliga from '../assets/bundesliga.png'
 import { message } from 'antd'
@@ -42,6 +42,7 @@ const NewBets = () => {
     const { user } = useAuth();
     const {pendingBets, setPendingBets} = FantasyState();
     const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
+    const [betsToCheck, setBetsToCheck] = useState([])
 
     const raiseRound = () => {
         setActiveRound((prevRound) => prevRound + 1)
@@ -61,7 +62,7 @@ const NewBets = () => {
           if (roundData && roundData.length > 0) {
             const currentRound = roundData[0].currentRound;
             setActiveRound(currentRound); // Set the active round
-            console.log(`Current round for league ${teamId}:`, currentRound);
+            //console.log(`Current round for league ${teamId}:`, currentRound);
           } else {
             console.error('No current round found for the team');
           }
@@ -85,7 +86,7 @@ const NewBets = () => {
           if (matchError) throw new Error(matchError.message);
           if (matchData && matchData.length > 0) {
             setActiveMatches(matchData[0][string]); // Store the fetched matches in state
-            console.log(`Matches for round ${round}:`, matchData[0][string]);
+            //console.log(`Matches for round ${round}:`, matchData[0][string]);
           } else {
             console.log('No matches found for the selected round');
           }
@@ -158,7 +159,7 @@ const NewBets = () => {
           }
         });
       };
-    console.log(selectedBet)
+    //console.log(selectedBet)
 
     const handleButtonClick = (league) => {
         setDisabledButton(league.name);
@@ -213,13 +214,40 @@ const NewBets = () => {
                 console.error('Error inserting/updating user session data:', error.message)
               } else {
                 setPendingBets(data.length)
+                console.log(data)
+                setBetsToCheck(data)
                 
         }
+      }
+
+      const writePendingBets = () => {
+        if(betsToCheck){
+            const matchesWithFL = betsToCheck.filter(bet => bet.bet[0]?.match?.fixture?.status?.short === "FT");
+
+            console.log(matchesWithFL);
+        }
+        /* const { data, error } = await supabase
+                    .from('fixtures')
+                    .select('*')
+                    .eq('status', 'Pending')
+                    .eq('user_id', user.id)
+                    .order('id', { ascending: true });
+                    if (error) {
+                        console.error('Error inserting/updating user session data:', error.message)
+                    } else {
+                        setPendingBets(data.length)
+                        setBetsToCheck(data)
+                        
+                } */
       }
 
       useEffect(() => {
         fetchPendingYourBets();
       }, [user])
+
+      useEffect(() => {
+        writePendingBets();
+      }, [betsToCheck])
 
       const openTeamMenu = (id) => {
         setActiveTeamId(id)
@@ -324,7 +352,7 @@ const NewBets = () => {
                         )}
                             </>
                         )}
-          <DateRow>{match.fixture.venue.name}, {match.fixture.venue.city}</DateRow>
+          <VenueRow>{match.fixture.venue.name}, {match.fixture.venue.city}</VenueRow>
         </TeamsResult>
         <TeamsLogo>
           <TeamLogoWrapper>
