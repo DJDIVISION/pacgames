@@ -709,16 +709,36 @@ export const BetConatiner = styled.div`
         height: 80vh;
     }
 `;
+export const Rower = styled.div`
+    width: 100%;
+    height: 130px;
+    ${props => props.theme.displayFlexCenter};
+`;
 
-export const SmallStatsWrapper = styled.div`
+export const LowRower = styled.div`
+    width: 100%;
+    max-height: 200px;
+    ${props => props.theme.displayFlexColumn};
+    overflow: hidden;
+`;
+
+export const RowerRow = styled.div`
+    width: 100%;
+    min-height: 50px;
+    ${props => props.theme.displayFlex};
+    justify-content: space-around;
+`;
+
+
+export const SmallStatsWrapper = styled(motion.div)`
     width: 60%;
-    min-height: 130px;
+    min-height: ${props => (props.expanded ? "330px" : "130px")};
     border: 1px solid white;
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
     margin: 10px 0;
-    ${props => props.theme.displayFlexCenter};
+    ${props => props.theme.displayFlexColumn};
     @media(max-width:968px){
         width: 70%; 
     }

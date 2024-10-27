@@ -1,13 +1,14 @@
 import React, {useState,useEffect} from 'react'
 import {Nav,NavColumn,NavIcon,NavText} from './index'
 import {Link as LinkR} from 'react-router-dom'
-/* import TonWalletLogin from './TonConnect'; */
+import TonWalletLogin from './TonConnect';
 import sportsIcon from '../assets/sportsIcon.png'
 import lottery from '../assets/bingo.png'
 import chip from '../assets/chip.png'
 import pacton from '../assets/pacton_robot_png.png'
 import roulette from '../assets/chips/roulette.png'
 import fantasy from '../assets/fantasy.png'
+import deposit from '../assets/logos/deposit.png'
 import axios from 'axios'
 import { message } from 'antd';
 import { BetState } from '../context/BetsContext';
@@ -15,6 +16,7 @@ import { Avatar, Fab } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client';
 import { useAuth } from '../pages/functions'
+import { FantasyState } from '../context/FantasyContext';
 
 const NavBar = () => {
 
@@ -22,6 +24,7 @@ const NavBar = () => {
     const [scrollNavDown, setScrollNavDown] = useState(false);
     const { user } = useAuth();
     const navigate = useNavigate()
+    const {depositMenu, setDepositMenu} = FantasyState();
 
     useEffect(() => {
         console.log(user)
@@ -129,7 +132,13 @@ const NavBar = () => {
             </NavIcon>
             <NavText>CASINO</NavText>
         </NavColumn></LinkR>
-      
+        <NavColumn onClick={() => setDepositMenu(true)}>
+            <NavIcon>
+                <img src={deposit} alt="casino" />
+            </NavIcon>
+            <NavText>DEPOSIT</NavText>
+        </NavColumn>
+      <TonWalletLogin />
     </Nav>
   )
 }

@@ -9,10 +9,14 @@ import { BetState } from '../context/BetsContext'
 import { useAuth, useFetchMessages } from './functions'
 import { Button } from '@mui/material'
 import { message } from 'antd'
+import { FantasyState } from '../context/FantasyContext'
+import DepositMenu from '../components/menus/DepositMenu'
 
 
 
 const Home = () => {
+
+  const {depositMenu, setDepositMenu} = FantasyState();
 
   const fetchData =  () => {
     const data = localStorage.getItem("barcelonaStats")
@@ -71,6 +75,9 @@ const Home = () => {
     <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
     <HomeSection>
       <NavBar />
+      {depositMenu && (
+        <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} />
+      )}
       {/* <Button onClick={fetchData} variant="contained">FETCH DATA</Button> */}
     </HomeSection>
     </motion.div>

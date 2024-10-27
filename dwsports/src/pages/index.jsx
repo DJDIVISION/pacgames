@@ -861,6 +861,18 @@ export const ArrowDown = styled(KeyboardArrowDownIcon)`
     }
 `;
 
+export const SmallArrowDown = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 1.2;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+    }
+`;
+
+
+
 export const ArrowDownRelative = styled(KeyboardArrowDownIcon)`
     &&&{
         color: ${props => props.theme.text};
@@ -1030,7 +1042,7 @@ export const TitleColumn = styled.div`
 
 export const TeamsLogo = styled.div`
     width: 25%;
-    height: 100%;
+    height: 130px;
     ${props => props.theme.displayFlexColumn};
 `;
 
@@ -1288,6 +1300,28 @@ export const OddsColumn = styled.div`
     cursor: pointer;
     font-size: 18px;
     
+    span{
+        font-size: 14px;
+        color: #c3c3c3;
+        margin-right: 5px;
+        background: transparent;
+    }
+    
+`;
+
+export const OddsColumnBig = styled.div`
+    width: 28%;
+    height: 70%;
+    display: flex;
+    border: 1px solid ${props => props.theme.text};
+    background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    text-align: center;
     span{
         font-size: 14px;
         color: #c3c3c3;

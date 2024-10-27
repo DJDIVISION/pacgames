@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'; 
+window.Buffer = Buffer;
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
@@ -12,7 +14,7 @@ console.log('Manifest URL:', `${window.location.origin}/tonconnect-manifest.json
 
 createRoot(document.getElementById('root')).render(
   <>
-    {/* <TonConnectUIProvider manifestUrl={`https://pacgames-nu.vercel.app/tonconnect-manifest.json`}> */}
+    <TonConnectUIProvider manifestUrl={`https://pacgames-nu.vercel.app/tonconnect-manifest.json`}>
     <BetsContext>
       <SocketsContext>
         <RouletteContext>
@@ -22,6 +24,6 @@ createRoot(document.getElementById('root')).render(
         </RouletteContext>
       </SocketsContext>
     </BetsContext>
-    {/* </TonConnectUIProvider> */}
+    </TonConnectUIProvider>
   </>,
 )

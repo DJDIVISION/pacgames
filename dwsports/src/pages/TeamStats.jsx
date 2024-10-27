@@ -96,7 +96,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     if (fixtureError) {
       console.error('Error fetching fixture data:', fixtureError.message);
     } else if (fixtureData && fixtureData.length > 0) {
-      console.log('Fetched fixture data:', fixtureData);
+      
       
       const homeMatches = [];
       const awayMatches = [];
@@ -112,7 +112,8 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
   
       setHomeMatches(homeMatches);
       setAwayMatches(awayMatches);
-      console.log('Active Team ID:', activeTeamId);
+      console.log(homeMatches)
+      console.log(awayMatches)
     } else {
       console.error('No fixture data found');
     }
@@ -126,7 +127,6 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     if (teamStatsError) {
       console.error('Error fetching team stats data:', teamStatsError.message);
     } else if (teamStatsData && teamStatsData.length > 0) {
-      console.log('Fetched team stats data:', teamStatsData);
       setTeamData(teamStatsData[0].stats)
       setLineUps(teamStatsData[0].stats.lineups)
       setCleanSheets(teamStatsData[0].stats.clean_sheet)

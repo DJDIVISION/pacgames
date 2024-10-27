@@ -12,7 +12,7 @@ import { FantasyState } from '../../context/FantasyContext';
 import { item } from '../../pages';
 import { CloseStats,StatsWrapper,BetSection,TeamsLogo,AvatarHolder,TypeofBet,TeamsName,HalfColumn,AbsoluteAvatar,
     FilterContainer,
-    CloseFilter
+    CloseFilter,CloseFilterTwo
  } from './index';
 import { Avatar } from '@mui/material';
 import draw from "../../assets/draw.png"
@@ -28,8 +28,54 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
   const [disabledButtonTwo, setDisabledButtonTwo] = useState("Pending Bets");
   const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false)
+  const [fixtures, setFixtures] = useState([])
+  const [homeResult, setHomeResult] = useState(null)
+  const [awayResult, setAwayResult] = useState(null)
   
 
+
+  const getFixtures = async (data) => {
+    setMyBets([])
+    console.log("data",data)
+    const updatedBets = data.map(async (bet) => {
+      const updatedBetMatches = await Promise.all(bet.bet.map(async (match) => {
+        const { data, error } = await supabase
+          .from('fixtures')
+          .select('fixtures')
+          .eq('leagueName', match.match.league.name);
+  
+        if (error) {
+          console.error('Error retrieving data from Supabase:', error.message);
+          return match; // Return the match as-is if there's an error
+        }
+  
+        if (data && data[0]?.fixtures) {
+          const id = match.match.fixture.id;
+          const matchesWithFL = data[0].fixtures.filter(betFixture => betFixture.fixture?.id === id);
+  
+          if (matchesWithFL.length > 0 && matchesWithFL[0].fixture.status.short === "FT") {
+            // Update match goals according to the fetched data
+            match.match.goals.home = matchesWithFL[0].goals.home;
+            match.match.goals.away = matchesWithFL[0].goals.away;
+          }
+        }
+  
+        return match; // Return the updated match
+      }));
+  
+      return {
+        ...bet,
+        bet: updatedBetMatches, // Assign updated matches to each bet's `bet` array
+      };
+    });
+  
+    const resolvedUpdatedBets = await Promise.all(updatedBets); // Await all bets processing
+    setMyBets(resolvedUpdatedBets); // Update the state with the fully updated bets array
+  };
+
+  
+
+  
 
   const leagues = [
     { name: 'Your Bets', logo: premier },
@@ -91,7 +137,7 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
-            setMyBets(data)
+            getFixtures(data)
             
     }
   }
@@ -105,7 +151,7 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
-            setMyBets(data)
+            getFixtures(data)
             
     }
   }
@@ -114,13 +160,21 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
     const { data, error } = await supabase
           .from('bets')
           .select('*')
-          .eq('status', 'Finished')
+          //.eq('status', 'Finished')
           .eq('user_id', user.id)
           .order('id', { ascending: true });
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
-            setMyBets(data)
+            const finished = []
+            console.log(data)
+            data.forEach((el) => {
+              if(el.status !== 'Pending'){
+                finished.push(el)
+              }
+            })
+            console.log(finished)
+            getFixtures(finished)
             
     }
   }
@@ -134,7 +188,7 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
-            setMyBets(data)
+            getFixtures(data)
             
     }
   }
@@ -148,7 +202,7 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
-            setMyBets(data)
+            getFixtures(data)
             
     }
   }
@@ -162,7 +216,8 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
-            setMyBets(data)
+            getFixtures(data)
+            console.log("data before", data)
             
     }
   }
@@ -177,7 +232,7 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
-            setMyBets(data)
+            getFixtures(data)
             
     }
   }
@@ -190,7 +245,7 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
-            setMyBets(data)
+            getFixtures(data)
             
     }
   }
@@ -198,8 +253,6 @@ const AllBetsMenu = ({allBetsMenu,setAllBetsMenu}) => {
   useEffect(() => {
     fetchPendingYourBets();
   }, [user])
-
-  console.log(myBets.bet)
   
 
   const closeBetsMenu = () => {
@@ -230,8 +283,82 @@ const getOdd = (betType, match) => {
     if(betType === "draw") return match.odds.draw
     return ''
 };
+
+function getAllWinningBets(bets) {
+  return bets.filter(entry =>
+      entry.bet.every(bet => bet.isWinningBet === true)
+  );
+}
+
+// Function to get entries with one or more losing bets
+function getMixedOrLosingBets(bets) {
+  return bets.filter(entry =>
+      entry.bet.some(bet => bet.isWinningBet === false)
+  );
+}
+
+const writePendingBets = () => {
+  console.log(myBets)
+  const filteredArray = myBets.filter(entry =>
+    entry.bet.every(bet => bet.match.goals.home !== null)
+  );
+  console.log(filteredArray)
+  filteredArray.forEach(entry => {
+    entry.bet.forEach(bet => {
+        const { betType, match } = bet;
+        const { home, away } = match.goals;
+
+        // Determine if the bet is a winning one based on the goals
+        const isWinningBet =
+            (betType === "home" && home > away) ||
+            (betType === "away" && away > home) ||
+            (betType === "draw" && home === away);
+
+        // Add a property to indicate if this is a winning bet
+        bet.isWinningBet = isWinningBet;
+    });
+  });
+  console.log(filteredArray);
+  const allWinningBets = getAllWinningBets(filteredArray);
+  const mixedOrLosingBets = getMixedOrLosingBets(filteredArray);
+
+  console.log("All Winning Bets:", allWinningBets.length);
+  if(allWinningBets.length > 0){
+    allWinningBets.forEach(async (bet) => {
+        const { data, error } = await supabase
+          .from('bets')
+          .update({ status: 'WON', bet: bet })
+          .eq('id', bet.id)
+          if (error) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            console.log(`Status changed for bet ${bet.id}`)
+
+          }
+      })
+  }
+  console.log("Mixed or Losing Bets:", mixedOrLosingBets.length);
+  if(mixedOrLosingBets.length > 0){
+    mixedOrLosingBets.forEach(async (bet) => {
+      const { data, error } = await supabase
+        .from('bets')
+        .update({ status: 'LOST', bet: bet })
+        .eq('id', bet.id)
+        if (error) {
+          console.error('Error inserting/updating user session data:', error.message)
+        } else {
+          console.log(`Status changed for bet ${bet.id}`)
+
+        }
+    })
+  }
+}
+
+useEffect(() => {
+  writePendingBets()
+}, [myBets])
  
-console.log(disabledButton)
+
   return (
     <motion.div className="menu-container-seven" variants={item}
     initial={{opacity:0, height: 0}}
@@ -240,7 +367,7 @@ console.log(disabledButton)
     exit="exit">
         
         <FilterContainer initial={{ height: 0, width: 0}} 
-        animate={{ height: isExpanded ? '130px' : 0, width: isExpanded ? '90%' : '90%' }} 
+        animate={{ height: isExpanded ? '80px' : 0, width: isExpanded ? '90%' : '90%' }} 
         transition={{ duration: 0.5 }}>
         {isExpanded && leagues.map((league, index) => (
         <StyledButtonBets
@@ -287,12 +414,12 @@ console.log(disabledButton)
         </FilterContainer>
         <BetSection>
       <CloseStats onClick={closeBetsMenu} />
-      <CloseFilter onClick={closeFilterMenu}/>
-        {myBets?.map((bet) => {
-            console.log(bet)
+      {isExpanded ? <CloseFilterTwo onClick={closeFilterMenu}/> : <CloseFilter onClick={closeFilterMenu}/>}
+        {myBets?.map((bet,index) => {
+            
             const type = bet.bet.length === 1 ? "SINGLE BET" : "MULTIPLE BET"
             return(
-                <StatsWrapper>
+                <StatsWrapper key={index}>
                     <AbsoluteAvatar>
                     <Avatar alt="Home Team Logo" src={bet.user_avatar} sx={{ width: 55, height: 55}}/>
                     </AbsoluteAvatar>
@@ -325,12 +452,20 @@ console.log(disabledButton)
                     </TeamsName>
                     <TypeofBet>
                         {bet.bet.map((el) => {
+                        return(
+                            <AvatarHolder>{el.match.goals.home} - {el.match.goals.away}</AvatarHolder>
+                        )
+                    })}
+                    </TypeofBet>
+                    <TypeofBet>
+                        {bet.bet.map((el) => {
                             const odd = getOdd(el.betType, el.match)
                         return(
                             <AvatarHolder>{odd}</AvatarHolder>
                         )
                     })}
                     </TypeofBet>
+                    
                     <TypeofBet><HalfColumn>BET AMOUNT: <span>${bet.amount}</span></HalfColumn></TypeofBet>
                     <TypeofBet>
                         <HalfColumn>

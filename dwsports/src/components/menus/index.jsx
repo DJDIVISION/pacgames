@@ -2,10 +2,11 @@ import styled from "styled-components";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { motion } from "framer-motion";
 import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 
 export const FilterContainer = styled(motion.div)`
     width: 90%;
-    height: 120px;
+    height: 80px;
     //border: 1px solid white;
     position: relative;
     justify-content: space-around;
@@ -101,6 +102,17 @@ export const BetSection = styled.div`
     padding: 30px;
 `;
 
+export const DepositWrapper = styled(motion.div)`
+    width: 50vw;
+    height: 50vh;
+    border: 2px solid ${props => props.theme.text};
+    ${props => props.theme.displayFlexColumn};
+    margin-top: 10vh;
+    border-radius: 10px;
+    padding: 20px;
+    font-size: 20px;
+`;
+
 export const Section = styled.div`
     width: 100%;
     height: auto;
@@ -192,6 +204,30 @@ export const Holder = styled.div`
         text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
     }
 `;
+
+export const LinkInputField = styled.input`
+    padding: 0 15px;
+    border: ${props => props.theme.pacBorder};
+    border-radius: 10px;
+    outline: none;
+    font-size: 18px;
+    text-align: center;
+    color: ${props => props.theme.pacColor};
+    background-color: transparent;
+    box-shadow: ${props => props.theme.pacBoxShadow};
+    width: 80%;
+    z-index: 4000;
+    height: 60px;
+    margin: 10px;
+`;
+
+export const DepositRow = styled.div`
+    width: 100%;
+    height: 20%;
+    ${props => props.theme.displayFlexCenter};
+    margin: 10px;
+`;
+
 export const CloseStats = styled(HighlightOffIcon)`
   &&&{
     position: fixed;
@@ -206,6 +242,18 @@ export const CloseStats = styled(HighlightOffIcon)`
 `;
 
 export const CloseFilter = styled(FilterListIcon)`
+  &&&{
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    transform: scale(1.8);
+    background: transparent;
+    z-index: 9999;
+    outline: none;
+    color: ${props => props.theme.text};
+  }
+`;
+export const CloseFilterTwo = styled(FilterListOffIcon)`
   &&&{
     position: fixed;
     top: 30px;

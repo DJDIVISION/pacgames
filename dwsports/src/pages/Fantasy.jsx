@@ -82,7 +82,7 @@ const Fantasy = () => {
   const { 
     teams, 
     getTeams, 
-    loadingTeams, 
+    loadingTeams,
     players, 
     loadingPlayers, 
     handleTeamChange,setPlayers,getPlayers // Expose handleTeamChange for use in UI
@@ -651,19 +651,31 @@ useEffect(() => {
     setSelectedTeamMenu(true)
   }
 
-  const getFixture = () => {
-    const str = localStorage.getItem("Serie A");
-    const json = JSON.parse(str);
+  const getFixture = async () => {
+    const { data, error } = await supabase
+      .from("fixtures").select('fixtures').eq('leagueName', "La Liga")
+      if(error){
+        console.log(error)
+      }
+      if(data){
+        console.log(data)
+        data[0].fixtures.forEach((el) => {
+          if(el.teams.home.name === "Real Madrid" && el.teams.away.name === "Barcelona"){
+            console.log(el)
+          }
+        })
+      } 
+    /* const json = JSON.parse(str);
     json.response.forEach((el) => {
       if(el.teams.home.name === "AS Roma" && el.teams.away.name === "Inter"){
         console.log(el)
       }
-    })
+    }) */
   }
   
-  /* useEffect(() => {
+  useEffect(() => {
     getFixture();
-  }, []) */
+  }, [])
 
   const expandDiv = () => {
     setIsColumnExpanded(!isColumnExpanded)
@@ -841,8 +853,8 @@ useEffect(() => {
       </BigPokerColumnLeft>
       <BottomPokerColumnLeft>
           <EuroBalanceDisplay balance={balance} />
-          {!gameStarted && <StyledButton onClick={() => saveTeam()}>SAVE TEAM</StyledButton>}
-          {/* {!gameStarted && <StyledButton onClick={() => fetchData()}>SEND DATA</StyledButton>} */}
+          {!gameStarted && <StyledButton onClick={() => fetchData()}>SAVE TEAM</StyledButton>}
+          {!gameStarted && <StyledButton onClick={() => setData()}>SEND DATA</StyledButton>}
           <AverageDisplay balance={teamAverage} />
           
       </BottomPokerColumnLeft>
@@ -1018,7 +1030,7 @@ const Section = styled.div`
 const options = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures/players',
-  params: {fixture: '1223673'},
+  params: {fixture: '1208587'},
   headers: {
     'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
     'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
@@ -1029,7 +1041,7 @@ const optionsTwo = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
   params: {
-    league: '135',
+    league: '61',
     season: '2024'
   },
   headers: {
@@ -1044,9 +1056,9 @@ const optionsFour = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
   params: {
-    league: '140',
+    league: '78',
     season: '2024',
-    round: 'Regular Season - 1'
+    round: 'Regular Season - 9'
   },
   headers: {
     'x-rapidapi-key': /*  */'5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
@@ -1068,13 +1080,39 @@ const optionsThree = {
   }
 };
 
+const optionsWWW = {
+  method: 'GET',
+  url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+  params: {
+    id: '419912',
+    season: '2024'
+  },
+  headers: {
+    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+  }
+};
 
-const fetchData = async () => {
+
+const setData = async () => {
   const str = localStorage.getItem("round")
   const json = JSON.parse(str)
   console.log(json.response)
-  const { data, error } = await supabase
-          .from('teams')
+  const filter = json.response.filter((bet) => bet.goals.home !== null)
+  console.log(filter)
+  /* const { data, error } = await supabase
+          .from('fixtures')
+          .update([{"9": json.response}])
+          .eq("leagueName", "Bundesliga")
+          if (error) {
+            console.log(`player with not found`)
+          } else {
+            console.log(`player with updated`, data)
+            message.success("data inserted successfully")
+
+          } */
+  /* const { data, error } = await supabase
+          .from('footballPlayers')
           .update([{"stats": json.response}])
           .eq("teamId", 1579)
           if (error) {
@@ -1082,7 +1120,7 @@ const fetchData = async () => {
           } else {
             console.log('User session data saved:', data)
             message.success("data written")
-          }
+          } */
         /* try {
           const response = await axios.request(optionsThree);
           console.log(response.data);
@@ -1093,9 +1131,9 @@ const fetchData = async () => {
         } */
 }
 
-const setSata = async () => {
+const fetchData = async () => {
   try {
-    const response = await axios.request(optionsThree);
+    const response = await axios.request(optionsTwo);
     console.log(response.data);
     localStorage.setItem("round", JSON.stringify(response.data))
     message.success("data fetched!")
