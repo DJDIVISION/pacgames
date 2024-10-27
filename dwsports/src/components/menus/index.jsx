@@ -44,12 +44,30 @@ export const TeamsLogo = styled.div`
 `;
 
 export const TeamsName = styled.div`
-    width: 25%;
+    width: 35%;
     height: 100%;
     ${props => props.theme.displayFlexColumnCenter};
     text-align: center;
     color: ${props => props.theme.text};
     font-size: 20px;
+`;
+
+export const TeamsStatus = styled.div`
+    width: 5%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumnCenter};
+    text-align: center;
+    color: ${props => props.theme.text};
+    font-size: 20px;
+`;
+
+export const TeamsDate = styled.div`
+    width: 15%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumnCenter};
+    text-align: center;
+    color: ${props => props.theme.text};
+    font-size: 16px;
 `;
 
 export const HalfColumn = styled.div`

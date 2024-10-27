@@ -47,6 +47,18 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
       if (bet.betType === 'home') odds = bet.match.odds.home;
       else if (bet.betType === 'draw') odds = bet.match.odds.draw;
       else if (bet.betType === 'away') odds = bet.match.odds.away;
+      else if (bet.betType === 'homeOver2') odds = bet.match.odds.homeOver2;
+      else if (bet.betType === 'btts') odds = bet.match.odds.btts;
+      else if (bet.betType === 'awayOver2') odds = bet.match.odds.awayOver2;
+      else if (bet.betType === 'homeUnder2') odds = bet.match.odds.homeUnder2;
+      else if (bet.betType === 'btnts') odds = bet.match.odds.btnts;
+      else if (bet.betType === 'awayUnder2') odds = bet.match.odds.awayUnder2;
+      else if (bet.betType === 'homeBTTS') odds = bet.match.odds.homeBTTS;
+      else if (bet.betType === 'homeMinus1') odds = bet.match.odds.homeMinus1;
+      else if (bet.betType === 'awayBTTS') odds = bet.match.odds.awayBTTS;
+      else if (bet.betType === 'homeBTNTS') odds = bet.match.odds.homeBTNTS;
+      else if (bet.betType === 'awayMinus1') odds = bet.match.odds.awayMinus1;
+      else if (bet.betType === 'awayBTNTS') odds = bet.match.odds.awayBTNTS;
   
       // Calculate winnings for this bet
       const winnings = amount * odds;
@@ -152,6 +164,18 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
           {selectedBet?.betType === 'home' && selectedBet?.match?.teams?.home?.name}
           {selectedBet?.betType === 'draw' && "DRAW"}
           {selectedBet?.betType === 'away' && selectedBet?.match?.teams?.away?.name}
+          {selectedBet?.betType === 'homeOver2' && selectedBet?.match?.teams?.home?.name + " OVER 2.5"}
+          {selectedBet?.betType === 'homeUnder2' && selectedBet?.match?.teams?.home?.name + " UNDER 2.5"}
+          {selectedBet?.betType === 'awayOver2' && selectedBet?.match?.teams?.away?.name + " OVER 2.5"}
+          {selectedBet?.betType === 'awayUnder2' && selectedBet?.match?.teams?.away?.name + " UNDER 2.5"}
+          {selectedBet?.betType === 'btts' && "BOTH TEAMS SCORE"}
+          {selectedBet?.betType === 'btnts' && "BOTH TEAMS NOT SCORE"}
+          {selectedBet?.betType === 'homeBTTS' && selectedBet?.match?.teams?.home?.name + " WINS BOTH TEAMS SCORE"}
+          {selectedBet?.betType === 'homeMinus1' && selectedBet?.match?.teams?.home?.name + " - 1"}
+          {selectedBet?.betType === 'awayMinus1' && selectedBet?.match?.teams?.away?.name + " - 1"}
+          {selectedBet?.betType === 'awayBTTS' && selectedBet?.match?.teams?.away?.name + " WINS BOTH TEAMS SCORE"}
+          {selectedBet?.betType === 'homeBTNTS' && selectedBet?.match?.teams?.home?.name + " WINS BOTH TEAMS NOT SCORE"}
+          {selectedBet?.betType === 'awayBTNTS' && selectedBet?.match?.teams?.away?.name + " WINS BOTH TEAMS NOT SCORE"}
         </span> 
         <span>-</span> ODDS: 
         <span>
@@ -159,6 +183,18 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
           {selectedBet?.betType === 'home' && selectedBet?.match?.odds?.home}
           {selectedBet?.betType === 'draw' && selectedBet?.match?.odds?.draw}
           {selectedBet?.betType === 'away' && selectedBet?.match?.odds?.away}
+          {selectedBet?.betType === 'homeOver2' && selectedBet?.match?.odds?.homeOver2}
+          {selectedBet?.betType === 'homeUnder2' && selectedBet?.match?.odds?.homeUnder2}
+          {selectedBet?.betType === 'awayOver2' && selectedBet?.match?.odds?.awayOver2}
+          {selectedBet?.betType === 'awayUnder2' && selectedBet?.match?.odds?.awayUnder2}
+          {selectedBet?.betType === 'btts' && selectedBet?.match?.odds?.btts}
+          {selectedBet?.betType === 'btnts' && selectedBet?.match?.odds?.btnts}
+          {selectedBet?.betType === 'homeBTTS' && selectedBet?.match?.odds?.homeBTTS}
+          {selectedBet?.betType === 'homeMinus1' && selectedBet?.match?.odds?.homeMinus1}
+          {selectedBet?.betType === 'awayBTTS' && selectedBet?.match?.odds?.awayBTTS}
+          {selectedBet?.betType === 'homeBTNTS' && selectedBet?.match?.odds?.homeBTNTS}
+          {selectedBet?.betType === 'awayMinus1' && selectedBet?.match?.odds?.awayMinus1}
+          {selectedBet?.betType === 'awayBTNTS' && selectedBet?.match?.odds?.awayBTNTS}
         </span>
       </BetBet>
 

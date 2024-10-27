@@ -227,8 +227,10 @@ const NewBets = () => {
         setAwayMinus1(null)
     }
 
+    
+
     const sendOddsTwo = async (match) => {
-    console.log(allFixtures)
+    console.log(activeMatches)
     const str = localStorage.getItem("round")
     const json = JSON.parse(str)
     /* const filter = json.response.filter((bet) => bet.goals.home !== null)
@@ -243,7 +245,7 @@ const NewBets = () => {
       })
     }) */
     console.log(json.response)
-    allFixtures.forEach((item2) => {
+    activeMatches.forEach((item2) => {
       // Find the corresponding item in array1 by matching the fixture id
       const match = json.response.find((item1) => item1.fixture.id === item2.fixture.id);
     
@@ -256,10 +258,10 @@ const NewBets = () => {
       }
     });
     
-    console.log(allFixtures);
+    console.log(activeMatches);
     const { data, error } = await supabase
             .from('fixtures')
-            .update([{fixtures: allFixtures}])
+            .update([{"9": activeMatches}])
             .eq("leagueName", activeLeague)
             if (error) {
                 console.error('Error inserting/updating user session data:', error.message)
@@ -347,82 +349,9 @@ const NewBets = () => {
         }
       }
 
-      const writePendingBets = () => {
-        console.log(betsToCheck)
-        console.log(allFixtures)
-        betsToCheck.forEach((entry) => {
-          entry.bet.forEach((bet) => {
-            console.log(bet)
-            const match = allFixtures.find(item1 => item1.fixture.id === bet.match.fixture.id);
-            console.log(match)
-          });
-          /* entry.bet.forEach((bet) => {
-            // Check if there is a matching fixture in array1 based on fixture.id
-            const match = allFixtures.find(item1 => item1.fixture.id === bet.match.fixture.id);
-            console.log("match", match)
-            // If a matching fixture is found, update fixture, goals, and score
-            if (match) {
-              bet.match.fixture = match.fixture;
-              bet.match.goals = match.goals;
-              bet.match.score = match.score;
-            }
-          }); */
-        });
-        
-        
-        /* if(betsToCheck){
-            const matchesWithFL = betsToCheck.filter(bet => bet.bet[0]?.match?.fixture?.status?.short === "FT");
-            
-            //console.log(matchesWithFL);
-            matchesWithFL.forEach((betEntry) => {
-                const {id, possibleWinnings} = betEntry
-                betEntry.bet.forEach(async (individualBet) => {
-                    const { betType, match} = individualBet;
-                    
-                    // Check if the team's winner status matches the betType
-                    const isWinningBet = match.teams[betType]?.winner === true;
-            
-                    console.log(`Bet on ${betType} for match ${match.fixture.id} is ${isWinningBet ? 'a win' : 'a loss'}`);
-                    
-                    // You could also save the result back to the bet object if you need to
-                    individualBet.isWinningBet = isWinningBet;
-                    individualBet.id = id
-                    individualBet.possibleWinnings = possibleWinnings
-                    if(individualBet.isWinningBet === true){
-                        const { data, error } = await supabase
-                            .from('bets')
-                            .update({status: 'Won'})
-                            .eq('id', id)
-                            if (error) {
-                                console.error('Error inserting/updating user session data:', error.message)
-                            } else {
-                                console.log("Status changed")
-                                
-                        }
-                    } else {
-                        const { data, error } = await supabase
-                            .from('bets')
-                            .update({status: 'Lost'})
-                            .eq('id', id)
-                            if (error) {
-                                console.error('Error inserting/updating user session data:', error.message)
-                            } else {
-                                console.log("Status changed")
-                                
-                        }
-                    }
-                });
-            });
-        } */
-      }
-
       useEffect(() => {
         fetchPendingYourBets();
       }, [user])
-
-      /* useEffect(() => {
-        writePendingBets();
-      }, [betsToCheck,allFixtures]) */
 
       const openTeamMenu = (id) => {
         setActiveTeamId(id)
@@ -469,7 +398,7 @@ const NewBets = () => {
             </LoadingSection>
           ) : (
             <BetConatiner>
-              <StyledButton onClick={sendOddsTwo}>SEND</StyledButton>
+              {/* <StyledButton onClick={sendOddsTwo}>SEND</StyledButton> */}
     {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
         activeMatches.map((match, index) => {
           
@@ -533,11 +462,11 @@ const NewBets = () => {
                         </MatchOdds>
                         ) : (
                             <MatchOdds>
-                              {/* <OddsColumn>MATCH STARTED</OddsColumn> */}
-                                <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
+                              <OddsColumn>MATCH STARTED</OddsColumn>
+                                {/* <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setDraw(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setTwo(e.target.value)} />
-                                <button onClick={() => sendOdds(match)}>SEND</button>
+                                <button onClick={() => sendOdds(match)}>SEND</button> */}
                             </MatchOdds>
                         )}
                             </>
@@ -557,24 +486,60 @@ const NewBets = () => {
         {expandedIndex === index && (
             <LowRower className="hidden-content">
               <RowerRow>
-                {match?.odds?.homeOver2 ? <OddsColumnBig>{match.teams.home.name} OVER 2.5 : {match?.odds?.homeOver2}</OddsColumnBig> : <input type='number' placeholder="HOME OVER 2.5" onChange={(e) => setHomeOverTwoFive(e.target.value)} />}
-                {match?.odds?.btts ? <OddsColumnBig>BOTH TEAMS SCORE : {match?.odds?.btts}</OddsColumnBig> : <input type='number' placeholder="BOTH TEAMS SCORE" onChange={(e) => setBtts(e.target.value)} />}
-                {match?.odds?.awayOver2 ? <OddsColumnBig>{match.teams.away.name} OVER 2.5 : {match?.odds?.awayOver2}</OddsColumnBig> : <input type='number' placeholder="AWAY OVER 2.5" onChange={(e) => setAwayOverTwoFive(e.target.value)} />}
+                {match?.odds?.homeOver2 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeOver2'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeOver2')}>{match.teams.home.name} OVER 2.5 : {match?.odds?.homeOver2}</OddsColumnBig> : <input type='number' placeholder="HOME OVER 2.5" onChange={(e) => setHomeOverTwoFive(e.target.value)} />}
+                {match?.odds?.btts ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btts'
+                                )}
+                                onClick={() => handleBetClick(match, 'btts')}>BOTH TEAMS SCORE : {match?.odds?.btts}</OddsColumnBig> : <input type='number' placeholder="BOTH TEAMS SCORE" onChange={(e) => setBtts(e.target.value)} />}
+                {match?.odds?.awayOver2 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayOver2'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayOver2')}>{match.teams.away.name} OVER 2.5 : {match?.odds?.awayOver2}</OddsColumnBig> : <input type='number' placeholder="AWAY OVER 2.5" onChange={(e) => setAwayOverTwoFive(e.target.value)} />}
               </RowerRow>
               <RowerRow>
-                {match?.odds?.homeUnder2 ? <OddsColumnBig>{match.teams.home.name} UNDER 2.5 : {match?.odds?.homeUnder2}</OddsColumnBig> : <input type='number' placeholder="HOME UNDER 2.5" onChange={(e) => setHomeUnderTwoFive(e.target.value)} />}
-                {match?.odds?.btnts ? <OddsColumnBig>BOTH TEAMS NOT SCORE : {match?.odds?.btnts}</OddsColumnBig> : <input type='number' placeholder="BOTH TEAMS NOT SCORE" onChange={(e) => setBtnts(e.target.value)} />}
-                {match?.odds?.awayUnder2 ? <OddsColumnBig>{match.teams.away.name} UNDER 2.5 : {match?.odds?.awayUnder2}</OddsColumnBig> : <input type='number' placeholder="AWAY UNDER 2.5" onChange={(e) => setAwayUnderTwoFive(e.target.value)} />}
+                {match?.odds?.homeUnder2 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeUnder2'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeUnder2')}>{match.teams.home.name} UNDER 2.5 : {match?.odds?.homeUnder2}</OddsColumnBig> : <input type='number' placeholder="HOME UNDER 2.5" onChange={(e) => setHomeUnderTwoFive(e.target.value)} />}
+                {match?.odds?.btnts ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btnts'
+                                )}
+                                onClick={() => handleBetClick(match, 'btnts')}>BOTH TEAMS NOT SCORE : {match?.odds?.btnts}</OddsColumnBig> : <input type='number' placeholder="BOTH TEAMS NOT SCORE" onChange={(e) => setBtnts(e.target.value)} />}
+                {match?.odds?.awayUnder2 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayUnder2'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayUnder2')}>{match.teams.away.name} UNDER 2.5 : {match?.odds?.awayUnder2}</OddsColumnBig> : <input type='number' placeholder="AWAY UNDER 2.5" onChange={(e) => setAwayUnderTwoFive(e.target.value)} />}
               </RowerRow>
               <RowerRow>
-              {match?.odds?.homeBTTS ? <OddsColumnBig>{match.teams.home.name} BOTH TEAMS SCORE: {match?.odds?.homeBTTS}</OddsColumnBig> : <input type='number' placeholder="HOME BOTH TEAMS SCORE" onChange={(e) => setHomeBtts(e.target.value)} />}
-              {match?.odds?.homeMinus1 ? <OddsColumnBig>{match.teams.home.name} -1 : {match?.odds?.homeMinus1}</OddsColumnBig> : <input type='number' placeholder="HOME -1" onChange={(e) => setHomeMinus1(e.target.value)} />}
-                {match?.odds?.awayBTTS ? <OddsColumnBig>{match.teams.away.name} BOTH TEAMS SCORE : {match?.odds?.awayBTTS}</OddsColumnBig> : <input type='number' placeholder="AWAY BOTH TEAMS SCORE" onChange={(e) => setAwayBtts(e.target.value)} />}
+              {match?.odds?.homeBTTS ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeBTTS')}>{match.teams.home.name} WINS BOTH TEAMS SCORE: {match?.odds?.homeBTTS}</OddsColumnBig> : <input type='number' placeholder="HOME BOTH TEAMS SCORE" onChange={(e) => setHomeBtts(e.target.value)} />}
+              {match?.odds?.homeMinus1 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeMinus1'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeMinus1')}>{match.teams.home.name} -1 : {match?.odds?.homeMinus1}</OddsColumnBig> : <input type='number' placeholder="HOME -1" onChange={(e) => setHomeMinus1(e.target.value)} />}
+                {match?.odds?.awayBTTS ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayBTTS')}>{match.teams.away.name} WINS BOTH TEAMS SCORE : {match?.odds?.awayBTTS}</OddsColumnBig> : <input type='number' placeholder="AWAY BOTH TEAMS SCORE" onChange={(e) => setAwayBtts(e.target.value)} />}
               </RowerRow>
               <RowerRow>
-              {match?.odds?.homeBTNTS ? <OddsColumnBig>{match.teams.home.name} BOTH TEAMS NOT SCORE : {match?.odds?.homeBTNTS}</OddsColumnBig> : <input type='number' placeholder="HOME BOTH TEAMS NOT SCORE" onChange={(e) => setHomeBtnts(e.target.value)} />}
-              {match?.odds?.awayMinus1 ? <OddsColumnBig>{match.teams.away.name} -1 : {match?.odds?.awayMinus1}</OddsColumnBig> : <input type='number' placeholder="AWAY -1" onChange={(e) => setAwayMinus1(e.target.value)} />}
-                {match?.odds?.awayBTNTS ? <OddsColumnBig>{match.teams.away.name} BOTH TEAMS NOT SCORE : {match?.odds?.awayBTNTS}</OddsColumnBig> : <input type='number' placeholder="AWAY BOTH NOT TEAMS SCORE" onChange={(e) => setAwayBtnts(e.target.value)} />}
+              {match?.odds?.homeBTNTS ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTNTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeBTNTS')}>{match.teams.home.name} WINS BOTH TEAMS NOT SCORE : {match?.odds?.homeBTNTS}</OddsColumnBig> : <input type='number' placeholder="HOME BOTH TEAMS NOT SCORE" onChange={(e) => setHomeBtnts(e.target.value)} />}
+              {match?.odds?.awayMinus1 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayMinus1'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayMinus1')}>{match.teams.away.name} -1 : {match?.odds?.awayMinus1}</OddsColumnBig> : <input type='number' placeholder="AWAY -1" onChange={(e) => setAwayMinus1(e.target.value)} />}
+                {match?.odds?.awayBTNTS ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTNTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayBTNTS')}>{match.teams.away.name} WINS BOTH TEAMS NOT SCORE : {match?.odds?.awayBTNTS}</OddsColumnBig> : <input type='number' placeholder="AWAY BOTH NOT TEAMS SCORE" onChange={(e) => setAwayBtnts(e.target.value)} />}
               </RowerRow>
             </LowRower>
           )}
