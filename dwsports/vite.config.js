@@ -9,6 +9,10 @@ export default defineConfig({
     react(),
     nodePolyfills(),
     VitePWA({
+      workbox: {
+        // Increase the maximum file size to cache (e.g., 4 MB)
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4 MB in bytes
+      },
       registerType: 'autoUpdate',
       manifest: {
         name: 'Pacton Gaming Zone',
