@@ -50,6 +50,9 @@ export const TeamsName = styled.div`
     text-align: center;
     color: ${props => props.theme.text};
     font-size: 20px;
+    @media(max-width: 968px){
+        font-size: 16px;
+    }
 `;
 
 export const TeamsStatus = styled.div`
@@ -68,6 +71,9 @@ export const TeamsDate = styled.div`
     text-align: center;
     color: ${props => props.theme.text};
     font-size: 16px;
+    @media(max-width: 968px){
+        font-size: 14px;
+    }
 `;
 
 export const HalfColumn = styled.div`
@@ -81,12 +87,16 @@ export const HalfColumn = styled.div`
     span{
         font-size: 30px;
         color: green;
-        
-        
     }
     strong{
         color: aqua;
         margin: 10px;
+    }
+    @media(max-width: 968px){
+        font-size: 14px;
+        span{
+            font-size: 22px;
+        }
     }
 `;
 
@@ -109,6 +119,9 @@ export const StatsWrapper = styled.div`
     margin: 20px 0;
     ${props => props.theme.displayFlex};
     padding: 10px;
+    @media(max-width: 968px){
+        width: 100%;
+    }
 `;
 
 export const BetSection = styled.div`
@@ -118,6 +131,9 @@ export const BetSection = styled.div`
     ${props => props.theme.displayFlexColumn};
     //background: ${props => props.theme.body};
     padding: 30px;
+    @media(max-width: 968px){
+        padding-top: 50px;
+    }
 `;
 
 export const DepositWrapper = styled(motion.div)`
