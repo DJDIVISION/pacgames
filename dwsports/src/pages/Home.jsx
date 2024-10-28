@@ -75,7 +75,7 @@ const Home = () => {
     <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
     <HomeSection>
       <NavBar />
-      <WalletAmount>YOUR BALANCE IS: {walletBalance} TON</WalletAmount>
+      {walletBalance && <WalletAmount>YOUR BALANCE IS: {walletBalance} TON</WalletAmount>}
       {depositMenu && (
         <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} />
       )}
