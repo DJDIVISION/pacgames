@@ -2,7 +2,8 @@ import React, {useState,useEffect} from 'react'
 import {Nav,NavColumn,NavIcon,NavText,SmartNav,Burguer,CloseBurguer,StaggerContainer,StaggerRow,
     StaggerAvatarRow,StaggerAvatarHolder,StaggerAvatarName,StaggerImageHolder,TonWrapper
 } from './index'
-import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet  } from '@tonconnect/ui-react';
+import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
+import { TonClient, Address } from '@ton/ton';
 import {Link as LinkR} from 'react-router-dom'
 import {motion} from 'framer-motion'
 
@@ -30,10 +31,73 @@ const NavBar = () => {
     const navigate = useNavigate()
     const {depositMenu, setDepositMenu} = FantasyState();
     const [open, setOpen] = useState(false);
+    const userFriendlyAddress = useTonAddress();
+    const rawAddress = useTonAddress(false);
+    const wallet = useTonWallet();
+    const { connected, account } = useTonConnectUI();
+    const {walletBalance,setWalletBalance} = FantasyState();
+    const [error, setError] = useState(null);
+    console.log(wallet)
+
+    console.log(rawAddress)
+
+    const client = new TonClient({
+        endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
+    });
+
+    console.log("client", client)
 
     useEffect(() => {
-        console.log(user)
-    }, [user])
+        const fetchBalance = async () => {
+            try {
+                const address = Address.parse(wallet.account.address);
+                const balanceResult = await client.getBalance(address);
+                console.log(balanceResult)
+                const balanceInTON = Number(balanceResult) / 1e9; // Convert nanoTONs to TON
+
+                setWalletBalance(balanceInTON);
+            } catch (err) {
+                console.error('Error fetching balance:', err);
+                setError('Failed to fetch balance.');
+            }
+        };
+
+        fetchBalance();
+    }, [wallet]);
+    console.log(walletBalance)
+
+    /* useEffect(() => {
+        const fetchBalance = async () => {
+            
+            if (connected && account) {
+                try {
+                    // Initialize TonClient with testnet endpoint and API key
+                    const client = new TonClient({
+                        endpoint: 'https://testnet-rpc.tonxapi.com/v2/json-rpc/278ddc2e-e05c-48b5-bfbd-c79495c40655',
+                    });
+
+                    // Parse and verify wallet address
+                    const walletAddress = Address.parse(account.address);
+                    
+                    if (!walletAddress) {
+                        throw new Error("Invalid wallet address");
+                    }
+
+                    // Fetch balance
+                    const balanceResult = await client.getBalance(walletAddress);
+                    console.log("Balance Result (nanoTONs):", balanceResult.toString());
+
+                    // Set balance after converting nanoTONs to TON
+                    setBalance(balanceResult.toNumber() / 1e9);
+                } catch (err) {
+                    console.error('Error fetching balance:', err);
+                    setError('Failed to fetch balance. Check console for details.');
+                }
+            }
+        };
+
+        fetchBalance();
+    }, [connected, account]); */
 
     const handleLogout = async () => {
         const { error } = await supabase.auth.signOut()
@@ -76,7 +140,8 @@ const NavBar = () => {
             delay:1
           }
         }
-      }
+    }
+
 
   return (
     <>
@@ -126,7 +191,7 @@ const NavBar = () => {
     </Nav>
     <SmartNav>
     <IconButton onClick={isOpen}><Burguer /></IconButton>
-    <TonConnectButton id="tonconnectTwo" />
+    <TonConnectButton />
     {open && (
         <motion.div className="menu-container" scrollNavDown={scrollNavDown} variants={item}
         initial={{height:0,opacity:0}}

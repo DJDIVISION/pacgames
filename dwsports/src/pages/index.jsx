@@ -1516,6 +1516,17 @@ export const HomeSection = styled.div`
     flex-direction: column;
 `;
 
+export const WalletAmount = styled.div`
+    width: 100%;
+    height: 40vh;
+    font-size: 28px;
+    ${props => props.theme.displayFlexCenter};
+    color: white;
+    span{
+        color: aqua;
+    }
+`;
+
 export const TeamStatsSection = styled.div`
     width: 100vw;
     height: auto;

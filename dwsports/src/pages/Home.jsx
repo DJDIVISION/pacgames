@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {HomeSection} from './index'
+import {HomeSection,WalletAmount} from './index'
 import {motion} from 'framer-motion'
 import NavBar from '../components/NavBar'
 import { animationOne, animationTwo, transition } from '../animations'
@@ -17,7 +17,7 @@ import DepositMenu from '../components/menus/DepositMenu'
 const Home = () => {
 
   const {depositMenu, setDepositMenu} = FantasyState();
-
+  const {walletBalance,setWalletBalance} = FantasyState();
   const fetchData =  () => {
     const data = localStorage.getItem("barcelonaStats")
     const json = JSON.parse(data)
@@ -75,6 +75,7 @@ const Home = () => {
     <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
     <HomeSection>
       <NavBar />
+      <WalletAmount>YOUR BALANCE IS: {walletBalance} TON</WalletAmount>
       {depositMenu && (
         <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} />
       )}
