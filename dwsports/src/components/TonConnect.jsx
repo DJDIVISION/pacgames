@@ -53,9 +53,9 @@ const TonWalletLogin = () => {
   }, [wallet, user]);
 
   return (
-    <div>
+    
       <TonConnectButton />
-    </div>
+    
   );
 };
 

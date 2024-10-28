@@ -1,7 +1,11 @@
 import React, {useState,useEffect} from 'react'
-import {Nav,NavColumn,NavIcon,NavText} from './index'
+import {Nav,NavColumn,NavIcon,NavText,SmartNav,Burguer,CloseBurguer,StaggerContainer,StaggerRow,
+    StaggerAvatarRow,StaggerAvatarHolder,StaggerAvatarName,StaggerImageHolder,TonWrapper
+} from './index'
+import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet  } from '@tonconnect/ui-react';
 import {Link as LinkR} from 'react-router-dom'
-import TonWalletLogin from './TonConnect';
+import {motion} from 'framer-motion'
+
 import sportsIcon from '../assets/sportsIcon.png'
 import lottery from '../assets/bingo.png'
 import chip from '../assets/chip.png'
@@ -12,7 +16,7 @@ import deposit from '../assets/logos/deposit.png'
 import axios from 'axios'
 import { message } from 'antd';
 import { BetState } from '../context/BetsContext';
-import { Avatar, Fab } from '@mui/material';
+import { Avatar, Fab, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client';
 import { useAuth } from '../pages/functions'
@@ -25,6 +29,7 @@ const NavBar = () => {
     const { user } = useAuth();
     const navigate = useNavigate()
     const {depositMenu, setDepositMenu} = FantasyState();
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         console.log(user)
@@ -42,48 +47,14 @@ const NavBar = () => {
         }
       }
 
-      const options = {
-        method: 'GET',
-        url: 'https://api-football-v1.p.rapidapi.com/v3/players',
-        params: {
-          id: '643',
-          season: '2024'
-        },
-        headers: {
-          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-        }
-      };
-      
-      
-      
-
-    const fetchData = async () => {
-        try {
-            const response = await axios.request(options);
-            console.log(response.data);
-            localStorage.setItem("barcelonaStats", JSON.stringify(response.data))
-            message.success("data fetched!")
-        } catch (error) {
-            console.error(error);
-        }
-    }
+      const isOpen = ()=>{
+        setOpen(!open);
+      }
 
     useEffect(() => {
        window.addEventListener('scroll', changeNavDown) 
     }, []);
 
-    let animate = {};
-    if(active === "menuOne") animate = { opacity: 0, y: '-100vh' };
-    else if (active === "menuTwo") animate = {  opacity: 1, y: 0 };
-
-    const Switch = () => {
-        if(active === "menuOne"){
-            setActive("menuTwo");
-        } else if(active === "menuTwo"){
-            setActive("menuOne");
-        }
-    }
 
     const changeNavDown = () => {
         if(window.scrollY >= 50) {
@@ -95,7 +66,20 @@ const NavBar = () => {
         }
     }
 
+    const item={
+        exit:{
+          opacity:0,
+          height:0,
+          transition:{
+            ease:"easeInOut",
+            duration:0.3,
+            delay:1
+          }
+        }
+      }
+
   return (
+    <>
     <Nav scrollNavDown={scrollNavDown}>
         {user ? (
             <Avatar alt="Image" src={user.user_metadata.avatar_url} sx={{ width: 50, height: 50, marginRight: '5px' }} onClick={handleLogout}/>
@@ -120,13 +104,13 @@ const NavBar = () => {
             </NavIcon>
             <NavText>AIRDROP</NavText>
         </NavColumn></LinkR> */}
-        <LinkR to="/roulette"><NavColumn /* onClick={fetchData} */>
+        {/* <LinkR to="/roulette"><NavColumn>
             <NavIcon>
                 <img src={roulette} alt="roulette" />
             </NavIcon>
             <NavText>ROULETTE</NavText>
-        </NavColumn></LinkR>
-        <LinkR to="/tonopoly"><NavColumn>
+        </NavColumn></LinkR> */}
+        <LinkR to="/casino"><NavColumn>
             <NavIcon>
                 <img src={chip} alt="casino" />
             </NavIcon>
@@ -138,8 +122,75 @@ const NavBar = () => {
             </NavIcon>
             <NavText>DEPOSIT</NavText>
         </NavColumn>
-      <TonWalletLogin />
+        
     </Nav>
+    <SmartNav>
+    <IconButton onClick={isOpen}><Burguer /></IconButton>
+    <TonConnectButton id="tonconnectTwo" />
+    {open && (
+        <motion.div className="menu-container" scrollNavDown={scrollNavDown} variants={item}
+        initial={{height:0,opacity:0}}
+        animate={{height:"100vh", opacity:1}}
+        transition={{duration:.5}}
+        exit="exit">
+        <IconButton onClick={isOpen}><CloseBurguer /></IconButton>
+        <StaggerContainer initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.3 },
+                },
+              }}>
+                <StaggerAvatarRow initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }} style={{color: 'white'}}>
+                       {user ? (
+                        <>
+                        <StaggerAvatarHolder>
+                        <Avatar alt="Image" src={user.user_metadata.avatar_url} sx={{ width: 80, height: 80 }} onClick={handleLogout}/>
+                        </StaggerAvatarHolder>
+                        <StaggerAvatarName>{user.user_metadata.name}</StaggerAvatarName>
+                        </>
+                    ): (
+                        <div></div>
+                    )} 
+                          </StaggerAvatarRow>
+                          <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.7 }} style={{ color: 'white' }}>
+                              <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
+                              <StaggerAvatarName>SPORTS</StaggerAvatarName>
+                          </StaggerRow></LinkR>
+                          <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.9 }} style={{ color: 'white' }}>
+                              <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
+                              <StaggerAvatarName>FANTASY FOOTBALL</StaggerAvatarName>
+                          </StaggerRow></LinkR>
+                          <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 1.1 }} style={{ color: 'white' }}>
+                              <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
+                              <StaggerAvatarName>CASINO</StaggerAvatarName>
+                          </StaggerRow></LinkR>
+                          {/* <StaggerRow initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 1.3 }} style={{ color: 'white' }}>
+                              <StaggerImageHolder><img src={deposit} alt="casino" /></StaggerImageHolder>
+                              <StaggerAvatarName>DEPOSIT</StaggerAvatarName>
+                          </StaggerRow>
+                          <StaggerRow initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 1.5 }} style={{ color: 'white' }}>
+                             
+                          </StaggerRow> */}
+                      </StaggerContainer>
+                  </motion.div>
+        )}
+        </SmartNav>
+    </>
   )
 }
 

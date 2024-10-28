@@ -13,6 +13,8 @@ import { styled as styledTwo } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import BJBack from '../assets/bjTable.jpg';
 import emptyChip from '../assets/chips/emptyChip.png'
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
 export const NavIcon = styled.div`
     width: 100%;
@@ -57,7 +59,102 @@ export const Nav = styled.nav`
     transition: 0.5s all ease;
     z-index: 1000;
     padding: 0 30px;
+    @media(max-width: 698px){
+        display: none;
+    }
 `;
+
+export const Burguer = styled(MenuOutlinedIcon)`
+    &&&{
+        color: black;
+        font-weight: bold;
+        scale: 1.5;
+    }
+`;
+export const CloseBurguer = styled(MenuOpenIcon)`
+    &&&{
+        color: white;
+        font-weight: bold;
+        scale: 1.5;
+    }
+`;
+
+export const StaggerContainer = styled(motion.div)`
+    width: 100%;
+    height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+`;
+
+export const TonWrapper = styled.div`
+    width: 100%;
+    height: 80px;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const StaggerAvatarRow = styled(motion.div)`
+    width: 100%;
+    height: 17.5vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+`;
+
+export const StaggerAvatarHolder = styled(motion.div)`
+    width: 100%;
+    height: 80%;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const StaggerImageHolder = styled(motion.div)`
+    width: 100%;
+    height: 85%;
+    ${props => props.theme.displayFlexCenter};
+    img{
+        width: 15%;
+        display: block;
+        object-fit: cover;
+    }
+`;
+
+export const StaggerAvatarName = styled(motion.div)`
+    width: 100%;
+    height: 15%;
+    ${props => props.theme.displayFlexCenter};
+    color: ${props => props.theme.text};
+    font-size: 20px;
+    text-align: center;
+`;
+
+export const StaggerRow = styled(motion.div)`
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0;
+`;
+
+export const SmartNav = styled.nav`
+    width: 100vw;
+    height: 80px;
+    background: #008080;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: ${({ scrollNavDown }) => (scrollNavDown ? "-100px" : "0")};
+    opacity: 0.9;
+    transition: 0.5s all ease;
+    z-index: 1000;
+    padding: 0 20px;
+    @media(min-width: 698px){
+        display: none;
+    }
+`;
+
 
 export const sportsData = [
     {
