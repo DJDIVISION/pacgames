@@ -1306,6 +1306,9 @@ export const OddsColumn = styled.div`
         margin-right: 5px;
         background: transparent;
     }
+    @media(max-width: 968px){
+        font-size: 14px;
+    }
     
 `;
 

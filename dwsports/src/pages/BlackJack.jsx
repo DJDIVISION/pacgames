@@ -32,7 +32,7 @@ import { ButtonAbsolute, CloseChatRoomIcon } from '../components/chats';
 
 
 
-/* const socket = io.connect("http://localhost:3030") */
+const socket = io.connect("https://pacgames.onrender.com")
 
 
 const BalanceDisplay = ({ balance }) => {

@@ -20,6 +20,7 @@ import Casino from './pages/Casino';
 import Texas from './pages/Texas';
 import Slots from './pages/Slots';
 import NewBets from './pages/NewBets';
+import Tonopoly from './pages/Tonopoly';
 
 function App() {
 
@@ -41,6 +42,7 @@ function App() {
         <Route path="/fantasy" element={<ProtectedRoute><Fantasy /></ProtectedRoute>} />
         <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />
         <Route path="/texas" element={<ProtectedRoute><Texas /></ProtectedRoute>} />
+        <Route path="/tonopoly" element={<ProtectedRoute><Tonopoly /></ProtectedRoute>} />
         <Route path="/slots" element={<ProtectedRoute><Slots /></ProtectedRoute>} />
         <Route path="/roulette" element={<ProtectedRoute><Roulette /></ProtectedRoute>} />
         <Route path="/player/:id" element={<ProtectedRoute><PlayerStats /></ProtectedRoute>} />

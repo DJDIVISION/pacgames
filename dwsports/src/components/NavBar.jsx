@@ -126,7 +126,7 @@ const NavBar = () => {
             </NavIcon>
             <NavText>ROULETTE</NavText>
         </NavColumn></LinkR>
-        <LinkR to="/casino"><NavColumn>
+        <LinkR to="/tonopoly"><NavColumn>
             <NavIcon>
                 <img src={chip} alt="casino" />
             </NavIcon>

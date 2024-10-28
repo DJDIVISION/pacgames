@@ -1,0 +1,54 @@
+.monopoly-board {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    grid-template-rows: repeat(11, 1fr);
+    width: 600px;
+    height: 600px;
+    border: 3px solid black;
+    gap: 1px; /* Optional spacing between cells */
+    background-color: #007bff; /* Board background color */
+  }
+  
+  /* Base styling for each cell */
+  .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+    border: 1px solid black;
+    text-align: center;
+    padding: 5px;
+  }
+  
+  /* Corner cell styles */
+  .cell.corner {
+    background-color: #f0e68c;
+    font-weight: bold;
+  }
+  
+  /* Property cell styles */
+  .cell.property {
+    font-size: 10px;
+    border: 1px solid #333;
+  }
+  
+  /* Specific color classes for properties */
+  .cell.property.brown { background-color: #a52a2a; }
+  .cell.property.lightblue { background-color: #87cefa; }
+  
+  /* Special cell styles */
+  .cell.special {
+    background-color: #ffa500;
+  }
+  
+  /* Railroad cell styles */
+  .cell.railroad {
+    background-color: #8b4513;
+  }
+  
+  /* Tax cell styles */
+  .cell.tax {
+    background-color: #ff4500;
+    font-weight: bold;
+  }
