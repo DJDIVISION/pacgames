@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components'
-import { motion, useTransform, useScroll, useAnimation } from 'framer-motion';
+import { motion, useTransform, useScroll, useAnimation, AnimatePresence } from 'framer-motion';
 import {HeroSection} from './index'
 import Ton from '../../assets/logos/ton.png'
 import { useAuth } from '../../pages/functions';
@@ -9,6 +9,7 @@ import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import SendIcon from '@mui/icons-material/Send';
 import { Avatar, Button, IconButton } from '@mui/material';
 import { supabase } from '../../supabase/client';
+import { MiniArrowDown, MiniArrowup } from '../../pages';
 
 const Hero = () => {
 
@@ -17,7 +18,7 @@ const Hero = () => {
     const [disabledInput, setDisabledInput] = useState(false)
     const [referrerValue, setReferrerValue] = useState("")
     const [referrals, setReferrals] = useState([])
-    const [isExpanded, setIsExpanded] = useState(true)
+    const [isExpanded, setIsExpanded] = useState(false)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
     const textScale = useTransform(scrollYProgress, [0, 0.5], [1.7, 1]);
     const imageTopScale = useTransform(scrollYProgress, [0, 0.5], [1.2, 0.9]);
@@ -30,7 +31,7 @@ const Hero = () => {
     const controls = useAnimation();
 
     const expandDiv = () => {
-        setIsExpanded(!isExpanded)
+        setIsExpanded((prev) => !prev);
       }
 
     const getReferrer = async () => {
@@ -174,10 +175,12 @@ const Hero = () => {
                 style={{ width: '100%', height: 'auto', objectFit: 'cover' }} 
                 animate={controls} />
       </motion.div> */}
-      <Header initial={{ height: 300 }} // Initial height
-                animate={{ height: isExpanded ? 'auto' : 300 }} // Height transitions between 100px and 300px
-                transition={{ duration: 0.5 }}>
-      <ContainerButtons>
+      <AnimatePresence>
+      <Header initial={{ height: '320px' }} // Initial height
+                animate={{ height: isExpanded ? 'auto' : '320px' }}
+                exit={{ opacity: 0, height: 0 }} // Height transitions between 100px and 300px
+                transition={{ duration: 0.5 }} style={{overflow: 'hidden'}} isExpanded={isExpanded}>
+            <ContainerButtons>
             <ContainerTitle>YOUR REFERRER LINK</ContainerTitle>
             
                     {user && <LinkInputField disabled={disabledInput} value={referrerValue} onChange={(e) => setReferrerValue(e.target.value)} id="referrerLink"/>} <IconButton onClick={sendLink}><Send /></IconButton>
@@ -189,19 +192,23 @@ const Hero = () => {
             </ContainerButtons>
             {isExpanded && (
                     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                        <ContainerTitle>YOUR REFERRALS</ContainerTitle>
                         {referrals?.map((referral) => {
                             console.log(referral)
                             return(
                                 <ReferralWrapper>
                                     <SecondRowAvatar><Avatar alt="Image" src={referral.avatar} sx={{ width: 50, height: 50 }} /></SecondRowAvatar>
                                     <ReferralName>{referral.name}</ReferralName>
-                                    <ReferralName>{referral.email}</ReferralName>
+                                    <ReferralMail>{referral.email}</ReferralMail>
                                 </ReferralWrapper>
                             )
                         })}
                     </div>
-                )}    
+                )}   
+                {(referrals.length > 0 && !isExpanded) && <MiniArrowDown onClick={expandDiv}/> } 
+                {(referrals.length > 0 && isExpanded) && <MiniArrowup onClick={expandDiv}/> } 
       </Header>
+      </AnimatePresence>
     </HeroSection>
   )
 }
@@ -214,11 +221,35 @@ const ReferralName = styled.div`
     ${props => props.theme.displayFlex};
     color: rgba(244,215,21,1);
     font-size: 24px;
-    padding: 0 20px;
+    text-align: center;
+    padding: 0 10px;
+    
+    @media(max-width: 968px){
+        font-size: 16px;
+        
+    }
+`;
+
+const ReferralMail = styled.div`
+    width: 40%;
+    height: 100%;
+    ${props => props.theme.displayFlex};
+    color: rgba(244,215,21,1);
+    font-size: 24px;
+    text-align: center;
+    padding: 0 10px;
+    
+    white-space: nowrap;      /* Prevents text from wrapping to the next line */
+    overflow: hidden;         /* Ensures content that overflows the container is hidden */
+    text-overflow: ellipsis;
+    @media(max-width: 968px){
+        font-size: 16px;
+        width: 35%;
+    }
 `;
 
 const SecondRowAvatar = styled.div`
-    width: 10%;
+    width: 20%;
     height: 100%;
     border-right: 1px solid rgba(244,215,21,1);
     ${props => props.theme.displayFlexColumnCenter};
@@ -235,8 +266,12 @@ const ReferralWrapper = styled.div`
 
 const Header = styled(motion.div)`
     width: 90%;
-    min-height: 300px;
-    border: 1px solid white;
+    min-height: 320px;
+    border: 1px solid rgba(244,215,21,1);
+    border-radius: 10px;
+    position: relative;
+    padding: 10px;
+    padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
 `;
 
 const ContainerTitle = styled.div`
@@ -250,6 +285,7 @@ const ContainerTitle = styled.div`
     font-size: 1.9rem;
     letter-spacing: 3;
 `;
+
 
 const ContainerButtons = styled.div`
     width: 100%;
