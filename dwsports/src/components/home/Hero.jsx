@@ -19,6 +19,7 @@ const Hero = () => {
     const [referrerValue, setReferrerValue] = useState("")
     const [referrals, setReferrals] = useState([])
     const [isExpanded, setIsExpanded] = useState(false)
+    const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
     const textScale = useTransform(scrollYProgress, [0, 0.5], [1.7, 1]);
     const imageTopScale = useTransform(scrollYProgress, [0, 0.5], [1.2, 0.9]);
@@ -55,12 +56,16 @@ const Hero = () => {
         }
     }
 
-    console.log(referrals)
+    console.log(user)
 
     
 
     useEffect(() => {
         if(user){
+            const signDate = user.last_sign_in_at;
+            const date = new Date(signDate);
+            const locale = date.toLocaleString();
+            setDate(locale)
             getReferrer();
         }
     }, [user])
@@ -176,6 +181,23 @@ const Hero = () => {
                 animate={controls} />
       </motion.div> */}
       <AnimatePresence>
+        <TopHeader>
+        <TopText>WELCOME TO PACTON'S GAMING ZONE</TopText>
+      <motion.img src={Ton} 
+                alt="background" 
+                style={{ width: '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 0.75 }} 
+                animate={controls} />
+     
+        </TopHeader>
+        <Header>
+        <ContainerTitle><Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} /></ContainerTitle>
+        <ContainerSamllTitle>{user && user.user_metadata.full_name}</ContainerSamllTitle>
+        <ContainerSamllTitle></ContainerSamllTitle>
+        <ContainerSamllTitle>{user && user.email}</ContainerSamllTitle>
+        <ContainerSamllTitle></ContainerSamllTitle>
+        <ContainerSamllTitle>LAST SIGNED IN</ContainerSamllTitle>
+        <ContainerSamllTitle>{date}</ContainerSamllTitle>
+        </Header>
       <Header initial={{ height: '320px' }} // Initial height
                 animate={{ height: isExpanded ? 'auto' : '320px' }}
                 exit={{ opacity: 0, height: 0 }} // Height transitions between 100px and 300px
@@ -264,12 +286,41 @@ const ReferralWrapper = styled.div`
     margin: 10px 0;
 `;
 
+const TopHeader = styled.div`
+    width: 90%;
+    max-height: 220px;
+    border: 1px solid rgba(244,215,21,1);
+    border-radius: 10px;
+    position: relative;
+    ${props => props.theme.displayFlexCenter};
+    margin: 10px;
+    padding: 10px;
+    padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
+`;
+
+const TopText = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    text-align: center;
+    color: ${props => props.theme.pacColor};
+    font-size: 32px;
+    font-weight: bold;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+    @media(max-width: 968px){
+        font-size: 18px;
+    }
+`;
+
 const Header = styled(motion.div)`
     width: 90%;
     min-height: 320px;
     border: 1px solid rgba(244,215,21,1);
     border-radius: 10px;
     position: relative;
+    margin: 10px;
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
 `;
@@ -283,6 +334,18 @@ const ContainerTitle = styled.div`
     color: ${props => props.theme.pacColor};
     //${props => props.theme.pacfont};
     font-size: 1.9rem;
+    letter-spacing: 3;
+`;
+
+const ContainerSamllTitle = styled.div`
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${props => props.theme.pacColor};
+    //${props => props.theme.pacfont};
+    font-size: 1.5rem;
     letter-spacing: 3;
 `;
 
