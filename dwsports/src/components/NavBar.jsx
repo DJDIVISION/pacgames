@@ -151,7 +151,7 @@ const NavBar = () => {
             </NavIcon>
             <NavText>ROULETTE</NavText>
         </NavColumn></LinkR> */}
-        <LinkR to="/airdrop"><NavColumn>
+        <LinkR to="/casino"><NavColumn>
             <NavIcon>
                 <img src={chip} alt="casino" />
             </NavIcon>
@@ -210,7 +210,7 @@ const NavBar = () => {
                               <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
                               <StaggerAvatarName>FANTASY FOOTBALL</StaggerAvatarName>
                           </StaggerRow></LinkR>
-                          <LinkR to="/airdrop"><StaggerRow initial={{ opacity: 0, y: 20 }}
+                          <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 1.1 }} style={{ color: 'white' }}>
                               <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
