@@ -368,7 +368,7 @@ const startStayLeaveTimeout = (roomId) => {
       })
       resetRoomTimeout(roomId)
     }
-  }, 15000000)
+  }, 15000)
 }
 
 
