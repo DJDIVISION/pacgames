@@ -303,7 +303,7 @@ const LinkInputField = styled.input`
   background-color: transparent;
   box-shadow: -2px 4px 8px rgb(255, 255, 255);
   width: 320px;
-  z-index: 4000;
+  z-index: 1;
   height: 40px;
   text-align: center;
   user-select: none;
