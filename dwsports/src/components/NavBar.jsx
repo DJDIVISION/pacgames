@@ -5,7 +5,7 @@ import {Nav,NavColumn,NavIcon,NavText,SmartNav,Burguer,CloseBurguer,StaggerConta
 import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
 import { TonClient, Address } from '@ton/ton';
 import {Link as LinkR} from 'react-router-dom'
-import {motion} from 'framer-motion'
+import {motion,AnimatePresence} from 'framer-motion'
 
 import sportsIcon from '../assets/sportsIcon.png'
 import lottery from '../assets/bingo.png'
@@ -37,67 +37,49 @@ const NavBar = () => {
     const { connected, account } = useTonConnectUI();
     const {walletBalance,setWalletBalance} = FantasyState();
     const [error, setError] = useState(null);
-    console.log(wallet)
-
-    console.log(rawAddress)
+    
 
     const client = new TonClient({
         endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
     });
 
-    console.log("client", client)
-
     useEffect(() => {
-        const fetchBalance = async () => {
-            try {
-                const address = Address.parse(wallet.account.address);
-                const balanceResult = await client.getBalance(address);
-                console.log(balanceResult)
-                const balanceInTON = Number(balanceResult) / 1e9; // Convert nanoTONs to TON
-
-                setWalletBalance(balanceInTON);
-            } catch (err) {
-                console.error('Error fetching balance:', err);
-                setError('Failed to fetch balance.');
+        if(wallet){
+            const writeData = async () => {
+                const updatedData = {
+                    name: user.user_metadata.name,
+                    avatar: user.user_metadata.avatar_url,
+                    email: user.email,
+                    walletAddress: wallet.account.address,
+                    user_id: user.id
+                  }
+                  const { data, error } = await supabase
+                  .from('user_wallets')
+                  .insert([updatedData])
+                  if (error) {
+                    console.error('Error inserting/updating user session data:', error.message)
+                  } else {
+                    console.log('User session data saved:', data)
+                  }
             }
-        };
-
-        fetchBalance();
-    }, [wallet]);
-    console.log(walletBalance)
-
-    /* useEffect(() => {
-        const fetchBalance = async () => {
-            
-            if (connected && account) {
+            const fetchBalance = async () => {
                 try {
-                    // Initialize TonClient with testnet endpoint and API key
-                    const client = new TonClient({
-                        endpoint: 'https://testnet-rpc.tonxapi.com/v2/json-rpc/278ddc2e-e05c-48b5-bfbd-c79495c40655',
-                    });
-
-                    // Parse and verify wallet address
-                    const walletAddress = Address.parse(account.address);
-                    
-                    if (!walletAddress) {
-                        throw new Error("Invalid wallet address");
-                    }
-
-                    // Fetch balance
-                    const balanceResult = await client.getBalance(walletAddress);
-                    console.log("Balance Result (nanoTONs):", balanceResult.toString());
-
-                    // Set balance after converting nanoTONs to TON
-                    setBalance(balanceResult.toNumber() / 1e9);
+                    const address = Address.parse(wallet.account.address);
+                    const balanceResult = await client.getBalance(address);
+                    console.log(balanceResult)
+                    const balanceInTON = Number(balanceResult) / 1e9; // Convert nanoTONs to TON
+    
+                    setWalletBalance(balanceInTON);
                 } catch (err) {
                     console.error('Error fetching balance:', err);
-                    setError('Failed to fetch balance. Check console for details.');
+                    setError('Failed to fetch balance.');
                 }
-            }
-        };
-
-        fetchBalance();
-    }, [connected, account]); */
+            };
+            writeData();
+            fetchBalance();
+        }
+    }, [wallet]);
+    
 
     const handleLogout = async () => {
         const { error } = await supabase.auth.signOut()
@@ -131,15 +113,9 @@ const NavBar = () => {
     }
 
     const item={
-        exit:{
-          opacity:0,
-          height:0,
-          transition:{
-            ease:"easeInOut",
-            duration:0.3,
-            delay:1
-          }
-        }
+        initial: { height: 0, opacity: 0 },
+        animate: { height: "100vh", opacity: 1, transition: { duration: 0.5 } },
+        exit: { height: 0, opacity: 0, transition: { duration: 1 } }
     }
 
 
@@ -175,7 +151,7 @@ const NavBar = () => {
             </NavIcon>
             <NavText>ROULETTE</NavText>
         </NavColumn></LinkR> */}
-        <LinkR to="/casino"><NavColumn>
+        <LinkR to="/airdrop"><NavColumn>
             <NavIcon>
                 <img src={chip} alt="casino" />
             </NavIcon>
@@ -189,14 +165,14 @@ const NavBar = () => {
         </NavColumn>
         
     </Nav>
-    <SmartNav>
+    <SmartNav scrollNavDown={scrollNavDown}>
     <IconButton onClick={isOpen}><Burguer /></IconButton>
     <TonConnectButton />
     {open && (
+        <AnimatePresence>
         <motion.div className="menu-container" scrollNavDown={scrollNavDown} variants={item}
-        initial={{height:0,opacity:0}}
-        animate={{height:"100vh", opacity:1}}
-        transition={{duration:.5}}
+        initial="initial"
+        animate="animate"
         exit="exit">
         <IconButton onClick={isOpen}><CloseBurguer /></IconButton>
         <StaggerContainer initial="hidden"
@@ -234,7 +210,7 @@ const NavBar = () => {
                               <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
                               <StaggerAvatarName>FANTASY FOOTBALL</StaggerAvatarName>
                           </StaggerRow></LinkR>
-                          <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 20 }}
+                          <LinkR to="/airdrop"><StaggerRow initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 1.1 }} style={{ color: 'white' }}>
                               <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
@@ -253,6 +229,7 @@ const NavBar = () => {
                           </StaggerRow> */}
                       </StaggerContainer>
                   </motion.div>
+                  </AnimatePresence>
         )}
         </SmartNav>
     </>

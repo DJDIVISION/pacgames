@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion, useTransform, useScroll, useInView } from 'framer-motion';
 import styled from 'styled-components'
 import pacton from '../assets/pacton_robot_png.png'
-import './styles.css'
 import google from '../assets/logos/google.jpg'
 import discord from '../assets/logos/discord.png'
 import xLogo from '../assets/logos/xLogo.png'

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css'
 import { themes } from "./styles/Themes";
@@ -21,6 +21,8 @@ import Texas from './pages/Texas';
 import Slots from './pages/Slots';
 import NewBets from './pages/NewBets';
 import Tonopoly from './pages/Tonopoly';
+import Airdrop from './pages/Airdrop';
+
 
 function App() {
 
@@ -30,7 +32,7 @@ function App() {
   if (loading) {
     return <HomeSection><CircularProgress sx={{ width: 80, height: 80 }} /></HomeSection>; // Display a loading message while checking the session
   }
-
+  
   return (
     <ThemeProvider theme={themes[theme]}>
     <Router>
@@ -41,6 +43,7 @@ function App() {
         <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />
         <Route path="/fantasy" element={<ProtectedRoute><Fantasy /></ProtectedRoute>} />
         <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />
+        <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
         <Route path="/texas" element={<ProtectedRoute><Texas /></ProtectedRoute>} />
         <Route path="/tonopoly" element={<ProtectedRoute><Tonopoly /></ProtectedRoute>} />
         <Route path="/slots" element={<ProtectedRoute><Slots /></ProtectedRoute>} />

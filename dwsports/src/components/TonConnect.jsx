@@ -22,35 +22,7 @@ const TonWalletLogin = () => {
     }
   };
   console.log(user)
-  useEffect(() => {
-    const writeData = async () => {
-      if(user){
-        if (wallet) {
-          setWalletAddress(wallet.account.address)
-          console.log('Wallet connected:', wallet);
-          const updatedData = {
-            name: user.user_metadata.name,
-            avatar: user.user_metadata.avatar_url,
-            email: user.mail,
-            walletAddress: wallet.account.address
-          }
-          const { data, error } = await supabase
-          .from('user_logins')
-          .insert([updatedData])
-          if (error) {
-            console.error('Error inserting/updating user session data:', error.message)
-          } else {
-            console.log('User session data saved:', data)
-          }
-          console.log('Wallet address:', wallet);
-        } else {
-          console.log('Wallet disconnected');
-        }
-      }
-    }
-    writeData();
-    
-  }, [wallet, user]);
+  
 
   return (
     

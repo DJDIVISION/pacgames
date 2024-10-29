@@ -1510,7 +1510,7 @@ export const StatsCountryLocation = styled.div`
 
 export const HomeSection = styled.div`
     width: 100vw;
-    height: 200vh;
+    height: 100vh;
     background: ${props => props.theme.body};
     display: flex;
     flex-direction: column;

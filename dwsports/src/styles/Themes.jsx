@@ -25,7 +25,7 @@ export const lightTheme = {
     text: '#fff', // black shade
     bodyRgba: '32,32,32',
     textRgba: '255, 255, 255',
-    pacBoxShadow: ' -11px 10px 15px -1px rgba(0,0,0,0.75)',
+    pacBoxShadow: ' -4px 5px 8px -1px rgba(255, 255, 255, 0.75)',
     dosisAqua: {
       fontFamily: 'Dosis',
       color: '#03e9f4',
