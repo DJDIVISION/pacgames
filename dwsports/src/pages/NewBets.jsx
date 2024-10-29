@@ -4,7 +4,7 @@ import { animationOne, transition } from '../animations'
 import { ArrowLeft, ArrowRight, BetSection, BetTitleRow, DateRow, MatchOdds, OddsColumn, SportsButtonRow, TeamLogoText, TeamLogoWrapper, TeamsLogo, TeamsResult,
     LoadingSection,AllBets,AllBetsText,AllBetsBadge,OddsColumnBig,
     ResultRow,BigDateRow,VenueRow,
-    ArrowDown,
+    ArrowDown,BackStyledIconButton,
     SmallArrowDown,
     StyledButton
  } from './index'
@@ -26,6 +26,7 @@ import AllBetsMenu from '../components/menus/AllBetsMenu'
 import { useAuth } from './functions';
 import Badge from '@mui/material/Badge';
 import TeamStats from './TeamStats';
+import { useNavigate } from 'react-router-dom';
 
 const NewBets = () => {
 
@@ -60,6 +61,7 @@ const NewBets = () => {
     const [betsToCheck, setBetsToCheck] = useState([])
     const [allFixtures, setAllFixtures] = useState([])
     const [expandedIndex, setExpandedIndex] = useState(null);
+    const navigate = useNavigate()
 
     const raiseRound = () => {
         setActiveRound((prevRound) => prevRound + 1)
@@ -362,6 +364,10 @@ const NewBets = () => {
         setExpandedIndex(expandedIndex === index ? null : index);
         
       };
+
+      const goBack = () => {
+        navigate(`/`)
+      }
       
   return (
       <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
@@ -552,6 +558,7 @@ const NewBets = () => {
             </BetConatiner>
           )}
           <AllBetsBadge>{pendingBets}</AllBetsBadge>
+          <BackStyledIconButton onClick={goBack}><ArrowLeft /></BackStyledIconButton>
           <AllBetsText onClick={() => setAllBetsMenu(true)}><img src={aaa} alt="" /></AllBetsText>
           </BetSection>
           {selectedBetMenu && (

@@ -799,11 +799,23 @@ export const AllBetsText = styled.div`
         bottom: 10px;
         right: 10px;  
     }
-    /* img{
-        width: 100%;
-        display: block;
-        object-fit: cover;
-    } */
+`;
+
+export const BackStyledIconButton = styled.div`
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    color: ${props => props.theme.text};
+    font-size: 16px;
+    ${props => props.theme.displayFlexCenter};
+    cursor: pointer;
+    @media(max-width:968px){
+        bottom: 10px;
+        right: 10px;  
+    }
 `;
 
 export const AllBetsBadge = styled.div`
@@ -868,6 +880,10 @@ export const SmallArrowDown = styled(KeyboardArrowDownIcon)`
         position: absolute;
         top: 20px;
         left: 20px;
+        @media(max-width: 968px){
+            top: 10px;
+            left: 10px; 
+        }
     }
 `;
 
@@ -915,6 +931,9 @@ export const ArrowLeft = styled(KeyboardArrowDownIcon)`
         transform: rotate(90deg) translate(-25%,-25%);
         z-index: 1000;
         cursor: pointer;
+        @media(max-width: 968px){
+            transform: rotate(90deg) translate(-25%,50%);
+        }
     }
 `;
 

@@ -18,7 +18,8 @@ import { RightPokerColumn,LeftPokerColumn,PokerNavBar,CountryBall,CountryBallTex
   ArrowBar,
   SearchBar,
   PlayerSettingsIcon,
-  ArrowLeft} from './index';
+  ArrowLeft,
+  BackStyledIconButton} from './index';
 import england from '../assets/logos/england.png'
 import spain from '../assets/logos/spain.png'
 import italy from '../assets/logos/italy.png' 
@@ -26,7 +27,7 @@ import germany from '../assets/logos/germany.png'
 import france from '../assets/logos/france.png' 
 import field from '../assets/lineups/field.jpg' 
 import cross from '../assets/chips/delete.png'
-import {Link as LinkR} from 'react-router-dom'
+import {Link as LinkR, useNavigate} from 'react-router-dom'
 import { AverageDisplay, EuroBalanceDisplay, useAuth, useGetTeams } from './functions';
 import { FantasyState } from '../context/FantasyContext';
 import { Row } from './indexTwo';
@@ -114,6 +115,7 @@ const Fantasy = () => {
   const [formation, setFormation] = useState("4-3-3")
   const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
   const [activeMatch, setActiveMatch] = useState([])
+  const navigate = useNavigate()
   const [droppedPlayers, setDroppedPlayers] = useState({
     area1: [],
     area2: [],
@@ -680,6 +682,10 @@ useEffect(() => {
   const expandDiv = () => {
     setIsColumnExpanded(!isColumnExpanded)
   }
+
+  const goBack = () => {
+    navigate(`/`)
+  }
    
   return ( 
     <Section>
@@ -1012,6 +1018,7 @@ useEffect(() => {
         <TeamStats selectedTeamMenu={selectedTeamMenu} setSelectedTeamMenu={setSelectedTeamMenu} />
       )}
       </DndContext>
+      <BackStyledIconButton onClick={goBack}><ArrowLeft /></BackStyledIconButton>
     </Section>
   )
 }

@@ -804,6 +804,7 @@ export const BetConatiner = styled.div`
     position: relative;
     @media(max-width: 968px){
         height: 80vh;
+        padding-bottom: 80px;
     }
 `;
 export const Rower = styled.div`
