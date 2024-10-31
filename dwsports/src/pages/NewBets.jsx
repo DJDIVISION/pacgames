@@ -193,7 +193,7 @@ const NewBets = () => {
         console.log(allFixtures)
         const { data, error } = await supabase
           .from('fixtures')
-          .update([{"9": activeMatches}])
+          .update([{"10": activeMatches}])
           .eq("leagueName", activeLeague)
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
@@ -235,7 +235,7 @@ const NewBets = () => {
     const str = localStorage.getItem("round")
     const json = JSON.parse(str)
     
-    activeMatches.forEach((item2) => {
+    allFixtures.forEach((item2) => {
       // Find the corresponding item in array1 by matching the fixture id
       const match = json.response.find((item1) => item1.fixture.id === item2.fixture.id);
     
@@ -249,7 +249,7 @@ const NewBets = () => {
     });
     const { data, error } = await supabase
             .from('fixtures')
-            .update([{"9": activeMatches}])
+            .update([{"fixtures": allFixtures}])
             .eq("leagueName", activeLeague)
             if (error) {
                 console.error('Error inserting/updating user session data:', error.message)
@@ -397,7 +397,7 @@ const NewBets = () => {
             const date = new Date(match.fixture.date).toLocaleString();
             const dateMS = new Date(match.fixture.date).getTime();
             const dateNow = new Date();
-            
+            console.log(match)
             return (
                 <SmallStatsWrapper key={index}
                 initial={{ minHeight: '130px' }}
@@ -422,7 +422,7 @@ const NewBets = () => {
                             </>
                         ) : (
                             <>
-                            {match.odds && dateNow < dateMS ? (
+                            {(match.odds && dateNow < dateMS) ? (
                             <MatchOdds>
                             <OddsColumn
                                 id={`${match.fixture.id}-home`}
@@ -454,11 +454,11 @@ const NewBets = () => {
                         </MatchOdds>
                         ) : (
                             <MatchOdds>
-                              <OddsColumn>MATCH STARTED</OddsColumn>
-                                {/* <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
+                              {/* <OddsColumn>MATCH STARTED</OddsColumn> */}
+                                <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setDraw(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setTwo(e.target.value)} />
-                                <button onClick={() => sendOdds(match)}>SEND</button> */}
+                                <button onClick={() => sendOdds(match)}>SEND</button>
                             </MatchOdds>
                         )}
                             </>

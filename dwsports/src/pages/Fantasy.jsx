@@ -1064,9 +1064,9 @@ const optionsFour = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
   params: {
-    league: '78',
+    league: '135',
     season: '2024',
-    round: 'Regular Season - 9'
+    round: 'Regular Season - 10'
   },
   headers: {
     'x-rapidapi-key': /*  */'5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
@@ -1137,7 +1137,7 @@ const setData = async () => {
 
 const fetchData = async () => {
   try {
-    const response = await axios.request(optionsWWW);
+    const response = await axios.request(optionsFour);
     console.log(response.data);
     localStorage.setItem("round", JSON.stringify(response.data))
     message.success("data fetched!")

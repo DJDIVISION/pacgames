@@ -120,7 +120,8 @@ export const StatsWrapper = styled.div`
     ${props => props.theme.displayFlex};
     padding: 10px;
     @media(max-width: 968px){
-        width: 100%;
+        width: 300%;
+        margin-left: 200%;
     }
 `;
 
@@ -133,6 +134,7 @@ export const BetSection = styled.div`
     padding: 30px;
     @media(max-width: 968px){
         padding-top: 50px;
+        overflow-x: scroll;
     }
 `;
 
