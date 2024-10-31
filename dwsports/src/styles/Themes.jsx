@@ -2,12 +2,15 @@ import { fontFamily, fontSize, fontWeight } from "@mui/system";
 
 export const lightTheme = {
     body: '#fff',
-    text: '#202020', // black shade
+    text: '#202020',
+    card: '#69e2f1', 
+    copyIcon: '#202020',
+    cardTwo: '#c0eaf0', // black shade
     bodyRgba: '255, 255, 255',
     textRgba: '32,32,32',
 
     grey: '#bebebe',
-    MainAccent: '#03e9f4',
+    MainAccent: '#96e6eb',
     fontxs: '0.75em',
     fontsm: '0.875em',
     fontmd: '1em', // 1em = 16px
@@ -18,11 +21,34 @@ export const lightTheme = {
     fontBig: '10em',
 
     navHeight: '5rem',
+    displayFlexCenter: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    displayFlex: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    displayFlexColumn: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    displayFlexColumnCenter: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
   };
   
   export const darkTheme = {
     body: '#202020',
-    text: '#fff', // black shade
+    text: '#fff', 
+    card: '#0f0d0d',
+    copyIcon: 'aqua',
+    cardTwo: '#302c2c',
     bodyRgba: '32,32,32',
     textRgba: '255, 255, 255',
     pacBoxShadow: ' -4px 5px 8px -1px rgba(255, 255, 255, 0.75)',

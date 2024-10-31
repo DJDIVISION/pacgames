@@ -1077,6 +1077,7 @@ export const TeamLogoText = styled.div`
     color: ${props => props.theme.text};
     font-size: 18px;
     text-align: center;
+    font-weight: bold;
     @media(max-width: 968px){
         font-size: 16px;
     }
@@ -1117,6 +1118,7 @@ export const DateRow = styled.div`
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
     text-align: center;
+    font-weight: bold;
 `;
 
 export const VenueRow = styled.div`
@@ -1145,6 +1147,7 @@ export const BigDateRow = styled.div`
     font-size: 16px;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
+    font-weight: bold;
 `;
 
 export const ResultRow = styled.div`
@@ -1318,7 +1321,7 @@ export const OddsColumn = styled.div`
     justify-content: center;
     cursor: pointer;
     font-size: 18px;
-    
+    font-weight: bold;
     span{
         font-size: 14px;
         color: #c3c3c3;
@@ -1342,7 +1345,8 @@ export const OddsColumnBig = styled.div`
     justify-content: center;
     cursor: pointer;
     font-size: 14px;
-    color: white;
+    color: ${props => props.theme.text};
+    font-weight: bold;
     text-align: center;
     span{
         font-size: 14px;

@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react'
+import { useState,useEffect,useMemo } from 'react'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css'
 import { themes } from "./styles/Themes";
@@ -28,16 +28,21 @@ function App() {
 
   const [theme, setTheme] = useState('dark');
   const { user, loading } = useAuth(); 
+  const themeObject = useMemo(() => themes[theme], [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === 'dark' ? 'light' : 'dark'));
+  };
 
   if (loading) {
     return <HomeSection><CircularProgress sx={{ width: 80, height: 80 }} /></HomeSection>; // Display a loading message while checking the session
   }
   
   return (
-    <ThemeProvider theme={themes[theme]}>
+    <ThemeProvider theme={themeObject}>
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home toggleTheme={toggleTheme}/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/bets" element={<ProtectedRoute><NewBets /></ProtectedRoute>} />
         <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />

@@ -232,21 +232,9 @@ const NewBets = () => {
     
 
     const sendOddsTwo = async (match) => {
-    console.log(activeMatches)
     const str = localStorage.getItem("round")
     const json = JSON.parse(str)
-    /* const filter = json.response.filter((bet) => bet.goals.home !== null)
-    console.log(filter)
-    filter.forEach((el) => {
-      allFixtures.forEach((match) => {
-        if(el.fixture.id === match.fixture.id){
-          console.log(el)
-          el.goals.away = match.goals.away
-          el.goals.home = match.goals.home
-        }
-      })
-    }) */
-    console.log(json.response)
+    
     activeMatches.forEach((item2) => {
       // Find the corresponding item in array1 by matching the fixture id
       const match = json.response.find((item1) => item1.fixture.id === item2.fixture.id);
@@ -259,8 +247,6 @@ const NewBets = () => {
         item2.teams = match.teams;
       }
     });
-    
-    console.log(activeMatches);
     const { data, error } = await supabase
             .from('fixtures')
             .update([{"9": activeMatches}])

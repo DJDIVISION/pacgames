@@ -1,514 +1,434 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
-
-// Import images
-import wolves from '../assets/wolves.png';
-import arsenal from '../assets/arsenal.png';
-import chelsea from '../assets/chelsea.png';
-import barça from '../assets/barça.png';
-import napoli from '../assets/napoli.png';
-import girona from '../assets/girona.png';
+import React,{useEffect, useState, useRef} from 'react'
+import styled from 'styled-components'
+import { motion,AnimatePresence } from 'framer-motion'
+import { FantasyState } from '../../context/FantasyContext';
+import { ButtonAbsolute, CloseChatRoomIcon } from '../chats';
+import { StyledAbsolute } from '../../pages/indexTwo';
+import { supabase } from '../../supabase/client';
+import {Section, Holder, Title, ListItemWrapper,ListWrapper,ListItemSpan,PlayerDataWrapper,PlayerLogo,PlayerStatsWrapper,
+    PlayerStatsName,PlayerStatCountry,StatsCountryLocation,PlayerStatsRating,TeamRatingTitle,TeamRating,PlayerStatsNameSmall,
+    RatingsContainer,RatingWrapper,HolderRow,Column,ListItemTitle
+} from './index'
+import { Avatar, Button, TextField } from '@mui/material';
+import CountUp from '../../animations/CountUp';
 import { message } from 'antd';
+import EditPlayerMenu from './EditPlayerMenu';
 
-// Sample images with id, src, and value
-const symbols = [
-  { id: 1, src: wolves, value: 10 },
-  { id: 2, src: arsenal, value: 20 },
-  { id: 3, src: chelsea, value: 30 },
-  { id: 4, src: barça, value: 40 },
-  { id: 5, src: napoli, value: 50 },
-  { id: 6, src: girona, value: 60 },
-];
 
-// Grid Container
-const SlotGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(6, 1fr); /* 6 columns */
-  grid-template-rows: ${({ rows }) => `repeat(${rows}, 1fr)`};
-  gap: 10px;
-  width: 600px;
-  height: ${({ rows }) => `${rows * 100}px`};
-  border: 10px solid #ba3d00;
-  padding: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  position: relative;
-`;
+const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
 
-// Chip Component for large and small chips
-const Chip = styled(motion.div)`
-  background-size: cover;
-  background-position: center;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  grid-column: ${({ colStart, colSpan }) => `${colStart} / span ${colSpan}`};
-  grid-row: ${({ rowStart, rowSpan }) => `${rowStart} / span ${rowSpan}`};
-`;
-
-// Button styling
-const SpinButton = styled.button`
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 18px;
-  background-color:${({ disabled }) => (disabled ? "#c2c2c2" : "#19f1f1")};
-  
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  &:hover {
-    background-color: #ddda0b;
-  }
-`;
-
-// Function to generate large chips
-const generateLargeChip = (spinCount,existingLargeChip) => {
-   if (existingLargeChip) return null; 
-  let largeSize;
-
-  // Determine size based on spin count
-  if (spinCount % 10 === 0 && spinCount !== 0) {
-    largeSize = { colSpan: 3, rowSpan: 3 };
-  } else if (spinCount % 5 === 0 && spinCount !== 0) {
-    largeSize = { colSpan: 2, rowSpan: 2 };
-  } else {
-    return null; // No large chip
-  }
-
-  // Calculate random starting position
-  const maxColumnStart = 6 - largeSize.colSpan;
-  const maxRowStart = 3 - largeSize.rowSpan;
-  const colStart = Math.floor(Math.random() * (maxColumnStart + 1)) + 1;
-  const rowStart = Math.floor(Math.random() * (maxRowStart + 1)) + 1;
-
-  // Select a random symbol for the large chip
-  const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-  
-  return {
-    ...largeSize,
-    colStart: colStart,
-    rowStart: rowStart,
-    type: "largeChip",
-    image: randomSymbol.src, // Get the image source from the symbol
-    value: randomSymbol.value, // Get the value from the symbol
-    id: `${colStart}-${rowStart}-large-chip`, // Unique id for large chip
-  };
-};
-
-// Check for overlap with large chip
-const isOverlappingLargeChip = (col, row, largeChip) => {
-  const { colStart, rowStart, colSpan, rowSpan } = largeChip;
-  return col >= colStart && col < colStart + colSpan && row >= rowStart && row < rowStart + rowSpan;
-};
-
-// Function to add both small and large chips into the columns array
-const populateGridWithChips = (largeChip, smallChips) => {
-  const columns = [[], [], [], [], [], []];
-
-  // Add large chip first if it exists
-  if (largeChip) {
-    for (let i = 0; i < largeChip.colSpan; i++) {
-      const colIndex = largeChip.colStart - 1 + i;
-
-      // Ensure the column index is within bounds
-      if (colIndex < 6) {
-        columns[colIndex].push({
-          ...largeChip,
-          isLarge: true,  // Mark this as a large chip
+    const {playerToUpdate, setPlayerToUpdate} = FantasyState();
+    const [playerLeagueData, setPlayerLeagueData] = useState({})
+    const [latestGamesData, setLatestGamesData] = useState({})
+    const [latestRatings, setLatestRatings] = useState([])
+    const [average, setAverage] = useState(null)
+    const [newRating, setNewRating] = useState("")
+    
+    const handleAction = (section, key, action) => {
+        setPlayerLeagueData((prevData) => {
+          const updatedSection = { ...prevData[section] };
+      
+          // Helper function to round to two decimal places
+          const roundToTwoDecimals = (num) => Math.round(num * 100) / 100;
+      
+          switch (action) {
+            case 'increment-0-01':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] + 0.01);
+              break;
+            case 'increment-0-1':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] + 0.1);
+              break;
+            case 'increment':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] + 1);
+              break;
+            case 'increment-10':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] + 10);
+              break;
+              case 'increment-50':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] + 50);
+              break;
+            case 'increment-100':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] + 100);
+              break;
+              case 'decrement-0-01':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] - 0.01);
+              break;
+            case 'decrement-0-1':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] - 0.1);
+              break;
+            case 'decrement':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] - 1);
+              break;
+            case 'decrement-10':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] - 10);
+              break;
+            case 'decrement-100':
+              updatedSection[key] = roundToTwoDecimals(prevData[section][key] - 100);
+              break;
+            case 'captain':
+              updatedSection[key] = true;
+              break;
+            case 'setToMax': // Example for setting to max value
+              updatedSection[key] = 100;
+              break;
+            default:
+              break;
+          }
+      
+          return {
+            ...prevData,
+            [section]: updatedSection,
+          };
         });
+      };
+
+    
+
+    /* const fetchData = async () => {
+        const item = localStorage.getItem("mainStats")
+        const json = JSON.parse(item)
+        setPlayerLeagueData(json)
+    } */
+
+    useEffect(() => {
+        fetchData();
+    }, [])
+
+    const item={
+        initial: { height: 0, opacity: 0 },
+        animate: { height: "100vh", opacity: 1, transition: { duration: 0.7 } },
+        exit: { height: 0, opacity: 0, transition: { duration: 0.7 } }
+    }
+
+    
+    const sendPlayerRatings = async () => {
+      let number = 0; // Default value for rating if there are no ratings
+    
+      if (latestRatings.length > 0) {
+        // Only calculate the average if ratings are present
+        const sum = latestRatings.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        const average = sum / latestRatings.length;
+        number = parseFloat(average.toFixed(2)); // Ensure the rating is properly formatted
       }
-    }
-  }
+    
+      // Proceed with updating the player data in the database
+      const { data, error } = await supabase
+        .from('footballPlayers')
+        .update({ ratings: latestRatings, rating: number })
+        .eq('id', playerToUpdate.id); // Match by player ID
+    
+      if (error) {
+        console.error('Error updating data:', error);
+      } else {
+        console.log('Data updated successfully:', data);
+        message.success("Data inserted successfully!");
+      }
+    
+      setSelectedPlayerMenu(false);
+      setPlayerToUpdate([]); // Reset the playerToUpdate state
+    };
 
-  // Now add small chips if they do not overlap with the large chip
-  smallChips.forEach((chip) => {
-    const isOverlappingLarge = largeChip &&
-      chip.colStart >= largeChip.colStart &&
-      chip.colStart < largeChip.colStart + largeChip.colSpan &&
-      chip.rowStart >= largeChip.rowStart &&
-      chip.rowStart < largeChip.rowStart + largeChip.rowSpan;
-
-    // Only add the small chip if it doesn't overlap with the large chip
-    if (!isOverlappingLarge) {
-      columns[chip.colStart - 1].push(chip);
-    }
-  });
-
-  return columns;
-};
-
-// The main SlotGame component
-const SlotGame = () => {
-  const [chips, setChips] = useState({ largeChip: null, smallChips: [] });
-  const [columns, setColumns] = useState([[], [], [], [], [], []]); // State for columns
-  const [animate, setAnimate] = useState(false);
-  const [spinCount, setSpinCount] = useState(0);
-  const [winnings, setWinnings] = useState(0); 
-  const [rows, setRows] = useState(3)
-  const [shake, setShake] = useState(false);
-  const [disabled, setDisabled] = useState(false)
-
-  const triggerShakeAnimation = () => {
-    // Trigger the shake animation by toggling the shake state
-    setShake(true);
-    setTimeout(() => {
-      setShake(false); // Stop the animation after it runs
-    }, 500); // Match the animation duration
-  };
-
-  const checkImagesAcrossAllColumns = (columns, largeChip) => {
-    const imageOccurrences = {}; 
-  
-    // Function to track images from chips
-    const trackImageFromChips = (chips = [], colIdx) => {
-      if (!chips || !Array.isArray(chips)) return; // Ensure chips is an array
-      chips.forEach((chip) => {
-        const image = chip.image;
-        if (!imageOccurrences[image]) {
-          imageOccurrences[image] = new Set();
-        }
-        imageOccurrences[image].add(colIdx);
+    const updatePlayerRatings = async () => {
+      console.log(newRating);
+      
+      const number = parseFloat(newRating); // Parse the new rating to a number
+      console.log(number);
+      console.log(typeof number); // Confirm it's a number
+      
+      // Ensure `latestRatings` is always an array
+      setLatestRatings((prevArray) => {
+        const updatedArray = prevArray ? [...prevArray, number] : [number]; // Handle when prevArray is undefined or null
+        return updatedArray;
       });
     };
-  
-    // Track images in the first three columns
-    for (let colIdx = 0; colIdx < 3; colIdx++) {
-      const column = columns[colIdx] || []; // Fallback to empty array
-      trackImageFromChips(column, colIdx);
-    }
-  
-    const repeatedImages = Object.keys(imageOccurrences).filter((image) => imageOccurrences[image].size === 3);
-  
-    repeatedImages.forEach((image) => {
-      let foundInAllColumns = true; 
-      let lastColumnFound = 2; // Start from the third column (0-indexed)
-  
-      for (let colIdx = 3; colIdx < columns.length; colIdx++) {
-        const column = columns[colIdx] || [];
-        const imageInColumn = column.some((chip) => chip.image === image); 
-  
-        if (!imageInColumn) {
-          console.log(`Image "${image}" is not found in column ${colIdx + 1}. Stopping at column ${colIdx}.`);
-          foundInAllColumns = false; 
-          break;
+
+    const getBackgroundColor = (number) => {
+        if (number >= 0 && number < 6) return 'red'; // Color for 5 to <6
+        if (number >= 6 && number < 6.5) return 'orange'; // Color for 5 to <6
+        if (number >= 6.5 && number < 7) return '#eafa07';  // Color for 6 to <7
+        if (number >= 7 && number < 8) return '#12f812'; // Color for 7 to <8
+        if (number >= 8 && number < 9) return '#00ccff'; // Color for 8 to <9
+        if (number >= 9 && number <= 10) return '#3F00FF'; // Color for 9 to 10
+        return 'white'; // Default background color if number is out of range
+    };
+
+    const fetchData = async () => {
+        const { data, error } = await supabase
+        .from('footballPlayers')
+        .select('*')
+        .eq("id", playerToUpdate.id)
+        if (error) {
+        console.error('Error inserting/updating user session data:', error.message)
         } else {
-          lastColumnFound = colIdx;
-        }
-      }
-  
-      if (foundInAllColumns || lastColumnFound >= 2) {
-        console.log(`Image "${image}" is found across columns up to ${lastColumnFound + 1}.`);
-        // Start removing chips one by one with delay, up to lastColumnFound
-        removeRepeatedImagesOneByOne(image, columns, lastColumnFound);
-      }
-    });
-    
-    if (repeatedImages.length === 0) {
-      console.log('No images repeated across the first three columns');
-      setDisabled(false)
-    }
-  };
-
-  
-  const repopulateChips = () => {
-    setColumns((prevColumns) => {
-      const newColumns = prevColumns.map((column, colIdx) => {
-        const newColumn = [...column]; // Create a copy of the current column
-        const largeChip = newColumn.find(chip => chip && chip.type === "largeChip");
-  
-        // If there's a large chip, mark where the small chips can go
-        const hasLargeChip = !!largeChip;
-  
-        for (let row = 0; row < newColumn.length; row++) {
-          // Only fill empty slots if there is no large chip in the column
-          if (newColumn[row] === null && !hasLargeChip) {
-            const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-            newColumn[row] = {
-              colStart: colIdx + 1,
-              rowStart: row + 1,
-              type: "smallChip",
-              image: randomSymbol.src,
-              value: randomSymbol.value,
-              id: Math.random(), // Ensure unique keys
-            };
+          console.log(data)
+          setLatestRatings(data[0].ratings)
+          if(data[0].laLigaStats[0] !== null){
+            
+            setPlayerLeagueData(data[0].laLigaStats[0].statistics )
+          } else {
+            console.log("no such data")
           }
+          if(data[0].latestMatches !== null){
+            setLatestGamesData(data[0].latestMatches[0] )
+          } else {
+            console.log("no such data")
+          }
+            
+            
+            console.log(data[0].ratings)
+            console.log(data[0].latestMatches[0])
+            const str = JSON.stringify(data[0].laLigaStats[0])
+            localStorage.setItem("mainStats", str);
+            //setPlayerChampionsData(data[0].championsStats[0])            
         }
-  
-        return newColumn; // Return the updated column
-      });
-  
-      return newColumns; // Update the columns state with new columns
-    });
-    setTimeout(() => {
-      console.log("Checking for repeated images after repopulating chips...");
-      checkImagesAcrossAllColumns(columns, chips.largeChip); 
-    }, 0); // 0 delay to ensure it runs after state update
-  };
-  
-  
+  }
 
-  const shiftAllChipsDown = () => {
-    setColumns((prevColumns) => {
-      // Loop through each column and shift down the chips to fill the empty spaces
-      const shiftedColumns = prevColumns.map((column) => {
-        // Filter out the `null` spaces (empty slots)
-        const chipsInColumn = column.filter(chip => chip !== null);
-  
-        // Fill from the bottom: calculate new rowStart for each chip
-        const filledColumn = Array(column.length).fill(null); // Create a new column filled with `null`
-        chipsInColumn.forEach((chip, index) => {
-          // Place each chip starting from the bottom (last available row)
-          const newRowStart = column.length - chipsInColumn.length + index + 1;
-          filledColumn[newRowStart - 1] = {
-            ...chip,
-            rowStart: newRowStart, // Update the rowStart based on the new position
-          };
-        });
-  
-        return filledColumn; // Return the new column with chips shifted down
-      });
-  
-      console.log("Columns after shifting all chips down:", shiftedColumns); // Log the updated columns after shift
-      return shiftedColumns; // Update state with the new columns
-    });
-  };
+ console.log(playerLeagueData)
 
-const addNewRowAtTop = () => {
-  setColumns((prevColumns) => {
-    // Add a new empty slot at the top of each column
-    const updatedColumns = prevColumns.map((column) => {
-      // Add a null (empty space) at the start of each column
-      const newColumn = [null, ...column];
-
-      // Adjust rowStart for each chip, since the new row shifts everything down
-      const shiftedColumn = newColumn.map((chip, index) => {
-        if (chip !== null) {
-          return {
-            ...chip,
-            rowStart: chip.rowStart + 1, // Shift each chip down by 1
-          };
-        }
-        return chip;
-      });
-
-      return shiftedColumn;
-    });
-
-    console.log("Columns after adding new row at the top:", updatedColumns); // Log the updated columns
-    return updatedColumns; // Return the updated columns with new row
-  });
-
-  // Increase the total number of rows by 1
-  setRows((prevRows) => prevRows + 1);
-};
-
-const removeRepeatedImagesOneByOne = (imageToRemove, columns, lastColumnFound) => {
-  let delay = 0;
-  let newRowAdded = false
-  setTimeout(() => {
-    const chipsToRemove = []; // Store the chips (by ID) to be removed
-
-    // Collect the chips that need to be removed (by unique chip ID)
-    for (let colIdx = 0; colIdx <= lastColumnFound; colIdx++) {
-      const column = columns[colIdx];
-      column.forEach((chip) => {
-        if (chip.image === imageToRemove) {
-          chipsToRemove.push({ colIdx, chipId: chip.id, chipValue: chip.value }); // Track the column, chip ID, and chip value
-        }
-      });
+  const setRating = async () => {
+    if(latestGamesData.games.rating && latestGamesData.games.rating > 0){
+      const number = parseFloat(latestGamesData.games.rating)
+      latestRatings.push(number)
+    } else {
+      console.log("no rating")
     }
-
-    console.log("Chips to remove:", chipsToRemove); // Log the chips to remove
-
-    // Now, remove the collected chips one by one with delay
-    chipsToRemove.forEach(({ colIdx, chipId, chipValue }, i) => {
-      setTimeout(() => {
-        setColumns((prevColumns) => {
-          console.log(`Before removal in column ${colIdx}:`, prevColumns[colIdx]); // Log the column before removal
-
-          const updatedColumns = prevColumns.map((col, index) => {
-            if (index === colIdx) {
-              // Instead of removing the chip completely, mark it as `null`
-              const newColumn = col.map((chip) => chip && chip.id === chipId ? null : chip);
-
-              console.log(`After marking chip as null in column ${colIdx}:`, newColumn); // Log the column after marking chips
-
-              return newColumn; // Return the updated column with nulls
-            }
-            return col;
-          });
-
-          console.log("Updated columns after marking as null:", updatedColumns); // Log the updated columns
-
-          return updatedColumns; // Return the updated columns
-        });
-
-        // Add the value of the removed chip to the balance
-        setWinnings((prevBalance) => {
-          const newBalance = prevBalance + chipValue;
-          console.log(`Updated winnings: ${newBalance}`); // Log updated winnings
-          return newBalance;
-        });
-
-        // If it's the last chip removal, add a new row and shift chips
-        if (i === chipsToRemove.length - 1 && !newRowAdded) {
-          newRowAdded = true
-          setTimeout(() => {
-            addNewRowAtTop(); // Add a new row at the top
-            shiftAllChipsDown();
-            triggerShakeAnimation(); // After adding the new row, shift all remaining chips down
-            repopulateChips();
-          }, 500); // Small delay before shifting down
-        }
-
-      }, delay);
-
-      delay += 100; // Delay between each removal
-    });
-
-  }, 2000);
-};
-
-  
-  
-
-  // Function to generate small chips and avoid large chip positions
-  const generateSmallChips = (largeChip) => {
-    const smallChips = [];
-    for (let row = 1; row <= 3; row++) {
-      for (let col = 1; col <= 6; col++) {
-        // Ensure chips are not overlapping with large chip
-        if (!largeChip || !isOverlappingLargeChip(col, row, largeChip)) {
-          const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-          smallChips.push({
-            colStart: col,
-            rowStart: row,
-            type: "smallChip",
-            image: randomSymbol.src, // Get the image source from the symbol
-            value: randomSymbol.value, // Get the value from the symbol
-            id: Math.random(), // Ensure unique keys
-          });
-        }
+    console.log(latestRatings)
+    let number = 0; // Default value for rating if there are no ratings
+    
+      if (latestRatings.length > 0) {
+        // Only calculate the average if ratings are present
+        const sum = latestRatings.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        const average = sum / latestRatings.length;
+        number = parseFloat(average.toFixed(2)); // Ensure the rating is properly formatted
       }
-    }
-    return smallChips;
-  };
+    
+      // Proceed with updating the player data in the database
+      const { data, error } = await supabase
+        .from('footballPlayers')
+        .update({ ratings: latestRatings, rating: number })
+        .eq('id', playerToUpdate.id); // Match by player ID
+    
+      if (error) {
+        console.error('Error updating data:', error);
+      } else {
+        console.log('Data updated successfully:', data);
+        message.success("Data inserted successfully!");
+      }
+    
+      setSelectedPlayerMenu(false);
+      setPlayerToUpdate([]); 
+  }
 
-  // Handle click to spin
-  const handleSpinClick = () => {
-    setDisabled(true)
-    setSpinCount(spinCount + 1);
-    setAnimate(true);
-    setWinnings(0)
-    setTimeout(() => {
-      const newLargeChip = generateLargeChip(spinCount + 1);
-      const newSmallChips = generateSmallChips(newLargeChip);
+  /* console.log(playerLeagueData)
+  console.log(latestGamesData) */
 
-      // Populate the grid with both large and small chips
-      const populatedColumns = populateGridWithChips(newLargeChip, newSmallChips);
-      checkImagesAcrossAllColumns(populatedColumns, newLargeChip);
-      setChips({ largeChip: newLargeChip, smallChips: newSmallChips });
-      setColumns(populatedColumns);
-      setAnimate(false);
-      triggerShakeAnimation();
-    }, 100);
-  };
-
-  const { largeChip, smallChips } = chips;
-
-  // Animation stagger logic
-  const staggerAnimation = {
-    hidden: { opacity: 0, y: -200 },
-    visible: (i) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.2, // Stagger animation by columns
-      },
-    }),
-    exit: { opacity: 0, y: 200 },
-  };
-
+ /*  const filterObject = (obj) => {
+    let result = {};
   
+    Object.entries(obj).forEach(([key, value]) => {
+      if (typeof value === 'object' && value !== null) {
+        // Recursively filter nested objects
+        const nestedResult = filterObject(value);
+        if (Object.keys(nestedResult).length > 0) {
+          result[key] = nestedResult; // Only add if there are valid nested results
+        }
+      } else if (value !== null && value > 0) {
+        result[key] = value; // Only add the property if it's not null and greater than 0
+      }
+    });
+  
+    return result;
+  };
+
+  const filteredStats = filterObject(latestGamesData);
+  console.log(filteredStats); */
+  
+
   return (
-      <Section>
-        <SlotGrid rows={rows} className={`slot-grid ${shake ? 'shake' : ''}`}>
-          <AnimatePresence>
-            {!animate && (
-              <>
-                {columns.map((column, colIdx) => (
-                  <React.Fragment key={`column-${colIdx}`}>
-                    {column.map((chip, chipIdx) => {
-                      if (!chip) {
-                        return null; // Skip rendering if chip is undefined
-                      }
-                      if (chip.isLarge) {
-                        // Render large chip only in its first column (colStart)
-                        if (chip.colStart === colIdx + 1) {
-                          return (
-                            <Chip
-                              key={`large-chip-${chip.id}`}
-                              style={{ backgroundImage: `url(${chip.image})` }}
-                              colStart={chip.colStart}
-                              rowStart={chip.rowStart}
-                              colSpan={chip.colSpan}
-                              rowSpan={chip.rowSpan}
-                              initial={{ y: -200, opacity: 0 }}
-                              animate={{
-                                y: 0,
-                                opacity: 1,
-                                transition: {
-                                  duration: 0.6,
-                                  delay: chip.colStart * 0.2,
-                                },
-                              }}
-                              exit={{ y: 200, opacity: 0 }}
-                            />
-                          );
-                        } else {
-                          return null; // Skip rendering in the other columns
-                        }
-                      } else {
-                        // Render small chips as usual
-                        return (
-                          <Chip
-                            key={`small-chip-${chip.id}`}
-                            colStart={chip.colStart}
-                            rowStart={chip.rowStart}
-                            colSpan={1}
-                            rowSpan={1}
-                            variants={staggerAnimation}
-                            initial="hidden"
-                            animate="visible"
-                            exit="exit"
-                            custom={colIdx} // Custom stagger based on column index
-                            style={{ backgroundImage: `url(${chip.image})` }}
-                          />
-                        );
-                      }
+    <AnimatePresence>
+          <motion.div className="menu-container-one" variants={item}
+              initial="initial"
+              animate="animate"
+              exit="exit">
+                <Section>
+                <PlayerDataWrapper>
+                    <PlayerLogo>
+                    <Avatar alt="Image" src={playerToUpdate.photo} sx={{ width: 120, height: 120, border: '4px solid aqua' }}/>
+                    </PlayerLogo>
+                    <PlayerStatsWrapper>
+                        <PlayerStatsNameSmall>{playerToUpdate.name}</PlayerStatsNameSmall>
+                        <PlayerStatsNameSmall>{playerToUpdate.nationality}</PlayerStatsNameSmall>
+                        <PlayerStatsNameSmall>Age: {playerToUpdate.age}</PlayerStatsNameSmall>
+                        <PlayerStatsNameSmall>Height: {playerToUpdate.height}cm.</PlayerStatsNameSmall>
+                    </PlayerStatsWrapper>
+                    <PlayerStatsWrapper>
+                    <PlayerStatsNameSmall>Position: {playerToUpdate.position}</PlayerStatsNameSmall>
+                    <PlayerStatsNameSmall>Main Foot: {playerToUpdate.preferredFoot}</PlayerStatsNameSmall>
+                    <PlayerStatsNameSmall>Number: {playerToUpdate.number}</PlayerStatsNameSmall>
+                    <PlayerStatsNameSmall>
+                    <TeamRatingTitle>Rating:</TeamRatingTitle> <TeamRating><strong style={{background: playerToUpdate.rating >= 7 ? `green` : playerToUpdate.rating >= 6 && playerToUpdate.rating < 7 ? "yellow" : "red"}}><CountUp endValue={playerToUpdate.rating} duration={500}/></strong></TeamRating><span></span>
+                    </PlayerStatsNameSmall>
+                    </PlayerStatsWrapper>
+                    <PlayerLogo>
+                    <Avatar alt="Image" src={playerToUpdate.teamLogo} sx={{ width: 90, height: 90, border: '4px solid aqua' }}/>
+                    </PlayerLogo>
+                </PlayerDataWrapper>
+                <Holder style={{width: '90vw'}}>
+                <h3>RATINGS</h3>
+                <RatingsContainer>
+                    {/* {playerToUpdate.ratings?.map((el) => {
+                        return(
+                            <RatingWrapper key={el} style={{background: getBackgroundColor(el)}}>{el}</RatingWrapper>
+                        )
+                    })} */}
+                    {latestRatings?.map((el) => {
+                        return(
+                            <RatingWrapper key={el}  style={{background: getBackgroundColor(el)}}>{el}</RatingWrapper>
+                        )
                     })}
-                  </React.Fragment>
-                ))}
-              </>
-            )}
-          </AnimatePresence>
-        </SlotGrid>
-        <h2>Winnings: {winnings}</h2>
-        {/* Button to trigger spin */}
-        <SpinButton disabled={disabled} onClick={handleSpinClick}>Spin</SpinButton>
-      </Section>
-  );
-};
+                </RatingsContainer>
+                <input type="number" style={{width: '200px', height: '50px'}} onChange={((e) => setNewRating(e.target.value))}></input>
+                <Button variant="contained" onClick={updatePlayerRatings}>ADD</Button>
+                <Button variant="contained" onClick={setRating}>SEND</Button>
+                </Holder>
+                <div style={{display: 'flex'}}>
+                  <Column>
+                  <ListItemTitle>ALL GAMES</ListItemTitle>
+                <StyledAbsolute onClick={() => {setSelectedPlayerMenu(false);setPlayerToUpdate({})}}><CloseChatRoomIcon /></StyledAbsolute>
+                
+                {playerToUpdate.injuryType !== null && (
+                  <Holder style={{border: '3px solid red'}}>
+                    <HolderRow>{playerToUpdate.injuryType}</HolderRow>
+                    <HolderRow>{playerToUpdate.injuryReason}</HolderRow>
+                  </Holder>
+                )}
+                  {/* {Object.entries(playerLeagueData).filter(([key, _]) => key !== 'team' && key !== 'league' && key !== "substitutes").map(([key, value]) => (
+                    
+                      <Holder key={key} style={{ marginBottom: '20px' }}>
+                          <h3>{key.toUpperCase()}</h3>
+                          <ListWrapper style={{width: '100%'}}>
+                              
+                              {typeof value === 'object' && !Array.isArray(value) ? (
+                                  Object.entries(value).filter(([value, _]) => value !== 'rating').map(([innerKey, innerValue]) => (
+                                    <div style={{display: 'flex', alignItems: 'center', width: '100%'}}>
+                                      <ListItemWrapper key={innerKey}>
+                                         <ListItemSpan>{innerKey}:</ListItemSpan>  <h3>{innerValue !== null ? innerValue : ''}</h3>
+                                      </ListItemWrapper>
+                                      
+                                    
+                                    {innerKey !== "captain" && (
+                                        <>
+                                    <button variant="contained"
+                                        onClick={() => handleAction(key, innerKey, 'decrement-10')}
+                                        style={{ marginLeft: '0px', width: '75px' }}
+                                    >
+                                        -10
+                                    </button>
+                                        <button variant="contained"
+                                        onClick={() => handleAction(key, innerKey, 'decrement')}
+                                        style={{ marginLeft: '0px', width: 'auto' }}
+                                    >
+                                        -1
+                                    </button>
+                                    <button variant="contained"
+                                    onClick={() => handleAction(key, innerKey, 'decrement-0-1')}
+                                    style={{ marginLeft: '0px', width: 'auto' }}
+                                >
+                                    -0.1
+                                </button>
+                                <button variant="contained"
+                                    onClick={() => handleAction(key, innerKey, 'decrement-0-01')}
+                                    style={{ marginLeft: '0px', width: 'auto' }}
+                                >
+                                    -0.01
+                                </button>
+                                <button variant="contained"
+                                    onClick={() => handleAction(key, innerKey, 'increment-0-01')}
+                                    style={{ marginLeft: '0px', width: 'auto' }}
+                                >
+                                    +0.01
+                                </button>
+                                    <button variant="contained"
+                                    onClick={() => handleAction(key, innerKey, 'increment-0-1')}
+                                    style={{ marginLeft: '0px', width: 'auto' }}
+                                >
+                                    +0.1
+                                </button>
+                                    <button variant="contained"
+                                    onClick={() => handleAction(key, innerKey, 'increment')}
+                                    style={{ marginLeft: '0px', width: 'auto' }}
+                                >
+                                    +1
+                                </button>
+                                <button variant="contained"
+                                    onClick={() => handleAction(key, innerKey, 'increment-10')}
+                                    style={{ marginLeft: '0px', width: 'auto' }}
+                                >
+                                    +10
+                                </button>
+                                <button variant="contained"
+                                    onClick={() => handleAction(key, innerKey, 'increment-50')}
+                                    style={{ marginLeft: '0px', width: 'auto' }}
+                                >
+                                    +50
+                                </button>
+                                <button variant="contained"
+                                    onClick={() => handleAction(key, innerKey, 'increment-100')}
+                                    style={{ marginLeft: '0px', width: 'auto' }}
+                                >
+                                    +100
+                                </button>
+                                </>
+                                    )}
+                                    </div>
+                                  ))
+                              ) : (
+                                
+                                  <ListItemWrapper>{key}: {value !== null ? value.toString() : 'N/A'}</ListItemWrapper>
+                              )}
+                          </ListWrapper>
+                      </Holder>
+                  ))} */}
+                  </Column>
+                  {/* <Column>
+                    <EditPlayerMenu setSelectedPlayerMenu={setSelectedPlayerMenu} setPlayerToUpdate={setPlayerToUpdate} playerLeagueData={playerLeagueData} playerToUpdate={playerToUpdate}/>
+                  </Column> */}
+                <Column>
+                <ListItemTitle>LAST GAME</ListItemTitle>
+                  {Object.entries(latestGamesData).map(([key, value]) => (
+                    value !== null && ( // Check if the value is not null before rendering the key
+                      <Holder key={key} style={{ marginBottom: '20px' }}>
+                        <h3>{key.toUpperCase()}</h3>
+                        <ListWrapper style={{ width: '100%' }}>
 
-export default SlotGame;
+                          {typeof value === 'object' && !Array.isArray(value) ? (
+                            // If value is an object, loop through the inner keys
+                            Object.entries(value).map(([innerKey, innerValue]) => (
+                              innerValue !== null && ( // Ensure the inner value is not null
+                                <div key={innerKey} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                  <ListItemWrapper>
+                                    <ListItemSpan>{innerKey}:</ListItemSpan>
+                                    <h3>{innerValue !== null ? innerValue : ''}</h3>
+                                  </ListItemWrapper>
+                                </div>
+                              )
+                            ))
+                          ) : (
+                            // If it's not an object, just display the value
+                            <ListItemWrapper>{key}: {value !== null ? value.toString() : 'N/A'}</ListItemWrapper>
+                          )}
+                        </ListWrapper>
+                      </Holder>
+                    )
+                  ))}
+                </Column>
+                </div>        
 
-const Section = styled.div`
-  width: 100vw;
-  height: 100vh;
-  background: ${(props) => props.theme.body};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-`;
+                </Section>
+          </motion.div>
+    </AnimatePresence>
+  )
+}
+
+export default PlayerStatsMenu
 

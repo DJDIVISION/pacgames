@@ -675,9 +675,9 @@ useEffect(() => {
     }) */
   }
   
-  useEffect(() => {
+  /* useEffect(() => {
     getFixture();
-  }, [])
+  }, []) */
 
   const expandDiv = () => {
     setIsColumnExpanded(!isColumnExpanded)
@@ -971,6 +971,7 @@ useEffect(() => {
                   : '2px solid white'; 
                 return (
                   <div style={{display: 'flex', alignItems:'center'}}>
+                    <StyledIconButtonHover style={{transform: 'translateX(-5px)'}} onClick={() => openPlayerMenu(player)}><PlayerSettingsIcon /></StyledIconButtonHover>
                   <PlayerWrapper key={player.photo} initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.15 }} id={player.id} style={{border: `${borderStyle}`}}>
@@ -988,7 +989,7 @@ useEffect(() => {
                     <PlayerValue>{player.value}M €</PlayerValue>
                     <PlayerShirtHolder onClick={() => {setOpenEditMenu(true); setPlayerToUpdate(player)}}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{player.rating}</PlayerRating></PlayerShirtHolder>
                   </PlayerWrapper>
-                  <StyledIconButtonHover style={{transform: 'translateX(-5px)'}} onClick={() => openPlayerMenu(player)}><PlayerSettingsIcon /></StyledIconButtonHover>
+                  
                   </div>
                 )
               })}
@@ -1030,7 +1031,7 @@ const Section = styled.div`
   height: 100vh;
   background: ${props => props.theme.body};
   ${props => props.theme.displayFlex};
-  overflow-x: hidden;
+  //overflow-x: hidden;
 `;
 
 
@@ -1048,7 +1049,7 @@ const optionsTwo = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
   params: {
-    league: '135',
+    league: '61',
     season: '2024'
   },
   headers: {
@@ -1091,7 +1092,7 @@ const optionsWWW = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/players',
   params: {
-    id: '419912',
+    id: '196156',
     season: '2024'
   },
   headers: {
@@ -1099,25 +1100,21 @@ const optionsWWW = {
     'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
   }
 };
-
-
 const setData = async () => {
   const str = localStorage.getItem("round")
   const json = JSON.parse(str)
   console.log(json.response)
-  const filter = json.response.filter((bet) => bet.goals.home !== null)
-  console.log(filter)
-  /* const { data, error } = await supabase
-          .from('fixtures')
-          .update([{"9": json.response}])
-          .eq("leagueName", "Bundesliga")
+  const { data, error } = await supabase
+          .from('footballPlayers')
+          .update([{"laLigaStats": json.response}])
+          .eq("id", 196156)
           if (error) {
             console.log(`player with not found`)
           } else {
             console.log(`player with updated`, data)
             message.success("data inserted successfully")
 
-          } */
+          }
   /* const { data, error } = await supabase
           .from('footballPlayers')
           .update([{"stats": json.response}])
@@ -1140,7 +1137,7 @@ const setData = async () => {
 
 const fetchData = async () => {
   try {
-    const response = await axios.request(optionsTwo);
+    const response = await axios.request(optionsWWW);
     console.log(response.data);
     localStorage.setItem("round", JSON.stringify(response.data))
     message.success("data fetched!")

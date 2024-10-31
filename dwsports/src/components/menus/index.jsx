@@ -220,10 +220,52 @@ export const HolderRow = styled.div`
     color: ${props => props.theme.MainAccent};
     font-size: 24px;
     text-align: center;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+export const HolderRowAround = styled.div`
+    width: 80%;
+    height: 40px;
+    color: ${props => props.theme.MainAccent};
+    font-size: 24px;
+    text-align: center;
+    ${props => props.theme.displayFlex};
+    justify-content: space-between;
+`;
+
+export const SmallHolderRowAround = styled.div`
+    width: 80%;
+    height: 40px;
+    color: ${props => props.theme.MainAccent};
+    font-size: 24px;
+    text-align: center;
+    ${props => props.theme.displayFlex};
+    justify-content: space-evenly;
+    h2{
+        font-size: 18px;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
+    }
+`;
+
+export const LeaguesHolder = styled.div`
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 50px;
+`;
+
+export const Row = styled.div`
+    width: 100%;
+    height: auto;
+    ${props => props.theme.displayFlexCenter};
+    justify-content: space-around;
 `;
 
 export const Holder = styled.div`
-    width: 48vw;
+    width: 45vw;
     height: auto;
     border: 2px solid black;
     padding: 20px;

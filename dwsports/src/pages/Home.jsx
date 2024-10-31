@@ -16,7 +16,7 @@ import Hero from '../components/home/Hero'
 
 
 
-const Home = () => {
+const Home = ({toggleTheme}) => {
 
   const {depositMenu, setDepositMenu} = FantasyState();
   const {walletBalance,setWalletBalance} = FantasyState();
@@ -97,7 +97,7 @@ const Home = () => {
   return (
     <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
     
-      <NavBar />
+      <NavBar toggleTheme={toggleTheme}/>
       {/* {walletBalance && <WalletAmount>YOUR BALANCE IS: {walletBalance} TON</WalletAmount>} */}
       {/* {depositMenu && (
         <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} />

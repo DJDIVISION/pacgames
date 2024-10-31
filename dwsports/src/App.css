@@ -51,15 +51,7 @@ input::-webkit-inner-spin-button {
   animation: heavyShake 0.5s ease-in-out;
 }
 
-.menu-container{
-  width: 100vw;
-  max-height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: black;
-  padding: 20px;
-}
+
 
 
 

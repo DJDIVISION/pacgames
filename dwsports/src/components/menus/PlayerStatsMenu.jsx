@@ -7,22 +7,27 @@ import { StyledAbsolute } from '../../pages/indexTwo';
 import { supabase } from '../../supabase/client';
 import {Section, Holder, Title, ListItemWrapper,ListWrapper,ListItemSpan,PlayerDataWrapper,PlayerLogo,PlayerStatsWrapper,
     PlayerStatsName,PlayerStatCountry,StatsCountryLocation,PlayerStatsRating,TeamRatingTitle,TeamRating,PlayerStatsNameSmall,
-    RatingsContainer,RatingWrapper,HolderRow,Column,ListItemTitle
+    RatingsContainer,RatingWrapper,HolderRow,Column,ListItemTitle,LeaguesHolder,HolderRowAround,SmallHolderRowAround,Row,
+
 } from './index'
 import { Avatar, Button, TextField } from '@mui/material';
 import CountUp from '../../animations/CountUp';
 import { message } from 'antd';
 import EditPlayerMenu from './EditPlayerMenu';
+import { StyledButton } from '../../pages';
 
 
 const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
 
     const {playerToUpdate, setPlayerToUpdate} = FantasyState();
+    const {activeLeague, setActiveLeague} = FantasyState();
     const [playerLeagueData, setPlayerLeagueData] = useState({})
+    const [activeLeagueData, setActiveLeagueData] = useState({})
     const [latestGamesData, setLatestGamesData] = useState({})
     const [latestRatings, setLatestRatings] = useState([])
     const [average, setAverage] = useState(null)
     const [newRating, setNewRating] = useState("")
+    const [leagues, setLeagues] = useState([])
     
     const handleAction = (section, key, action) => {
         setPlayerLeagueData((prevData) => {
@@ -163,26 +168,45 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
           console.log(data)
           setLatestRatings(data[0].ratings)
           if(data[0].laLigaStats[0] !== null){
-            setPlayerLeagueData(data[0].laLigaStats[0] )
+            
+            setPlayerLeagueData(data[0].laLigaStats[0].statistics )
           } else {
             console.log("no such data")
           }
-          if(data[0].latestMatches !== null){
+          /* if(data[0].latestMatches !== null){
             setLatestGamesData(data[0].latestMatches[0] )
           } else {
             console.log("no such data")
-          }
-            
-            
-            console.log(data[0].ratings)
-            console.log(data[0].latestMatches[0])
-            const str = JSON.stringify(data[0].laLigaStats[0])
-            localStorage.setItem("mainStats", str);
-            //setPlayerChampionsData(data[0].championsStats[0])            
+          }   */  
         }
   }
 
- 
+  const setData = () => {
+    if(playerLeagueData.length > 0){
+      const leagues = []
+      playerLeagueData.forEach((league) => {
+        leagues.push(league.league.name)
+        if(league.league.name === activeLeague){
+          setActiveLeagueData(league)
+        }
+      })
+      setLeagues(leagues)
+    }
+  }
+
+
+  useEffect(() => {
+    setData();
+  }, [playerLeagueData])
+
+  const setLeague = (league) => {
+    const filter = playerLeagueData.filter((el) => el.league.name === league)
+    setActiveLeagueData(filter[0])
+  }
+
+  useEffect(() => {
+    console.log(activeLeagueData)
+  }, [activeLeagueData])
 
   const setRating = async () => {
     if(latestGamesData.games.rating && latestGamesData.games.rating > 0){
@@ -218,29 +242,9 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
       setPlayerToUpdate([]); 
   }
 
-  /* console.log(playerLeagueData)
-  console.log(latestGamesData) */
+  console.log(playerToUpdate.id)
 
- /*  const filterObject = (obj) => {
-    let result = {};
   
-    Object.entries(obj).forEach(([key, value]) => {
-      if (typeof value === 'object' && value !== null) {
-        // Recursively filter nested objects
-        const nestedResult = filterObject(value);
-        if (Object.keys(nestedResult).length > 0) {
-          result[key] = nestedResult; // Only add if there are valid nested results
-        }
-      } else if (value !== null && value > 0) {
-        result[key] = value; // Only add the property if it's not null and greater than 0
-      }
-    });
-  
-    return result;
-  };
-
-  const filteredStats = filterObject(latestGamesData);
-  console.log(filteredStats); */
   
 
   return (
@@ -272,157 +276,110 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     <Avatar alt="Image" src={playerToUpdate.teamLogo} sx={{ width: 90, height: 90, border: '4px solid aqua' }}/>
                     </PlayerLogo>
                 </PlayerDataWrapper>
-                <Holder style={{width: '90vw'}}>
-                <h3>RATINGS</h3>
-                <RatingsContainer>
-                    {/* {playerToUpdate.ratings?.map((el) => {
-                        return(
-                            <RatingWrapper key={el} style={{background: getBackgroundColor(el)}}>{el}</RatingWrapper>
-                        )
-                    })} */}
-                    {latestRatings?.map((el) => {
-                        return(
-                            <RatingWrapper key={el}  style={{background: getBackgroundColor(el)}}>{el}</RatingWrapper>
-                        )
-                    })}
-                </RatingsContainer>
-                <input type="number" style={{width: '200px', height: '50px'}} onChange={((e) => setNewRating(e.target.value))}></input>
-                <Button variant="contained" onClick={updatePlayerRatings}>ADD</Button>
-                <Button variant="contained" onClick={setRating}>SEND</Button>
-                </Holder>
-                <div style={{display: 'flex'}}>
-                  <Column>
-                  <ListItemTitle>ALL GAMES</ListItemTitle>
                 <StyledAbsolute onClick={() => {setSelectedPlayerMenu(false);setPlayerToUpdate({})}}><CloseChatRoomIcon /></StyledAbsolute>
-                
                 {playerToUpdate.injuryType !== null && (
-                  <Holder style={{border: '3px solid red'}}>
+                  <Holder style={{border: '3px solid red', marginBottom: '50px'}}>
                     <HolderRow>{playerToUpdate.injuryType}</HolderRow>
                     <HolderRow>{playerToUpdate.injuryReason}</HolderRow>
                   </Holder>
-                )}
-                  {Object.entries(playerLeagueData).filter(([key, _]) => key !== 'team' && key !== 'league' && key !== "substitutes").map(([key, value]) => (
-                    
-                      <Holder key={key} style={{ marginBottom: '20px' }}>
-                          <h3>{key.toUpperCase()}</h3>
-                          <ListWrapper style={{width: '100%'}}>
-                              
-                              {typeof value === 'object' && !Array.isArray(value) ? (
-                                  Object.entries(value).filter(([value, _]) => value !== 'rating').map(([innerKey, innerValue]) => (
-                                    <div style={{display: 'flex', alignItems: 'center', width: '100%'}}>
-                                      <ListItemWrapper key={innerKey}>
-                                         <ListItemSpan>{innerKey}:</ListItemSpan>  <h3>{innerValue !== null ? innerValue : ''}</h3>
-                                      </ListItemWrapper>
-                                      
-                                    
-                                    {/* {innerKey !== "captain" && (
-                                        <>
-                                    <button variant="contained"
-                                        onClick={() => handleAction(key, innerKey, 'decrement-10')}
-                                        style={{ marginLeft: '0px', width: '75px' }}
-                                    >
-                                        -10
-                                    </button>
-                                        <button variant="contained"
-                                        onClick={() => handleAction(key, innerKey, 'decrement')}
-                                        style={{ marginLeft: '0px', width: 'auto' }}
-                                    >
-                                        -1
-                                    </button>
-                                    <button variant="contained"
-                                    onClick={() => handleAction(key, innerKey, 'decrement-0-1')}
-                                    style={{ marginLeft: '0px', width: 'auto' }}
-                                >
-                                    -0.1
-                                </button>
-                                <button variant="contained"
-                                    onClick={() => handleAction(key, innerKey, 'decrement-0-01')}
-                                    style={{ marginLeft: '0px', width: 'auto' }}
-                                >
-                                    -0.01
-                                </button>
-                                <button variant="contained"
-                                    onClick={() => handleAction(key, innerKey, 'increment-0-01')}
-                                    style={{ marginLeft: '0px', width: 'auto' }}
-                                >
-                                    +0.01
-                                </button>
-                                    <button variant="contained"
-                                    onClick={() => handleAction(key, innerKey, 'increment-0-1')}
-                                    style={{ marginLeft: '0px', width: 'auto' }}
-                                >
-                                    +0.1
-                                </button>
-                                    <button variant="contained"
-                                    onClick={() => handleAction(key, innerKey, 'increment')}
-                                    style={{ marginLeft: '0px', width: 'auto' }}
-                                >
-                                    +1
-                                </button>
-                                <button variant="contained"
-                                    onClick={() => handleAction(key, innerKey, 'increment-10')}
-                                    style={{ marginLeft: '0px', width: 'auto' }}
-                                >
-                                    +10
-                                </button>
-                                <button variant="contained"
-                                    onClick={() => handleAction(key, innerKey, 'increment-50')}
-                                    style={{ marginLeft: '0px', width: 'auto' }}
-                                >
-                                    +50
-                                </button>
-                                <button variant="contained"
-                                    onClick={() => handleAction(key, innerKey, 'increment-100')}
-                                    style={{ marginLeft: '0px', width: 'auto' }}
-                                >
-                                    +100
-                                </button>
-                                </>
-                                    )} */}
-                                    </div>
-                                  ))
-                              ) : (
-                                
-                                  <ListItemWrapper>{key}: {value !== null ? value.toString() : 'N/A'}</ListItemWrapper>
-                              )}
-                          </ListWrapper>
-                      </Holder>
-                  ))}
-                  </Column>
-                  {/* <Column>
-                    <EditPlayerMenu setSelectedPlayerMenu={setSelectedPlayerMenu} setPlayerToUpdate={setPlayerToUpdate} playerLeagueData={playerLeagueData} playerToUpdate={playerToUpdate}/>
-                  </Column> */}
-                <Column>
-                <ListItemTitle>LAST GAME</ListItemTitle>
-                  {Object.entries(latestGamesData).map(([key, value]) => (
-                    value !== null && ( // Check if the value is not null before rendering the key
-                      <Holder key={key} style={{ marginBottom: '20px' }}>
-                        <h3>{key.toUpperCase()}</h3>
-                        <ListWrapper style={{ width: '100%' }}>
+                )}   
+                <LeaguesHolder>    
+                {leagues && leagues.map((league) => {
+                  return(
+                    <StyledButton style={{fontSize: '10px', padding: '5px 5px'}} onClick={() => setLeague(league)}>{league}</StyledButton>
+                  )
+                })}
+                </LeaguesHolder> 
+                <Holder>
+                <HolderRowAround>
+                <Avatar alt="Image" src={activeLeagueData?.league?.logo} sx={{ width: 60, height: 60, border: '2px solid aqua', background: 'white'}}/>
+                <h3>{activeLeagueData?.league?.name}</h3>
+                <Avatar alt="Image" src={activeLeagueData?.team?.logo} sx={{ width: 60, height: 60, border: '2px solid aqua', background: 'white' }} />
+                </HolderRowAround>
+                <SmallHolderRowAround><h2>( {activeLeagueData?.league?.country} )</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>TEAM: {activeLeagueData?.team?.name}</h2></SmallHolderRowAround>
+                </Holder>
+                <Row>
+                <Holder>
+                <h3>GAMES</h3>
+                <SmallHolderRowAround><h2>Appearences: {activeLeagueData?.games?.appearences}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Lineups: {activeLeagueData?.games?.lineups}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Minutes played: {activeLeagueData?.games?.minutes}</h2></SmallHolderRowAround>
+                {activeLeagueData?.games?.rating !== null && <SmallHolderRowAround><h2>Rating: {(parseFloat(activeLeagueData?.games?.rating))}</h2></SmallHolderRowAround>}
+                </Holder>
+                <Holder>
+                <h3>GOALS</h3>
+                <SmallHolderRowAround><h2>Goals: {activeLeagueData?.goals?.total !== null ? activeLeagueData?.goals?.total : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Assists: {activeLeagueData?.goals?.assists !== null ? activeLeagueData?.goals?.assists : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Goals conceded: {activeLeagueData?.goals?.conceded !== null ? activeLeagueData?.goals?.conceded : 0}</h2></SmallHolderRowAround>
+                </Holder>
+                </Row>
 
-                          {typeof value === 'object' && !Array.isArray(value) ? (
-                            // If value is an object, loop through the inner keys
-                            Object.entries(value).map(([innerKey, innerValue]) => (
-                              innerValue !== null && ( // Ensure the inner value is not null
-                                <div key={innerKey} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                                  <ListItemWrapper>
-                                    <ListItemSpan>{innerKey}:</ListItemSpan>
-                                    <h3>{innerValue !== null ? innerValue : ''}</h3>
-                                  </ListItemWrapper>
-                                </div>
-                              )
-                            ))
-                          ) : (
-                            // If it's not an object, just display the value
-                            <ListItemWrapper>{key}: {value !== null ? value.toString() : 'N/A'}</ListItemWrapper>
-                          )}
-                        </ListWrapper>
-                      </Holder>
-                    )
-                  ))}
-                </Column>
-                </div>        
+                <Row>
+                <Holder>
+                <h3>SHOTS</h3> 
+                <SmallHolderRowAround><h2>Total shots: {activeLeagueData?.shots?.total !== null ? activeLeagueData?.shots?.total : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>On target: {activeLeagueData?.shots?.on !== null ? activeLeagueData?.shots?.on : 0}</h2></SmallHolderRowAround>
+                </Holder>
+                <Holder>
+                <h3>DUELS</h3> 
+                <SmallHolderRowAround><h2>Total duels: {activeLeagueData?.duels?.total !== null ? activeLeagueData?.duels?.total : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Won: {activeLeagueData?.duels?.won !== null ? activeLeagueData?.duels?.won : 0}</h2></SmallHolderRowAround>
+                </Holder>
+                </Row>
 
+                <Row>
+                <Holder>
+                <h3>PASSES</h3> 
+                <SmallHolderRowAround><h2>Total Passes: {activeLeagueData?.passes?.total !== null ? activeLeagueData?.passes?.total : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Key Passes: {activeLeagueData?.passes?.key !== null ? activeLeagueData?.passes?.key : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Accuracy: {activeLeagueData?.passes?.accuracy !== null ? activeLeagueData?.passes?.accuracy + "%" : "N/A"}</h2></SmallHolderRowAround>
+                </Holder>
+                <Holder>
+                <h3>TACKLES</h3> 
+                <SmallHolderRowAround><h2>Total: {activeLeagueData?.tackles?.total !== null ? activeLeagueData?.tackles?.total : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Blocks: {activeLeagueData?.tackles?.blocks !== null ? activeLeagueData?.tackles?.blocks : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Interceptions: {activeLeagueData?.tackles?.interceptions !== null ? activeLeagueData?.tackles?.interceptions : 0}</h2></SmallHolderRowAround>
+                </Holder>
+                </Row>                
+
+                <Row>
+                <Holder>
+                <h3>DRIBBLES</h3> 
+                <SmallHolderRowAround><h2>Attempts: {activeLeagueData?.dribbles?.attempts !== null ? activeLeagueData?.dribbles?.attempts : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Successful: {activeLeagueData?.dribbles?.success !== null ? activeLeagueData?.dribbles?.success : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Past: {activeLeagueData?.dribbles?.past !== null ? activeLeagueData?.dribbles?.past : 0}</h2></SmallHolderRowAround>
+                </Holder>
+                <Holder>
+                <h3>SUBSTITUTES</h3> 
+                <SmallHolderRowAround><h2>In: {activeLeagueData?.substitutes?.in !== null ? activeLeagueData?.substitutes?.in : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Out: {activeLeagueData?.substitutes?.out !== null ? activeLeagueData?.substitutes?.out : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Bench: {activeLeagueData?.substitutes?.bench !== null ? activeLeagueData?.substitutes?.bench : 0}</h2></SmallHolderRowAround>
+                </Holder>
+                </Row>
+
+                <Row>
+                <Holder>
+                <h3>FOULS</h3> 
+                <SmallHolderRowAround><h2>Committed: {activeLeagueData?.fouls?.committed !== null ? activeLeagueData?.fouls?.committed : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Drawn: {activeLeagueData?.fouls?.drawn !== null ? activeLeagueData?.fouls?.drawn : 0}</h2></SmallHolderRowAround>
+                </Holder>
+                <Holder>
+                <h3>CARDS</h3> 
+                <SmallHolderRowAround><h2>Yellow: {activeLeagueData?.cards?.yellow}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Red: {activeLeagueData?.cards?.red}</h2></SmallHolderRowAround>
+                </Holder>
+                </Row>
+
+                <Row>
+                <Holder>
+                <h3>PENALTY</h3> 
+                <SmallHolderRowAround><h2>Won: {activeLeagueData?.penalty?.won !== null ? activeLeagueData?.penalty?.won : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Committed: {activeLeagueData?.penalty?.commited !== null ? activeLeagueData?.penalty?.commited : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Scored: {activeLeagueData?.penalty?.scored !== null ? activeLeagueData?.penalty?.scored : 0}</h2></SmallHolderRowAround>
+                <SmallHolderRowAround><h2>Missed: {activeLeagueData?.penalty?.missed !== null ? activeLeagueData?.penalty?.missed : 0}</h2></SmallHolderRowAround>
+                </Holder> 
+                </Row>
                 </Section>
           </motion.div>
     </AnimatePresence>

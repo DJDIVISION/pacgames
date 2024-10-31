@@ -15,6 +15,28 @@ import BJBack from '../assets/bjTable.jpg';
 import emptyChip from '../assets/chips/emptyChip.png'
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+
+export const CustomIconButton = styledTwo(IconButton)(({ theme }) => ({
+    outline: 'none',
+    zIndex: 9999, // Remove outline
+    '&:focus': {
+      outline: 'none', // Remove outline when focused
+    },
+  }));
+
+export const LightIcon = styled(LightModeIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+    }
+`;
+
+export const DarkIcon = styled(DarkModeIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+    }
+`;
 
 export const NavIcon = styled.div`
     width: 100%;
@@ -73,9 +95,21 @@ export const Burguer = styled(MenuOutlinedIcon)`
 `;
 export const CloseBurguer = styled(MenuOpenIcon)`
     &&&{
-        color: white;
+        color: ${props => props.theme.text};
         font-weight: bold;
         scale: 1.5;
+    }
+`;
+
+export const StyledMenu = styled(motion.div)`
+    &&&{
+    background-color: ${({ theme }) => theme.body};
+    width: 100vw;
+    max-height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px;
     }
 `;
 
@@ -127,6 +161,7 @@ export const StaggerAvatarName = styled(motion.div)`
     color: ${props => props.theme.text};
     font-size: 20px;
     text-align: center;
+    font-weight: bold;
 `;
 
 export const StaggerRow = styled(motion.div)`
@@ -833,7 +868,7 @@ export const SmallStatsWrapper = styled(motion.div)`
     min-height: ${props => (props.expanded ? "330px" : "130px")};
     border: 1px solid white;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.8);
+    background: ${props => props.theme.cardTwo};
     backdrop-filter: blur(10px);
     margin: 10px 0;
     ${props => props.theme.displayFlexColumn};

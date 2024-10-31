@@ -1,12 +1,15 @@
 import React, {useState,useEffect} from 'react'
 import {Nav,NavColumn,NavIcon,NavText,SmartNav,Burguer,CloseBurguer,StaggerContainer,StaggerRow,
-    StaggerAvatarRow,StaggerAvatarHolder,StaggerAvatarName,StaggerImageHolder,TonWrapper
+    StaggerAvatarRow,StaggerAvatarHolder,StaggerAvatarName,StaggerImageHolder,TonWrapper,
+    CustomIconButton,
+    LightIcon,StyledMenu,
+    DarkIcon
 } from './index'
 import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
 import { TonClient, Address } from '@ton/ton';
 import {Link as LinkR} from 'react-router-dom'
 import {motion,AnimatePresence} from 'framer-motion'
-
+import  { useTheme } from 'styled-components'
 import sportsIcon from '../assets/sportsIcon.png'
 import lottery from '../assets/bingo.png'
 import chip from '../assets/chip.png'
@@ -23,7 +26,7 @@ import { supabase } from '../supabase/client';
 import { useAuth } from '../pages/functions'
 import { FantasyState } from '../context/FantasyContext';
 
-const NavBar = () => {
+const NavBar = ({toggleTheme}) => {
 
     const [active, setActive] = useState("menuOne");
     const [scrollNavDown, setScrollNavDown] = useState(false);
@@ -37,6 +40,7 @@ const NavBar = () => {
     const { connected, account } = useTonConnectUI();
     const {walletBalance,setWalletBalance} = FantasyState();
     const [error, setError] = useState(null);
+    const theme = useTheme();
     
 
     const client = new TonClient({
@@ -118,7 +122,6 @@ const NavBar = () => {
         exit: { height: 0, opacity: 0, transition: { duration: 1 } }
     }
 
-
   return (
     <>
     <Nav scrollNavDown={scrollNavDown}>
@@ -170,7 +173,7 @@ const NavBar = () => {
     <TonConnectButton />
     {open && (
         <AnimatePresence>
-        <motion.div className="menu-container" scrollNavDown={scrollNavDown} variants={item}
+        <StyledMenu scrollNavDown={scrollNavDown} variants={item} 
         initial="initial"
         animate="animate"
         exit="exit">
@@ -184,7 +187,7 @@ const NavBar = () => {
                   transition: { staggerChildren: 0.3 },
                 },
               }}>
-                <StaggerAvatarRow initial={{ opacity: 0, y: 20 }}
+                <StaggerAvatarRow initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }} style={{color: 'white'}}>
                        {user ? (
@@ -198,37 +201,34 @@ const NavBar = () => {
                         <div></div>
                     )} 
                           </StaggerAvatarRow>
-                          <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 20 }}
+                          <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.7 }} style={{ color: 'white' }}>
+                              transition={{ delay: 0.7 }} >
                               <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
                               <StaggerAvatarName>SPORTS</StaggerAvatarName>
                           </StaggerRow></LinkR>
-                          <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 20 }}
+                          <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.9 }} style={{ color: 'white' }}>
+                              transition={{ delay: 0.9 }} >
                               <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
                               <StaggerAvatarName>FANTASY FOOTBALL</StaggerAvatarName>
                           </StaggerRow></LinkR>
-                          <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 20 }}
+                          <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 1.1 }} style={{ color: 'white' }}>
+                              transition={{ delay: 1.1 }} >
                               <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
                               <StaggerAvatarName>CASINO</StaggerAvatarName>
                           </StaggerRow></LinkR>
-                          {/* <StaggerRow initial={{ opacity: 0, y: 20 }}
+                          <StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 1.3 }} style={{ color: 'white' }}>
-                              <StaggerImageHolder><img src={deposit} alt="casino" /></StaggerImageHolder>
-                              <StaggerAvatarName>DEPOSIT</StaggerAvatarName>
+                              transition={{ delay: 1.3 }}> 
+                          <StaggerImageHolder>
+                          {theme === 'dark' ? <LightIcon onClick={toggleTheme}/> : <DarkIcon onClick={toggleTheme}/>}
+                          </StaggerImageHolder>
+                          <StaggerAvatarName>SWITCH THEME</StaggerAvatarName>
                           </StaggerRow>
-                          <StaggerRow initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 1.5 }} style={{ color: 'white' }}>
-                             
-                          </StaggerRow> */}
                       </StaggerContainer>
-                  </motion.div>
+                  </StyledMenu>
                   </AnimatePresence>
         )}
         </SmartNav>

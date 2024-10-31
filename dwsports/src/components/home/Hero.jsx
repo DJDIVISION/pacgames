@@ -245,7 +245,7 @@ const ReferralName = styled.div`
     font-size: 24px;
     text-align: center;
     padding: 0 10px;
-    
+    font-weight: bold;
     @media(max-width: 968px){
         font-size: 16px;
         
@@ -260,7 +260,7 @@ const ReferralMail = styled.div`
     font-size: 24px;
     text-align: center;
     padding: 0 10px;
-    
+    font-weight: bold;
     white-space: nowrap;      /* Prevents text from wrapping to the next line */
     overflow: hidden;         /* Ensures content that overflows the container is hidden */
     text-overflow: ellipsis;
@@ -293,6 +293,7 @@ const TopHeader = styled.div`
     border-radius: 10px;
     position: relative;
     ${props => props.theme.displayFlexCenter};
+    background: ${props => props.theme.card};
     margin: 10px;
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
@@ -323,6 +324,7 @@ const Header = styled(motion.div)`
     margin: 10px;
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
+    background: ${props => props.theme.cardTwo};
 `;
 
 const ContainerTitle = styled.div`
@@ -335,6 +337,7 @@ const ContainerTitle = styled.div`
     //${props => props.theme.pacfont};
     font-size: 1.9rem;
     letter-spacing: 3;
+    font-weight: bold;
 `;
 
 const ContainerSamllTitle = styled.div`
@@ -347,6 +350,7 @@ const ContainerSamllTitle = styled.div`
     //${props => props.theme.pacfont};
     font-size: 1.5rem;
     letter-spacing: 3;
+    font-weight: bold;
 `;
 
 
@@ -358,6 +362,7 @@ const ContainerButtons = styled.div`
 
 const LinkInputField = styled.input`
   padding: 0 15px;
+  font-weight: bold;
   border: ${props => props.theme.pacBorder};
   border-radius: 10px;
   outline: none;
@@ -375,12 +380,12 @@ const LinkInputField = styled.input`
 const CopyClipboard = styled(ContentCopyRoundedIcon)`
     &&&{
         margin: 10px;
-        color: ${props => props.theme.MainAccent};
+        color: ${props => props.theme.copyIcon};
     }
 `;
 const Send = styled(SendIcon)`
     &&&{
         margin: 10px;
-        color: ${props => props.theme.MainAccent};
+        color: ${props => props.theme.copyIcon};
     }
 `;

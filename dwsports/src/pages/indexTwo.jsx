@@ -548,7 +548,7 @@ export const StyledAbsolute = styled(IconButton)`
     @media(max-width: 968px){
       transform: scale(0.8);
       top: 10px;
-      right: 10px;
+      left: 10px;
     }
   }
 `;
