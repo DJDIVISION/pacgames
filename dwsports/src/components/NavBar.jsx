@@ -190,26 +190,26 @@ const NavBar = ({toggleTheme}) => {
                   transition: { staggerChildren: 0.3 },
                 },
               }}>
-                <StaggerAvatarRow initial={{ opacity: 0, y: 40 }}
+                {/* <StaggerAvatarRow initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }} style={{color: 'white'}}>
                        {user ? (
                         <>
                         <StaggerAvatarHolder>
-                        <Avatar alt="Image" src={user.user_metadata.avatar_url} sx={{ width: 80, height: 80 }} onClick={handleLogout}/>
+                        <Avatar alt="Image" src={user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} onClick={handleLogout}/>
                         </StaggerAvatarHolder>
                         <StaggerAvatarName>{user.user_metadata.name}</StaggerAvatarName>
                         </>
                     ): (
                         <div></div>
                     )} 
-                          </StaggerAvatarRow>
-                          {/* <LinkR to="/bets"> */}<StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {setDepositMenu(true)}}
+                          </StaggerAvatarRow> */}
+                          <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }} 
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.7 }} >
                               <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
                               <StaggerAvatarName>SPORTS</StaggerAvatarName>
-                          </StaggerRow>{/* </LinkR> */}
+                          </StaggerRow></LinkR>
                           <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.9 }} >
@@ -222,9 +222,15 @@ const NavBar = ({toggleTheme}) => {
                               <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
                               <StaggerAvatarName>CASINO</StaggerAvatarName>
                           </StaggerRow></LinkR>
+                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => setDepositMenu(true)}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 1.3 }} >
+                              <StaggerImageHolder><img src={deposit} alt="fantasy" /></StaggerImageHolder>
+                              <StaggerAvatarName>DEPOSIT</StaggerAvatarName>
+                          </StaggerRow>
                           <StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 1.3 }}> 
+                              transition={{ delay: 1.5 }}> 
                           <StaggerImageHolder>
                           {theme === 'dark' ? <LightIcon onClick={toggleTheme}/> : <DarkIcon onClick={toggleTheme}/>}
                           </StaggerImageHolder>
