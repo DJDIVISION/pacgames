@@ -50,7 +50,7 @@ export const BalanceDisplay = ({ balance }) => {
       animate={{ opacity: [0, 1] }}
       transition={{ duration: 0.5 }}
     >
-     <SmallTextHolder>BALANCE: ${displayBalance}</SmallTextHolder>
+     <SmallTextHolder>BALANCE: {displayBalance} PGZ</SmallTextHolder>
     </motion.div>
   );
 };

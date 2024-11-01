@@ -146,7 +146,11 @@ export const DepositWrapper = styled(motion.div)`
     text-align: center;
     border-radius: 10px;
     padding: 10px;
-    transform: translateY(-20vh);
+    transform: translateY(-10vh);
+    span{
+        color: ${props => props.theme.MainAccent};
+        margin: 5px;
+    }
 `;
 
 export const DepositBigTitle = styled.div`
@@ -156,15 +160,19 @@ export const DepositBigTitle = styled.div`
     font-weight: bold;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
-    transform: translateY(-15vh);
+    transform: translateY(-5vh);
 `;
 
 export const DepositTitle = styled.div`
     width: 100%;
-    height: 20%;
+    height: 16.6%;
     font-size: 20px;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
+    span{
+        color: ${props => props.theme.MainAccent};
+        margin: 5px;
+    }
 `;
 
 export const Section = styled.div`

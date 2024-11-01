@@ -11,6 +11,7 @@ import { mnemonicNew, mnemonicToPrivateKey } from "@ton/crypto";
 /* import TonWeb from 'tonweb'; */
 import axios from 'axios';
 import { FantasyState } from '../../context/FantasyContext';
+import { BalanceDisplay } from '../../pages/functions';
 
 
 const DepositMenu = ({depositMenu,setDepositMenu}) => {
@@ -22,7 +23,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const wallet = useTonWallet();
     const {balance, setBalance} = FantasyState();
     const {walletBalance,setWalletBalance} = FantasyState();
-    console.log(wallet)
+    console.log("balance", balance)
 
     
  
@@ -47,6 +48,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             tonConnectUI.sendTransaction(myTransaction)
                 .then(() => {
                     setTransactionStatus('Transaction sent successfully.');
+                    setBalance((prevBalance) => prevBalance + (amount * 1000));
                 })
                 .catch(error => {
                     console.error('Transaction failed:', error);
@@ -94,6 +96,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         <DepositWrapper>
             <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
             <DepositTitle><LinkInputField disabled={true} value={teamWalletAddress}/></DepositTitle>
+            <DepositTitle>YOUR BALANCE: {parseFloat(walletBalance)}<span>TON</span></DepositTitle>
             <DepositTitle>AMOUNT TO DEPOSIT:</DepositTitle>
             <DepositTitle><BetInput style={{borderRadius: '10px'}} value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value))}/></DepositTitle>
@@ -104,9 +107,9 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             <DepositTitle>
                 <StyledButton onClick={handleSendTransaction}>DEPOSIT</StyledButton>
             </DepositTitle>
-            {transactionStatus}
+            <span>{transactionStatus}</span>
         </DepositWrapper>
-     
+        <BalanceDisplay balance={balance}/>
     </motion.div>
     </AnimatePresence>
   )

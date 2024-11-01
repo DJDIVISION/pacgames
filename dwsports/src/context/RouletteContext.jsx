@@ -8,7 +8,7 @@ const RouletteContext = ({children}) => {
 
     
     const [myId, setMyId] = useState(null);
-    const [balance, setBalance] = useState(5000)
+    const [balance, setBalance] = useState(0)
     const [placedBet, setPlacedBet] = useState(0)
     const [latestNumbers, setLatestNumbers] = useState(LatestNumbers)
     const [winningNumber, setWinningNumber] = useState(null)

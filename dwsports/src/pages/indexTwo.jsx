@@ -125,10 +125,10 @@ export const BigTextWinnings = styled.div`
 `;
 
 export const SmallTextHolder = styled.div`
-  width: 60%;
-  height: 100%;
+  min-width: 90%;
+  height: 80px;
   color: ${props => props.theme.text};
-  font-size: 12px;
+  font-size: 32px;
   ${props => props.theme.displayFlexCenter};
   font-weight: bold;
   text-align: center;
