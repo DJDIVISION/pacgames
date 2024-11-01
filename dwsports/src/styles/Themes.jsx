@@ -8,7 +8,7 @@ export const lightTheme = {
     cardTwo: '#c0eaf0', // black shade
     bodyRgba: '255, 255, 255',
     textRgba: '32,32,32',
-
+    darkBg: '#ffffff',
     grey: '#bebebe',
     MainAccent: '#96e6eb',
     fontxs: '0.75em',
@@ -46,6 +46,7 @@ export const lightTheme = {
   export const darkTheme = {
     body: '#202020',
     text: '#fff', 
+    darkBg: '#000000', 
     card: '#0f0d0d',
     copyIcon: 'aqua',
     cardTwo: '#302c2c',

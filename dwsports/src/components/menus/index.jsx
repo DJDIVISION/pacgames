@@ -139,14 +139,32 @@ export const BetSection = styled.div`
 `;
 
 export const DepositWrapper = styled(motion.div)`
-    width: 50vw;
+    width: 90%;
     height: 50vh;
     border: 2px solid ${props => props.theme.text};
     ${props => props.theme.displayFlexColumn};
-    margin-top: 10vh;
+    text-align: center;
     border-radius: 10px;
-    padding: 20px;
+    padding: 10px;
+    transform: translateY(-20vh);
+`;
+
+export const DepositBigTitle = styled.div`
+    width: 100%;
+    height: 20%;
+    font-size: 32px;
+    font-weight: bold;
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexCenter};
+    transform: translateY(-15vh);
+`;
+
+export const DepositTitle = styled.div`
+    width: 100%;
+    height: 20%;
     font-size: 20px;
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexCenter};
 `;
 
 export const Section = styled.div`
@@ -293,16 +311,16 @@ export const LinkInputField = styled.input`
     color: ${props => props.theme.pacColor};
     background-color: transparent;
     box-shadow: ${props => props.theme.pacBoxShadow};
-    width: 80%;
+    width: 100%;
     z-index: 4000;
-    height: 60px;
-    margin: 10px;
+    height: 80%;
+    
 `;
 
 export const DepositRow = styled.div`
     width: 100%;
-    height: 20%;
-    ${props => props.theme.displayFlexCenter};
+    height: 30%;
+    ${props => props.theme.displayFlexColumn};
     margin: 10px;
 `;
 

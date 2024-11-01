@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client';
 import { useAuth } from '../pages/functions'
 import { FantasyState } from '../context/FantasyContext';
+import DepositMenu from './menus/DepositMenu';
 
 const NavBar = ({toggleTheme}) => {
 
@@ -41,6 +42,7 @@ const NavBar = ({toggleTheme}) => {
     const {walletBalance,setWalletBalance} = FantasyState();
     const [error, setError] = useState(null);
     const theme = useTheme();
+    const {walletAddress, setWalletAddress} = FantasyState();
     
 
     const client = new TonClient({
@@ -69,6 +71,7 @@ const NavBar = ({toggleTheme}) => {
             const fetchBalance = async () => {
                 try {
                     const address = Address.parse(wallet.account.address);
+                    setWalletAddress(wallet)
                     const balanceResult = await client.getBalance(address);
                     console.log(balanceResult)
                     const balanceInTON = Number(balanceResult) / 1e9; // Convert nanoTONs to TON
@@ -201,12 +204,12 @@ const NavBar = ({toggleTheme}) => {
                         <div></div>
                     )} 
                           </StaggerAvatarRow>
-                          <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }}
+                          {/* <LinkR to="/bets"> */}<StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {setDepositMenu(true)}}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.7 }} >
                               <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
                               <StaggerAvatarName>SPORTS</StaggerAvatarName>
-                          </StaggerRow></LinkR>
+                          </StaggerRow>{/* </LinkR> */}
                           <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.9 }} >
@@ -229,7 +232,11 @@ const NavBar = ({toggleTheme}) => {
                           </StaggerRow>
                       </StaggerContainer>
                   </StyledMenu>
+                  {depositMenu && (
+                    <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} />
+                  )}
                   </AnimatePresence>
+                  
         )}
         </SmartNav>
     </>

@@ -1,10 +1,10 @@
 import React,{useEffect, useState} from 'react'
 import {motion, AnimatePresence} from 'framer-motion'
-import { CloseStats,BetSection,DepositWrapper,LinkInputField,DepositRow } from './index' 
+import { CloseStats,BetSection,DepositWrapper,LinkInputField,DepositRow,DepositTitle,DepositBigTitle } from './index' 
 import {BetInput} from '../../components/index'
-import { TonConnectUI } from '@tonconnect/ui-react';
 import { StyledButton } from '../../pages';
-import { TonClient, WalletContractV4, internal, fromNano } from "@ton/ton";
+import { TonClient, Address, internal } from '@ton/ton';
+import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { mnemonicNew, mnemonicToPrivateKey } from "@ton/crypto";
 
 
@@ -16,28 +16,48 @@ import { FantasyState } from '../../context/FantasyContext';
 const DepositMenu = ({depositMenu,setDepositMenu}) => {
 
     const [amount, setAmount] = useState(0);
+    const [tonConnectUI, setOptions] = useTonConnectUI();
+    const [transactionStatus, setTransactionStatus] = useState('');
     const [client, setClient] = useState(null);
-    const {walletAddress, setWalletAddress} = FantasyState();
+    const wallet = useTonWallet();
     const {balance, setBalance} = FantasyState();
+    const {walletBalance,setWalletBalance} = FantasyState();
+    console.log(wallet)
 
-    useEffect(() => {
-        // Initialize TON client
-        const tonClient = new TonClient({
-          endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC', // or your preferred endpoint
-          apiKey: 'c4d8cb87-4cf0-4d8a-a173-2d945c113edc' // replace with your API key
-        });
-        setClient(tonClient);
-      }, []);
+    
  
     const closeDepositMenu = () => {
         setDepositMenu(false)
     }
-    const teamWalletAddress = "0QA9CPg5-7jCfSpvBiyBjcQL4wmKFm3nZkr0R21EqcuxauVE"
+    const teamWalletAddress = "kQDou06VuEO-u3S56M3TnXjQG98hN552PKyyltQJzbkqi06c"
     
-    
-    console.log(client)
-    console.log(walletAddress)
-    console.log("balance", balance)
+    const handleSendTransaction = () => {
+        // Transaction details based on tonConnectUI structure
+        const myTransaction = {
+            validUntil: Math.floor(Date.now() / 1000) + 60, // Transaction expiration in 60 seconds
+            messages: [
+                {
+                    address: 'kQDou06VuEO-u3S56M3TnXjQG98hN552PKyyltQJzbkqi06c', // Recipient Address
+                    amount: (amount * 1e9).toString(), // Amount in nanoTONs, here 1.5 TON
+                },
+            ],
+        };
+
+        try {
+            tonConnectUI.sendTransaction(myTransaction)
+                .then(() => {
+                    setTransactionStatus('Transaction sent successfully.');
+                })
+                .catch(error => {
+                    console.error('Transaction failed:', error);
+                    setTransactionStatus(`Transaction failed: ${error.message}`);
+                });
+        } catch (error) {
+            console.error('Transaction initiation failed:', error);
+            setTransactionStatus(`Transaction initiation failed: ${error.message}`);
+        }
+    };
+
 
     const fetchBalance = async (address) => {
         setLoading(true);
@@ -58,7 +78,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
 
     const item={
         initial: { height: 0, opacity: 0 },
-        animate: { height: 660, opacity: 1, transition: { duration: 0.5 } },
+        animate: { minHeight: '100vh', opacity: 1, transition: { duration: 0.5 } },
         exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
     } 
 
@@ -68,19 +88,25 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     initial="initial"
     animate="animate"
     exit="exit">
+        <DepositBigTitle>RATIO: 1TON - 1000 PGZ</DepositBigTitle>
      <CloseStats onClick={closeDepositMenu} /> 
-     <BetSection>
+     
         <DepositWrapper>
-            PACTON'S GAMING ZONE WALLET ADDRESS:
-            <LinkInputField disabled={true} value={teamWalletAddress}/>
-            <DepositRow>
-                AMOUNT TO DEPOSIT: <BetInput style={{borderRadius: '10px'}} onChange={(e) => setAmount(e.target.value)}/>
-            </DepositRow>
-            <DepositRow>
-                <StyledButton onClick={() => fetchBalance()}>DEPOSIT</StyledButton>
-            </DepositRow>
+            <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
+            <DepositTitle><LinkInputField disabled={true} value={teamWalletAddress}/></DepositTitle>
+            <DepositTitle>AMOUNT TO DEPOSIT:</DepositTitle>
+            <DepositTitle><BetInput style={{borderRadius: '10px'}} value={amount}
+                onChange={(e) => setAmount(parseFloat(e.target.value))}/></DepositTitle>
+            {/* <DepositRow>
+                AMOUNT TO DEPOSIT: <BetInput style={{borderRadius: '10px'}} value={amount}
+                onChange={(e) => setAmount(parseFloat(e.target.value))}/>
+            </DepositRow> */}
+            <DepositTitle>
+                <StyledButton onClick={handleSendTransaction}>DEPOSIT</StyledButton>
+            </DepositTitle>
+            {transactionStatus}
         </DepositWrapper>
-     </BetSection>
+     
     </motion.div>
     </AnimatePresence>
   )

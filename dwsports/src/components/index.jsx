@@ -103,7 +103,7 @@ export const CloseBurguer = styled(MenuOpenIcon)`
 
 export const StyledMenu = styled(motion.div)`
     &&&{
-    background-color: ${({ theme }) => theme.body};
+    background-color: ${({ theme }) => theme.darkBg};
     width: 100vw;
     max-height: 100vh;
     position: absolute;
@@ -777,7 +777,7 @@ export const BetInput = styled.input.attrs({ type: 'number' })`
     padding: 8px; /* Add some padding */
     background-color: transparent; /* Transparent background */
     color: white; /* Text color */
-    height: 80%;
+    height: 70%;
     width: 100px;
     font-size: 28px;
     margin: 0 20px;
@@ -791,7 +791,7 @@ export const BetInput = styled.input.attrs({ type: 'number' })`
 
     /* Change border color to black on focus */
     &:focus {
-    border-color: black;
+    border-color: gold;
     }
 `;
 

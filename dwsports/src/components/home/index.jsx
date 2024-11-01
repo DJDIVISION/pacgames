@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const HeroSection = styled.div`
     width: 100%;
-    height: auto;
+    height: calc(100vh - 80px);
     background: ${props => props.theme.body};
     ${props => props.theme.displayFlexColumn};
     padding: 10px;
