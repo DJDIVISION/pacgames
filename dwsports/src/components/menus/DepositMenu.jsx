@@ -11,7 +11,9 @@ import { mnemonicNew, mnemonicToPrivateKey } from "@ton/crypto";
 /* import TonWeb from 'tonweb'; */
 import axios from 'axios';
 import { FantasyState } from '../../context/FantasyContext';
-import { BalanceDisplay } from '../../pages/functions';
+import { BalanceDisplay, useAuth } from '../../pages/functions';
+import { supabase } from '../../supabase/client';
+import { message } from 'antd';
 
 
 const DepositMenu = ({depositMenu,setDepositMenu}) => {
@@ -23,9 +25,9 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const wallet = useTonWallet();
     const {balance, setBalance} = FantasyState();
     const {walletBalance,setWalletBalance} = FantasyState();
+    const [transactionHash, setTransactionHash] = useState(null);
     console.log("balance", balance)
-
-    
+    const {user} = useAuth();
  
     const closeDepositMenu = () => {
         setDepositMenu(false)
@@ -44,10 +46,68 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             ],
         };
 
+        const client = new TonClient({
+            endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
+        });
+
         try {
             tonConnectUI.sendTransaction(myTransaction)
-                .then(() => {
+                .then(async () => {
                     setTransactionStatus('Transaction sent successfully.');
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('id', user.id);
+
+                    if (error) {
+                        console.error('Error fetching user data:', error.message);
+                    } else {
+                        if (data.length === 0) {
+                            message.error("This user does not exist in our database");
+                        } else {
+                            console.log(data);
+                            const userJsonData = data[0].deposits || {};
+                            const userBalance = data[0].appBalance || 0;
+                            userJsonData.deposits = userJsonData.deposits || [];
+                            const d = new Date();
+                            let date = d.toLocaleString();
+                            const updatedData = {
+                                token: "TON",
+                                amount: amount,
+                                date: date,
+                                senderAddress: wallet.account.address
+                            };
+
+                            // Add the updated data to the referrals array
+                            userJsonData.deposits.push(updatedData);
+
+                            // Update the user's jsonb column
+                            const { error: updateError } = await supabase
+                                .from('users')
+                                .update([{ deposits: userJsonData }]) // Update the jsonb column
+                                .eq('id', user.id); // Identify which user to update
+
+                            if (updateError) {
+                                console.error('Error updating user data:', updateError.message);
+                            } else {
+                                console.log('User data updated successfully:', userJsonData);
+                                message.success("Your balance has been updated!");
+                            }
+
+                            const newBalance = userBalance + (amount * 1000)
+
+                            const { error: updateReferral } = await supabase
+                                .from('users')
+                                .update({ appBalance: newBalance }) 
+                                .eq('id', user.id); 
+
+                            if (updateReferral) {
+                                console.error('Error updating user data:', updateReferral.message);
+                            } else {
+                                console.log("User data updated successfully!");
+                            }
+                        }
+                    }
                     setBalance((prevBalance) => prevBalance + (amount * 1000));
                 })
                 .catch(error => {
