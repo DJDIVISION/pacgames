@@ -235,7 +235,7 @@ const NewBets = () => {
     const str = localStorage.getItem("round")
     const json = JSON.parse(str)
     
-    allFixtures.forEach((item2) => {
+    activeMatches.forEach((item2) => {
       // Find the corresponding item in array1 by matching the fixture id
       const match = json.response.find((item1) => item1.fixture.id === item2.fixture.id);
     
@@ -249,7 +249,7 @@ const NewBets = () => {
     });
     const { data, error } = await supabase
             .from('fixtures')
-            .update([{"fixtures": allFixtures}])
+            .update([{"11": activeMatches}])
             .eq("leagueName", activeLeague)
             if (error) {
                 console.error('Error inserting/updating user session data:', error.message)
@@ -454,11 +454,11 @@ const NewBets = () => {
                         </MatchOdds>
                         ) : (
                             <MatchOdds>
-                              {/* <OddsColumn>MATCH STARTED</OddsColumn> */}
-                                <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
+                              <OddsColumn>MATCH STARTED</OddsColumn>
+                                {/* <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setDraw(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setTwo(e.target.value)} />
-                                <button onClick={() => sendOdds(match)}>SEND</button>
+                                <button onClick={() => sendOdds(match)}>SEND</button> */}
                             </MatchOdds>
                         )}
                             </>

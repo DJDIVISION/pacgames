@@ -42,8 +42,8 @@ export const ButtonAbsolute = styled(IconButton)`
 
 export const ChatContainer = styled(motion.div)`
   width: 25%;
-  height: 30vh;
   display: flex;
+  height: 100%;
   align-items: center;
   flex-direction: column;
   z-index: 1000;

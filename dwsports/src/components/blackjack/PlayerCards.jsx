@@ -1,7 +1,8 @@
 import React, {useMemo,useRef,useEffect,useState} from 'react'
 import {BlackJackCards,UserAvatar,UserChipSum,EmptyCardLine,CardHolder,SportsCarousel,InnerSportsCarousel,
-    Card,
+    
 } from './index'
+import styled from 'styled-components'
 import { IconButton, Avatar } from '@mui/material'
 import { motion } from 'framer-motion'
 import chipImage from '../../assets/chips/emptyChip.png'
@@ -10,7 +11,7 @@ import { styled as styledTwo } from '@mui/system';
 import { ArrowLeftMiddle,ArrowRightMiddle } from '../../pages'
 
 
-const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
+const PlayerCards = ({players,player,activePlayer,rooms,gameFinished,playerIndex}) => {
 
     const carroussel = useRef();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -115,20 +116,108 @@ const PlayerCards = ({players,player,activePlayer,rooms,gameFinished}) => {
     <BlackJackCards animate={{ height: activePlayer || gameFinished ? '60%' : '70%' }}
         initial={{ height: '70%' }}
         transition={{ duration: 0.5 }}>
-          <ArrowLeftMiddle onClick={goToPrev}/>
-          <ArrowRightMiddle onClick={goToNext}/>
           {/* <IconButton  onClick={disconnect}><Disconnect /></IconButton> */}
-          {Array.from({ length: 5 }).map((_, i) => (
-              <CardSpot
-                key={i}
-                transform={getTransformForIndex(i)}
-                index={i}
-                currentIndex={currentIndex}
-                players={players}
-              />
-            ))}
+          {players?.map((player,index) => {
+            return(
+              <PlayerWrapper style={{border: playerIndex === index ? '3px solid lime' : '3px solid white'}}>
+                <PlayerAvatar style={{backgroundImage: `url(${player.avatar})`, backgroundSize: 'cover',
+              border: playerIndex === index ? '3px solid lime' : '3px solid white'}}></PlayerAvatar>
+                <PlayerBet>
+                  <PlayerBetRow>BET: {player.bet} PGZ</PlayerBetRow>
+                  <PlayerBetRow>SUM: {player.playerSum}</PlayerBetRow>
+                </PlayerBet>
+                <PlayerHandWrapper>
+                {player.hand?.map((card) => {
+                   
+                    return (
+                      <Card >
+                        <img src={`./assets/cards/${card}.png`} />
+                      </Card>
+                     
+                    )
+                  })}
+                </PlayerHandWrapper>
+              </PlayerWrapper>
+            )
+          })}
         </BlackJackCards>
   )
 }
 
 export default PlayerCards
+
+const Card = styled.div`
+    width: 12.5%; /* Set width as a percentage */
+    aspect-ratio: 5 / 7; 
+    background: white;
+    margin-left: 15px;
+    ${props => props.theme.displayFlexCenter}
+    /* @media(max-width: 968px){
+      width: 11%;
+      height: 85%;
+    }
+    @media(max-width:498px){
+      width: 13%;
+      height: 90%;
+  } */
+`;
+
+
+const PlayerWrapper = styled.div`
+  width: 45%;
+  height: 25%;
+  background: #424040;
+  border-radius: 10px;
+  position: relative;
+  margin: 20px;
+  padding: 10px;
+  ${props => props.theme.displayFlex}
+  @media(max-width:498px){
+    width: 90%;
+    height: 15%;
+  }
+`;
+
+const PlayerHandWrapper = styled.div`
+  width: 80%;
+  height: 100%;
+  ${props => props.theme.displayFlex}
+  @media(max-width:498px){
+    height: 80%;
+  }
+`;
+
+const PlayerBet = styled.div`
+  width: 20%;
+  height: 100%;
+  ${props => props.theme.displayFlexColumn}
+  justify-content: space-evenly;
+`;
+
+const PlayerBetRow = styled.div`
+  width: 100%;
+  height: 20%;
+  ${props => props.theme.displayFlexCenter}
+  color: ${props => props.theme.text};
+  font-size: 18px;
+  text-align: center;
+  font-weight: bold;
+  @media(max-width:968px){
+    font-size: 14px;
+  }
+`;
+
+const PlayerAvatar = styled.div`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  @media(max-width:968px){
+    width: 40px;
+    height: 40px;
+    top: -20px;
+    left: -20px;
+  }
+`;

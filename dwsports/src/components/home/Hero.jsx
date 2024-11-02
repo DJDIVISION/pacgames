@@ -10,6 +10,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { Avatar, Button, IconButton } from '@mui/material';
 import { supabase } from '../../supabase/client';
 import { MiniArrowDown, MiniArrowup } from '../../pages';
+import { FantasyState } from '../../context/FantasyContext';
 
 const Hero = () => {
 
@@ -19,6 +20,7 @@ const Hero = () => {
     const [referrerValue, setReferrerValue] = useState("")
     const [referrals, setReferrals] = useState([])
     const [isExpanded, setIsExpanded] = useState(false)
+    const {balance, setBalance} = FantasyState();
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
     const textScale = useTransform(scrollYProgress, [0, 0.5], [1.7, 1]);
@@ -45,13 +47,16 @@ const Hero = () => {
             console.error('Error fetching user data:', error.message);
         } 
         if(data){
-            
+            console.log(data)
             if(data[0].hasReferrer === true){
                 setDisabledInput(true)
                 setReferrerValue(data[0].referrerLink)
             }
             if(data[0].referralData !== null){
                 setReferrals(data[0].referralData.referrals)
+            }
+            if(data[0].appBalance > 0){
+                setBalance(data[0].appBalance)
             }
         }
     }

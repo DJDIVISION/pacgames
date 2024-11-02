@@ -627,9 +627,7 @@ export const BlackJackSection = styled.div`
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    @media screen and (max-width: 468px){
-      display: none;
-    }
+    
 `;
 
 export const BlackJackSectionSmart = styled.div`

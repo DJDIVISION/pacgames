@@ -142,22 +142,22 @@ input::-webkit-inner-spin-button {
 
 #area1{
   position: absolute;
-  top: 50%;
-  left: 10%;
-  transform: translate(-25%, -50%);
+  bottom: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 #area2{
   position: absolute;
 }
 
 .layout1 #area2{
-  top: 15%;
-  left: 30%;
+  bottom: 30%;
+  left: 17.5%;
   transform: translate(-50%, -50%);
 }
 .layout2 #area2{
-  top: 15%;
-  left: 30%;
+  top: 25%;
+  left: 45%;
   transform: translate(-50%, -50%);
 }
 .layout3 #area2{
@@ -191,8 +191,8 @@ input::-webkit-inner-spin-button {
 }
 
 .layout1 #area3{
-  top: 37.5%;
-  left: 25%;
+  bottom: 17.5%;
+  left: 30%;
   transform: translate(-50%, -50%);
 }
 .layout2 #area3{
@@ -232,8 +232,8 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area4{
-  top: 60%;
-  left: 25%;
+  bottom: 17.5%;
+  right: 20%;
   transform: translate(-50%, -50%);
 }
 .layout2 #area4{
@@ -272,8 +272,8 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area5{
-  top: 85%;
-  left: 30%;
+  bottom: 30%;
+  right: 5%;
   transform: translate(-50%, -50%);
 }
 .layout2 #area5{
@@ -838,7 +838,8 @@ input::-webkit-inner-spin-button {
   border: 2px solid aqua;
   align-items: center;
   flex-direction: column;
-  height: 100%;
+  width: 80vw;
+  height: 15vh;
   background-color: rgba(0, 0, 0, 0.8);
   font-size: 1.5rem;
   text-align: center;

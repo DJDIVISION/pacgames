@@ -56,7 +56,7 @@ export const Search = ({setIsSearchExpanded,isSearchExpanded,playerToFind,setPla
 
 
 export const BallColumn = styled.div`
-    width: 20%;
+    width: 100%;
     height: 100%;
     ${props => props.theme.displayFlexColumn};
     position: relative;
@@ -68,13 +68,43 @@ export const CountryBall = styled(motion.div)`
     ${props => props.theme.displayFlexCenter};
 `;
 
-export const CountryBallText = styled(motion.div)`
+export const CountryBallTeam = styled(motion.div)`
     width: 80%;
     height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    img{
+        width: 75%;
+        display: block;
+        object-fit: cover;
+    }
+`;
+
+export const CountryBallTextTop = styled(motion.div)`
+    width: 80%;
+    height: 50%;
+    font-size: 24px;
     ${props => props.theme.displayFlexCenter};
     color: ${props => props.theme.text};
     font-weight: bold;
     text-transform: uppercase;
+    transform: translateY(-50%);
+    text-shadow: ${props => props.theme.textShadowTwo};
+    @media(max-width: 498px){
+        font-size: 6vw;
+    }
+`;
+
+export const CountryBallText = styled(motion.div)`
+    width: 80%;
+    height: 50%;
+    ${props => props.theme.displayFlexCenter};
+    color: ${props => props.theme.body};
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 3vw;
+    line-height: 1.1;
+    transform: translateY(-50%);
+    text-shadow: ${props => props.theme.textShadow};
 `;
 
 export const PlayersContainer = styled.div`
@@ -579,13 +609,10 @@ export const ButtonHoverAbsoluteLeft = styled(IconButton)`
         top: 30px;
         left: 30px;
         z-index: 5000;
-        padding: 10px;
+        padding: 5px;
         background: ${props => props.theme.body};
+        scale: 1.5;
         box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
-        &:hover{
-            
-            //background: transparent;
-        }
         @media (max-width: 968px) {
         top: 10px;
         left: 10px;
@@ -656,7 +683,7 @@ export const StyledButton = styled(Button)`
     border-radius: 0.58vmin;
     color: ${props => props.theme.MainAccent};
     padding: 5px 10px;
-    font-size: 20px;
+    font-size: 16px;
     text-decoration: none;
     text-transform: uppercase;
     overflow: hidden;
@@ -669,7 +696,14 @@ export const StyledButton = styled(Button)`
         font-weight: bold;
     }
     @media(max-width: 968px){
-        font-size: 14px;
+        font-size: 12px;
+        padding: 2px 10px;
+        line-height: 1.1;
+    }
+    @media(max-width: 698px){
+        font-size: 10px;
+        padding: 2px 10px;
+        line-height: 1.1;
     }
     }
 `;
@@ -910,6 +944,16 @@ export const MiniArrowDown = styled(KeyboardArrowDownIcon)`
         right: 10px;
     }
 `;
+export const MiniArrowDownTop = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        position: absolute;
+        scale: 1.5;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+`;
 
 export const MiniArrowup = styled(KeyboardArrowDownIcon)`
     &&&{
@@ -920,14 +964,23 @@ export const MiniArrowup = styled(KeyboardArrowDownIcon)`
         transform: rotate(180deg);
     }
 `;
+export const MiniArrowupTop = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        transform: rotate(180deg);
+    }
+`;
 
 export const ArrowLeft = styled(KeyboardArrowDownIcon)`
     &&&{
         color: ${props => props.theme.text};
         scale: 2;
         position: absolute;
-        top: 50%;
-        left: 10%;
+        top: 10%;
+        left: 5%;
         transform: rotate(90deg) translate(-25%,-25%);
         z-index: 1000;
         cursor: pointer;
@@ -1633,7 +1686,7 @@ export const ColumnTopSmall = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: 24px;
     color: ${props => props.theme.MainAccent};
     background: transparent;
     text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
@@ -1643,9 +1696,13 @@ export const ColumnTopSmall = styled.div`
         margin-left: 10px;
         font-weight: bold;
         margin-right: 5px;
+        font-size: 28px;
     }
     @media(max-width: 968px){
-        font-size: 20px; 
+        font-size: 14px; 
+        span{
+            font-size: 16px; 
+        }
     }
 `;
 

@@ -37,6 +37,7 @@ export const JoinButton = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 10px;
     border-left: 0.5px solid ${props => props.theme.MainAccent};
 `;
 
@@ -121,6 +122,9 @@ export const RoomAvailable = styled.div`
     color: ${props => props.theme.text};
     font-size: 18px;
     border-left: 0.5px solid ${props => props.theme.MainAccent};
+    @media(max-width:698px){
+        font-size: 14px;
+    }
 `;
 
 export const RoomNumber = styled.div`
@@ -170,6 +174,9 @@ export const TabWrapper = styled.div`
     height: 10%;
     display: flex;
     align-items: center;
+    @media(max-width:498px){
+        width: 180%;
+    }
 `;
 
 export const FilterContainer = styled(motion.div)`
@@ -182,6 +189,9 @@ export const FilterContainer = styled(motion.div)`
     padding: 20px 0;
     border: 1px solid aqua;
     overflow-y: scroll;
+    @media(max-width:498px){
+        width: 180%;
+    }
 `;
 
 export const BlackSection = styled.div`
@@ -192,9 +202,7 @@ export const BlackSection = styled.div`
     flex-direction: column;
     align-items: center;
     position: relative;
-    @media screen and (max-width: 468px){
-      display: none;
-    }
+    
 `;
 
 export const BlackSectionSmart = styled.div`
@@ -228,17 +236,24 @@ export const Tabs = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-    @media screen and (max-width: 768px){
+    @media(max-width: 768px){
             height: 90vh;
+    }
+    @media(max-width: 498px){
+        overflow-x: scroll;
+        padding: 20px;
     }
 `;
 
 export const TabsContainer = styled.div`
-  width: 80%;
-  height: 90%;
+    width: 80%;
+    height: 90%;
   @media screen and (max-width: 768px){
     width: 90%;
-    }
+  }
+  @media(max-width: 498px){
+    width: 180%;
+}
 `;
 
 export const Disconnect = styled(ExitToAppIcon)`
@@ -293,7 +308,10 @@ export const BlackJackCards = styled(motion.div)`
     align-items: center;
     justify-content: center;
     position: relative;
-    perspective: 1200px;
+    border: 1px solid red;
+    @media(max-width: 498px){
+        flex-direction: column;
+    }
 `;
 
 export const UserAvatar = styled.div`
@@ -374,12 +392,12 @@ export const InnerSportsCarousel = styled(motion.div)`
 `;
 
 export const Card = styled.div`
-    min-width:45%;
-    height: 77.5%;
+    min-width: 10%;
+    height: 80%;
     background: white;
     margin-left: 20px;
-    @media(max-width: 968px){
+    /* @media(max-width: 968px){
         min-width: 42.5%;
         height: 75%;
-    }
+    } */
 `;

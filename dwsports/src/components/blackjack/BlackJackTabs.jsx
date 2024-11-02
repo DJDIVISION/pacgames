@@ -144,7 +144,7 @@ const BlackJackTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
         </TabsContainer>
       </Tabs>
     </BlackSection>
-    <BlackSectionSmart>TURN YOUR DEVICE FOR A BETTER PLAY</BlackSectionSmart>
+    {/* <BlackSectionSmart>TURN YOUR DEVICE FOR A BETTER PLAY</BlackSectionSmart> */}
     </>
   )
 }

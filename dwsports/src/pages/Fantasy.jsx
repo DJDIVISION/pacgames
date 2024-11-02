@@ -1066,7 +1066,7 @@ const optionsFour = {
   params: {
     league: '135',
     season: '2024',
-    round: 'Regular Season - 10'
+    round: 'Regular Season - 11'
   },
   headers: {
     'x-rapidapi-key': /*  */'5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
@@ -1100,44 +1100,81 @@ const optionsWWW = {
     'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
   }
 };
-const setData = async () => {
+
+const optionsFive = {
+  method: 'GET',
+  url: 'https://api-football-v1.p.rapidapi.com/v3/injuries',
+  params: {date: '2024-11-03'},
+  headers: {
+    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+  }
+};
+/* const setData = async () => {
   const str = localStorage.getItem("round")
   const json = JSON.parse(str)
   console.log(json.response)
-  const { data, error } = await supabase
-          .from('footballPlayers')
-          .update([{"laLigaStats": json.response}])
-          .eq("id", 196156)
-          if (error) {
-            console.log(`player with not found`)
-          } else {
-            console.log(`player with updated`, data)
-            message.success("data inserted successfully")
+  const delay = 500;
+  for (const update of json.response){
+    const playerId = update.player.id
+    const { data, error } = await supabase
+          .from('footballPlayers') // replace with your actual table name
+          .select('*')
+          .eq('id', playerId)
+      if (error) {
+          console.error(`Error updating row with ID ${playerId}:`, error.message);
+      } else {
+          if(data.length > 0){
+            const injuryReason = update.player.reason
+            const injuryType = update.player.type
+            const { data, error } = await supabase
+          .from('footballPlayers') // replace with your actual table name
+          .update([{injuryType: injuryType, injuryReason: injuryReason}])
+          .eq('id', playerId); // replace 'id' with your actual primary key column name
 
-          }
-  /* const { data, error } = await supabase
-          .from('footballPlayers')
-          .update([{"stats": json.response}])
-          .eq("teamId", 1579)
           if (error) {
-            console.error('Error inserting/updating user session data:', error.message)
+              console.error(`Error updating row with ID ${playerId}:`, error.message);
           } else {
-            console.log('User session data saved:', data)
-            message.success("data written")
-          } */
-        /* try {
-          const response = await axios.request(optionsThree);
-          console.log(response.data);
-          localStorage.setItem("round", JSON.stringify(response.data))
-          message.success("data fetched!")
-        } catch (error) {
-          console.error(error);
-        } */
-}
+              console.log(`Row with ID ${playerId} updated successfully:`, data);
+          }
+          }
+      }
+  }
+} */
+
+  const setData = async () => {
+    const { data, error } = await supabase
+      .from('footballPlayers')
+      .select('id, laLigaStats')
+      .eq('leagueName', 'Ligue 1');
+    if (error) {
+      console.error("Error fetching data:", error.message);
+    } else {
+      // Filter rows in JavaScript
+      const missingStatisticsRows = data.filter(row => 
+        Array.isArray(row.laLigaStats) && // Ensure laLigaStats is an array
+        !row.laLigaStats.some(stat => stat && stat.hasOwnProperty('statistics'))
+      );
+    
+      const idsToUpdate = missingStatisticsRows.map(row => row.id);
+
+      // Update rows in Supabase to set laLigaStats to null
+      const { error: updateError } = await supabase
+        .from('footballPlayers')
+        .update({ laLigaStats: null })
+        .in('id', idsToUpdate); // Use the IDs from the filtered rows
+
+      if (updateError) {
+        console.error("Error updating rows:", updateError.message);
+      } else {
+        console.log("Rows updated successfully. IDs:", idsToUpdate);
+      }
+    }
+  }
 
 const fetchData = async () => {
   try {
-    const response = await axios.request(optionsFour);
+    const response = await axios.request(optionsFive);
     console.log(response.data);
     localStorage.setItem("round", JSON.stringify(response.data))
     message.success("data fetched!")

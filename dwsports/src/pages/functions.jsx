@@ -496,7 +496,8 @@ export const useGetTeams = () => {
   const [teams, setTeams] = useState([]); // Stores the list of teams
   const [loadingTeams, setLoadingTeams] = useState(false); // Loading state for teams
   const [loadingPlayers, setLoadingPlayers] = useState(false); // Loading state for players
-  const { activeLeague, setActiveLeague } = FantasyState(); // Active league state
+  const { activeLeague, setActiveLeague } = FantasyState(); 
+  const {activeTeam, setActiveTeam} = FantasyState();
   const { activeTeamId, setActiveTeamId } = FantasyState(); 
   const [players, setPlayers] = useState([]); // Stores the list of players for the active team
 
@@ -506,7 +507,7 @@ export const useGetTeams = () => {
     const { data, error } = await supabase
       .from('teams')
       .select('*')
-      .eq("league", activeLeague)
+      .eq("league", activeLeague.league)
       .order('teamName', { ascending: true });
 
     if (error) {
@@ -517,6 +518,7 @@ export const useGetTeams = () => {
 
     if (data && data.length > 0) {
       setTeams(data);
+      /* setActiveTeam(data[0]) */
       setActiveTeamId(data[0].teamId); // Set the first team as active
       getPlayers(data[0].teamId); // Fetch players for the first team
     }
@@ -563,6 +565,7 @@ export const useGetTeams = () => {
     loadingPlayers, 
     handleTeamChange,
     setPlayers,
+    setTeams,
     getPlayers // Expose handleTeamChange for use in UI
   };
 };

@@ -10,20 +10,20 @@ import './styles.css'
 
 const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId}) => {
 
-    /* const { messages } = useFetchMessages(); */
+    const { messages } = useFetchMessages();
     const [actionMenuOpen, setActionMenuOpen] = useState(false)
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [message, setMessage] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     const chatEndRef = useRef(null);
     
-    /* useEffect(() => {
+    useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages,isExpanded]); */
+    }, [messages,isExpanded]);
 
   return (
-    <ChatContainer /* id="smallChat" */ initial={{ height: '30vh', width: '25vw'}} // Initial height
-    animate={{ height: isExpanded ? '100vh' : '30vh', width: isExpanded ? '100vw' : '25vw' }} // Height transitions between 100px and 300px
+    <ChatContainer /* id="smallChat" */ initial={{ height: '100%', width: '25vw'}} // Initial height
+    animate={{ height: isExpanded ? '100vh' : '100%', width: isExpanded ? '100vw' : '25vw' }} // Height transitions between 100px and 300px
     transition={{ duration: 0.5 }} isExpanded={isExpanded}>
       
        
@@ -31,7 +31,7 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
           message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}
         />
         <MessagesWrapper>
-              {/* {messages?.map((msg, index) => {
+              {messages?.map((msg, index) => {
                   let date = new Date(msg.created_at)
                   let str = date.toLocaleTimeString()
                   str = str.substring(0, str.length - 3);
@@ -45,7 +45,7 @@ const ChatMessages = ({isExpanded,setIsExpanded,activeRoom,playerName,playerId})
                           <MessageTime className={`${msg.sendedBy}TIME`}>{str}</MessageTime>
                       </MessageHolder>
                   )
-              })} */}
+              })}
               <div ref={chatEndRef}></div>
         </MessagesWrapper>
         {isExpanded && (

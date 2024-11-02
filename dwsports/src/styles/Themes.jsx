@@ -8,9 +8,13 @@ export const lightTheme = {
     cardTwo: '#c0eaf0', // black shade
     bodyRgba: '255, 255, 255',
     textRgba: '32,32,32',
+    pacColor: 'rgba(244,215,21,1)',
+    textShadow:  '-1px 2px 2px #000000',
+    textShadowTwo:  '0px 1px 1px #ffffff',
     darkBg: '#ffffff',
     grey: '#bebebe',
     MainAccent: '#96e6eb',
+    MainShadow: '0 0 5px #acecf0, 0 0 25px #acecf0, 0 0 50px #acecf0, 0 0 100px #acecf0',
     fontxs: '0.75em',
     fontsm: '0.875em',
     fontmd: '1em', // 1em = 16px
@@ -50,8 +54,12 @@ export const lightTheme = {
     card: '#0f0d0d',
     copyIcon: 'aqua',
     cardTwo: '#302c2c',
+    pacColor: 'rgba(244,215,21,1)',
     bodyRgba: '32,32,32',
     textRgba: '255, 255, 255',
+    textShadow:  '0px 1px 1px #ffffff',
+    textShadowTwo:  '0px 1px 1px #000000',
+    MainShadow: '0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4',
     pacBoxShadow: ' -4px 5px 8px -1px rgba(255, 255, 255, 0.75)',
     dosisAqua: {
       fontFamily: 'Dosis',

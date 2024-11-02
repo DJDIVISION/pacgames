@@ -3,7 +3,7 @@ import BlackJackTabs from '../components/blackjack/BlackJackTabs'
 import io from 'socket.io-client';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ChatMessages from '../components/chats/ChatMessages';
 import { transitionLong,animationFour } from '../animations';
 import { Avatar } from '@mui/material';
@@ -19,20 +19,24 @@ import BetArea from '../components/blackjack/BetArea';
 import { supabase } from '../supabase/client';
 import { BetState } from '../context/BetsContext';
 import { useAuth } from './functions';
-import { useNavigate } from 'react-router-dom';
+import { Link as LinkR, useNavigate } from 'react-router-dom';
 import karmacoma from '../assets/sounds/karmacoma.ogg'
 //import { playChipSound,playShuffle,playAmbience,playWinnings } from './functions';
 import chipSound from '../assets/sounds/chipSound.ogg'
 import shuffle from '../assets/sounds/shuffle.mp3'
 import casinoAmbience from '../assets/sounds/casinoAmbience.ogg'
 import winnings from '../assets/sounds/casinoAmbience.ogg'
+import welcomeBJ from '../assets/sounds/welcomeBJ.ogg'
+import placeYourBet from '../assets/sounds/placeYourBet.ogg'
+import yourTurn from '../assets/sounds/yourTurn.ogg'
 
 import MusicMenu from '../components/music/MusicMenu';
 import { ButtonAbsolute, CloseChatRoomIcon } from '../components/chats';
+import { FantasyState } from '../context/FantasyContext';
 
+ 
 
-
-/* const socket = io.connect("https://pacgames.onrender.com") */
+const socket = io.connect("http://localhost:3030")
 
 
 const BalanceDisplay = ({ balance }) => {
@@ -54,9 +58,9 @@ const BalanceDisplay = ({ balance }) => {
     <motion.div
       animate={{ opacity: [0, 1] }}
       transition={{ duration: 0.5 }}
-      style={{ fontSize: '2rem', fontWeight: 'bold' }}
+      style={{ fontWeight: 'bold' }}
     >
-      ${displayBalance}
+      {displayBalance} PGZ
     </motion.div>
   );
 };
@@ -74,7 +78,7 @@ const BlackJack = () => {
     const [dealerHidden, setDealerHidden] = useState([])
     const [dealerSum, setDealerSum] = useState(null);
     const [playerAvatar, setPlayerAvatar] = useState(null);
-    const [balance, setBalance] = useState(500);
+    const {balance, setBalance} = FantasyState();
     
     const [placedBet, setPlacedBet] = useState(null);
     const [droppedChips, setDroppedChips] = useState([]);
@@ -101,7 +105,8 @@ const BlackJack = () => {
     const musicRef = useRef(new Audio(casinoAmbience));
     const [allowEffects, setAllowEffects] = useState(true);
     const [currentTrack, setCurrentTrack] = useState(null);
-    console.log(musicVolume)
+    const [playerIndex, setPlayerIndex] = useState(null)
+     
 
     
 
@@ -123,6 +128,9 @@ const BlackJack = () => {
         new Audio(chipSound),
         new Audio(shuffle),
         new Audio(winnings),
+        new Audio(welcomeBJ),
+        new Audio(placeYourBet),
+        new Audio(yourTurn),
       ];
       
       // Apply the initial volume
@@ -263,6 +271,7 @@ const BlackJack = () => {
         setMyId(data.playerId)
         setActiveRoom(data.room)
         setPlayOnline(true) 
+        playEffect(3)
         //waitingtToStarttNotify('Waiting for other players to join the room... ⌛')
       });
       socket?.on('update_players', (data) => {
@@ -286,6 +295,7 @@ const BlackJack = () => {
       socket?.on('timeoutExpired', () => {
         console.log("time out expired, place tyour bet")
         setChipMenuOpen(true)
+        playEffect(4);
         startCountdown();
       });
       socket?.on('game-started', (data) => {
@@ -313,14 +323,17 @@ const BlackJack = () => {
         setTimeout(() => {
           setActivePlayer(true)
         }, 1000)
+        playEffect(5)
         console.log("ITS YOUR TURN")
+      });
+      socket.on('currentPlayerIndex', (data) => {
+        setPlayerIndex(data.index)
       });
       socket.on("cardAfterHit", (data) => {
         const {playerName,playerSum,gameData} = data;
         playEffect(1);
         setPlayerSum(playerSum)
         setPlayers(gameData.players)
-        console.log(data)
         if(playerSum >= 21){
           document.getElementById('hitButton').style.display = 'none'
           document.getElementById('doubleButton').style.display = 'none'
@@ -391,6 +404,7 @@ const BlackJack = () => {
         }
         setGameFinished(true)
         sendAmdminMessage(messageToUpdate)
+        setPlayerIndex(null)
         //startJoinTimeOut()
        });
        socket.on('player-keeps-playing', (data) => {
@@ -451,6 +465,7 @@ const BlackJack = () => {
         socket.off('game-started');
         socket.off('firstRound');
         socket.off('balanceUpdate');
+        socket.off('currentPlayerIndex');
         socket.off('bets-placed');
         socket.off('all.bets-placed');
         socket.off('gameResults');
@@ -497,8 +512,9 @@ const BlackJack = () => {
       setActivePlayer(false)
       setCantHit(false)
       setGameFinished(true)
+      setPlayerIndex((prev) => prev + 1)
       //goToNext();
-      console.log(activeRoom)
+      
       socket?.emit("playerStays", {
         roomId: activeRoom,
         id: myId
@@ -522,10 +538,6 @@ const BlackJack = () => {
         message: 'leaving'
       })
     }
-
-    
-
-    console.log("volumn", effectsVolume)
     
 
 
@@ -534,6 +546,7 @@ const BlackJack = () => {
         return (
           <>
             <ButtonHoverAbsolute onClick={toggleVolumeMenu}><VolumeIcon /></ButtonHoverAbsolute>
+            <LinkR to="/casino"><ButtonHoverAbsoluteLeft><ArrowLeft /></ButtonHoverAbsoluteLeft></LinkR>
             <BlackJackTabs socket={socket} rooms={rooms} players={players} playerName={playerName} setPlayerName={setPlayerName}/>
             {volumeMenuOpen && (
                 <MusicMenu volumeMenuOpen={volumeMenuOpen} setVolumeMenuOpen={setVolumeMenuOpen} musicVolume={musicVolume} setMusicVolume={setMusicVolume} 
@@ -571,8 +584,8 @@ const BlackJack = () => {
                     <WholeColumn>
                       <ColumnTopBig>
                           <Avatar alt = "Image" src = {user.user_metadata.avatar_url}  sx={{
-                      width: { xs: 20, sm: 20, md: 40, lg: 70, xl: 70 }, 
-                      height: { xs: 20, sm: 20, md: 40, lg: 70, xl: 70 },
+                      width: { xs: 20, sm: 20, md: 30, lg: 70, xl: 70 }, 
+                      height: { xs: 20, sm: 20, md: 30, lg: 70, xl: 70 },
                     }}/>
                     </ColumnTopBig>
                   <ColumnTopSmall>Balance: <span><BalanceDisplay balance={balance} /></span></ColumnTopSmall>
@@ -580,7 +593,7 @@ const BlackJack = () => {
 
                 </BalanceColumn>
               </BlackJackTitle>
-              <PlayerCards players={players} activePlayer={activePlayer} playerSum={playerSum} gameFinished={gameFinished}/>
+              <PlayerCards players={players} activePlayer={activePlayer} playerSum={playerSum} gameFinished={gameFinished} playerIndex={playerIndex}/>
               <ActionButtons animate={{ height: activePlayer || gameFinished ? '15%' : '0' }}
                     initial={{ height: '0' }}
                     transition={{ duration: 0.5 }}>
@@ -715,7 +728,7 @@ const BlackJack = () => {
                     <StyledButton onClick={keepPlaying} id="keepPlayingButton">KEEP PLAYING</StyledButton>
               </ActionButtons>
             )} */}
-            <BlackJackSectionSmart>TURN YOUR DEVICE FOR A BETTER PLAY</BlackJackSectionSmart>
+            {/* <BlackJackSectionSmart>TURN YOUR DEVICE FOR A BETTER PLAY</BlackJackSectionSmart> */}
           </>
         )
     }
@@ -730,6 +743,11 @@ const DealerCard = styled.div`
     width: 15%;
 `;
 
+const ArrowLeft = styled(ArrowCircleLeftIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+    }
+`;
 
 
 export const DealerText = styled.div`

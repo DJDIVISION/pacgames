@@ -15,7 +15,7 @@ import CountUp from '../../animations/CountUp';
 import { message } from 'antd';
 import EditPlayerMenu from './EditPlayerMenu';
 import { StyledButton } from '../../pages';
-
+import axios from 'axios'
 
 const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
 
@@ -158,6 +158,25 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
     };
 
     const fetchData = async () => {
+      /* const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+        params: {
+          id: playerToUpdate.id,
+          season: '2024'
+        },
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+      
+      try {
+        const response = await axios.request(options);
+        setPlayerLeagueData(response.data.response[0].statistics);
+      } catch (error) {
+        console.error(error);
+      } */
         const { data, error } = await supabase
         .from('footballPlayers')
         .select('*')
@@ -173,11 +192,6 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
           } else {
             console.log("no such data")
           }
-          /* if(data[0].latestMatches !== null){
-            setLatestGamesData(data[0].latestMatches[0] )
-          } else {
-            console.log("no such data")
-          }   */  
         }
   }
 
