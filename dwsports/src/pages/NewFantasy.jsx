@@ -498,8 +498,7 @@ useEffect(() => {
                 return(
                   <div key={player.id} style={{position: 'relative'}}>
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
-                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
                   {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
@@ -510,8 +509,7 @@ useEffect(() => {
                 return(
                   <div key={player.id} style={{position: 'relative'}}>
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
-                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
                   {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
@@ -522,8 +520,7 @@ useEffect(() => {
                 return(
                   <div key={player.id} style={{position: 'relative'}}>
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
-                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
                   {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
@@ -534,8 +531,7 @@ useEffect(() => {
                 return(
                   <div key={player.id} style={{position: 'relative'}}>
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
-                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
                   {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
@@ -546,8 +542,7 @@ useEffect(() => {
                 return(
                   <div key={player.id} style={{position: 'relative'}}>
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
-                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
                   {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
@@ -558,8 +553,7 @@ useEffect(() => {
                 return(
                   <div key={player.id} style={{position: 'relative'}}>
                     <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
-                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
                   {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
                   </div>
                 )
