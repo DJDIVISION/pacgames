@@ -312,9 +312,10 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area6{
-  top: 22.5%;
-  left: 55%;
+  top: 42.5%;
+  left: 17.5%;
   transform: translate(-50%, -50%);
+  
 }
 .layout2 #area6{
   top: 20%;
@@ -391,9 +392,10 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area8{
-  top: 77.5%;
-  left: 55%;
+  top: 42.5%;
+  right: 5%;
   transform: translate(-50%, -50%);
+  
 }
 .layout2 #area8{
   top: 50%;
@@ -431,9 +433,10 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area9 {
-  top: 25%;
-  left: 75%;
+  top: 30%;
+  left: 30%;
   transform: translate(-50%, -50%);
+  
 }
 .layout2 #area9 {
   top: 80%;
@@ -471,9 +474,10 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area10 {
-  top: 49%;
-  left: 85%;
+  top: 30%;
+  right: 17.5%;
   transform: translate(-50%, -50%);
+  
 }
 .layout2 #area10 {
   top: 35%;
@@ -511,8 +515,8 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area11{
-  top: 75%;
-  left: 75%;
+  top: 20%;
+  left: 50%;
   transform: translate(-50%, -50%);
 }
 .layout2 #area11{

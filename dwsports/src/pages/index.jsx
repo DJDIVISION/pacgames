@@ -98,13 +98,13 @@ export const CountryBallText = styled(motion.div)`
     width: 80%;
     height: 50%;
     ${props => props.theme.displayFlexCenter};
-    color: ${props => props.theme.body};
+    color: ${props => props.theme.text};
     font-weight: bold;
     text-transform: uppercase;
     font-size: 3vw;
     line-height: 1.1;
     transform: translateY(-50%);
-    text-shadow: ${props => props.theme.textShadow};
+    text-shadow: ${props => props.theme.textShadowTwo};
 `;
 
 export const PlayersContainer = styled.div`

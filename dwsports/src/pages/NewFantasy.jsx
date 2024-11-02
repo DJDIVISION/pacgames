@@ -18,6 +18,7 @@ import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { message } from 'antd';
+import { StyledButton } from '../components';
 
 const NewFantasy = () => {
 
@@ -159,10 +160,9 @@ const NewFantasy = () => {
     }
 
     const openLeague = () => {
-        
+        setActiveLeague(null)
         setOpenDropMenu(false)
         setTeams([])
-        setActiveLeague(null)
         setActivePlayer(null)
         setActiveTeam(null)
         if(openTeamMenu){
@@ -274,7 +274,22 @@ useEffect(() => {
         }
         setActivePlayer(null)
         setOpenConfirmMenu(false)
+        setAreaId(null)
         message.success("Your player has been placed!")
+        setTimeout(() => {
+            setOpenDropMenu(false)
+            setOpenPlayerMenu(false)
+            setOpenTeamMenu(true)
+        }, 3000)
+    }
+
+    const cancelPlayer = () => {
+        setActivePlayer(null)
+        setOpenConfirmMenu(false)
+        setOpenDropMenu(false)
+        setTimeout(() => {
+            setOpenTeamMenu(true)
+        }, 500)
     }
 
     console.log(droppedPlayers)
@@ -358,8 +373,11 @@ useEffect(() => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                 
-                <Button onClick={confirmPlayer} variant="contained">CONFIRM</Button>
+                <BigTeamName><h2>DO YOU WANT TO LINEUP THIS PLAYER?</h2></BigTeamName>
+                <div style={{display: 'flex', width: '100%', height: '70px', alignItems: 'center', justifyContent: 'center'}}>
+                <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CANCEL</StyledButton>
+                <StyledButton onClick={confirmPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CONFIRM</StyledButton>
+                </div>
             </FoldingMenu>
         )}
         {openPlayerMenu && (
@@ -475,6 +493,78 @@ useEffect(() => {
                 )
               })}
             </BetArea>
+            <BetArea id="area6">
+              {droppedPlayers.area6.map((player) => {
+                return(
+                  <div key={player.id} style={{position: 'relative'}}>
+                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
+                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
+                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
+                  </div>
+                )
+              })}
+            </BetArea>
+            <BetArea id="area7">
+              {droppedPlayers.area7.map((player) => {
+                return(
+                  <div key={player.id} style={{position: 'relative'}}>
+                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
+                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
+                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
+                  </div>
+                )
+              })}
+            </BetArea>
+            <BetArea id="area8">
+              {droppedPlayers.area8.map((player) => {
+                return(
+                  <div key={player.id} style={{position: 'relative'}}>
+                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
+                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
+                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
+                  </div>
+                )
+              })}
+            </BetArea>
+            <BetArea id="area9">
+              {droppedPlayers.area9.map((player) => {
+                return(
+                  <div key={player.id} style={{position: 'relative'}}>
+                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
+                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
+                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
+                  </div>
+                )
+              })}
+            </BetArea>
+            <BetArea id="area10">
+              {droppedPlayers.area10.map((player) => {
+                return(
+                  <div key={player.id} style={{position: 'relative'}}>
+                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
+                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
+                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
+                  </div>
+                )
+              })}
+            </BetArea>
+            <BetArea id="area11">
+              {droppedPlayers.area11.map((player) => {
+                return(
+                  <div key={player.id} style={{position: 'relative'}}>
+                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
+                  <Avatar alt="Image" src={player.image} sx={{ width: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, 
+                  height: { xs: 30, sm: 30, md: 40, lg: 60, xl: 60 }, }} />
+                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
+                  </div>
+                )
+              })}
+            </BetArea>
             </FantasyFoldingMenu>
         )}
         </AnimatePresence>
@@ -488,7 +578,9 @@ useEffect(() => {
         {loading ? (
             <CircularProgress sx={{ width: 80, height: 80 }} />
         ) : (
-            <BallColumn onClick={openLeague}>
+            <>
+            {activeLeague !== null && (
+                <BallColumn onClick={openLeague}>
             <CountryBall initial={{ height: activeBall === activeLeague?.id ? '70%' : '100%'}}
                 animate={{ height: activeBall === activeLeague?.id ? '70%' : '100%', transform: activeBall === activeLeague?.id ? 'translateY(10px) scale(0.9)' : '' }} 
                 transition={{ duration: 0.3 }} ><img src={activeLeague?.logo} alt="england" /></CountryBall>
@@ -496,6 +588,8 @@ useEffect(() => {
                 animate={{fontSize: activeBall === activeLeague?.id ? '18px' : '0', display: activeBall === activeLeague?.id ? 'flex' : 'none', height: activeBall === activeLeague?.id ? '30%' : '0%', transform: activeBall === activeLeague?.id ? 'translateY(-5px)' : ''  }} 
                 transition={{ duration: 0.3 }}>{activeLeague?.name}</CountryBallText>
             </BallColumn>
+            )}
+            </>
         )}
         </IconHolder>
         )}
@@ -636,14 +730,14 @@ const TeamLogo = styled.div`
 
 const BigTeamName = styled.div`
     width: 75%;
-    height: 100%;
+    height: 100px;
     ${props => props.theme.displayFlex}
     padding: 10px;
     text-align: center;
     position: relative;
     h2{
         color: ${props => props.theme.text};
-        font-size: 34px;
+        font-size: 24px;
         font-weight: bold;
     }
 `;
@@ -831,6 +925,7 @@ const FantasyFoldingMenu = styled(motion.div)`
     background-position: center;
     position: relative;
     background-image: url(${field});
+    background-color: ${props => props.theme.body};
    
 `;
 
