@@ -9,7 +9,7 @@ import italy from '../assets/logos/italy.png'
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
 import field from '../assets/lineups/vertField.png' 
-import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop } from './index';
+import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon } from './index';
 import { FantasyState } from '../context/FantasyContext';
 import { CircularProgress } from '@mui/material';
 import { useGetTeams } from './functions';
@@ -19,6 +19,8 @@ import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core'
 import { TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { message } from 'antd';
 import { StyledButton } from '../components';
+import TeamStats from './TeamStats';
+import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 
 const NewFantasy = () => {
 
@@ -75,12 +77,16 @@ const NewFantasy = () => {
     const [openLeagueMenu, setOpenLeagueMenu] = useState(true)
     const [openTeamMenu, setOpenTeamMenu] = useState(false)
     const [openPlayerMenu, setOpenPlayerMenu] = useState(false)
+    const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
     const [openDropMenu, setOpenDropMenu] = useState(false)
     const [openConfirmMenu, setOpenConfirmMenu] = useState(false)
+    const [selectedPlayerMenu, setSelectedPlayerMenu] = useState(false)
     const [areaId, setAreaId] = useState(null)
     const [loading, setLoading] = useState(false)
     const [balance, setBalance] = useState(300)
     const [isDateExpanded, setIsDateExpanded] = useState(true)
+    const {playerToUpdate, setPlayerToUpdate} = FantasyState();
+    
     const { activeTeamId, setActiveTeamId } = FantasyState(); 
     const {teams,getTeams,loadingTeams,players,loadingPlayers,handleTeamChange,setPlayers,getPlayers,setTeams} = useGetTeams();
     const [droppedPlayers, setDroppedPlayers] = useState({
@@ -292,6 +298,17 @@ useEffect(() => {
         }, 500)
     }
 
+    const openTeamStatsMenu = (team) => {
+        
+        setActiveTeamId(team.teamId)
+        setSelectedTeamMenu(true)
+    }
+
+    const openPlayerStatsMenu = (player) => {
+        setPlayerToUpdate(player)
+        setSelectedPlayerMenu(true)
+      }
+
     console.log(droppedPlayers)
 
   const BetArea = ({ id, children }) => {
@@ -354,9 +371,10 @@ useEffect(() => {
                         {teams?.map((team,index) => {
                             return(
                                 
-                                <TeamHolder whileHover={{scale: 1.05}} key={index} onClick={() => setAllPlayers(team)}>
-                                    <TeamLogo><img src={team.teamLogo} alt={team.teamLogo} /></TeamLogo>
-                                    <TeamName><h2>{team.teamName}</h2></TeamName>
+                                <TeamHolder whileHover={{scale: 1.05}} key={index} >
+                                    <TeamLogo onClick={() => setAllPlayers(team)}><img src={team.teamLogo} alt={team.teamLogo} /></TeamLogo>
+                                    <TeamName onClick={() => setAllPlayers(team)}><h2>{team.teamName}</h2></TeamName>
+                                    <TeamSettings onClick={() => openTeamStatsMenu(team)}><PlayerSettingsIcon /></TeamSettings>
                                 </TeamHolder>
                                 
                             )
@@ -411,16 +429,17 @@ useEffect(() => {
                               : '2px solid white'; 
                             return(
                                 
-                                <TeamHolder whileHover={{scale: 1.02}} style={{border: `${borderStyle}`}} onClick={() => selectPlayer(player,playerIsDropped)}>
-                                    <PlayerLogo><Avatar alt="Image" src={player.photo} sx={{
-                                        width: { xs: 70, sm: 70, md: 80, lg: 90, xl: 90 },
-                                        height: { xs: 70, sm: 70, md: 80, lg: 90, xl: 90 }
+                                <TeamHolder whileHover={{scale: 1.02}} style={{border: `${borderStyle}`}} key={player.name}>
+                                    <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><Avatar alt="Image" src={player.photo} sx={{
+                                        width: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 },
+                                        height: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 }
                                     }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo></PlayerLogo>
-                                    <TeamName>
-                                      <PlayerName><h2>{player.name}</h2></PlayerName>  
-                                      <PlayerLogo><PlayerRating><span>{player.value}M€</span></PlayerRating></PlayerLogo>
-                                      <PlayerLogo><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{!isNaN(player.rating) && player.rating}</PlayerRating></PlayerLogo>
-                                    </TeamName>
+                                    
+                                      <PlayerName onClick={() => selectPlayer(player,playerIsDropped)}><h2>{player.name}</h2></PlayerName>  
+                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating><span>{player.value}M€</span></PlayerRating></PlayerLogo>
+                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{!isNaN(player.rating) && player.rating}</PlayerRating></PlayerLogo>
+                                      <PlayerLogo onClick={() => openPlayerStatsMenu(player)}><PlayerSettingsIcon /></PlayerLogo>
+                                    
                                 </TeamHolder>
                                 
                             )
@@ -630,6 +649,12 @@ useEffect(() => {
             <IconHolder onClick={toggleMenu}>OPEN TEAM</IconHolder>
         )}
       </BottomRow>
+      {selectedTeamMenu && (
+        <TeamStats selectedTeamMenu={selectedTeamMenu} setSelectedTeamMenu={setSelectedTeamMenu} />
+      )}
+      {selectedPlayerMenu && (
+        <PlayerStatsMenu selectedPlayerMenu={selectedPlayerMenu} setSelectedPlayerMenu={setSelectedPlayerMenu} />
+      )}
     </Section>
   )
 }
@@ -681,21 +706,36 @@ const PlayerRating = styled.div`
         font-weight: bold;
         font-size: 22px;
     }
+    @media(max-width: 498px){
+        span{
+        font-size: 18px;
+    } 
+    }
 `;
 
 const PlayerName = styled.div`
-    width: 50%;
+    min-width: 40%;
     height: 100%;
     padding: 5px;
     h2{
         color: ${props => props.theme.text};
-        font-size: 16px;
+        font-size: 22px;
         font-weight: bold;
+    }
+    @media(max-width: 968px){
+        h2{
+            font-size: 22px;
+        } 
+    }
+    @media(max-width: 498px){
+        h2{
+            font-size: 20px;
+        } 
     }
 `;
 
 const PlayerLogo = styled.div`
-    width: 25%;
+    min-width: 15%;
     height: 100%;
     ${props => props.theme.displayFlexCenter}
     position: relative;
@@ -712,7 +752,7 @@ const PlayerTeamLogo = styled.div`
 
 
 const TeamLogo = styled.div`
-    width: 25%;
+    width: 20%;
     height: 100%;
     ${props => props.theme.displayFlexCenter}
     img{
@@ -721,9 +761,17 @@ const TeamLogo = styled.div`
         object-fit: cover;
     }
 `;
+const TeamSettings = styled.div`
+    width: 20%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter}
+    position: absolute;
+    top: 0;
+    right: 0;
+`;
 
 const BigTeamName = styled.div`
-    width: 75%;
+    width: 70%;
     height: 100px;
     ${props => props.theme.displayFlex}
     padding: 10px;
@@ -758,6 +806,8 @@ const TeamHolder = styled(motion.div)`
     ${props => props.theme.displayFlexCenter}
     border-radius: 5px;
     cursor: pointer;
+    position: relative;
+    padding: 10px;
 `;
 
 const LeagueHolder = styled(motion.div)`
@@ -817,6 +867,10 @@ const PlayerRow = styled.div`
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     overflow-y: auto;
+    @media(max-width: 968px){
+        grid-template-columns: repeat(2, 1fr);
+        height: 85%;
+    }
     @media(max-width: 498px){
         grid-template-columns: repeat(1, 1fr);
         height: 85%;

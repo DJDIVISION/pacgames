@@ -821,13 +821,13 @@ export const StatsSection = styled.div`
 `;
 
 export const StatsWrapper = styled.div`
-    width: 80%;
-    min-height: 130px;
+    min-width: 350px;
+    max-height: 140px;
     border: 1px solid white;
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
-    margin: 10px 0;
+    margin: 10px;
     ${props => props.theme.displayFlexCenter};
 `;
 

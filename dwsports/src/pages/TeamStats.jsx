@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { BetState } from '../context/BetsContext';
+import styled from 'styled-components';
 import { supabase } from '../supabase/client';
 import {motion} from 'framer-motion'
 import {BetSection,ArrowUp,SportsButtonRow,item,BorderedMatch,BetWrapper,MatchColumn,MatchDate,TeamStatsLogo,AgeAverage,
@@ -7,12 +7,12 @@ import {BetSection,ArrowUp,SportsButtonRow,item,BorderedMatch,BetWrapper,MatchCo
   RightColumn,TeamStatsWrapper,TeamStatsName,TeamStatCountry,StatsCountryAvatar,StatsCountryLocation,TeamStatsRating,
   TeamRatingTitle,TeamRating,AccordionTitle,SmallBorderedMatch,TeamMembers,Row,Column,ColumnIcon,SmallColumnText,BigColumnText,
   Stadium,Capacity,Coach,Foundation,RecentForm,TeamStatsRow,SmallBorderedMatchRight,ArrivalsText,ArrivalsTitle,ReadMore,
-  TitleRow,TitleColumn,TeamsLogo,TeamsResult,DateRow,ResultRow,TeamLogoWrapper,TeamLogoText,NewHolder
+  TitleRow,TitleColumn,TeamsLogo,TeamsResult,DateRow,ResultRow,TeamLogoWrapper,TeamLogoText,NewHolder,TopRow
 } from './index'
 import {CloseStats,StatsSection,StatsWrapper,StatsStadium,StatsStadiumCapacity,MatchLineUp,
   StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Wrapper,PlayerDisplay,PlayerBigPicture
 } from '../components/index'
-import { Avatar } from '@mui/material';
+import { Avatar, Button } from '@mui/material';
 import england from '../assets/england.png'
 import spain from '../assets/england.png'
 import italy from '../assets/england.png'
@@ -21,6 +21,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom'
 import {Link as LinkR} from 'react-router-dom'
 import { FantasyState } from '../context/FantasyContext';
+import { minWidth } from '@mui/system';
 
 
 
@@ -31,6 +32,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
   const {activeTeamId, setActiveTeamId} = FantasyState();
   const [homeMatches, setHomeMatches] = useState([]);
   const [awayMatches, setAwayMatches] = useState([]);
+  const [activeMatches, setActiveMatches] = useState([]);
   const [teamData, setTeamData] = useState([])
   const [lineUps, setLineUps] = useState([])
   const [cleanSheets, setCleanSheets] = useState([])
@@ -45,6 +47,16 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
   const [goalsFor, setGoalsFor] = useState([])
   const [form, setForm] = useState([])
   const [loading, setLoading] = useState(false)
+  const [activeBackground, setActiveBackground] = useState('home')
+
+  const GraphWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    height: 200px;
+    max-width: 95%;
+    overflow-y: hidden;
+    overflow-x: scroll;
+  `;
 
   const BarGraph = ({ results }) => {
     // Function to calculate bar properties based on result
@@ -52,18 +64,18 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     const getBarProperties = (result) => {
       switch (result) {
         case 'W':
-          return { height: '80px', backgroundColor: 'green', marginTop: '0' }; // Win: bar goes up
+          return { height: '80px', backgroundColor: 'green', marginTop: '-60px', minWidth: '30px' }; // Win: bar goes up
         case 'L':
-          return { height: '80px', backgroundColor: 'red', marginTop: '160px', marginBottom: '20px' }; // Loss: bar goes down
+          return { height: '80px', backgroundColor: 'red', marginTop: '100px', marginBottom: '20px', minWidth: '30px' }; // Loss: bar goes down
         case 'D':
-          return { height: '40px', backgroundColor: 'grey', marginTop: '80px' }; // Draw: stays at the center
+          return { height: '40px', backgroundColor: 'grey', marginTop: '20px', minWidth: '30px' }; // Draw: stays at the center
         default:
-          return { height: '0px', backgroundColor: 'grey', marginTop: '100px' }; // Default (draw)
+          return { height: '0px', backgroundColor: 'grey', marginTop: '100px', minWidth: '30px' }; // Default (draw)
       }
     };
   
     return (
-      <div style={{ display: 'flex', alignItems: 'center', height: '200px' }}>
+      <GraphWrapper>
         {validResults.split('').map((result, index) => (
           <div
             key={index}
@@ -79,7 +91,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
           ></div>
         ))}
         {validResults.length === 0 && <p>No results available</p>} {/* Display a message if no results */}
-      </div>
+      </GraphWrapper>
     );
   };
 
@@ -91,7 +103,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     const { data: fixtureData, error: fixtureError } = await supabase
       .from('fixtures')
       .select('fixtures')
-      .eq("leagueName", activeLeague);
+      .eq("leagueName", activeLeague.league);
     
     if (fixtureError) {
       console.error('Error fetching fixture data:', fixtureError.message);
@@ -112,8 +124,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
   
       setHomeMatches(homeMatches);
       setAwayMatches(awayMatches);
-      console.log(homeMatches)
-      console.log(awayMatches)
+      setActiveMatches(homeMatches);
     } else {
       console.error('No fixture data found');
     }
@@ -184,6 +195,17 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     fetchData();
   }, [])
   
+  const changeMatches = (e) => {
+    if(e.target.id === 'home'){
+      setActiveMatches(homeMatches)
+      setActiveBackground('home')
+    }
+    if(e.target.id === 'away'){
+      setActiveMatches(awayMatches)
+      setActiveBackground('away')
+    }
+    
+  }
 
   return (
     <motion.div className="menu-container-one" variants={item}
@@ -197,12 +219,11 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
       ) : (
             <>
               <TitleRow>
-                <TitleColumn>HOME</TitleColumn>
-                <TitleColumn>AWAY</TitleColumn>
+                <TitleColumn><StyledButton className={`button ${activeBackground === 'home' ? 'active' : ''}`} id="home" onClick={(e) => changeMatches(e)}>HOME</StyledButton></TitleColumn>
+                <TitleColumn><StyledButton className={`button ${activeBackground === 'away' ? 'active' : ''}`} id="away" onClick={(e) => changeMatches(e)}>AWAY</StyledButton></TitleColumn>
               </TitleRow>
-              <Row>
-                <LeftColumn>
-                  {homeMatches.map((match) => {
+              <TopRow>
+              {activeMatches?.map((match) => {
                     const date = new Date(match.fixture.date).toLocaleString();
                     return (
                       <StatsWrapper>
@@ -233,49 +254,14 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                       </StatsWrapper>
                     )
                   })}
-                </LeftColumn>
-                <RightColumn>
-                  {awayMatches.map((match) => {
-                    const date = new Date(match.fixture.date).toLocaleString();
-                    return (
-                      <StatsWrapper>
-                        <TeamsLogo>
-                          <TeamLogoWrapper>
-                            <Avatar alt="Image" src={match.teams.home.logo} sx={{
-                              width: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 },
-                              height: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 }, transform: 'translateY(5px)'
-                            }} />
-                          </TeamLogoWrapper>
-                          <TeamLogoText>{match.teams.home.name}</TeamLogoText>
-                        </TeamsLogo>
-                        <TeamsResult>
-                          <DateRow>{date}</DateRow>
-                          <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.score.fulltime.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.score.fulltime.away}</h2></ResultRow>
-                          <DateRow>( {match.score.halftime.home} - {match.score.halftime.away} )</DateRow>
-                          <DateRow style={{ fontSize: '12px' }}>{match.fixture.venue.name}, {match.fixture.venue.city}</DateRow>
-                        </TeamsResult>
-                        <TeamsLogo>
-                          <TeamLogoWrapper>
-                            <Avatar alt="Image" src={match.teams.away.logo} sx={{
-                              width: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 },
-                              height: { xs: 50, sm: 50, md: 70, lg: 80, xl: 80 }, transform: 'translateY(5px)'
-                            }} />
-                          </TeamLogoWrapper>
-                          <TeamLogoText>{match.teams.away.name}</TeamLogoText>
-                        </TeamsLogo>
-                      </StatsWrapper>
-                    )
-                  })}
-                </RightColumn>
-              </Row>
+              </TopRow>
               <NewHolder>
                 <h3>RECENT FORM</h3>
                 <BarGraph results={form} />
               </NewHolder>
-
               <Row>
-                <LeftColumn>
-                  <NewHolder>
+              <LeftColumn>
+              <NewHolder>
                     <h3>GAMES PLAYED</h3>
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       {Object.entries(played).map(([key, value]) => (
@@ -286,53 +272,9 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                       ))}
                     </div>
                   </NewHolder>
-                  <NewHolder>
-                    <h3>GAMES LOST</h3>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      {Object.entries(loses).map(([key, value]) => (
-                        <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
-                          <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
-                          <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </NewHolder>
-                  <NewHolder>
-                    <h3>GOALS SCORED</h3>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      {Object.entries(goalsFor).map(([key, value]) => (
-                        <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
-                          <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
-                          <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </NewHolder>
-                  <NewHolder>
-                    <h3>CLEAN SHEETS</h3>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      {Object.entries(cleanSheets).map(([key, value]) => (
-                        <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
-                          <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
-                          <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </NewHolder>
-                  <NewHolder>
-                    <h3>SCORED PENALTIES</h3>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      {Object.entries(penaltyScored).map(([key, value]) => (
-                        <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
-                          <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
-                          <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </NewHolder>
-                </LeftColumn>
-                <RightColumn>
-                  <NewHolder>
+              </LeftColumn>
+              <RightColumn>
+              <NewHolder>
                     <h3>GAMES WON</h3>
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       {Object.entries(wins).map(([key, value]) => (
@@ -343,7 +285,25 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                       ))}
                     </div>
                   </NewHolder>
-                  <NewHolder>
+              </RightColumn>
+              </Row>
+
+              <Row>
+              <LeftColumn>
+              <NewHolder>
+                    <h3>GAMES LOST</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                      {Object.entries(loses).map(([key, value]) => (
+                        <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+                          <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+                          <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </NewHolder>
+              </LeftColumn>
+              <RightColumn>
+              <NewHolder>
                     <h3>DRAW GAMES</h3>
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       {Object.entries(draws).map(([key, value]) => (
@@ -354,7 +314,25 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                       ))}
                     </div>
                   </NewHolder>
-                  <NewHolder>
+              </RightColumn>
+              </Row>
+
+              <Row>
+              <LeftColumn>
+              <NewHolder>
+                    <h3>GOALS SCORED</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                      {Object.entries(goalsFor).map(([key, value]) => (
+                        <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+                          <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+                          <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </NewHolder>
+              </LeftColumn>
+              <RightColumn>
+              <NewHolder>
                     <h3>GOALS RECEIVED</h3>
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       {Object.entries(goalsAgainst).map(([key, value]) => (
@@ -365,7 +343,25 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                       ))}
                     </div>
                   </NewHolder>
-                  <NewHolder>
+              </RightColumn>
+              </Row>
+
+              <Row>
+              <LeftColumn>
+              <NewHolder>
+                    <h3>CLEAN SHEETS</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                      {Object.entries(cleanSheets).map(([key, value]) => (
+                        <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+                          <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+                          <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </NewHolder>
+              </LeftColumn>
+              <RightColumn>
+              <NewHolder>
                     <h3>FAILED TO SCORE</h3>
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       {Object.entries(failedToScore).map(([key, value]) => (
@@ -376,7 +372,25 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                       ))}
                     </div>
                   </NewHolder>
-                  <NewHolder>
+              </RightColumn>
+              </Row>
+
+              <Row>
+              <LeftColumn>
+              <NewHolder>
+                    <h3>SCORED PENALTIES</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                      {Object.entries(penaltyScored).map(([key, value]) => (
+                        <div key={key} style={{ margin: '0 10px', textAlign: 'center' }}>
+                          <span style={{ fontWeight: 'bold' }}>{key.toUpperCase()}:</span>
+                          <span style={{ marginLeft: '5px' }}>{value !== null ? value.toString() : 'N/A'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </NewHolder>
+              </LeftColumn>
+              <RightColumn>
+              <NewHolder>
                     <h3>MISSED PENALTIES</h3>
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       {Object.entries(penaltyMissed).map(([key, value]) => (
@@ -387,7 +401,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                       ))}
                     </div>
                   </NewHolder>
-                </RightColumn>
+              </RightColumn>
               </Row>
             </>
       )}
@@ -397,3 +411,38 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
 }
 
 export default TeamStats
+
+const StyledButton = styled(Button)`
+    &&&{
+        align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    cursor: pointer;
+    border: 1px solid ${props => props.theme.MainAccent};
+    border-radius: 0.58vmin;
+    color: ${props => props.theme.MainAccent};
+    padding: 10px 20px;
+    font-size: 16px;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: 0.5s;
+    &:hover {
+        background: ${props => props.theme.MainAccent};
+        color: #ffffff;
+        box-shadow: 0 0 5px ${props => props.theme.MainAccent}, 0 0 25px ${props => props.theme.MainAccent},
+        0 0 50px ${props => props.theme.MainAccent}, 0 0 100px ${props => props.theme.MainAccent};
+        font-weight: bold;
+    }
+    @media(max-width: 968px){
+        font-size: 16px;
+        padding: 7.5px 15px;
+    }
+    @media(max-width: 698px){
+        font-size: 14px;
+        padding: 7.5px 15px;
+    }
+    }
+`;

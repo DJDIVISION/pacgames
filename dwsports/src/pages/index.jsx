@@ -770,6 +770,16 @@ export const Row = styled.div`
     width: 100%;
     height: 100%;
     display: flex;
+    @media(max-width: 498px){
+        flex-direction: column;
+    }
+`;
+
+export const TopRow = styled.div`
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    overflow-x: auto;
 `;
 
 export const BetTitleRow = styled.div`
@@ -1087,6 +1097,10 @@ export const LeftColumn = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    @media(max-width: 498px){
+        width: 100%;
+        height: 50%;
+    }
 `;
 
 export const RightColumn = styled.div`
@@ -1095,20 +1109,26 @@ export const RightColumn = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    @media(max-width: 498px){
+        width: 100%;
+        height: 50%;
+    }
 `;
 
 export const TitleRow = styled.div`
     width: 100%;
-    height: 250px;
+    min-height: 100px;
     ${props => props.theme.displayFlexCenter};
+    margin-top: 30px;
+    @media(max-width:498px){
+        margin-top: 40px; 
+    }
 `;
 
 export const TitleColumn = styled.div`
     width: 50%;
     height: 100%;
     ${props => props.theme.displayFlexCenter};
-    font-size: 32px;
-    color: ${props => props.theme.MainAccent};
 `;
 
 
@@ -1162,6 +1182,10 @@ export const NewHolder = styled.div`
     }
     span{
         color: ${props => props.theme.text};
+    }
+    @media(max-width: 498px){
+        width: 90%;
+
     }
 `;
 export const DateRow = styled.div`
