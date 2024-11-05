@@ -570,4 +570,31 @@ export const useGetTeams = () => {
   };
 };
 
+export function startCountdown(date) {
+  console.log("date", date)
+  const countdownElement = document.getElementById("countdown");
+  console.log("element",countdownElement)
+    if (!countdownElement) {
+        console.error("Countdown element not found.");
+        return;
+    }
+    const updateCountdown = () => {
+        const now = Date.now();
+        const timeRemaining = date - now;
+
+        if (timeRemaining <= 0) {
+            countdownElement.textContent = "There is no training going on!";
+            return;
+        }
+        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+        countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s \n\r left for next training`;
+
+        setTimeout(updateCountdown, 1000);
+    };
+
+    updateCountdown();
+}
 
