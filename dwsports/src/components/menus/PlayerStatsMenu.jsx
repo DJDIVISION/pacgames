@@ -200,7 +200,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
       const leagues = []
       playerLeagueData.forEach((league) => {
         leagues.push(league.league.name)
-        if(league.league.name === activeLeague){
+        if(league.league.name === activeLeague.league){
           setActiveLeagueData(league)
         }
       })

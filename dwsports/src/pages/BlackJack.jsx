@@ -36,7 +36,7 @@ import { FantasyState } from '../context/FantasyContext';
 
  
 
-const socket = io.connect("http://localhost:3030")
+/* const socket = io.connect("http://localhost:3030") */
 
 
 const BalanceDisplay = ({ balance }) => {

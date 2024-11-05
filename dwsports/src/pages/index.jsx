@@ -101,7 +101,7 @@ export const CountryBallText = styled(motion.div)`
     color: ${props => props.theme.text};
     font-weight: bold;
     text-transform: uppercase;
-    font-size: 3vw;
+    font-size: 18px;
     line-height: 1.1;
     transform: translateY(-50%);
     text-shadow: ${props => props.theme.textShadowTwo};
@@ -787,7 +787,8 @@ export const BetTitleRow = styled.div`
     height: 80px;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
+    text-align: center;
     position: relative;
     h2{
         color: ${props => props.theme.text};
@@ -991,7 +992,7 @@ export const ArrowLeft = styled(KeyboardArrowDownIcon)`
         position: absolute;
         top: 10%;
         left: 5%;
-        transform: rotate(90deg) translate(-25%,-25%);
+        transform: rotate(90deg) translate(37.5%,-150%);
         z-index: 1000;
         cursor: pointer;
         @media(max-width: 968px){
@@ -1007,7 +1008,7 @@ export const ArrowRight = styled(KeyboardArrowDownIcon)`
         position: absolute;
         top: 50%;
         right: 10%;
-        transform: rotate(270deg) translate(25%,25%);
+        transform: rotate(270deg) translate(37.5%,-100%);
         z-index: 1000;
         cursor: pointer;
     }

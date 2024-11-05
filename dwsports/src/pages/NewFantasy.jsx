@@ -12,7 +12,7 @@ import field from '../assets/lineups/vertField.png'
 import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon } from './index';
 import { FantasyState } from '../context/FantasyContext';
 import { CircularProgress } from '@mui/material';
-import { useGetTeams } from './functions';
+import { useAuth, useGetTeams } from './functions';
 import { useMediaQuery } from 'react-responsive';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
@@ -65,7 +65,7 @@ const NewFantasy = () => {
             id: 5
         }
     ]
-
+    const { user } = useAuth(); 
     const [startDate, setStartDate] = useState('2024-11-01')
     const [endDate, setEndDate] = useState('2024-11-05')
     const [allLeagues, setAllLeagues] = useState(leagues)
@@ -83,25 +83,47 @@ const NewFantasy = () => {
     const [selectedPlayerMenu, setSelectedPlayerMenu] = useState(false)
     const [areaId, setAreaId] = useState(null)
     const [loading, setLoading] = useState(false)
-    const [balance, setBalance] = useState(300)
+    const [balance, setBalance] = useState(null)
+    const [teamRating, setTeamRating] = useState(null)
     const [isDateExpanded, setIsDateExpanded] = useState(true)
     const {playerToUpdate, setPlayerToUpdate} = FantasyState();
-    
+    const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
     const { activeTeamId, setActiveTeamId } = FantasyState(); 
     const {teams,getTeams,loadingTeams,players,loadingPlayers,handleTeamChange,setPlayers,getPlayers,setTeams} = useGetTeams();
-    const [droppedPlayers, setDroppedPlayers] = useState({
-        area1: [],
-        area2: [],
-        area3: [],
-        area4: [],
-        area5: [],
-        area6: [],
-        area7: [],
-        area8: [],
-        area9: [],
-        area10: [],
-        area11: []
-      });
+    const [droppedPlayers, setDroppedPlayers] = useState([]);
+
+      const fetchUserData = async () => {
+        const { data, error } = await supabase
+                    .from('fantasyFootball')
+                    .select('*') // Update the jsonb column
+                    .eq('id', user.id); // Identify which user to update
+    
+                if (error) {
+                    console.error('Error updating user data:', error);
+                } 
+                if(data){
+                    if(data.length === 0){
+                        const { error: updateError } = await supabase
+                        .from('fantasyFootball')
+                        .insert({ id: user.id, balanceRemaining: 300, playerName: user.user_metadata.full_name, email: user.email }) 
+                        if (updateError) {
+                            console.error('Error updating user data:', updateError.message);
+                        } else {
+                            console.log("data inserted now!")
+                        }
+                    } else {
+                        setBalance(data[0].balanceRemaining)
+                        setDroppedPlayers(data[0].players.players)
+                        setTeamRating(data[0].teamRating)
+                    }
+                }
+      }
+
+      console.log(droppedPlayers)
+
+      useEffect(() => {
+        fetchUserData(); 
+      }, [user])
 
       useEffect(() => {
         getTeams();
@@ -166,7 +188,10 @@ const NewFantasy = () => {
     }
 
     const openLeague = () => {
-        setActiveLeague(null)
+        if(openLeagueMenu){
+            return
+        } else {
+            setActiveLeague(null)
         setOpenDropMenu(false)
         setTeams([])
         setActivePlayer(null)
@@ -180,6 +205,7 @@ const NewFantasy = () => {
         setTimeout(() => {
             setOpenLeagueMenu((prev) => !prev);
         }, 500)
+        }
     }
     const openPlayer = () => {
         setOpenPlayerMenu((prev) => !prev);
@@ -225,8 +251,9 @@ const selectPlayer = (player,playerIsDropped) => {
     } else {
         setActivePlayer(player)
         setOpenPlayerMenu(false)
+        
         setTimeout(() => {
-            setOpenDropMenu(true)
+            setOpenConfirmMenu(true)
         }, 500)
     }
     
@@ -248,19 +275,30 @@ const setAllTeams = (league) => {
 const closePlayers = () => {
     setOpenPlayerMenu(false)
     setActiveTeam(null)
+    setActivePlayer(null)
+    setOpenDropMenu(false)
     setTimeout(() => {
         setOpenTeamMenu(true)
     }, 500)
 }
 
 const toggleMenu = () => {
-    setOpenDropMenu((prev) => !prev);
-
+    if(!openDropMenu){
+        setOpenPlayerMenu(false)
+        setOpenLeagueMenu(false)
+        setOpenTeamMenu(false)
+        setActiveTeam(null)
+        setActivePlayer(null)
+        setTimeout(() => {
+            setOpenDropMenu((prev) => !prev);
+        }, 500)
+    } else {
+        setOpenDropMenu((prev) => !prev);
+        setTimeout(() => {
+            setOpenLeagueMenu((prev) => !prev);
+        }, 500)
+    }
 }
-
-useEffect(() => {
-    console.log(activePlayer)
-}, [activePlayer])
 
 
     const placePlayer = (areaId) => {
@@ -268,25 +306,76 @@ useEffect(() => {
         setOpenConfirmMenu(true)
     }
 
-    const confirmPlayer = () => {
-        const { value, photo, position, name, teamLogo, rating, id } = activePlayer;
-        const fakeBalance = balance - value
-        if(value && photo && fakeBalance > 0){
-            setBalance((prevBalance) => prevBalance - value);
-            setDroppedPlayers((prev) => ({
-                ...prev,
-                [areaId]: [{ id: id, value, photo, teamLogo, areaId: areaId, rating: rating, isDropped: true, name: name, lastMatchRating: null, position: position }], // Replace the existing player
-            }));
+    const confirmPlayer = async () => {
+        
+        const parsedRating = parseFloat(activePlayer.rating.toFixed(2)); 
+        console.log(parsedRating)
+        const fakeBalance = balance - activePlayer.value
+        const parsedBalance = parseFloat(fakeBalance.toFixed(2)); 
+        console.log(parsedBalance)
+
+        const { data, error } = await supabase
+            .from('fantasyFootball')
+            .select('*')
+            .eq('id', user.id);
+    
+        if (error) {
+            console.error('Error fetching user data:', error.message);
+        } else {
+            if (data.length === 0) {
+                message.error("This user does not exist in our database");
+            } else {
+                console.log(data);
+
+                const userPlayersData = data[0].players || {}; 
+                let teamRating
+                const power = data[0].teamRating
+                if(power === null){
+                    teamRating = parsedRating
+                } else {
+                    const parsedPower = parseFloat(power)
+                    teamRating =  (parsedRating + parsedPower)/ 2
+                }
+                const newRating = parseFloat(teamRating.toFixed(2))
+                // Initialize referrals array if it doesn't exist
+                userPlayersData.players = userPlayersData.players || []; 
+                
+                // Prepare the updated data structure to add
+                const updatedData = {
+                    name: activePlayer.name,
+                    photo: activePlayer.photo,
+                    position: activePlayer.position,
+                    value: activePlayer.value,
+                    teamLogo: activePlayer.teamLogo,
+                    rating: parsedRating,
+                    id: activePlayer.id 
+                };
+    
+                // Add the updated data to the referrals array
+                userPlayersData.players.push(updatedData);
+    
+                // Update the user's jsonb column
+                const { error: updateError } = await supabase
+                    .from('fantasyFootball')
+                    .update({ players: userPlayersData, balanceRemaining: parsedBalance, teamRating: newRating }) 
+                    .eq('id', user.id); // Identify which user to update
+    
+                if (updateError) {
+                    console.error('Error updating user data:', updateError.message);
+                } else {
+                    console.log('User data updated successfully:', userPlayersData);
+                    setOpenConfirmMenu(false)
+                    setActivePlayer(null)
+                    setActiveTeam(null)
+                    setBalance((prev) => prev - activePlayer.value)
+                    fetchUserData();
+                    setTimeout(() => {
+                        message.success("Player added to your team!!!");
+                        setOpenDropMenu(true)
+                    }, 300)
+                }
+            }
         }
-        setActivePlayer(null)
-        setOpenConfirmMenu(false)
-        setAreaId(null)
-        message.success("Your player has been placed!")
-        setTimeout(() => {
-            setOpenDropMenu(false)
-            setOpenPlayerMenu(false)
-            setOpenTeamMenu(true)
-        }, 3000)
     }
 
     const cancelPlayer = () => {
@@ -307,9 +396,34 @@ useEffect(() => {
     const openPlayerStatsMenu = (player) => {
         setPlayerToUpdate(player)
         setSelectedPlayerMenu(true)
-      }
+    }
 
-    console.log(droppedPlayers)
+    const sortByRating = () =>{
+        const sortedPlayers = [...players].sort((a, b) => b.rating - a.rating);
+        setPlayers(sortedPlayers);
+    }
+    
+    const sortByValue = () =>{
+        const sortedPlayers = [...players].sort((a, b) => b.value - a.value);
+        setPlayers(sortedPlayers);
+    }
+
+    const positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Attacker' ];
+
+    const sortByPosition = () => {
+        const currentPosition = positions[currentPositionIndex];
+        const sortedPlayers = [...players].sort((a, b) => {
+        if (a.position === currentPosition && b.position !== currentPosition) {
+            return -1; 
+        }
+        if (a.position !== currentPosition && b.position === currentPosition) {
+            return 1; 
+        }
+        return 0; 
+        });
+        setPlayers(sortedPlayers); 
+        setCurrentPositionIndex((prevIndex) => (prevIndex + 1) % positions.length);
+    };
 
   const BetArea = ({ id, children }) => {
     
@@ -319,6 +433,15 @@ useEffect(() => {
       </PlayerDroppingArea>
     );
   };
+
+  const positionOrder = ["Attacker", "Midfielder", "Defender", "Goalkeeper"];
+
+  const groupedPlayers = positionOrder.map((position) => ({
+  position,
+  players: droppedPlayers.filter((player) => player.position === position),
+}));
+
+
 
   return (
     <Section>
@@ -391,10 +514,32 @@ useEffect(() => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <BigTeamName><h2>DO YOU WANT TO LINEUP THIS PLAYER?</h2></BigTeamName>
+                <BigTeamName style={{color: 'white'}}><h2>YOUR BALANCE: {balance}M€</h2></BigTeamName>
+                <BigTeamName>
+                    {balance - activePlayer.value > 0 ? (
+                        <h2>DO YOU WANT TO BUY THIS PLAYER?</h2>
+                    ) : (
+                        <h2>YOU CAN NOT AFFORD THIS PLAYER</h2> 
+                    )}
+                </BigTeamName>
+                <BuyPlayerHolder>
+                    <BuyPlayerAvatar><Avatar alt="Image" src={activePlayer.photo} sx={{
+                                        width: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 },
+                                        height: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 }
+                                    }} /></BuyPlayerAvatar>
+                                    <BuyPlayerName><h2>{activePlayer.name}</h2></BuyPlayerName>
+                                    <BuyPlayerName><span>{activePlayer.value}M€</span></BuyPlayerName>
+                </BuyPlayerHolder>
                 <div style={{display: 'flex', width: '100%', height: '70px', alignItems: 'center', justifyContent: 'center'}}>
-                <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CANCEL</StyledButton>
-                <StyledButton onClick={confirmPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CONFIRM</StyledButton>
+                {balance - activePlayer.value > 0 ? (
+                        <>
+                            <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CANCEL</StyledButton>
+                            <StyledButton onClick={confirmPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CONFIRM</StyledButton>
+                        </>
+                    ) : (
+                        <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CANCEL</StyledButton>
+                    )}
+                
                 </div>
             </FoldingMenu>
         )}
@@ -411,13 +556,15 @@ useEffect(() => {
                     <CircularProgress sx={{ width: 80, height: 80 }} />
                     </TeamCircularRow>
                 ) : (
+                    <>
+                    <FilterRow>
+                        <StyledButton onClick={sortByRating}>SORT BY RATE</StyledButton>
+                        <StyledButton onClick={sortByPosition}>SORT BY POSITION</StyledButton>
+                        <StyledButton onClick={sortByValue}>SORT BY VALUE</StyledButton>
+                    </FilterRow>
                     <PlayerRow >
                         {players?.map((player) => {
-                            const playerIsDropped = Object.values(droppedPlayers).some(area =>
-                                area.find(droppedPlayer => droppedPlayer.id === player.id)
-                            );
-                            /* const filter = player.laLigaStats[0].statistics.filter((stat) => stat.league.name === player.leagueName && stat.team.name === player.team)
-                            const rating = parseFloat(filter[0].games.rating).toFixed(2) */
+                            const playerIsDropped = droppedPlayers.find(droppedPlayer => droppedPlayer.id === player.id)
                             const playerIsInjured = player.injuryType === 'Missing Fixture';
                             const playerIsQuestionable = player.injuryType === 'Questionable';
                             const borderStyle = playerIsDropped 
@@ -436,6 +583,7 @@ useEffect(() => {
                                     }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo></PlayerLogo>
                                     
                                       <PlayerName onClick={() => selectPlayer(player,playerIsDropped)}><h2>{player.name}</h2></PlayerName>  
+                                      <PlayerPosition><h2>{player.position.charAt(0)}</h2></PlayerPosition>
                                       <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating><span>{player.value}M€</span></PlayerRating></PlayerLogo>
                                       <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating style={{background: player.rating >= 7 ? `green` : player.rating >= 6 && player.rating < 7 ? "yellow" : "red"}}>{!isNaN(player.rating) && player.rating}</PlayerRating></PlayerLogo>
                                       <PlayerLogo onClick={() => openPlayerStatsMenu(player)}><PlayerSettingsIcon /></PlayerLogo>
@@ -445,6 +593,7 @@ useEffect(() => {
                             )
                         })}
                     </PlayerRow>
+                    </>
                 )}
             </FoldingMenu>
         )}
@@ -454,137 +603,40 @@ useEffect(() => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className='layout1'
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                 
-                 <BetArea id="area1" className='droppable-area'>
-                {droppedPlayers.area1.map((player) => {
-                    return(
-                    <div key={player.id} style={{position: 'relative'}}>
-                        <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                    {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                    </div>
-                    )
-                })}
-                </BetArea>
-                <BetArea id="area2">
-                {droppedPlayers.area2.map((player) => {
-                    return(
-                    <div key={player.id} style={{position: 'relative'}}>
-                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                    {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                    </div>
-                    )
-                })}
-                </BetArea>
-                <BetArea id="area3">
-              {droppedPlayers.area3.map((player) => {
-                return(
-                  <div key={player.id} style={{position: 'relative'}}>
-                  <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>  
-                  <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                  </div>
-                )
-              })}
-            </BetArea>
-            <BetArea id="area4">
-              {droppedPlayers.area4.map((player) => {
-                return(
-                  <div key={player.id} style={{position: 'relative'}}>
-                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                  </div>
-                )
-              })}
-            </BetArea>
-            <BetArea id="area5">
-              {droppedPlayers.area5.map((player) => {
-                return(
-                  <div key={player.id} style={{position: 'relative'}}>
-                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                  </div>
-                )
-              })}
-            </BetArea>
-            <BetArea id="area6">
-              {droppedPlayers.area6.map((player) => {
-                return(
-                  <div key={player.id} style={{position: 'relative'}}>
-                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                  </div>
-                )
-              })}
-            </BetArea>
-            <BetArea id="area7">
-              {droppedPlayers.area7.map((player) => {
-                return(
-                  <div key={player.id} style={{position: 'relative'}}>
-                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                  </div>
-                )
-              })}
-            </BetArea>
-            <BetArea id="area8">
-              {droppedPlayers.area8.map((player) => {
-                return(
-                  <div key={player.id} style={{position: 'relative'}}>
-                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                  </div>
-                )
-              })}
-            </BetArea>
-            <BetArea id="area9">
-              {droppedPlayers.area9.map((player) => {
-                return(
-                  <div key={player.id} style={{position: 'relative'}}>
-                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                  </div>
-                )
-              })}
-            </BetArea>
-            <BetArea id="area10">
-              {droppedPlayers.area10.map((player) => {
-                return(
-                  <div key={player.id} style={{position: 'relative'}}>
-                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                  </div>
-                )
-              })}
-            </BetArea>
-            <BetArea id="area11">
-              {droppedPlayers.area11.map((player) => {
-                return(
-                  <div key={player.id} style={{position: 'relative'}}>
-                    <PlayerTeamLogo style={{backgroundImage: `url(${player.teamLogo})`, backgroundSize: 'cover'}}></PlayerTeamLogo>
-                    <img src={player.photo} alt="player" style={{borderRadius: '50%'}}/>
-                  {player.lastMatchRating !== null && <PlayerTeamRating style={{background: player.lastMatchRating >= 7 ? `green` : player.lastMatchRating >= 6 && player.lastMatchRating < 7 ? "yellow" : "red"}}>{player.lastMatchRating}</PlayerTeamRating>}
-                  </div>
-                )
-              })}
-            </BetArea>
+                <MyBalanceRow><h2>BALANCE: {balance}M€</h2></MyBalanceRow>
+                <MyBalanceRow><h2>TEAM RATING: {teamRating}</h2></MyBalanceRow>
+                <PlayerRow >
+                          {groupedPlayers.map((group) => (
+                            group.players.length > 0 && (
+                                <>
+                                <MyPlayerPosition><h2>{group.position}s</h2></MyPlayerPosition>
+                                  <MyPlayerRow>
+                                      {group.players.map((player) => (
+                                          <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
+                                            width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
+                                            height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
+                                        }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
+                                      ))}
+                                 </MyPlayerRow>
+                                 </>
+                            )
+                          ))}
+                 </PlayerRow>
             </FantasyFoldingMenu>
         )}
         </AnimatePresence>
       </Container>
       
       <BottomRow>
-        {openLeagueMenu ? (
+        <IconHolder>
+            {openDropMenu ? (
+                <IconHolder><h2>TRAINING</h2></IconHolder>
+            ):(
+                <IconHolder onClick={openLeague}><h2>CHOOSE A LEAGUE</h2></IconHolder>  
+            )}
+        </IconHolder>
+        {/* {openLeagueMenu ? (
             <IconHolder onClick={openLeague}><h2>CHOOSE A LEAGUE</h2></IconHolder>
         ) : (
             <IconHolder>
@@ -605,7 +657,7 @@ useEffect(() => {
             </>
         )}
         </IconHolder>
-        )}
+        )} */}
         
         {openTeamMenu ? (
             <IconHolder><h2>CHOOSE A TEAM</h2></IconHolder>
@@ -618,7 +670,7 @@ useEffect(() => {
                 {activeTeam && (
                     <BallColumn onClick={closePlayers}>
                     <CountryBall initial={{y:10}}><img src={activeTeam?.teamLogo} alt="england" style={{width: '60%', display: 'block', objectFit: 'cover'}}/></CountryBall>
-                        <CountryBallText initial={{y:-2.5}} >{activeTeam?.teamName}</CountryBallText>
+                        <CountryBallText initial={{y:-15}} >{activeTeam?.teamName}</CountryBallText>
                     </BallColumn>
                 )}
             </>
@@ -636,7 +688,7 @@ useEffect(() => {
                 {activePlayer && (
                     <BallColumn >
                     <CountryBall initial={{y:10}}><img src={activePlayer?.photo} alt="" style={{width: '60%', borderRadius: '50%'}}/></CountryBall>
-                        <CountryBallText initial={{y:-2.5}} >{activePlayer?.name}</CountryBallText>
+                        <CountryBallText initial={{y:-15}} >{activePlayer?.name}</CountryBallText>
                     </BallColumn>
                 )}
             </>
@@ -644,9 +696,9 @@ useEffect(() => {
         </IconHolder>
         )}
         {activePlayer ? (
-            <IconHolder >PLACE YOUR PLAYER</IconHolder>
+            <IconHolder ><h2>BUY THIS PLAYER?</h2></IconHolder>
         ) : (
-            <IconHolder onClick={toggleMenu}>OPEN TEAM</IconHolder>
+            <IconHolder onClick={toggleMenu}><h2>YOUR TEAM</h2></IconHolder>
         )}
       </BottomRow>
       {selectedTeamMenu && (
@@ -704,11 +756,11 @@ const PlayerRating = styled.div`
     span{
         color: ${props => props.theme.pacColor};
         font-weight: bold;
-        font-size: 22px;
+        font-size: 18px;
     }
     @media(max-width: 498px){
         span{
-        font-size: 18px;
+        font-size: 16px;
     } 
     }
 `;
@@ -717,9 +769,10 @@ const PlayerName = styled.div`
     min-width: 40%;
     height: 100%;
     padding: 5px;
+    text-align: center;
     h2{
         color: ${props => props.theme.text};
-        font-size: 22px;
+        font-size: 20px;
         font-weight: bold;
     }
     @media(max-width: 968px){
@@ -735,10 +788,22 @@ const PlayerName = styled.div`
 `;
 
 const PlayerLogo = styled.div`
-    min-width: 15%;
+    min-width: 12.5%;
     height: 100%;
     ${props => props.theme.displayFlexCenter}
     position: relative;
+`;
+
+const PlayerPosition = styled.div`
+    min-width: 10%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter}
+    position: relative;
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 24px;
+        font-weight: bold;
+    }
 `;
 
 const PlayerTeamLogo = styled.div`
@@ -770,10 +835,96 @@ const TeamSettings = styled.div`
     right: 0;
 `;
 
+const MyPlayerRow = styled.div`
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+`;
+
+const MyPlayer = styled.div`
+    min-width: 25%;
+    height: 90px;
+    ${props => props.theme.displayFlexColumn}
+`;
+
+const MyPlayerAvatar = styled.div`
+    width: 100%;
+    height: 70%;
+    ${props => props.theme.displayFlexCenter}
+    position: relative;
+`;
+const MyPlayerPosition = styled.div`
+    width: 100%;
+    height: 40px;
+    ${props => props.theme.displayFlex}
+    padding: 20px;
+    h2{
+        color: ${props => props.theme.MainAccent};
+        font-size: 16px;
+        font-weight: bold; 
+    }
+`;
+const MyBalanceRow = styled.div`
+    width: 100%;
+    height: 30px;
+    ${props => props.theme.displayFlexCenter}
+    padding: 20px;
+    text-align: center;
+    h2{
+        color: ${props => props.theme.MainAccent};
+        font-size: 20px;
+        font-weight: bold; 
+    }
+`;
+
+const MyPlayerName = styled.div`
+    width: 100%;
+    height: 30%;
+    ${props => props.theme.displayFlexCenter}
+    text-align: center;
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 12px;
+        font-weight: bold; 
+        transform: translateY(-5px);
+    }
+
+`;
+
+const BuyPlayerHolder = styled.div`
+    width: 100%;
+    height: 30%;
+    ${props => props.theme.displayFlexColumn}
+    margin: 20px 0;
+`;
+
+const BuyPlayerAvatar = styled.div`
+    width: 100%;
+    height: 60%;
+    ${props => props.theme.displayFlexCenter}
+`;
+const BuyPlayerName = styled.div`
+    width: 100%;
+    height: 20%;
+    ${props => props.theme.displayFlexCenter}
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 24px;
+        font-weight: bold; 
+    }
+    span{
+        color: ${props => props.theme.pacColor};
+        font-size: 24px;
+        font-weight: bold;  
+    }
+`;
+
 const BigTeamName = styled.div`
     width: 70%;
-    height: 100px;
-    ${props => props.theme.displayFlex}
+    height: 10%;
+    ${props => props.theme.displayFlexCenter}
+    margin: 10px 0;
     padding: 10px;
     text-align: center;
     position: relative;
@@ -845,7 +996,7 @@ const TeamCircularRow = styled.div`
 
 const TeamRow = styled.div`
     width: 100%;
-    height: 70vh;
+    height: 80vh;
     padding: 10px;
     display: grid;
     place-items: center;
@@ -904,6 +1055,18 @@ const IconHolder = styled.div`
     @media(max-width: 498px){
         height: 100%;
         width: 24%;  
+    }
+`;
+
+const FilterRow = styled.div`
+    width: 70%;
+    height: 10vh;
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexCenter}
+    justify-content: space-around;
+    @media(max-width: 498px){
+        height: 10vh;
+        width: 100%;  
     }
 `;
 
@@ -967,14 +1130,7 @@ const FantasyFoldingMenu = styled(motion.div)`
     bottom: 0;
     left: 0;
     width: 100%;
-    ${props => props.theme.displayFlexColumnCenter}
-    background-size: 95%;
-    background-repeat: no-repeat;
-    background-position: center;
-    position: relative;
-    background-image: url(${field});
-    background-color: ${props => props.theme.body};
-   
+    ${props => props.theme.displayFlexColumn}   
 `;
 
 

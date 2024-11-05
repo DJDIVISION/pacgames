@@ -420,16 +420,10 @@ io.on("connection", (socket) => {
         // Remove player from room if they were in one
         const playerIndex = room.players.findIndex(p => p.playerId === socket.id);
         console.log(`removed player ${playerIndex} from the room ${room}`)
-        if (playerIndex !== -1) {
-          room.players[playerIndex] = {
-            playerId: "",
-            playerName: "",
-            bet: 0,
-            playerBets: [],
-            googleId: "",
-            avatar: "",
-            room: ""
-          };
+        if (playerIndex !== -1) { // Ensure player is in the room
+          // Remove player from room's players array
+          room.players.splice(playerIndex, 1);
+          console.log(`Removed player with ID ${socket.id} from room ${room.roomId}`);
         }
       });
     })
