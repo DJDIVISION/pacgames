@@ -575,9 +575,9 @@ const toggleMenu = () => {
         position,
         players: droppedPlayers.filter((player) => player.position === position),
     }));
-
+    console.log(droppedPlayers.length)
     const startTraining = async () => {
-        if(droppedPlayers.length <= 11){
+        if(droppedPlayers.length < 11){
             message.error("You need a full team to start trainings!")
             return
         } else {
