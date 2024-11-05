@@ -17,6 +17,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LanguageIcon from '@mui/icons-material/Language';
 
 export const CustomIconButton = styledTwo(IconButton)(({ theme }) => ({
     outline: 'none',
@@ -26,6 +27,11 @@ export const CustomIconButton = styledTwo(IconButton)(({ theme }) => ({
     },
   }));
 
+export const Language = styled(LanguageIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+    }
+`;
 export const LightIcon = styled(LightModeIcon)`
     &&&{
         color: ${props => props.theme.text};

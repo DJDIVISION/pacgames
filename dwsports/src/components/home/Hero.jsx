@@ -11,10 +11,12 @@ import { Avatar, Button, IconButton } from '@mui/material';
 import { supabase } from '../../supabase/client';
 import { MiniArrowDown, MiniArrowup } from '../../pages';
 import { FantasyState } from '../../context/FantasyContext';
+import { useTranslation } from 'react-i18next'
 
 const Hero = () => {
 
     const ref = useRef(null);
+    const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
     const [disabledInput, setDisabledInput] = useState(false)
     const [referrerValue, setReferrerValue] = useState("")
@@ -101,14 +103,14 @@ const Hero = () => {
     
     const sendLink = async () => {
         if(disabledInput === true){
-            message.error("You can not link another referrer!")
+            message.error(`${t("hero.message1")}`)
             return
         }
         const referral = document.getElementById("referralLink").value;
         const referrer = document.getElementById("referrerLink").value;
     
         if (referral === referrer) {
-            message.error("Both links are the same!");
+            message.error(`${t("hero.message2")}`);
             return; // Exit the function early
         }
     
@@ -121,7 +123,7 @@ const Hero = () => {
             console.error('Error fetching user data:', error.message);
         } else {
             if (data.length === 0) {
-                message.error("This user does not exist in our database");
+                message.error(`${t("hero.message3")}`);
             } else {
                 console.log(data);
     
@@ -153,7 +155,7 @@ const Hero = () => {
                     console.error('Error updating user data:', updateError.message);
                 } else {
                     console.log('User data updated successfully:', userJsonData);
-                    message.success("Referrer linked successfully!");
+                    message.success(`${t("hero.message4")}`);
                 }
 
                 const { error: updateReferral } = await supabase
@@ -164,7 +166,7 @@ const Hero = () => {
                 if (updateReferral) {
                     console.error('Error updating user data:', updateReferral.message);
                 } else {
-                    console.log("User data updated successfully!");
+                    console.log(`${t("hero.message5")}`);
                 }
                 getReferrer();
             }
@@ -185,7 +187,7 @@ const Hero = () => {
       </motion.div> */}
       <AnimatePresence>
         <TopHeader>
-        <TopText>WELCOME TO PACTON'S GAMING ZONE</TopText>
+        <TopText>{t("hero.title")}</TopText>
       <motion.img src={Ton} 
                 alt="background" 
                 style={{ width: '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 0.75 }} 
@@ -198,7 +200,7 @@ const Hero = () => {
         <ContainerSamllTitle></ContainerSamllTitle>
         <ContainerSamllTitle>{user && user.email}</ContainerSamllTitle>
         <ContainerSamllTitle></ContainerSamllTitle>
-        <ContainerSamllTitle>LAST SIGNED IN</ContainerSamllTitle>
+        <ContainerSamllTitle>{t("hero.title2")}</ContainerSamllTitle>
         <ContainerSamllTitle>{date}</ContainerSamllTitle>
         </Header>
       <Header initial={{ height: '320px' }} // Initial height
@@ -206,18 +208,18 @@ const Hero = () => {
                 exit={{ opacity: 0, height: 0 }} // Height transitions between 100px and 300px
                 transition={{ duration: 0.5 }} style={{overflow: 'hidden'}} isExpanded={isExpanded}>
             <ContainerButtons>
-            <ContainerTitle>YOUR REFERRER LINK</ContainerTitle>
+            <ContainerTitle>{t("hero.title3")}</ContainerTitle>
             
                     {user && <LinkInputField disabled={disabledInput} value={referrerValue} onChange={(e) => setReferrerValue(e.target.value)} id="referrerLink"/>} <IconButton onClick={sendLink}><Send /></IconButton>
             </ContainerButtons>
             <ContainerButtons>
-            <ContainerTitle>YOUR REFERRAL LINK</ContainerTitle>
+            <ContainerTitle>{t("hero.title4")}</ContainerTitle>
            
                     {user && <LinkInputField disabled={true} id="referralLink" value={`PACTONGZ/${user.id}`}/>} <IconButton onClick={clipboard}><CopyClipboard /></IconButton>
             </ContainerButtons>
             {isExpanded && (
                     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <ContainerTitle>YOUR REFERRALS</ContainerTitle>
+                        <ContainerTitle>{t("hero.title5")}</ContainerTitle>
                         {referrals?.map((referral) => {
                             console.log(referral)
                             return(
@@ -336,6 +338,7 @@ const ContainerTitle = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     color: ${props => props.theme.pacColor};
     //${props => props.theme.pacfont};
     font-size: 1.9rem;

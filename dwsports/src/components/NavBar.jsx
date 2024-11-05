@@ -2,7 +2,7 @@ import React, {useState,useEffect} from 'react'
 import {Nav,NavColumn,NavIcon,NavText,SmartNav,Burguer,CloseBurguer,StaggerContainer,StaggerRow,
     StaggerAvatarRow,StaggerAvatarHolder,StaggerAvatarName,StaggerImageHolder,TonWrapper,
     CustomIconButton,
-    LightIcon,StyledMenu,
+    LightIcon,StyledMenu,Language,
     DarkIcon
 } from './index'
 import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
@@ -11,21 +11,24 @@ import {Link as LinkR} from 'react-router-dom'
 import {motion,AnimatePresence} from 'framer-motion'
 import  { useTheme } from 'styled-components'
 import sportsIcon from '../assets/sportsIcon.png'
-import lottery from '../assets/bingo.png'
+
 import chip from '../assets/chip.png'
-import pacton from '../assets/pacton_robot_png.png'
-import roulette from '../assets/chips/roulette.png'
+
 import fantasy from '../assets/fantasy.png'
 import deposit from '../assets/logos/deposit.png'
-import axios from 'axios'
-import { message } from 'antd';
-import { BetState } from '../context/BetsContext';
+
 import { Avatar, Fab, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client';
 import { useAuth } from '../pages/functions'
 import { FantasyState } from '../context/FantasyContext';
 import DepositMenu from './menus/DepositMenu';
+import ES from '../assets/svg/es.png';
+import FR from '../assets/svg/fr.png';
+import EN from '../assets/svg/uk.png';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
+import SpeedDial from '@mui/material/SpeedDial';
+import { useTranslation } from 'react-i18next'
 
 const NavBar = ({toggleTheme}) => {
 
@@ -43,6 +46,24 @@ const NavBar = ({toggleTheme}) => {
     const [error, setError] = useState(null);
     const theme = useTheme();
     const {walletAddress, setWalletAddress} = FantasyState();
+    const [t, i18n] = useTranslation("global");
+
+    console.log(i18n.translator.language);
+
+    const languages = [
+        {
+            icon: <img src={ES} alt="ES" onClick={() => i18n.changeLanguage("es")} />,
+            name: 'ES'
+        },
+        {
+            icon: <img src={FR} alt="FR" onClick={() => i18n.changeLanguage("fr")} />,
+            name: 'FR'
+        },
+        {
+            icon: <img src={EN} alt="EN" onClick={() => i18n.changeLanguage("en")} />,
+            name: 'EN'
+        }
+    ];
     
 
     const client = new TonClient({
@@ -137,13 +158,13 @@ const NavBar = ({toggleTheme}) => {
             <NavIcon>
                 <img src={sportsIcon} alt="sports" />
             </NavIcon>
-            <NavText>SPORTS</NavText>
+            <NavText>{t("navbar.sports")}</NavText>
         </NavColumn></LinkR>
         <LinkR to="/fantasy"><NavColumn>
             <NavIcon>
                 <img src={fantasy} alt="fantasy" />
             </NavIcon>
-            <NavText>FANTASY</NavText>
+            <NavText>{t("navbar.fantasy")}</NavText>
         </NavColumn></LinkR>
         {/* <LinkR to="/airdrop"><NavColumn>
             <NavIcon>
@@ -167,7 +188,7 @@ const NavBar = ({toggleTheme}) => {
             <NavIcon>
                 <img src={deposit} alt="casino" />
             </NavIcon>
-            <NavText>DEPOSIT</NavText>
+            <NavText>{t("navbar.deposit")}</NavText>
         </NavColumn>
         
     </Nav>
@@ -208,13 +229,13 @@ const NavBar = ({toggleTheme}) => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.7 }} >
                               <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
-                              <StaggerAvatarName>SPORTS</StaggerAvatarName>
+                              <StaggerAvatarName>{t("navbar.sports")}</StaggerAvatarName>
                           </StaggerRow></LinkR>
                           <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.9 }} >
                               <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
-                              <StaggerAvatarName>FANTASY FOOTBALL</StaggerAvatarName>
+                              <StaggerAvatarName>{t("navbar.fantasy")}</StaggerAvatarName>
                           </StaggerRow></LinkR>
                           <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
@@ -226,7 +247,7 @@ const NavBar = ({toggleTheme}) => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 1.3 }} >
                               <StaggerImageHolder><img src={deposit} alt="fantasy" /></StaggerImageHolder>
-                              <StaggerAvatarName>DEPOSIT</StaggerAvatarName>
+                              <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
                           </StaggerRow>
                           <StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: 0 }}
@@ -234,13 +255,26 @@ const NavBar = ({toggleTheme}) => {
                           <StaggerImageHolder>
                           {theme === 'dark' ? <LightIcon onClick={toggleTheme}/> : <DarkIcon onClick={toggleTheme}/>}
                           </StaggerImageHolder>
-                          <StaggerAvatarName>SWITCH THEME</StaggerAvatarName>
+                          <StaggerAvatarName>{t("navbar.switch")}</StaggerAvatarName>
                           </StaggerRow>
                       </StaggerContainer>
                   </StyledMenu>
                   {depositMenu && (
                     <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} />
                   )}
+                  <SpeedDial
+        ariaLabel="SpeedDial basic example"
+        sx={{ position: 'fixed', bottom: 30, left: 30 }}
+        icon={<Language />}
+      >
+       {languages.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+          />
+        ))}
+      </SpeedDial>
                   </AnimatePresence>
                   
         )}

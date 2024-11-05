@@ -1,0 +1,26 @@
+{
+    "fantasy": {
+        "positionOrder1": "Ailier",
+        "positionOrder2": "Milieu de terrain",
+        "positionOrder3": "Défenseur",
+        "positionOrder4": "Gardien de but"
+    },
+    "navbar": {
+        "sports": "PARIS SPORTIFS",
+        "fantasy": "FOOTBALL FANTAISIE",
+        "deposit": "DÉPÔT",
+        "switch": "CHANGER DE THÈME"
+    },
+    "hero": {
+        "message1": "Vous ne pouvez pas lier un autre référent!",
+        "message2": "Les deux liens sont identiques !",
+        "message3": "Cet utilisateur n'existe pas dans notre base de données!",
+        "message4": "Le référent a été lié avec succès!",
+        "message5": "Données utilisateur mises à jour avec succès!",
+        "title": "BIENVENUE SUR PACTON'S GAMING ZONE",
+        "title2": "DERNIÈRE CONNEXION",
+        "title3": "VOTRE LIEN DE RÉFÉRENT",
+        "title4": "VOTRE LIEN DE RÉFÉRENCE",
+        "title5": "VOS RÉFÉRENCES"
+    }
+}

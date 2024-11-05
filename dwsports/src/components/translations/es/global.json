@@ -1,0 +1,26 @@
+{
+    "fantasy": {
+        "positionOrder1": "Delantero",
+        "positionOrder2": "Centrocampista",
+        "positionOrder3": "Defensa",
+        "positionOrder4": "Portero"
+    },
+    "navbar": {
+        "sports": "APUESTAS DEPORTIVAS",
+        "fantasy": "FÚTBOL FANTASÍA",
+        "deposit": "DEPÓSITO",
+        "switch": "CAMBIAR MODO"
+    },
+    "hero": {
+        "message1": "¡No puedes vincular a otro referente!",
+        "message2": "¡Ambos enlaces son iguales!",
+        "message3": "¡Este usuario no existe en nuestra base de datos!",
+        "message4": "¡Referente vinculado con éxito!",
+        "message5": "¡Datos actualizados con éxito!",
+        "title": "BIENVENIDO A PACTON'S GAMING ZONE",
+        "title2": "ÚLTIMO INICIO DE SESIÓN",
+        "title3": "TU ENLACE DE REFERENCIA",
+        "title4": "TU ENLACE DE REFERIDOS",
+        "title5": "TUS REFERIDOS"
+    }
+}

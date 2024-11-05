@@ -18,6 +18,7 @@ import { message } from 'antd';
 import { StyledButton } from '../components';
 import TeamStats from './TeamStats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
+import {useTranslation} from "react-i18next";
 
 const NewFantasy = () => {
 
@@ -53,6 +54,7 @@ const NewFantasy = () => {
             id: 5
         }
     ]
+    const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
     const [startDate, setStartDate] = useState('2024-11-01')
     const [endDate, setEndDate] = useState('2024-11-05')

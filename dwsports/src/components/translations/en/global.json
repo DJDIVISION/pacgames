@@ -1,0 +1,26 @@
+{
+    "fantasy": {
+        "positionOrder1": "Attacker",
+        "positionOrder2": "Midfielder",
+        "positionOrder3": "Defender",
+        "positionOrder4": "Goalkeeper"
+    },
+    "navbar": {
+        "sports": "SPORT BETS",
+        "fantasy": "FANTASY FOOTBALL",
+        "deposit": "DEPOSIT",
+        "switch": "CHANGE THEME"
+    },
+    "hero": {
+        "message1": "You can not link another referrer!",
+        "message2": "Both links are the same!",
+        "message3": "This user does not exist in our database!",
+        "message4": "Referrer linked successfully!",
+        "message5": "User data updated successfully!",
+        "title": "WELCOME TO PACTON'S GAMING ZONE",
+        "title2": "LAST SIGNED IN",
+        "title3": "YOUR REFERRER LINK",
+        "title4": "YOUR REFERRAL LINK",
+        "title5": "YOUR REFERRALS"
+    }
+}
