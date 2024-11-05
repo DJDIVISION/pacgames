@@ -234,7 +234,6 @@ const NewFantasy = () => {
         setOpenSellMenu(false)
         setTimeout(() => {
             setOpenTrainingMenu((prev) => !prev);
-            console.log("lastTraining", lastTraining)
         },500)
     }
     const closeDate = () => {
@@ -622,7 +621,7 @@ const getBackgroundColor = (number) => {
         animate={isDateExpanded ? "expanded" : "collapsed"} 
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
-      <h2>NEXT FANTASY FOOTBALL GAME INCLUDES LEAGUES PLAYING FROM {startDate} TO {endDate}</h2>
+      <h2>{t("fantasy.title1")} {startDate} {t("fantasy.title2")} {endDate}</h2>
       <AbsoluteIconButton onClick={closeDate}><ArrowDown /></AbsoluteIconButton>
       </Title>
       <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
@@ -642,7 +641,8 @@ const getBackgroundColor = (number) => {
                         <LeagueHolder whileHover={{scale: 1.05}} key={index} onClick={() => setAllTeams(league)}>
                         <BallColumn key={league.id}>
               <CountryBall><img src={league.logo} alt="england" /></CountryBall>
-              <CountryBallTextTop>{league.name}</CountryBallTextTop><CountryBallTextTop>{league.league}</CountryBallTextTop>
+              <CountryBallTextTop>{league.name === "England" && `${t("fantasy.england")}`}{league.name === "Spain" && `${t("fantasy.spain")}`}{league.name === "Italy" && `${t("fantasy.italy")}`}
+              {league.name === "Germany" && `${t("fantasy.germany")}`}{league.name === "France" && `${t("fantasy.france")}`}</CountryBallTextTop><CountryBallTextTop>{league.league}</CountryBallTextTop>
               </BallColumn>
                         </LeagueHolder>
                 )
@@ -687,12 +687,12 @@ const getBackgroundColor = (number) => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <BigTeamName style={{color: 'white'}}><h2>YOUR BALANCE: {balance}M€</h2></BigTeamName>
+                <BigTeamName style={{color: 'white'}}><h2>{t("fantasy.title3")}: {balance}M€</h2></BigTeamName>
                 <BigTeamName>
                     {balance - activePlayer.value > 0 ? (
-                        <h2>DO YOU WANT TO BUY THIS PLAYER?</h2>
+                        <h2>{t("fantasy.title4")}</h2>
                     ) : (
-                        <h2>YOU CAN NOT AFFORD THIS PLAYER</h2> 
+                        <h2>{t("fantasy.title5")}</h2> 
                     )}
                 </BigTeamName>
                 <BuyPlayerHolder>
@@ -706,11 +706,11 @@ const getBackgroundColor = (number) => {
                 <div style={{display: 'flex', width: '100%', height: '70px', alignItems: 'center', justifyContent: 'center'}}>
                 {balance - activePlayer.value > 0 ? (
                         <>
-                            <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CANCEL</StyledButton>
-                            <StyledButton onClick={confirmPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CONFIRM</StyledButton>
+                            <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
+                            <StyledButton onClick={confirmPlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.confirm")}</StyledButton>
                         </>
                     ) : (
-                        <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>CANCEL</StyledButton>
+                        <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
                     )}
                 
                 </div>
@@ -718,15 +718,15 @@ const getBackgroundColor = (number) => {
         )}
         {openConfirmSellMenu && (
             <FoldingMenu 
-            style={{zIndex: 5000, background: 'black'}}
+            style={{zIndex: 5000, background: 'black', justifyContent: 'space-around'}}
             variants={item}
             initial="initial"
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <BigTeamName style={{color: 'white'}}><h2>YOUR BALANCE: {balance}M€</h2></BigTeamName>
+                <BigTeamName style={{color: 'white'}}><h2>{t("fantasy.title3")}: {balance}M€</h2></BigTeamName>
                 <BigTeamName>
-                <h2>DO YOU WANT TO SELL THIS PLAYER? YOU WILL GET {activePlayerSell.value * 75/100}M BACK</h2>
+                <h2>{t("fantasy.title6")} {activePlayerSell.value * 75/100}M {t("fantasy.title7")}</h2>
                 </BigTeamName>
                 <BuyPlayerHolder>
                     <BuyPlayerAvatar><Avatar alt="Image" src={activePlayerSell.photo} sx={{
@@ -738,8 +738,8 @@ const getBackgroundColor = (number) => {
                 </BuyPlayerHolder>
                 <div style={{display: 'flex', width: '100%', height: '70px', alignItems: 'center', justifyContent: 'center'}}>
                         {<>
-                            <StyledButton onClick={cancelPlayerSell} style={{fontSize: '18px', margin: '0 5px'}}>CANCEL</StyledButton>
-                            <StyledButton onClick={confirmPlayerSell} style={{fontSize: '18px', margin: '0 5px'}}>CONFIRM</StyledButton>
+                            <StyledButton onClick={cancelPlayerSell} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
+                            <StyledButton onClick={confirmPlayerSell} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.confirm")}</StyledButton>
                         </>}
                 
                 </div>
@@ -760,9 +760,9 @@ const getBackgroundColor = (number) => {
                 ) : (
                     <>
                     <FilterRow>
-                        <StyledButton onClick={sortByRating}>SORT BY RATE</StyledButton>
-                        <StyledButton onClick={sortByPosition}>SORT BY POSITION</StyledButton>
-                        <StyledButton onClick={sortByValue}>SORT BY VALUE</StyledButton>
+                        <StyledButton onClick={sortByRating}>{t("fantasy.title8")}</StyledButton>
+                        <StyledButton onClick={sortByPosition}>{t("fantasy.title9")}</StyledButton>
+                        <StyledButton onClick={sortByValue}>{t("fantasy.title10")}</StyledButton>
                     </FilterRow>
                     <PlayerRow >
                         {players?.map((player) => {
@@ -806,14 +806,16 @@ const getBackgroundColor = (number) => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <MyBalanceRow><h2>BALANCE: {balance}M€</h2></MyBalanceRow>
-                <MyBalanceRow>{droppedPlayers.length > 0 ? <h2>TEAM RATING: <span style={{color: getBackgroundColor(teamRating)}}>{teamRating}</span></h2> : <h2></h2>}</MyBalanceRow>
+                <MyBalanceRow><h2>{t("fantasy.title3")}: {balance}M€</h2></MyBalanceRow>
+                <MyBalanceRow>{droppedPlayers.length > 0 ? <h2>{t("fantasy.title11")}: <span style={{color: getBackgroundColor(teamRating)}}>{teamRating}</span></h2> : <h2></h2>}</MyBalanceRow>
                 {droppedPlayers.length > 0 ? (
                     <MyPlayerContainer >
                     {groupedPlayers.map((group) => (
                       group.players.length > 0 && (
                           <div style={{width: '100%', height: '50%', display: 'flex', flexDirection: 'column'}}>
-                          <MyPlayerPosition><h2>{group.position}s</h2></MyPlayerPosition>
+                          <MyPlayerPosition><h2>{group.position === "Attacker" && `${t("fantasy.positionOrder1")}`}
+                          {group.position === "Midfielder" && `${t("fantasy.positionOrder2")}`}{group.position === "Defender" && `${t("fantasy.positionOrder3")}`}
+                          {group.position === "Goalkeeper" && `${t("fantasy.positionOrder4")}`}</h2></MyPlayerPosition>
                             <MyPlayerRow>
                                 {group.players.map((player) => (
                                     <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
@@ -827,7 +829,7 @@ const getBackgroundColor = (number) => {
                     ))}
                     </MyPlayerContainer>
                 ):(
-                    <MyBalanceRow><h2>YOU DON'T HAVE ANY PLAYERS YET</h2></MyBalanceRow>
+                    <MyBalanceRow><h2>{t("fantasy.title12")}</h2></MyBalanceRow>
                 )}
             </FantasyFoldingMenu>
         )}
@@ -838,7 +840,7 @@ const getBackgroundColor = (number) => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <SellPlayerRow><h2>IF YOU SELL A PLAYER YOU WILL GET 75% OF HIS VALUE BACK. <br/>{droppedPlayers.length > 0 && "PICK A PLAYER TO SELL."}</h2></SellPlayerRow>
+                <SellPlayerRow><h2>{t("fantasy.title13")} <br/>{droppedPlayers.length > 0 && `${t("fantasy.title14")} :`}</h2></SellPlayerRow>
                 <LeagueRow>
                 {droppedPlayers.length > 0 ? (
                     <MyPlayerContainer style={{height: '110%'}}>
@@ -859,7 +861,7 @@ const getBackgroundColor = (number) => {
                     ))}
                     </MyPlayerContainer>
                 ):(
-                    <MyBalanceRow><h2>YOU DON'T HAVE ANY PLAYERS YET</h2></MyBalanceRow>
+                    <MyBalanceRow><h2>{t("fantasy.title12")}</h2></MyBalanceRow>
                 )}
                 </LeagueRow>
             </FantasyFoldingMenu>
@@ -883,14 +885,14 @@ const getBackgroundColor = (number) => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <SellPlayerRow><h2>YOU CAN TRAIN YOUR PLAYERS EVERY 24 HOURS TO BOOST THEIR RATING ON THEIR NEXT MATCH</h2></SellPlayerRow>
+                <SellPlayerRow><h2>{t("fantasy.title15")}</h2></SellPlayerRow>
                 <SellPlayerRow>{lastTraining === null ? (
-                    <h2>You haven't trained your players yet</h2>
+                    <h2>{t("fantasy.title16")}</h2>
                 ) : (
-                    <h2>You have trained your players {trainingsNumber} {trainingsNumber === 1 ? "time" : "times"} this week</h2>
+                    <h2>{t("fantasy.title17")} {trainingsNumber} {t("fantasy.title18")}</h2>
                 )}</SellPlayerRow>
                 <SellPlayerRow>
-                    {lastTraining < Date.now() && <StyledButton style={{fontSize: '14px'}} onClick={startTraining}>START TRAINING</StyledButton>}
+                    {lastTraining < Date.now() && <StyledButton style={{fontSize: '14px'}} onClick={startTraining}>{t("fantasy.title19")}</StyledButton>}
                 </SellPlayerRow>
                 <SellPlayerRow style={{width: '60%'}}><h2 id="countdown" style={{fontSize: '24px'}}></h2></SellPlayerRow>
             </FantasyFoldingMenu>
@@ -901,17 +903,17 @@ const getBackgroundColor = (number) => {
       <BottomRow>
         <IconHolder>
             {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) ? (
-                <h2 onClick={openTraining}>TRAINING</h2>
+                <h2 onClick={openTraining}>{t("fantasy.training")}</h2>
             ):(
                 <>
                     {openTeamMenu || openPlayerMenu  ? (
-                        <h2 onClick={openLeague}>GO BACK</h2>
+                        <h2 onClick={openLeague}>{t("fantasy.back")}</h2>
                     ):(
                         <>
                             {(openConfirmMenu || openStatsMenu || openTrainingMenu || openSellMenu) ? (
                                 <h2></h2>
                             ):(
-                                <h2 onClick={openLeague}>CHOOSE A LEAGUE</h2>
+                                <h2 onClick={openLeague}>{t("fantasy.title20")}</h2>
                             )}
                         </>
                     )}
@@ -920,7 +922,7 @@ const getBackgroundColor = (number) => {
         </IconHolder>
         <IconHolder>
             {openTeamMenu ? (
-                 <h2>CHOOSE A TEAM</h2>
+                 <h2>{t("fantasy.title21")}</h2>
             ):(
                 <>
                 {loading ? (
@@ -934,7 +936,7 @@ const getBackgroundColor = (number) => {
                         </BallColumn>
                     )}
                     {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) && (
-                        <h2 onClick={openStats}>STATISTICS</h2>
+                        <h2 onClick={openStats}>{t("fantasy.stats")}</h2>
                     )}
                     </> 
                 )}
@@ -943,7 +945,7 @@ const getBackgroundColor = (number) => {
         </IconHolder>
         <IconHolder>
             {openPlayerMenu ? (
-                <h2>CHOOSE A PLAYER</h2>
+                <h2>{t("fantasy.title22")}</h2>
             ):(
                 <>
                  {loading ? (
@@ -957,7 +959,7 @@ const getBackgroundColor = (number) => {
                         </BallColumn>
                     )}
                     {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) &&  (
-                        <h2 onClick={openSell}>SELL PLAYER</h2> 
+                        <h2 onClick={openSell}>{t("fantasy.title23")}</h2> 
                     )}
                     </>
                  )}
@@ -965,13 +967,13 @@ const getBackgroundColor = (number) => {
             )}
         </IconHolder>
         {activePlayer ? (
-            <IconHolder ><h2>BUY THIS PLAYER?</h2></IconHolder>
+            <IconHolder ><h2>{t("fantasy.title24")}</h2></IconHolder>
         ) : (
             <>
             {openDropMenu ? (
-                <IconHolder onClick={toggleMenu}><h2>GO BACK</h2></IconHolder>
+                <IconHolder onClick={toggleMenu}><h2>{t("fantasy.back")}</h2></IconHolder>
             ):(
-                <IconHolder onClick={toggleMenu}><h2>YOUR TEAM</h2></IconHolder>
+                <IconHolder onClick={toggleMenu}><h2>{t("fantasy.title25")}</h2></IconHolder>
             )}
             </>
         )}
@@ -1327,7 +1329,7 @@ const PlayerRow = styled.div`
     }
     @media(max-width: 498px){
         grid-template-columns: repeat(1, 1fr);
-        height: 85%;
+        height: 80%;
     }
 `;
 

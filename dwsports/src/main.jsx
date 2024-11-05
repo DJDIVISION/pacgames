@@ -17,8 +17,8 @@ import global_en from "./components/translations/en/global.json"
 
 i18next.init ({
   interpolation: {escapeValue: false},
-  fallbackLng: 'en',
-  lng: 'en',
+  fallbackLng: 'fr',
+  lng: 'fr',
   resources: {
     es: {
       global: global_es
