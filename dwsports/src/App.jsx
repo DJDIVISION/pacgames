@@ -22,7 +22,7 @@ import Slots from './pages/Slots';
 import NewBets from './pages/NewBets';
 import Tonopoly from './pages/Tonopoly';
 import Airdrop from './pages/Airdrop';
-import NewFantasy from './pages/NewFantasy';
+import NewFantasy from './pages/NewFantasy'; 
 
 
 function App() {
