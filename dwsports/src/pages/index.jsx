@@ -862,19 +862,19 @@ export const AllBetsText = styled.div`
 `;
 
 export const BackStyledIconButton = styled.div`
-    width: 75px;
-    height: 75px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     position: absolute;
-    bottom: 20px;
+    bottom: 30px;
     left: 30px;
     color: ${props => props.theme.text};
     font-size: 16px;
-    ${props => props.theme.displayFlexCenter};
+    ${props => props.theme.displayFlexCenter}
     cursor: pointer;
-    @media(max-width:968px){
-        bottom: 10px;
-        right: 10px;  
+    @media(max-width:480px){
+        bottom: 30px;
+        left: 10px;  
     }
 `;
 
@@ -959,6 +959,25 @@ export const ArrowDownRelative = styled(KeyboardArrowDownIcon)`
             color: gold;
             transition: 0.6 all ease-in-out;
         }
+    }
+`;
+
+
+export const ArrowLeftRelative = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 1.5;
+        transform:  rotate(90deg) translateY(50%);;
+        cursor: pointer;
+    }
+`;
+
+export const ArrowRightRelative = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        scale: 1.5;
+        transform:  rotate(270deg) translateY(50%);;
+        cursor: pointer;
     }
 `;
 
@@ -1407,6 +1426,7 @@ export const OddsColumn = styled.div`
     width: 33%;
     height: 50%;
     display: flex;
+    text-align: center;
     border: 1px solid ${props => props.theme.red};
     background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
     display: flex;

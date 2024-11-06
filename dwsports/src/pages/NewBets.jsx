@@ -6,7 +6,10 @@ import { ArrowLeft, ArrowRight, BetSection, BetTitleRow, DateRow, MatchOdds, Odd
     ResultRow,BigDateRow,VenueRow,
     ArrowDown,BackStyledIconButton,
     SmallArrowDown,
-    StyledButton
+    StyledButton,
+    ArrowLeftRelative,
+    ArrowRightMiddle,
+    ArrowRightRelative
  } from './index'
 import Stack from '@mui/material/Stack';
 import allBets from '../assets/allBets.png'
@@ -412,9 +415,9 @@ const NewBets = () => {
       ))}
             </SportsButtonRow>
             <BetTitleRow>
-              <ArrowLeft onClick={lowRound}></ArrowLeft>
+              <ArrowLeftRelative onClick={lowRound}></ArrowLeftRelative>
               <h2>Round: {activeRound}</h2>
-              <ArrowRight onClick={raiseRound}></ArrowRight>
+              <ArrowRightRelative onClick={raiseRound}></ArrowRightRelative>
           </BetTitleRow>
           {loading ? (
             <LoadingSection>
@@ -486,11 +489,13 @@ const NewBets = () => {
                         </MatchOdds>
                         ) : (
                             <MatchOdds>
-                              {/* <OddsColumn>{match.fixture.status.short === "PST" ? "MATCH POSTPONED" : "MATCH STARTED"}</OddsColumn> */}
-                                <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
+                              <OddsColumn style={{width: '50%'}}>{match.fixture.status.short === "PST" ? "MATCH POSTPONED" : match.fixture.status.short === "NS" ? "NOT STARTED" : match.fixture.status.short === "TBD" ? "TIME NOT DEFINED" : "MATCH STARTED"}
+                                
+                              </OddsColumn>
+                                {/* <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setDraw(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setTwo(e.target.value)} />
-                                <button onClick={() => sendOdds(match)}>SEND</button>
+                                <button onClick={() => sendOdds(match)}>SEND</button> */}
                             </MatchOdds>
                         )}
                             </>
@@ -576,7 +581,7 @@ const NewBets = () => {
             </BetConatiner>
           )}
           <AllBetsBadge>{pendingBets}</AllBetsBadge>
-          <BackStyledIconButton onClick={goBack}><ArrowLeft /></BackStyledIconButton>
+          <BackStyledIconButton onClick={goBack}><ArrowLeftRelative style={{transform: 'scale(1.5) rotate(90deg)'}}/></BackStyledIconButton>
           <AllBetsText onClick={() => setAllBetsMenu(true)}><img src={aaa} alt="" /></AllBetsText>
           </BetSection>
           {selectedBetMenu && (
