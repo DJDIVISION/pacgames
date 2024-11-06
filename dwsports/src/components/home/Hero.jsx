@@ -173,7 +173,17 @@ const Hero = () => {
         }
     };
     
-
+    const handleLogout = async () => {
+        const { error } = await supabase.auth.signOut()
+    
+        if (error) {
+          console.error('Error logging out:', error.message)
+        } else {
+          console.log('User logged out successfully')
+          // Redirect to the login page or home page
+          navigate('/login')
+        }
+      }
 
   return (
     <HeroSection ref={ref}>
@@ -195,7 +205,7 @@ const Hero = () => {
      
         </TopHeader>
         <Header>
-        <ContainerTitle><Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} /></ContainerTitle>
+        <ContainerTitle><Avatar onClick={handleLogout} alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} /></ContainerTitle>
         <ContainerSamllTitle>{user && user.user_metadata.full_name}</ContainerSamllTitle>
         <ContainerSamllTitle></ContainerSamllTitle>
         <ContainerSamllTitle>{user && user.email}</ContainerSamllTitle>
