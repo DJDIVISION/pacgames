@@ -626,7 +626,9 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 60px 0;
+  height: auto;
+  border: 1px solid orange;
+  padding: 20px;
 }
 
 .hidden-content2{

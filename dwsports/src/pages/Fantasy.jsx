@@ -1174,7 +1174,7 @@ const optionsFive = {
 
 const fetchData = async () => {
   try {
-    const response = await axios.request(optionsFive);
+    const response = await axios.request(optionsTwo);
     console.log(response.data);
     localStorage.setItem("round", JSON.stringify(response.data))
     message.success("data fetched!")

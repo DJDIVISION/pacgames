@@ -1407,7 +1407,7 @@ export const OddsColumn = styled.div`
     width: 33%;
     height: 50%;
     display: flex;
-    border: 1px solid ${props => props.theme.text};
+    border: 1px solid ${props => props.theme.red};
     background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
     display: flex;
     align-items: center;
@@ -1429,7 +1429,7 @@ export const OddsColumn = styled.div`
 
 export const OddsColumnBig = styled.div`
     width: 28%;
-    height: 70%;
+    height: auto;
     display: flex;
     border: 1px solid ${props => props.theme.text};
     background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
@@ -1446,6 +1446,12 @@ export const OddsColumnBig = styled.div`
         color: #c3c3c3;
         margin-right: 5px;
         background: transparent;
+    }
+    @media(max-width: 480px){
+        font-size: 12px;
+        span{
+            font-size: 12px;  
+        }
     }
     
 `;

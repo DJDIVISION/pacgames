@@ -193,7 +193,7 @@ const NewBets = () => {
         console.log(allFixtures)
         const { data, error } = await supabase
           .from('fixtures')
-          .update([{"10": activeMatches}])
+          .update([{"11": activeMatches}])
           .eq("leagueName", activeLeague)
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
@@ -247,9 +247,11 @@ const NewBets = () => {
         item2.teams = match.teams;
       }
     });
+
+    console.log(activeMatches)
     const { data, error } = await supabase
             .from('fixtures')
-            .update([{"11": activeMatches}])
+            .update([{"10": activeMatches}])
             .eq("leagueName", activeLeague)
             if (error) {
                 console.error('Error inserting/updating user session data:', error.message)
@@ -258,7 +260,37 @@ const NewBets = () => {
                 message.success("data successfully inserted on your ass")
                 
         }
+    }
+
+    const sendOddsThree = async () => {
+      const { data, error } = await supabase
+      .from('fixtures')
+      .select('fixtures')
+      .eq("leagueName", activeLeague)
+      if (error) {
+          console.error('Error inserting/updating user session data:', error.message)
+      } else {
+          const fixtures = []
+          data[0].fixtures.forEach((fix) => {
+            if(fix.league.round === "Regular Season - 10"){
+              fixtures.push(fix)
+            }
+          })
+          console.log("fixtures", fixtures)
+          const { error: updateError } = await supabase
+                    .from('fixtures')
+                    .update([{"10": fixtures}]) // Update the jsonb column
+                    .eq("leagueName", activeLeague); // Identify which user to update
+    
+                if (updateError) {
+                    console.error('Error updating user data:', updateError.message);
+                } else {
+                    
+                    message.success('data inserted with my dick');
+                }
+          
   }
+    }
     
     const handleBetClick = (match, betType) => {
         setSelectedBet((prevBets) => {
@@ -390,14 +422,14 @@ const NewBets = () => {
             </LoadingSection>
           ) : (
             <BetConatiner>
-              {/* <StyledButton onClick={sendOddsTwo}>SEND</StyledButton> */}
+              <StyledButton onClick={sendOddsThree}>SEND</StyledButton>
     {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
         activeMatches.map((match, index) => {
           
             const date = new Date(match.fixture.date).toLocaleString();
             const dateMS = new Date(match.fixture.date).getTime();
             const dateNow = new Date();
-            console.log(match)
+            
             return (
                 <SmallStatsWrapper key={index}
                 initial={{ minHeight: '130px' }}
@@ -454,11 +486,11 @@ const NewBets = () => {
                         </MatchOdds>
                         ) : (
                             <MatchOdds>
-                              <OddsColumn>MATCH STARTED</OddsColumn>
-                                {/* <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
+                              {/* <OddsColumn>{match.fixture.status.short === "PST" ? "MATCH POSTPONED" : "MATCH STARTED"}</OddsColumn> */}
+                                <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setDraw(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setTwo(e.target.value)} />
-                                <button onClick={() => sendOdds(match)}>SEND</button> */}
+                                <button onClick={() => sendOdds(match)}>SEND</button>
                             </MatchOdds>
                         )}
                             </>
@@ -476,7 +508,7 @@ const NewBets = () => {
         </TeamsLogo>
         </Rower>
         {expandedIndex === index && (
-            <LowRower className="hidden-content">
+            <LowRower >
               <RowerRow>
                 {match?.odds?.homeOver2 ? <OddsColumnBig isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeOver2'

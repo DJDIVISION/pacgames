@@ -856,16 +856,18 @@ export const Rower = styled.div`
 
 export const LowRower = styled.div`
     width: 100%;
-    max-height: 200px;
+    height: auto;
     ${props => props.theme.displayFlexColumn};
-    overflow: hidden;
+    overflow-y: auto;
+    padding: 10px 0;
 `;
 
 export const RowerRow = styled.div`
     width: 100%;
-    min-height: 50px;
+    height: auto;
     ${props => props.theme.displayFlex};
     justify-content: space-around;
+    margin: 5px 0;
 `;
 
 

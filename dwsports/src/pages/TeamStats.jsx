@@ -103,7 +103,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     const { data: fixtureData, error: fixtureError } = await supabase
       .from('fixtures')
       .select('fixtures')
-      .eq("leagueName", activeLeague.league);
+      .eq("leagueName", activeLeague);
     
     if (fixtureError) {
       console.error('Error fetching fixture data:', fixtureError.message);
