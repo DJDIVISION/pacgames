@@ -1441,6 +1441,7 @@ export const OddsColumnBig = styled.div`
     color: ${props => props.theme.text};
     font-weight: bold;
     text-align: center;
+    padding: 3px;
     span{
         font-size: 14px;
         color: #c3c3c3;

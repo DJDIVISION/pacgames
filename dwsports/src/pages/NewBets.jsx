@@ -422,7 +422,7 @@ const NewBets = () => {
             </LoadingSection>
           ) : (
             <BetConatiner>
-              <StyledButton onClick={sendOddsThree}>SEND</StyledButton>
+              {/* <StyledButton onClick={sendOddsThree}>SEND</StyledButton> */}
     {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
         activeMatches.map((match, index) => {
           
