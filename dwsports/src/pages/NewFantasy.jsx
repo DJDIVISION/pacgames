@@ -20,6 +20,7 @@ import { StyledButton } from '../components';
 import TeamStats from './TeamStats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 import {useTranslation} from "react-i18next";
+import { getBackgroundColor } from './functions';
 
 const NewFantasy = () => {
 
@@ -219,9 +220,9 @@ const NewFantasy = () => {
 
 
     const item={
-        initial: { height: 0, opacity: 0 },
-        animate: { height: "100%", opacity: 1, transition: { duration: 0.7 } },
-        exit: { height: 0, opacity: 0, transition: { duration: 0.7 } }
+        initial: { opacity: 0 },
+        animate: { opacity: 1, transition: { duration: 0.7 } },
+        exit: { opacity: 0, transition: { duration: 0.7 } }
     }
 
     const openLeague = () => {
@@ -291,7 +292,7 @@ const NewFantasy = () => {
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const variants = {
         expanded: {
-            height: isMobile ? '10vh' : '15vh'
+            height: isMobile ? '10vh' : '10vh'
         },
         collapsed: {
             height: '0vh'
@@ -302,7 +303,7 @@ const NewFantasy = () => {
             height: isMobile ? '90vh' : '85vh'
         },
         collapsed: {
-            height: isMobile ? '80vh' : '70vh'
+            height: isMobile ? '80vh' : '75vh'
         },
     };
     
@@ -333,7 +334,10 @@ const selectPlayer = (player,playerIsDropped) => {
 const openConfirmSell = (player) => {
     console.log(player)
     setActivePlayerSell(player)
-    setOpenConfirmSellMenu(!openConfirmSellMenu)
+    setOpenSellMenu(false)
+    setTimeout(() => {
+        setOpenConfirmSellMenu(!openConfirmSellMenu)
+    }, 500)
 }
 
 const setAllTeams = (league) => {
@@ -580,6 +584,9 @@ const toggleMenu = () => {
     const cancelPlayerSell = () => {
         setActivePlayerSell(null)
         setOpenConfirmSellMenu(false)
+        setTimeout(() => {
+            setOpenSellMenu(true)
+        }, 500)
         
     }
 
@@ -654,30 +661,343 @@ const toggleMenu = () => {
 
     
 
-const getBackgroundColor = (number) => {
-    if (number >= 0 && number < 6) return 'red'; // Color for 5 to <6
-    if (number >= 6 && number < 6.5) return 'orange'; // Color for 5 to <6
-    if (number >= 6.5 && number < 7) return '#eafa07';  // Color for 6 to <7
-    if (number >= 7 && number < 8) return '#12f812'; // Color for 7 to <8
-    if (number >= 8 && number < 9) return '#00ccff'; // Color for 8 to <9
-    if (number >= 9 && number <= 10) return '#3F00FF'; // Color for 9 to 10
-    return 'white'; // Default background color if number is out of range
-};
+
 
 
   return (
     <Section>
-        
+        {isDateExpanded ? <AbsoluteIconButton onClick={closeDate}><ArrowDown /></AbsoluteIconButton> : <AbsoluteIconButton onClick={closeDate}><ArrowUp /></AbsoluteIconButton>}
         <Title initial="expanded"
         animate={isDateExpanded ? "expanded" : "collapsed"} 
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
-      <h2>{t("fantasy.title1")} {startDate} {t("fantasy.title2")} {endDate}</h2>
-      
-      <AbsoluteIconButton onClick={closeDate}><ArrowDown /></AbsoluteIconButton>
-      </Title>
-      
-      <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            <h2>{t("fantasy.title1")} {startDate} {t("fantasy.title2")} {endDate}</h2>
+        </Title>
+        <AnimatePresence>
+          {openLeagueMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
+                <LeagueRow variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+               {availableLeagues?.map((league,index) => {
+                return(
+                    
+                        <LeagueHolder whileHover={{scale: 1.05}} key={league.name} onClick={() => setAllTeams(league)}>
+                        <BallColumn key={league.id}>
+              <CountryBall><img src={league.logo} alt="england" /></CountryBall>
+              <CountryBallTextTop>{league.name === "England" && `${t("fantasy.england")}`}{league.name === "Spain" && `${t("fantasy.spain")}`}{league.name === "Italy" && `${t("fantasy.italy")}`}
+              {league.name === "Germany" && `${t("fantasy.germany")}`}{league.name === "France" && `${t("fantasy.france")}`}</CountryBallTextTop><CountryBallTextTop>{league.league}</CountryBallTextTop>
+              </BallColumn>
+                        </LeagueHolder>
+                )
+            })} 
+            </LeagueRow>
+            </Container>
+          )}  
+          {openTeamMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} >
+                {loadingTeams ? (
+                    <TeamCircularRow>
+                    <CircularProgress sx={{ width: 80, height: 80 }} />
+                    </TeamCircularRow>
+                ) : (
+                    <TeamRow variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                        {teams?.map((team,index) => {
+                            return(
+                                
+                                <TeamHolder whileHover={{scale: 1.05}} key={team.name} >
+                                    <TeamLogo onClick={() => setAllPlayers(team)}><img src={team.teamLogo} alt={team.teamLogo} /></TeamLogo>
+                                    <TeamName onClick={() => setAllPlayers(team)}><h2>{team.teamName}</h2></TeamName>
+                                    <TeamSettings onClick={() => openTeamStatsMenu(team)}><PlayerSettingsIcon /></TeamSettings>
+                                </TeamHolder>
+                                
+                            )
+                        })}
+                    </TeamRow>
+                )}
+            </Container>
+          )} 
+          {openPlayerMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                {loadingPlayers ? (
+                    <TeamCircularRow>
+                    <CircularProgress sx={{ width: 80, height: 80 }} />
+                    </TeamCircularRow>
+                ) : (
+                    <>
+                    <FilterRow>
+                        <StyledButton onClick={sortByRating}>{t("fantasy.title8")}</StyledButton>
+                        <StyledButton onClick={sortByPosition}>{t("fantasy.title9")}</StyledButton>
+                        <StyledButton onClick={sortByValue}>{t("fantasy.title10")}</StyledButton>
+                    </FilterRow>
+                    <PlayerRow variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                        {players?.map((player) => {
+                            const playerIsDropped = droppedPlayers.find(droppedPlayer => droppedPlayer.id === player.id)
+                            const playerIsInjured = player.injuryType === 'Missing Fixture';
+                            const playerIsQuestionable = player.injuryType === 'Questionable';
+                            const borderStyle = playerIsDropped 
+                              ? '3px solid green' 
+                              : playerIsInjured 
+                              ? '3px solid red' 
+                              : playerIsQuestionable 
+                              ? '3px solid orange' 
+                              : '2px solid white'; 
+                            return(
+                                
+                                <TeamHolder whileHover={{scale: 1.02}} style={{border: `${borderStyle}`}} key={player.name}>
+                                    <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><Avatar alt="Image" src={player.photo} sx={{
+                                        width: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 },
+                                        height: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 }
+                                    }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo></PlayerLogo>
+                                    
+                                      <PlayerName onClick={() => selectPlayer(player,playerIsDropped)}><h2>{player.name}</h2></PlayerName>  
+                                      <PlayerPosition><h2>{player.position.charAt(0)}</h2></PlayerPosition>
+                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating><span>{player.value}M€</span></PlayerRating></PlayerLogo>
+                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating style={{background: getBackgroundColor(player.rating)}}>{!isNaN(player.rating) && player.rating}</PlayerRating></PlayerLogo>
+                                      <PlayerLogo onClick={() => openPlayerStatsMenu(player)}><PlayerSettingsIcon /></PlayerLogo>
+                                    
+                                </TeamHolder>
+                                
+                            )
+                        })}
+                    </PlayerRow>
+                    </>
+                )}
+            </Container>
+          )} 
+          {openConfirmMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '5%'}} variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                    <BigTeamName style={{color: 'white'}}><h2>{t("fantasy.title3")}: {balance}M€</h2></BigTeamName>
+                <BigTeamName>
+                    {balance - activePlayer.value > 0 ? (
+                        <h2>{t("fantasy.title4")}</h2>
+                    ) : (
+                        <h2>{t("fantasy.title5")}</h2> 
+                    )}
+                </BigTeamName>
+                <BuyPlayerHolder>
+                    <BuyPlayerAvatar><Avatar alt="Image" src={activePlayer.photo} sx={{
+                                        width: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 },
+                                        height: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 }
+                                    }} /></BuyPlayerAvatar>
+                                    <BuyPlayerName><h2>{activePlayer.name}</h2></BuyPlayerName>
+                                    <BuyPlayerName><span>{activePlayer.value}M€</span></BuyPlayerName>
+                </BuyPlayerHolder>
+                <div style={{display: 'flex', width: '100%', height: '70px', alignItems: 'center', justifyContent: 'center'}}>
+                {balance - activePlayer.value > 0 ? (
+                        <>
+                            <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
+                            <StyledButton onClick={confirmPlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.confirm")}</StyledButton>
+                        </>
+                    ) : (
+                        <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
+                    )}
+                
+                </div>
+                </motion.div>
+            </Container>
+        )}
+        {openDropMenu && (
+           <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+           variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+            <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2.5%'}} variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <MyBalanceRow><h2>{t("fantasy.title3")}: {balance}M€</h2></MyBalanceRow>
+                <MyBalanceRow>{droppedPlayers.length > 0 ? <h2>{t("fantasy.title11")}: <span style={{color: getBackgroundColor(teamRating)}}>{teamRating}</span></h2> : <h2></h2>}</MyBalanceRow>
+                {droppedPlayers.length > 0 ? (
+                    <MyPlayerContainer >
+                    {groupedPlayers.map((group) => (
+                      group.players.length > 0 && (
+                          <div style={{width: '100%', height: '50%', display: 'flex', flexDirection: 'column'}}>
+                          <MyPlayerPosition><h2>{group.position === "Attacker" && `${t("fantasy.positionOrder1")}`}
+                          {group.position === "Midfielder" && `${t("fantasy.positionOrder2")}`}{group.position === "Defender" && `${t("fantasy.positionOrder3")}`}
+                          {group.position === "Goalkeeper" && `${t("fantasy.positionOrder4")}`}</h2></MyPlayerPosition>
+                            <MyPlayerRow>
+                                {group.players.map((player) => (
+                                    <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
+                                      width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
+                                      height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
+                                  }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
+                                ))}
+                           </MyPlayerRow>
+                           </div>
+                      )
+                    ))}
+                    </MyPlayerContainer>
+                ):(
+                    <MyBalanceRow><h2>{t("fantasy.title12")}</h2></MyBalanceRow>
+                )}
+                </motion.div>
+           </Container>
+        )}
+        {openSellMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2.5%'}} variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <SellPlayerRow><h2>{t("fantasy.title13")} <br/>{droppedPlayers.length > 0 && `${t("fantasy.title14")} :`}</h2></SellPlayerRow>
+                {droppedPlayers.length > 0 ? (
+                    <MyPlayerContainer style={{height: '110%'}}>
+                    {groupedPlayers.map((group) => (
+                      group.players.length > 0 && (
+                          <div style={{width: '100%', height: '50%', display: 'flex', flexDirection: 'column'}}>
+                          <MyPlayerPosition><h2>{group.position === "Attacker" && `${t("fantasy.positionOrder1")}`}
+                          {group.position === "Midfielder" && `${t("fantasy.positionOrder2")}`}{group.position === "Defender" && `${t("fantasy.positionOrder3")}`}
+                          {group.position === "Goalkeeper" && `${t("fantasy.positionOrder4")}`}</h2></MyPlayerPosition>
+                            <MyPlayerRow>
+                                {group.players.map((player) => (
+                                    <MyPlayer onClick={() => openConfirmSell(player)}><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
+                                      width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
+                                      height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
+                                  }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
+                                ))}
+                           </MyPlayerRow>
+                           </div>
+                      )
+                    ))}
+                    </MyPlayerContainer>
+                ):(
+                    <MyBalanceRow><h2>{t("fantasy.title12")}</h2></MyBalanceRow>
+                )}
+                </motion.div>
+            </Container>
+        )}
+        {openConfirmSellMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2.5%'}} variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <BigTeamName style={{color: 'white'}}><h2>{t("fantasy.title3")}: {balance}M€</h2></BigTeamName>
+                <BigTeamName>
+                <h2>{t("fantasy.title6")} {activePlayerSell.value * 75/100}M {t("fantasy.title7")}</h2>
+                </BigTeamName>
+                <BuyPlayerHolder>
+                    <BuyPlayerAvatar><Avatar alt="Image" src={activePlayerSell.photo} sx={{
+                                        width: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 },
+                                        height: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 }
+                                    }} /></BuyPlayerAvatar>
+                                    <BuyPlayerName><h2>{activePlayerSell.name}</h2></BuyPlayerName>
+                                    <BuyPlayerName><span>{activePlayerSell.value}M€</span></BuyPlayerName>
+                </BuyPlayerHolder>
+                <div style={{display: 'flex', width: '100%', height: '70px', alignItems: 'center', justifyContent: 'center'}}>
+                        {<>
+                            <StyledButton onClick={cancelPlayerSell} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
+                            <StyledButton onClick={confirmPlayerSell} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.confirm")}</StyledButton>
+                        </>}
+                
+                </div>
+                </motion.div>
+            </Container>
+        )}
+        {openStatsMenu && (
+             <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+             variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                 <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2.5%'}} variants={item}
+                     initial="initial"
+                     animate="animate"
+                     exit="exit"
+                     transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <MyBalanceRow><h2>STATS MENU</h2></MyBalanceRow>
+                </motion.div>
+                </Container>
+        )}
+         {openTrainingMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '10%'}} variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <SellPlayerRow><h2>{t("fantasy.title15")}</h2></SellPlayerRow>
+                <SellPlayerRow>{lastTraining === null ? (
+                    <h2>{t("fantasy.title16")}</h2>
+                ) : (
+                    <h2>{t("fantasy.title17")} {trainingsNumber} {t("fantasy.title18")}</h2>
+                )}</SellPlayerRow>
+                <SellPlayerRow>
+                    {lastTraining < Date.now() && <StyledButton style={{fontSize: '14px'}} onClick={startTraining}>{t("fantasy.title19")}</StyledButton>}
+                </SellPlayerRow>
+                <SellPlayerRow style={{width: '60%'}}><h2 id="countdown" style={{fontSize: '24px'}}></h2></SellPlayerRow>
+                </motion.div>
+                </Container>
+        )}
+        {openSearchMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2.5%'}} variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <Search playerToFind={playerToFind} setPlayerToFind={setPlayerToFind}/>
+                
+                
+                <SearchPlayerRow>
+                        {searchedPlayers?.map((player) => {
+                            const playerIsDropped = droppedPlayers.find(droppedPlayer => droppedPlayer.id === player.id)
+                            const playerIsInjured = player.injuryType === 'Missing Fixture';
+                            const playerIsQuestionable = player.injuryType === 'Questionable';
+                            const borderStyle = playerIsDropped 
+                              ? '3px solid green' 
+                              : playerIsInjured 
+                              ? '3px solid red' 
+                              : playerIsQuestionable 
+                              ? '3px solid orange' 
+                              : '2px solid white'; 
+                            return(
+                                
+                                <TeamHolder whileHover={{scale: 1.02}} style={{border: `${borderStyle}`}} key={player.name}>
+                                    <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><Avatar alt="Image" src={player.photo} sx={{
+                                        width: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 },
+                                        height: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 }
+                                    }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo></PlayerLogo>
+                                    
+                                      <PlayerName onClick={() => selectPlayer(player,playerIsDropped)}><h2>{player.name}</h2></PlayerName>  
+                                      <PlayerPosition><h2>{player.position.charAt(0)}</h2></PlayerPosition>
+                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating><span>{player.value}M€</span></PlayerRating></PlayerLogo>
+                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating style={{background: getBackgroundColor(player.rating)}}>{!isNaN(player.rating) && player.rating}</PlayerRating></PlayerLogo>
+                                      <PlayerLogo onClick={() => openPlayerStatsMenu(player)}><PlayerSettingsIcon /></PlayerLogo>
+                                    
+                                </TeamHolder>
+                                
+                            )
+                        })}
+                    </SearchPlayerRow>
+                
+                </motion.div>
+                </Container>
+        )}
+        </AnimatePresence>
+      {/* <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
       variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
         {!isDateExpanded && <AbsoluteIconButton onClick={closeDate}><ArrowUp /></AbsoluteIconButton>}
         
@@ -727,279 +1047,8 @@ const getBackgroundColor = (number) => {
                 </LeagueRow>
             </FoldingMenu>
         )}
-        {openLeagueMenu && (
-            <FoldingMenu 
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                 <LeagueRow>
-                {availableLeagues?.map((league,index) => {
-                return(
-                        <LeagueHolder whileHover={{scale: 1.05}} key={league.name} onClick={() => setAllTeams(league)}>
-                        <BallColumn key={league.id}>
-              <CountryBall><img src={league.logo} alt="england" /></CountryBall>
-              <CountryBallTextTop>{league.name === "England" && `${t("fantasy.england")}`}{league.name === "Spain" && `${t("fantasy.spain")}`}{league.name === "Italy" && `${t("fantasy.italy")}`}
-              {league.name === "Germany" && `${t("fantasy.germany")}`}{league.name === "France" && `${t("fantasy.france")}`}</CountryBallTextTop><CountryBallTextTop>{league.league}</CountryBallTextTop>
-              </BallColumn>
-                        </LeagueHolder>
-                )
-            })}
-            </LeagueRow>
-            </FoldingMenu>
-        )}
-        {openTeamMenu && (
-            <FoldingMenu 
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                 
-                {loadingTeams ? (
-                    <TeamCircularRow>
-                    <CircularProgress sx={{ width: 80, height: 80 }} />
-                    </TeamCircularRow>
-                ) : (
-                    <TeamRow >
-                        {teams?.map((team,index) => {
-                            return(
-                                
-                                <TeamHolder whileHover={{scale: 1.05}} key={team.name} >
-                                    <TeamLogo onClick={() => setAllPlayers(team)}><img src={team.teamLogo} alt={team.teamLogo} /></TeamLogo>
-                                    <TeamName onClick={() => setAllPlayers(team)}><h2>{team.teamName}</h2></TeamName>
-                                    <TeamSettings onClick={() => openTeamStatsMenu(team)}><PlayerSettingsIcon /></TeamSettings>
-                                </TeamHolder>
-                                
-                            )
-                        })}
-                    </TeamRow>
-                )}
-            </FoldingMenu>
-        )}
-        {openConfirmMenu && (
-            <FoldingMenu 
-            style={{zIndex: 5000, background: 'black'}}
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <BigTeamName style={{color: 'white'}}><h2>{t("fantasy.title3")}: {balance}M€</h2></BigTeamName>
-                <BigTeamName>
-                    {balance - activePlayer.value > 0 ? (
-                        <h2>{t("fantasy.title4")}</h2>
-                    ) : (
-                        <h2>{t("fantasy.title5")}</h2> 
-                    )}
-                </BigTeamName>
-                <BuyPlayerHolder>
-                    <BuyPlayerAvatar><Avatar alt="Image" src={activePlayer.photo} sx={{
-                                        width: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 },
-                                        height: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 }
-                                    }} /></BuyPlayerAvatar>
-                                    <BuyPlayerName><h2>{activePlayer.name}</h2></BuyPlayerName>
-                                    <BuyPlayerName><span>{activePlayer.value}M€</span></BuyPlayerName>
-                </BuyPlayerHolder>
-                <div style={{display: 'flex', width: '100%', height: '70px', alignItems: 'center', justifyContent: 'center'}}>
-                {balance - activePlayer.value > 0 ? (
-                        <>
-                            <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
-                            <StyledButton onClick={confirmPlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.confirm")}</StyledButton>
-                        </>
-                    ) : (
-                        <StyledButton onClick={cancelPlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
-                    )}
-                
-                </div>
-            </FoldingMenu>
-        )}
-        {openConfirmSellMenu && (
-            <FoldingMenu 
-            style={{zIndex: 5000, background: 'black', justifyContent: 'space-around'}}
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <BigTeamName style={{color: 'white'}}><h2>{t("fantasy.title3")}: {balance}M€</h2></BigTeamName>
-                <BigTeamName>
-                <h2>{t("fantasy.title6")} {activePlayerSell.value * 75/100}M {t("fantasy.title7")}</h2>
-                </BigTeamName>
-                <BuyPlayerHolder>
-                    <BuyPlayerAvatar><Avatar alt="Image" src={activePlayerSell.photo} sx={{
-                                        width: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 },
-                                        height: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 }
-                                    }} /></BuyPlayerAvatar>
-                                    <BuyPlayerName><h2>{activePlayerSell.name}</h2></BuyPlayerName>
-                                    <BuyPlayerName><span>{activePlayerSell.value}M€</span></BuyPlayerName>
-                </BuyPlayerHolder>
-                <div style={{display: 'flex', width: '100%', height: '70px', alignItems: 'center', justifyContent: 'center'}}>
-                        {<>
-                            <StyledButton onClick={cancelPlayerSell} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
-                            <StyledButton onClick={confirmPlayerSell} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.confirm")}</StyledButton>
-                        </>}
-                
-                </div>
-            </FoldingMenu>
-        )}
-        {openPlayerMenu && (
-            <FoldingMenu 
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                 
-                {loadingPlayers ? (
-                    <TeamCircularRow>
-                    <CircularProgress sx={{ width: 80, height: 80 }} />
-                    </TeamCircularRow>
-                ) : (
-                    <>
-                    <FilterRow>
-                        <StyledButton onClick={sortByRating}>{t("fantasy.title8")}</StyledButton>
-                        <StyledButton onClick={sortByPosition}>{t("fantasy.title9")}</StyledButton>
-                        <StyledButton onClick={sortByValue}>{t("fantasy.title10")}</StyledButton>
-                    </FilterRow>
-                    <PlayerRow >
-                        {players?.map((player) => {
-                            const playerIsDropped = droppedPlayers.find(droppedPlayer => droppedPlayer.id === player.id)
-                            const playerIsInjured = player.injuryType === 'Missing Fixture';
-                            const playerIsQuestionable = player.injuryType === 'Questionable';
-                            const borderStyle = playerIsDropped 
-                              ? '3px solid green' 
-                              : playerIsInjured 
-                              ? '3px solid red' 
-                              : playerIsQuestionable 
-                              ? '3px solid orange' 
-                              : '2px solid white'; 
-                            return(
-                                
-                                <TeamHolder whileHover={{scale: 1.02}} style={{border: `${borderStyle}`}} key={player.name}>
-                                    <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><Avatar alt="Image" src={player.photo} sx={{
-                                        width: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 },
-                                        height: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 }
-                                    }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo></PlayerLogo>
-                                    
-                                      <PlayerName onClick={() => selectPlayer(player,playerIsDropped)}><h2>{player.name}</h2></PlayerName>  
-                                      <PlayerPosition><h2>{player.position.charAt(0)}</h2></PlayerPosition>
-                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating><span>{player.value}M€</span></PlayerRating></PlayerLogo>
-                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating style={{background: getBackgroundColor(player.rating)}}>{!isNaN(player.rating) && player.rating}</PlayerRating></PlayerLogo>
-                                      <PlayerLogo onClick={() => openPlayerStatsMenu(player)}><PlayerSettingsIcon /></PlayerLogo>
-                                    
-                                </TeamHolder>
-                                
-                            )
-                        })}
-                    </PlayerRow>
-                    </>
-                )}
-            </FoldingMenu>
-        )}
-        {openDropMenu && (
-            <FantasyFoldingMenu 
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <MyBalanceRow><h2>{t("fantasy.title3")}: {balance}M€</h2></MyBalanceRow>
-                <MyBalanceRow>{droppedPlayers.length > 0 ? <h2>{t("fantasy.title11")}: <span style={{color: getBackgroundColor(teamRating)}}>{teamRating}</span></h2> : <h2></h2>}</MyBalanceRow>
-                {droppedPlayers.length > 0 ? (
-                    <MyPlayerContainer >
-                    {groupedPlayers.map((group) => (
-                      group.players.length > 0 && (
-                          <div style={{width: '100%', height: '50%', display: 'flex', flexDirection: 'column'}}>
-                          <MyPlayerPosition><h2>{group.position === "Attacker" && `${t("fantasy.positionOrder1")}`}
-                          {group.position === "Midfielder" && `${t("fantasy.positionOrder2")}`}{group.position === "Defender" && `${t("fantasy.positionOrder3")}`}
-                          {group.position === "Goalkeeper" && `${t("fantasy.positionOrder4")}`}</h2></MyPlayerPosition>
-                            <MyPlayerRow>
-                                {group.players.map((player) => (
-                                    <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
-                                      width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
-                                      height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
-                                  }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
-                                ))}
-                           </MyPlayerRow>
-                           </div>
-                      )
-                    ))}
-                    </MyPlayerContainer>
-                ):(
-                    <MyBalanceRow><h2>{t("fantasy.title12")}</h2></MyBalanceRow>
-                )}
-            </FantasyFoldingMenu>
-        )}
-        {openSellMenu && (
-            <FantasyFoldingMenu 
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <SellPlayerRow><h2>{t("fantasy.title13")} <br/>{droppedPlayers.length > 0 && `${t("fantasy.title14")} :`}</h2></SellPlayerRow>
-                <LeagueRow>
-                {droppedPlayers.length > 0 ? (
-                    <MyPlayerContainer style={{height: '110%'}}>
-                    {groupedPlayers.map((group) => (
-                      group.players.length > 0 && (
-                          <div style={{width: '100%', height: '50%', display: 'flex', flexDirection: 'column'}}>
-                          <MyPlayerPosition><h2>{group.position === "Attacker" && `${t("fantasy.positionOrder1")}`}
-                          {group.position === "Midfielder" && `${t("fantasy.positionOrder2")}`}{group.position === "Defender" && `${t("fantasy.positionOrder3")}`}
-                          {group.position === "Goalkeeper" && `${t("fantasy.positionOrder4")}`}</h2></MyPlayerPosition>
-                            <MyPlayerRow>
-                                {group.players.map((player) => (
-                                    <MyPlayer onClick={() => openConfirmSell(player)}><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
-                                      width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
-                                      height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
-                                  }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
-                                ))}
-                           </MyPlayerRow>
-                           </div>
-                      )
-                    ))}
-                    </MyPlayerContainer>
-                ):(
-                    <MyBalanceRow><h2>{t("fantasy.title12")}</h2></MyBalanceRow>
-                )}
-                </LeagueRow>
-            </FantasyFoldingMenu>
-        )}
-
-        {openStatsMenu && (
-            <FantasyFoldingMenu 
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <MyBalanceRow><h2>STATS MENU</h2></MyBalanceRow>
-            </FantasyFoldingMenu>
-        )}
-
-        {openTrainingMenu && (
-            <FantasyFoldingMenu 
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <SellPlayerRow><h2>{t("fantasy.title15")}</h2></SellPlayerRow>
-                <SellPlayerRow>{lastTraining === null ? (
-                    <h2>{t("fantasy.title16")}</h2>
-                ) : (
-                    <h2>{t("fantasy.title17")} {trainingsNumber} {t("fantasy.title18")}</h2>
-                )}</SellPlayerRow>
-                <SellPlayerRow>
-                    {lastTraining < Date.now() && <StyledButton style={{fontSize: '14px'}} onClick={startTraining}>{t("fantasy.title19")}</StyledButton>}
-                </SellPlayerRow>
-                <SellPlayerRow style={{width: '60%'}}><h2 id="countdown" style={{fontSize: '24px'}}></h2></SellPlayerRow>
-            </FantasyFoldingMenu>
-        )}
         </AnimatePresence>
-      </Container>
+      </Container> */}
       
       <BottomRow>
         <IconHolder>
@@ -1039,7 +1088,9 @@ const getBackgroundColor = (number) => {
                     {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) ? (
                         <h2 onClick={openStats} style={{color: openStatsMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.stats")}</h2>
                     ) : (
-                        <h2 onClick={openSearch} style={{color: openSearchMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title26")}</h2>
+                        <>
+                            {!activeLeague && <h2 onClick={openSearch} style={{color: openSearchMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title26")}</h2>}
+                        </>
                     )}
                     </> 
                 )}
@@ -1102,7 +1153,7 @@ const PlayerTeamRating = styled.div`
     position: absolute; 
     bottom: 0;
     right: 0;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     @media(max-width: 968px){
         font-size: 14px; 
@@ -1152,7 +1203,7 @@ const PlayerName = styled.div`
     text-align: center;
     h2{
         color: ${props => props.theme.text};
-        font-size: 20px;
+        font-size: 16px;
         font-weight: bold;
     }
     @media(max-width: 968px){
@@ -1247,7 +1298,7 @@ const MyPlayerPosition = styled.div`
 `;
 const MyBalanceRow = styled.div`
     width: 100%;
-    height: 30px;
+    height: 5%;
     ${props => props.theme.displayFlexCenter}
     padding: 20px;
     text-align: center;
@@ -1259,7 +1310,7 @@ const MyBalanceRow = styled.div`
 `;
 const SellPlayerRow = styled.div`
     width: 70%;
-    height: 15vh;
+    height: 15%;
     ${props => props.theme.displayFlexCenter}
     padding: 10px;
     text-align: center;
@@ -1314,9 +1365,9 @@ const BuyPlayerName = styled.div`
 
 const BigTeamName = styled.div`
     width: 70%;
-    height: 10%;
+    height: 15%;
+    text-align: center;
     ${props => props.theme.displayFlexCenter}
-    margin: 10px 0;
     padding: 10px;
     text-align: center;
     position: relative;
@@ -1366,7 +1417,7 @@ const LeagueHolder = styled(motion.div)`
     }
 `;
 
-const LeagueRow = styled.div`
+const LeagueRow = styled(motion.div)`
     width: 100%;
     height: 35vh;
     padding: 10px;
@@ -1381,15 +1432,15 @@ const LeagueRow = styled.div`
 
 const TeamCircularRow = styled.div`
     width: 100%;
-    height: 70vh;
+    height: 100%;
     padding: 10px;
     ${props => props.theme.displayFlexCenter}
 `;
 
-const TeamRow = styled.div`
+const TeamRow = styled(motion.div)`
     width: 100%;
-    height: 65vh;
-    padding: 10px;
+    padding: 20px;
+    height: 100%;
     display: grid;
     place-items: center;
     grid-template-columns: repeat(4, 1fr); /* 2 columns */
@@ -1398,13 +1449,12 @@ const TeamRow = styled.div`
     overflow-y: auto;
     @media(max-width: 498px){
         grid-template-columns: repeat(1, 1fr);
-        height: 75vh;
     }
 `;
 
 const MyPlayerContainer = styled.div`
     width: 60%;
-    height: 70%;
+    height: 87.5%;
     padding: 10px;
     ${props => props.theme.displayFlexColumn};
     overflow-y: auto;
@@ -1414,7 +1464,6 @@ const MyPlayerContainer = styled.div`
     }
     @media(max-width: 498px){
         grid-template-columns: repeat(1, 1fr);
-        height: 75%;
         width: 100%;
     }
 `;
@@ -1434,11 +1483,11 @@ const SearchPlayerRow = styled.div`
     }
     @media(max-width: 498px){
         grid-template-columns: repeat(1, 1fr);
-        height: 85%;
+        
     }
 `;
 
-const PlayerRow = styled.div`
+const PlayerRow = styled(motion.div)`
     width: 100%;
     height: 90%;
     padding: 10px;
@@ -1453,7 +1502,7 @@ const PlayerRow = styled.div`
     }
     @media(max-width: 498px){
         grid-template-columns: repeat(1, 1fr);
-        height: 80%;
+        
     }
 `;
 
@@ -1465,6 +1514,7 @@ const IconHolder = styled.div`
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
     padding: 5px;
+    cursor: pointer;
     h2{
         font-size: 12px !important;
         font-weight: bold; 
@@ -1490,19 +1540,23 @@ const IconHolder = styled.div`
 
 const FilterRow = styled.div`
     width: 70%;
-    height: 10vh;
+    height: 10%;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter}
     justify-content: space-around;
     @media(max-width: 498px){
         height: 10vh;
         width: 100%;  
+        
     }
 `;
 
 const BottomRow = styled.div`
-    width: 70%;
+    width: 100%;
     height: 15vh;
+    position: absolute;
+    top: 85vh;
+    left: 0;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter}
     justify-content: space-around;
@@ -1513,6 +1567,7 @@ const BottomRow = styled.div`
     @media(max-width: 498px){
         height: 10vh;
         width: 100%;  
+        top: 90vh;
     }
 `;
 
@@ -1540,8 +1595,8 @@ const Title = styled(motion.div)`
 
 const Container = styled(motion.div)`
     width: 100%;
+    ${props => props.theme.displayFlexCenter}
     height: 70vh;
-    //position: relative;
     @media(max-width: 498px){
         height: 80vh;
     }
@@ -1567,6 +1622,7 @@ const FantasyFoldingMenu = styled(motion.div)`
 const Section = styled.div`
     width: 100vw;
     height: 100vh;
+    position: relative;
     ${props => props.theme.displayFlexColumn}
     background: ${props => props.theme.body};
 `;

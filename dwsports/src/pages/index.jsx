@@ -50,7 +50,7 @@ export const SearchIconButton = styled(SearchIcon)`
 export const Search = ({playerToFind,setPlayerToFind}) => {
     const [t, i18n] = useTranslation("global");
     return(
-        <Box sx={{ display: 'flex', alignItems: 'center', height: '10vh', width: '100%'}}>
+        <Box sx={{ display: 'flex', alignItems: 'center', height: '10%', width: '70%'}}>
         
         <TextField autoComplete='off' onChange={(e) => {setPlayerToFind(e.target.value)}} value={playerToFind} fullWidth id="input-with-sx" label={`${t("fantasy.search")}`} variant="filled" slotProps={{
             input: {

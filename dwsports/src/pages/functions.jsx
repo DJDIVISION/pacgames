@@ -598,3 +598,13 @@ export function startCountdown(date) {
     updateCountdown();
 }
 
+export const getBackgroundColor = (number) => {
+  if (number >= 0 && number < 6) return 'red'; // Color for 5 to <6
+  if (number >= 6 && number < 6.5) return 'orange'; // Color for 5 to <6
+  if (number >= 6.5 && number < 7) return '#eafa07';  // Color for 6 to <7
+  if (number >= 7 && number < 8) return '#12f812'; // Color for 7 to <8
+  if (number >= 8 && number < 9) return '#00ccff'; // Color for 8 to <9
+  if (number >= 9 && number <= 10) return '#3F00FF'; // Color for 9 to 10
+  return 'white'; // Default background color if number is out of range
+};
+
