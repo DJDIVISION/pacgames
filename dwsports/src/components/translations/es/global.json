@@ -38,7 +38,9 @@
         "title22": "ELIGE UN JUGADOR",
         "title23": "VENDER JUGADOR",
         "title24": "¿COMPRAR JUGADOR?",
-        "title25": "TU EQUIPO"
+        "title25": "TU EQUIPO",
+        "title26": "BUSCAR JUGADOR",
+        "search": "Buscar jugador por nombre"
     },
     "navbar": {
         "sports": "APUESTAS DEPORTIVAS",

@@ -20,6 +20,7 @@ import InputBase from '@mui/material/InputBase';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+import {useTranslation} from "react-i18next";
 
 export const PlayerSettingsIcon = styled(DisplaySettingsIcon)`
     &&&{
@@ -29,23 +30,37 @@ export const PlayerSettingsIcon = styled(DisplaySettingsIcon)`
 
 export const SearchIconButton = styled(SearchIcon)`
     &&&{
-        color: ${props =>props.theme.text}
+        color: ${props =>props.theme.text};
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 3px;
+        transform: scale(1.4);
+        border-radius: 50%;
+        box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+        z-index: 1000;
+        @media (max-width: 968px) {
+        top: 20px;
+        right: 15px;
+        scale: 1.2;
+        }
     }
 `;
 
-export const Search = ({setIsSearchExpanded,isSearchExpanded,playerToFind,setPlayerToFind}) => {
+export const Search = ({playerToFind,setPlayerToFind}) => {
+    const [t, i18n] = useTranslation("global");
     return(
-        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', width: '100%' }}>
-        <SearchIconButton/>
-        <TextField autoComplete='off' onChange={(e) => {setIsSearchExpanded(true);setPlayerToFind(e.target.value)}} value={playerToFind} fullWidth id="input-with-sx" label="Search by name" variant="filled" slotProps={{
+        <Box sx={{ display: 'flex', alignItems: 'center', height: '10vh', width: '100%'}}>
+        
+        <TextField autoComplete='off' onChange={(e) => {setPlayerToFind(e.target.value)}} value={playerToFind} fullWidth id="input-with-sx" label={`${t("fantasy.search")}`} variant="filled" slotProps={{
             input: {
                 style: {
-                    color: 'white'
+                    color: 'white',fontFamily: 'Quicksand'
                 }
             },
             inputLabel: {
                 style: {
-                    color: 'white'
+                    color: 'white',fontFamily: 'Quicksand'
                 }
             }
         }}/>
@@ -82,7 +97,7 @@ export const CountryBallTeam = styled(motion.div)`
 export const CountryBallTextTop = styled(motion.div)`
     width: 80%;
     height: 50%;
-    font-size: 24px;
+    font-size: 20px;
     ${props => props.theme.displayFlexCenter};
     color: ${props => props.theme.text};
     font-weight: bold;
@@ -90,7 +105,7 @@ export const CountryBallTextTop = styled(motion.div)`
     transform: translateY(-50%);
     text-shadow: ${props => props.theme.textShadowTwo};
     @media(max-width: 498px){
-        font-size: 6vw;
+        font-size: 18px;
     }
 `;
 

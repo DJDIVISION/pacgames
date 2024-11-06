@@ -1,5 +1,6 @@
-import React, { useEffect,useState } from 'react'
+import React, { useEffect,useState,useCallback } from 'react'
 import styled from 'styled-components'
+import { debounce } from 'lodash';
 import { supabase } from '../supabase/client'
 import { Avatar, Button, IconButton } from '@mui/material';
 import {motion,AnimatePresence} from 'framer-motion'
@@ -8,7 +9,7 @@ import spain from '../assets/logos/spain.png'
 import italy from '../assets/logos/italy.png' 
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
-import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon } from './index';
+import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton } from './index';
 import { FantasyState } from '../context/FantasyContext';
 import { CircularProgress } from '@mui/material';
 import { startCountdown, useAuth, useGetTeams } from './functions';
@@ -73,6 +74,7 @@ const NewFantasy = () => {
     const [openConfirmMenu, setOpenConfirmMenu] = useState(false)
     const [openConfirmSellMenu, setOpenConfirmSellMenu] = useState(false)
     const [openSellMenu, setOpenSellMenu] = useState(false)
+    const [openSearchMenu, setOpenSearchMenu] = useState(false)
     const [openStatsMenu, setOpenStatsMenu] = useState(false)
     const [openTrainingMenu, setOpenTrainingMenu] = useState(false)
     const [selectedPlayerMenu, setSelectedPlayerMenu] = useState(false)
@@ -87,7 +89,37 @@ const NewFantasy = () => {
     const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
     const { activeTeamId, setActiveTeamId } = FantasyState(); 
     const {teams,getTeams,loadingTeams,players,loadingPlayers,handleTeamChange,setPlayers,getPlayers,setTeams} = useGetTeams();
-    const [droppedPlayers, setDroppedPlayers] = useState([]);
+    const [droppedPlayers, setDroppedPlayers] = useState([])
+    const [searchedPlayers, setSearchedPlayers] = useState([])
+    const [playerToFind, setPlayerToFind] = useState("")
+
+    const fetchPlayers = useCallback(debounce(async (searchTerm) => {
+        if (!searchTerm) {
+          setSearchedPlayers([]);  // Reset players when input is empty
+          return;
+        }
+        
+        setLoading(true);
+    
+        const { data, error } = await supabase
+          .from('footballPlayers')  // Replace with your actual table name
+          .select('*')
+          .ilike('name', `%${searchTerm}%`);  // Use ilike for case-insensitive search
+    
+        if (error) {
+          console.error('Error fetching players:', error);
+        } else {
+          setSearchedPlayers(data);  // Update the players state with fetched data
+        }
+    
+        setLoading(false);
+    }, 500), []);  // Debounce with a delay of 500ms
+
+    // Fetch players when the input value changes
+    useEffect(() => {
+        fetchPlayers(playerToFind);  // Call the debounced function
+    }, [playerToFind, fetchPlayers]);
+    
 
       const fetchUserData = async () => {
         const { data, error } = await supabase
@@ -200,6 +232,7 @@ const NewFantasy = () => {
         setOpenDropMenu(false)
         setTeams([])
         setActivePlayer(null)
+        setOpenSearchMenu(false)
         setActiveTeam(null)
         if(openTeamMenu){
             setOpenTeamMenu(false)
@@ -238,6 +271,22 @@ const NewFantasy = () => {
     }
     const closeDate = () => {
         setIsDateExpanded((prev) => !prev);
+    }
+    const openSearch = () => {
+        if(openSearchMenu){
+            setOpenSearchMenu(false)
+            setTimeout(() => {
+                setOpenLeagueMenu(true)
+            },500)
+        } else {
+            setOpenLeagueMenu(false)
+            setOpenDropMenu(false)
+            setOpenPlayerMenu(false)
+            setTimeout(() => {
+                setOpenSearchMenu((prev) => !prev);
+            },500)
+        }
+        
     }
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const variants = {
@@ -313,6 +362,7 @@ const toggleMenu = () => {
         setOpenPlayerMenu(false)
         setOpenLeagueMenu(false)
         setOpenSellMenu(false)
+        setOpenSearchMenu(false)
         setOpenTrainingMenu(false)
         setOpenStatsMenu(false)
         setOpenTeamMenu(false)
@@ -617,17 +667,66 @@ const getBackgroundColor = (number) => {
 
   return (
     <Section>
+        
         <Title initial="expanded"
         animate={isDateExpanded ? "expanded" : "collapsed"} 
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
       <h2>{t("fantasy.title1")} {startDate} {t("fantasy.title2")} {endDate}</h2>
+      
       <AbsoluteIconButton onClick={closeDate}><ArrowDown /></AbsoluteIconButton>
       </Title>
+      
       <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
       variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
         {!isDateExpanded && <AbsoluteIconButton onClick={closeDate}><ArrowUp /></AbsoluteIconButton>}
+        
       <AnimatePresence>
+        {openSearchMenu && (
+            <FoldingMenu 
+            variants={item}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            style={{paddingTop: '50px'}}
+            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <Search playerToFind={playerToFind} setPlayerToFind={setPlayerToFind}/>
+                <LeagueRow>
+                
+                <SearchPlayerRow>
+                        {searchedPlayers?.map((player) => {
+                            const playerIsDropped = droppedPlayers.find(droppedPlayer => droppedPlayer.id === player.id)
+                            const playerIsInjured = player.injuryType === 'Missing Fixture';
+                            const playerIsQuestionable = player.injuryType === 'Questionable';
+                            const borderStyle = playerIsDropped 
+                              ? '3px solid green' 
+                              : playerIsInjured 
+                              ? '3px solid red' 
+                              : playerIsQuestionable 
+                              ? '3px solid orange' 
+                              : '2px solid white'; 
+                            return(
+                                
+                                <TeamHolder whileHover={{scale: 1.02}} style={{border: `${borderStyle}`}} key={player.name}>
+                                    <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><Avatar alt="Image" src={player.photo} sx={{
+                                        width: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 },
+                                        height: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 }
+                                    }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo></PlayerLogo>
+                                    
+                                      <PlayerName onClick={() => selectPlayer(player,playerIsDropped)}><h2>{player.name}</h2></PlayerName>  
+                                      <PlayerPosition><h2>{player.position.charAt(0)}</h2></PlayerPosition>
+                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating><span>{player.value}M€</span></PlayerRating></PlayerLogo>
+                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating style={{background: getBackgroundColor(player.rating)}}>{!isNaN(player.rating) && player.rating}</PlayerRating></PlayerLogo>
+                                      <PlayerLogo onClick={() => openPlayerStatsMenu(player)}><PlayerSettingsIcon /></PlayerLogo>
+                                    
+                                </TeamHolder>
+                                
+                            )
+                        })}
+                    </SearchPlayerRow>
+                </LeagueRow>
+            </FoldingMenu>
+        )}
         {openLeagueMenu && (
             <FoldingMenu 
             variants={item}
@@ -635,10 +734,10 @@ const getBackgroundColor = (number) => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                 <LeagueRow >
+                 <LeagueRow>
                 {availableLeagues?.map((league,index) => {
                 return(
-                        <LeagueHolder whileHover={{scale: 1.05}} key={index} onClick={() => setAllTeams(league)}>
+                        <LeagueHolder whileHover={{scale: 1.05}} key={league.name} onClick={() => setAllTeams(league)}>
                         <BallColumn key={league.id}>
               <CountryBall><img src={league.logo} alt="england" /></CountryBall>
               <CountryBallTextTop>{league.name === "England" && `${t("fantasy.england")}`}{league.name === "Spain" && `${t("fantasy.spain")}`}{league.name === "Italy" && `${t("fantasy.italy")}`}
@@ -667,7 +766,7 @@ const getBackgroundColor = (number) => {
                         {teams?.map((team,index) => {
                             return(
                                 
-                                <TeamHolder whileHover={{scale: 1.05}} key={index} >
+                                <TeamHolder whileHover={{scale: 1.05}} key={team.name} >
                                     <TeamLogo onClick={() => setAllPlayers(team)}><img src={team.teamLogo} alt={team.teamLogo} /></TeamLogo>
                                     <TeamName onClick={() => setAllPlayers(team)}><h2>{team.teamName}</h2></TeamName>
                                     <TeamSettings onClick={() => openTeamStatsMenu(team)}><PlayerSettingsIcon /></TeamSettings>
@@ -847,7 +946,9 @@ const getBackgroundColor = (number) => {
                     {groupedPlayers.map((group) => (
                       group.players.length > 0 && (
                           <div style={{width: '100%', height: '50%', display: 'flex', flexDirection: 'column'}}>
-                          <MyPlayerPosition><h2>{group.position}s</h2></MyPlayerPosition>
+                          <MyPlayerPosition><h2>{group.position === "Attacker" && `${t("fantasy.positionOrder1")}`}
+                          {group.position === "Midfielder" && `${t("fantasy.positionOrder2")}`}{group.position === "Defender" && `${t("fantasy.positionOrder3")}`}
+                          {group.position === "Goalkeeper" && `${t("fantasy.positionOrder4")}`}</h2></MyPlayerPosition>
                             <MyPlayerRow>
                                 {group.players.map((player) => (
                                     <MyPlayer onClick={() => openConfirmSell(player)}><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
@@ -903,7 +1004,7 @@ const getBackgroundColor = (number) => {
       <BottomRow>
         <IconHolder>
             {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) ? (
-                <h2 onClick={openTraining}>{t("fantasy.training")}</h2>
+                <h2 style={{color: openTrainingMenu ? "rgba(244,215,21,1)" : ""}} onClick={openTraining}>{t("fantasy.training")}</h2>
             ):(
                 <>
                     {openTeamMenu || openPlayerMenu  ? (
@@ -913,7 +1014,7 @@ const getBackgroundColor = (number) => {
                             {(openConfirmMenu || openStatsMenu || openTrainingMenu || openSellMenu) ? (
                                 <h2></h2>
                             ):(
-                                <h2 onClick={openLeague}>{t("fantasy.title20")}</h2>
+                                <h2 onClick={openLeague} style={{color: openLeagueMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title20")}</h2>
                             )}
                         </>
                     )}
@@ -922,7 +1023,7 @@ const getBackgroundColor = (number) => {
         </IconHolder>
         <IconHolder>
             {openTeamMenu ? (
-                 <h2>{t("fantasy.title21")}</h2>
+                 <h2 style={{color: openTeamMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title21")}</h2>
             ):(
                 <>
                 {loading ? (
@@ -935,8 +1036,10 @@ const getBackgroundColor = (number) => {
                             <CountryBallText initial={{y:-15}} >{activeTeam?.teamName}</CountryBallText>
                         </BallColumn>
                     )}
-                    {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) && (
-                        <h2 onClick={openStats}>{t("fantasy.stats")}</h2>
+                    {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) ? (
+                        <h2 onClick={openStats} style={{color: openStatsMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.stats")}</h2>
+                    ) : (
+                        <h2 onClick={openSearch} style={{color: openSearchMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title26")}</h2>
                     )}
                     </> 
                 )}
@@ -945,7 +1048,7 @@ const getBackgroundColor = (number) => {
         </IconHolder>
         <IconHolder>
             {openPlayerMenu ? (
-                <h2>{t("fantasy.title22")}</h2>
+                <h2 style={{color: openPlayerMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title22")}</h2>
             ):(
                 <>
                  {loading ? (
@@ -959,7 +1062,7 @@ const getBackgroundColor = (number) => {
                         </BallColumn>
                     )}
                     {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) &&  (
-                        <h2 onClick={openSell}>{t("fantasy.title23")}</h2> 
+                        <h2 onClick={openSell} style={{color: openSellMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title23")}</h2> 
                     )}
                     </>
                  )}
@@ -967,13 +1070,13 @@ const getBackgroundColor = (number) => {
             )}
         </IconHolder>
         {activePlayer ? (
-            <IconHolder ><h2>{t("fantasy.title24")}</h2></IconHolder>
+            <IconHolder ><h2 style={{color: activePlayer ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title24")}</h2></IconHolder>
         ) : (
             <>
             {openDropMenu ? (
-                <IconHolder onClick={toggleMenu}><h2>{t("fantasy.back")}</h2></IconHolder>
+                <IconHolder onClick={toggleMenu}><h2 style={{color: openDropMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.back")}</h2></IconHolder>
             ):(
-                <IconHolder onClick={toggleMenu}><h2>{t("fantasy.title25")}</h2></IconHolder>
+                <IconHolder onClick={toggleMenu}><h2 >{t("fantasy.title25")}</h2></IconHolder>
             )}
             </>
         )}
@@ -1094,7 +1197,7 @@ const PlayerTeamLogo = styled.div`
 
 
 const TeamLogo = styled.div`
-    width: 20%;
+    width: 15%;
     height: 100%;
     ${props => props.theme.displayFlexCenter}
     img{
@@ -1120,7 +1223,7 @@ const MyPlayerRow = styled.div`
 `;
 
 const MyPlayer = styled.div`
-    min-width: 25%;
+    width: 100px;
     height: 90px;
     ${props => props.theme.displayFlexColumn}
 `;
@@ -1225,7 +1328,7 @@ const BigTeamName = styled.div`
 `;
 
 const TeamName = styled.div`
-    width: 75%;
+    width: 85%;
     height: 100%;
     ${props => props.theme.displayFlex}
     padding: 10px;
@@ -1233,7 +1336,7 @@ const TeamName = styled.div`
     position: relative;
     h2{
         color: ${props => props.theme.text};
-        font-size: 24px;
+        font-size: 18px;
         font-weight: bold;
     }
 `;
@@ -1270,7 +1373,7 @@ const LeagueRow = styled.div`
     ${props => props.theme.displayFlexCenter}
     justify-content: space-around;
     @media(max-width: 498px){
-        height: 70vh; 
+        height: 80vh; 
         flex-direction: column;
         overflow-y: auto;
     }
@@ -1285,7 +1388,7 @@ const TeamCircularRow = styled.div`
 
 const TeamRow = styled.div`
     width: 100%;
-    height: 80vh;
+    height: 65vh;
     padding: 10px;
     display: grid;
     place-items: center;
@@ -1295,14 +1398,35 @@ const TeamRow = styled.div`
     overflow-y: auto;
     @media(max-width: 498px){
         grid-template-columns: repeat(1, 1fr);
+        height: 75vh;
     }
 `;
 
 const MyPlayerContainer = styled.div`
+    width: 60%;
+    height: 70%;
+    padding: 10px;
+    ${props => props.theme.displayFlexColumn};
+    overflow-y: auto;
+    @media(max-width: 968px){
+        grid-template-columns: repeat(2, 1fr);
+        height: 85%;
+    }
+    @media(max-width: 498px){
+        grid-template-columns: repeat(1, 1fr);
+        height: 75%;
+        width: 100%;
+    }
+`;
+
+const SearchPlayerRow = styled.div`
     width: 100%;
     height: 90%;
     padding: 10px;
-    ${props => props.theme.displayFlexColumn};
+    display: grid;
+    place-items: center;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
     overflow-y: auto;
     @media(max-width: 968px){
         grid-template-columns: repeat(2, 1fr);
@@ -1340,8 +1464,9 @@ const IconHolder = styled.div`
     background: #3f3e3e;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
+    padding: 5px;
     h2{
-        font-size: 16px !important;
+        font-size: 12px !important;
         font-weight: bold; 
     }
 
@@ -1401,14 +1526,14 @@ const Title = styled(motion.div)`
     position: relative;
     overflow: hidden;
     h2{
-        font-size: 24px;
-        width: 70%;
+        font-size: 18px;
+        width: 80%;
     }
     @media(max-width: 498px){
         height: 10vh;
         h2{
-            font-size: 18px;
-            width: 65%;
+            font-size: 14px;
+            width: 70%;
         }
     }
 `;
@@ -1416,7 +1541,7 @@ const Title = styled(motion.div)`
 const Container = styled(motion.div)`
     width: 100%;
     height: 70vh;
-    position: relative;
+    //position: relative;
     @media(max-width: 498px){
         height: 80vh;
     }
@@ -1451,6 +1576,24 @@ const AbsoluteIconButton = styled(IconButton)`
         position: absolute;
         top: 20px;
         right: 20px;
+        padding: 5px;
+        background: ${props => props.theme.body};
+        scale: 1.2;
+        box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+        z-index: 1000;
+        @media (max-width: 968px) {
+        top: 15px;
+        right: 15px;
+        scale: 1.2;
+        }
+    }
+`;
+
+const AbsoluteIconButtonLeft = styled(IconButton)`
+    &&&{
+        
+        top: 20px;
+        left: 20px;
         padding: 5px;
         background: ${props => props.theme.body};
         scale: 1.2;
