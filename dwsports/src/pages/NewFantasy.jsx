@@ -82,6 +82,7 @@ const NewFantasy = () => {
     const [areaId, setAreaId] = useState(null)
     const [loading, setLoading] = useState(false)
     const [balance, setBalance] = useState(null)
+    const [disabledTitle, setDisabledTitle] = useState(false)
     const [lastTraining, setLastTraining] = useState(null)
     const [teamRating, setTeamRating] = useState(null)
     const [trainingsNumber, setTrainingsNumber] = useState(null)
@@ -322,6 +323,7 @@ const selectPlayer = (player,playerIsDropped) => {
     if(playerIsDropped){
         message.error("This player is already on your team!")
     } else {
+        setOpenSearchMenu(false)
         setActivePlayer(player)
         setOpenPlayerMenu(false)
         
@@ -372,11 +374,13 @@ const toggleMenu = () => {
         setOpenTeamMenu(false)
         setActiveTeam(null)
         setActivePlayer(null)
+        setDisabledTitle(true)
         setTimeout(() => {
             setOpenDropMenu((prev) => !prev);
         }, 500)
     } else {
         setOpenDropMenu((prev) => !prev);
+        setDisabledTitle(false)
         setTimeout(() => {
             setOpenLeagueMenu((prev) => !prev);
         }, 500)
@@ -997,59 +1001,6 @@ const toggleMenu = () => {
                 </Container>
         )}
         </AnimatePresence>
-      {/* <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
-      variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
-        {!isDateExpanded && <AbsoluteIconButton onClick={closeDate}><ArrowUp /></AbsoluteIconButton>}
-        
-      <AnimatePresence>
-        {openSearchMenu && (
-            <FoldingMenu 
-            variants={item}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            style={{paddingTop: '50px'}}
-            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <Search playerToFind={playerToFind} setPlayerToFind={setPlayerToFind}/>
-                <LeagueRow>
-                
-                <SearchPlayerRow>
-                        {searchedPlayers?.map((player) => {
-                            const playerIsDropped = droppedPlayers.find(droppedPlayer => droppedPlayer.id === player.id)
-                            const playerIsInjured = player.injuryType === 'Missing Fixture';
-                            const playerIsQuestionable = player.injuryType === 'Questionable';
-                            const borderStyle = playerIsDropped 
-                              ? '3px solid green' 
-                              : playerIsInjured 
-                              ? '3px solid red' 
-                              : playerIsQuestionable 
-                              ? '3px solid orange' 
-                              : '2px solid white'; 
-                            return(
-                                
-                                <TeamHolder whileHover={{scale: 1.02}} style={{border: `${borderStyle}`}} key={player.name}>
-                                    <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><Avatar alt="Image" src={player.photo} sx={{
-                                        width: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 },
-                                        height: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 }
-                                    }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo></PlayerLogo>
-                                    
-                                      <PlayerName onClick={() => selectPlayer(player,playerIsDropped)}><h2>{player.name}</h2></PlayerName>  
-                                      <PlayerPosition><h2>{player.position.charAt(0)}</h2></PlayerPosition>
-                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating><span>{player.value}M€</span></PlayerRating></PlayerLogo>
-                                      <PlayerLogo onClick={() => selectPlayer(player,playerIsDropped)}><PlayerRating style={{background: getBackgroundColor(player.rating)}}>{!isNaN(player.rating) && player.rating}</PlayerRating></PlayerLogo>
-                                      <PlayerLogo onClick={() => openPlayerStatsMenu(player)}><PlayerSettingsIcon /></PlayerLogo>
-                                    
-                                </TeamHolder>
-                                
-                            )
-                        })}
-                    </SearchPlayerRow>
-                </LeagueRow>
-            </FoldingMenu>
-        )}
-        </AnimatePresence>
-      </Container> */}
-      
       <BottomRow>
         <IconHolder>
             {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) ? (
@@ -1060,7 +1011,7 @@ const toggleMenu = () => {
                         <h2 onClick={openLeague}>{t("fantasy.back")}</h2>
                     ):(
                         <>
-                            {(openConfirmMenu || openStatsMenu || openTrainingMenu || openSellMenu) ? (
+                            {(openConfirmMenu || openStatsMenu || openTrainingMenu || openSellMenu || disabledTitle) ? (
                                 <h2></h2>
                             ):(
                                 <h2 onClick={openLeague} style={{color: openLeagueMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title20")}</h2>
@@ -1089,7 +1040,7 @@ const toggleMenu = () => {
                         <h2 onClick={openStats} style={{color: openStatsMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.stats")}</h2>
                     ) : (
                         <>
-                            {!activeLeague && <h2 onClick={openSearch} style={{color: openSearchMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title26")}</h2>}
+                            {(!activeTeam && !disabledTitle) && <h2 onClick={openSearch} style={{color: openSearchMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title26")}</h2>}
                         </>
                     )}
                     </> 
