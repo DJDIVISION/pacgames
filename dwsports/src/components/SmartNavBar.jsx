@@ -168,11 +168,10 @@ const SmartNavBar = ({toggleTheme}) => {
         // Function to detect mobile devices reliably
         const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
         alert("Is Mobile: " + isMobile);  // Alert to check mobile detection
-        alert("WINDOW ETH",window.ethereum);
-        // Check for MetaMask availability on window.ethereum with a small delay for mobile
+    
         if (typeof window.ethereum !== 'undefined') {
             alert("MetaMask or another wallet is detected!"); // Alert to confirm MetaMask is detected
-            
+    
             // Check if we're on mobile and MetaMask is available
             if (isMobile) {
                 alert("MetaMask is available on mobile! Proceeding with mobile logic."); // Mobile-specific logic
@@ -236,12 +235,21 @@ const SmartNavBar = ({toggleTheme}) => {
             }
     
         } else {
-            // MetaMask is not detected, prompt to install it
+            // MetaMask is not detected, prompt to install it or open MetaMask manually
             alert("MetaMask is not detected. Prompting user to install it.");
+    
+            // Provide instructions to open MetaMask manually on mobile
+            if (isMobile) {
+                alert("Please open the MetaMask app and make sure it's connected.");
+            }
+    
             setTitle("You need to Install a Wallet");
             setDescription("We recommend the MetaMask wallet.");
             setButton("Install MetaMask");
             setIcon("warning");
+            
+            // Provide fallback option to connect via WalletConnect if MetaMask is not available
+            alert("Alternatively, use WalletConnect to connect your wallet.");
         }
     };
 
