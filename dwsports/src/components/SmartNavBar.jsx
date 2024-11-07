@@ -168,15 +168,14 @@ const SmartNavBar = ({toggleTheme}) => {
         const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
         alert("isMobile: " + isMobile);
     
-        if (typeof window.ethereum !== 'undefined') {
-            alert("MetaMask detected");
+        if (typeof window.ethereum !== 'undefined' && !isMobile) {
+            alert("MetaMask detected on Desktop");
     
             setTitle("Connect your Wallet");
             setDescription("To begin, please connect your MetaMask wallet.");
             setButton("Connect MetaMask");
             setIcon("warning");
     
-            // Attempt MetaMask connection for desktop or MetaMask browser on mobile
             try {
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 alert("MetaMask connected!");
@@ -185,47 +184,44 @@ const SmartNavBar = ({toggleTheme}) => {
             }
     
         } else if (isMobile) {
-            // WalletConnect setup as fallback for mobile
-            alert("MetaMask not found, using WalletConnect");
+            alert("MetaMask not found, using WalletConnect for mobile");
     
             setTitle("Connect your Wallet");
-            setDescription("To begin, please connect your Wallet via WalletConnect.");
+            setDescription("To begin, please connect your wallet via WalletConnect.");
             setButton("Connect WalletConnect");
             setIcon("warning");
     
-            const provider = new WalletConnectProvider({
-                infuraId: "513e757c3e244d1982a1c3854e286141",
-            });
+            try {
+                // Initialize WalletConnectProvider using the API key in place of Infura ID
+                const provider = new WalletConnectProvider({
+                    rpc: {
+                        56: `https://bsc-mainnet.gateway.pokt.network/v1/lb/513e757c3e244d1982a1c3854e286141`,  // Replace with your API key
+                    },
+                });
     
-            await provider.enable();
-            const web3 = new Web3(provider);
-            const accounts = await web3.eth.getAccounts();
-            alert("Connected with account: " + (accounts[0] || "No accounts found"));
+                // Enable session (connect to wallet)
+                await provider.enable();
+                const web3 = new Web3(provider);
     
-            provider.on("disconnect", (code, reason) => {
-                alert("Disconnected: " + reason);
-            });
+                // Get connected accounts
+                const accounts = await web3.eth.getAccounts();
+                alert("Connected with account: " + (accounts[0] || "No accounts found"));
+    
+                // Listen for disconnect events
+                provider.on("disconnect", (code, reason) => {
+                    alert("Disconnected: " + reason);
+                });
+    
+            } catch (error) {
+                alert("Error with WalletConnect: " + error.message);
+            }
     
         } else {
-            // MetaMask not detected and not mobile
+            // Fallback for non-supported browsers/devices
             setTitle("You need to Install a Wallet");
             setDescription("We recommend the MetaMask wallet.");
             setButton("Install MetaMask");
             setIcon("warning");
-        }
-    };
-    
-    // Use this function to trigger the MetaMask login on desktop
-    const connectMetaMask = async () => {
-        if (window.ethereum) {
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                alert("MetaMask connected!");
-            } catch (error) {
-                console.error("User denied account access", error);
-            }
-        } else {
-            alert("MetaMask not available.");
         }
     };
 
