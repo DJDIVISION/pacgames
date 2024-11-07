@@ -66,7 +66,7 @@ const SmartNavBar = ({toggleTheme}) => {
         try {
           // Initialize the provider with the WalletConnect projectId and chainId
           const newProvider = await EthereumProvider.init({
-            projectId: 'your-walletconnect-project-id', // Replace with your WalletConnect projectId
+            projectId: '87ce01feb918e3377f943f901349cd66', // Replace with your WalletConnect projectId
             chains: [1], // Ethereum Mainnet chainId is 1
             showQrModal: true, // This will show the QR modal for mobile connection
             metadata: {
