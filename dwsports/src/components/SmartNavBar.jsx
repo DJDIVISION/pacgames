@@ -165,11 +165,13 @@ const SmartNavBar = ({toggleTheme}) => {
     }
 
     const checkForWallet = async () => {
-        // Replace with your Infura API key
-        const INFURA_API_KEY = "513e757c3e244d1982a1c3854e286141";
+        const INFURA_API_KEY = "513e757c3e244d1982a1c3854e286141";  // Your Infura API key
     
-        // Detect if MetaMask (or any Ethereum wallet) is installed
+        // Function to detect mobile devices more reliably
+        const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+    
         if (typeof window.ethereum !== 'undefined') {
+            // MetaMask is detected
             setTitle("Connect your wallet");
             setDescription("To begin, please connect your MetaMask wallet");
             setButton("Connect MetaMask");
@@ -187,7 +189,7 @@ const SmartNavBar = ({toggleTheme}) => {
                 blockExplorerUrls: ['https://bscscan.com'],
             };
     
-            // Try to switch the network to BNB Chain
+            // Try to switch to the correct chain (BNB Chain)
             try {
                 await window.ethereum.request({
                     method: 'wallet_switchEthereumChain',
@@ -196,7 +198,6 @@ const SmartNavBar = ({toggleTheme}) => {
                 console.log('Successfully connected to Binance Smart Chain');
             } catch (error) {
                 if (error.code === 4902) {
-                    // Add BNB Chain if not already in MetaMask
                     try {
                         await window.ethereum.request({
                             method: 'wallet_addEthereumChain',
@@ -214,51 +215,46 @@ const SmartNavBar = ({toggleTheme}) => {
                 console.log('Network changed:', chainId);
             });
     
+        } else if (isMobile) {
+            // If the device is mobile and MetaMask is not detected, use WalletConnect
+            setTitle("You need to Install a Wallet");
+            setDescription("We recommend using MetaMask or other wallets via WalletConnect.");
+            setButton("Connect via WalletConnect");
+            setIcon("warning");
+    
+            // Call WalletConnect function after a brief delay (or when the user clicks)
+            setTimeout(() => {
+                connectWithWalletConnect(INFURA_API_KEY);  // Call WalletConnect connection function
+            }, 2000);  // Adjust this as needed for better UX
+    
         } else {
-            // If MetaMask is not installed, check for mobile wallet options (WalletConnect)
-            const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
-    
-            if (isMobile) {
-                // If on mobile and MetaMask is not installed, offer WalletConnect
-                setTitle("You need to Install a Wallet");
-                setDescription("We recommend the MetaMask wallet.");
-                setButton("Install MetaMask");
-                setIcon("warning");
-    
-                // Optionally, provide an automatic WalletConnect option for mobile users
-                setTimeout(() => {
-                    connectWalletWithWalletConnect(INFURA_API_KEY); // Call the WalletConnect handler
-                }, 2000); // Auto-activate WalletConnect after 2 seconds
-            } else {
-                // Desktop environment, prompt for MetaMask installation
-                setTitle("You need to Install a Wallet");
-                setDescription("We recommend the MetaMask wallet.");
-                setButton("Install MetaMask");
-                setIcon("warning");
-            }
+            // If the device is desktop and MetaMask is not detected
+            setTitle("You need to Install a Wallet");
+            setDescription("We recommend the MetaMask wallet.");
+            setButton("Install MetaMask");
+            setIcon("warning");
         }
     };
     
-    // Function to connect to a wallet using WalletConnect (for mobile)
-    const connectWalletWithWalletConnect = async (infuraApiKey) => {
+    // Function to initialize and connect with WalletConnect
+    const connectWithWalletConnect = async (infuraApiKey) => {
         const provider = new WalletConnectProvider({
             rpc: {
-                1: `https://mainnet.infura.io/v3/${infuraApiKey}`,  // Ethereum Mainnet RPC URL with Infura API key
+                1: `https://mainnet.infura.io/v3/${infuraApiKey}`,  // Ethereum Mainnet RPC URL
             },
             chainId: 1,  // Ethereum Mainnet
         });
     
         try {
-            // Enable the WalletConnect provider
+            // Enable the WalletConnect provider (this will trigger wallet selection on mobile)
             await provider.enable();
     
-            // Initialize Web3Provider with WalletConnect
+            // Initialize Web3 with the WalletConnect provider
             const web3Provider = new Web3(provider);
     
-            // Get the user's address
+            // Get user accounts
             const accounts = await web3Provider.eth.getAccounts();
             const userAddress = accounts[0];
-    
             console.log(`Connected with WalletConnect, address: ${userAddress}`);
     
             // Update UI to show wallet connected state

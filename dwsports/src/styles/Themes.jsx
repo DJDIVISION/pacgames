@@ -78,7 +78,6 @@ export const lightTheme = {
       textShadow:  '-3px 4px 1px #000000'
     },
     pacBorder: '2px solid rgba(244,215,21,1)',
-    pacColor: 'rgba(244,215,21,1)',
     pacBlue: 'rgba(75,65,230,1)',
     pacfont: {
       fontFamily: 'PacFont',
