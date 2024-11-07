@@ -71,8 +71,8 @@ const SmartNavBar = ({toggleTheme}) => {
             showQrModal: true, // This will show the QR modal for mobile connection
             metadata: {
               name: "PACTON'S GAMING ZONE",
-              description: 'Your app description',
-              url: "PACTON'S GAMING ZONE",
+              description: 'A New Era of Gaming and Sports Betting',
+              url: "https://pacgames-frontend.onrender.com",
               icons: ['https://ibb.co/ggRJJQ0'],
             },
           });
