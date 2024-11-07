@@ -15,8 +15,8 @@ import metamask from '../assets/logos/metamask.svg'
 import chip from '../assets/chip.png'
 import Onboarding from '@metamask/onboarding';
 import detectEthereumProvider from '@metamask/detect-provider';
-import WalletConnectProvider from "@walletconnect/client";
-import Web3 from 'web3';
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import Web3 from "web3";
 import fantasy from '../assets/fantasy.png'
 import deposit from '../assets/logos/deposit.png'
 import Swal from "sweetalert2";
@@ -166,86 +166,70 @@ const SmartNavBar = ({toggleTheme}) => {
 
     const checkForWallet = async () => {
         const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
-        alert("Is Mobile: " + isMobile); // Alert to check if it's mobile
+        alert("Is Mobile: " + isMobile); // This checks whether it's a mobile device
     
-        // Checking for MetaMask
         if (typeof window.ethereum !== 'undefined') {
             alert("MetaMask is available");
     
-            // If it's mobile, you can proceed with connecting MetaMask
+            // If MetaMask is available and it's a mobile device, suggest WalletConnect
             if (isMobile) {
                 alert("MetaMask detected on Mobile");
     
-                // Change UI or provide instruction to connect
-                setTitle("Connect your wallet");
-                setDescription("Please connect your MetaMask wallet.");
+                setTitle("Connect your Wallet");
+                setDescription("To begin, please connect your MetaMask wallet.");
                 setButton("Connect MetaMask");
                 setIcon("warning");
     
-                // Example for BNB Chain
-                const BNB_CHAIN_PARAMS = {
-                    chainId: '0x38', // 56 in hexadecimal for Binance Smart Chain mainnet
-                    chainName: 'Binance Smart Chain',
-                    nativeCurrency: {
-                        name: 'Binance Coin',
-                        symbol: 'BNB',
-                        decimals: 18,
-                    },
-                    rpcUrls: ['https://bsc-dataseed.binance.org/'], // Mainnet RPC URL
-                    blockExplorerUrls: ['https://bscscan.com'],
-                };
-    
-                try {
-                    alert("Attempting to switch to BNB Chain..."); // Alert before attempting to switch
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: BNB_CHAIN_PARAMS.chainId }],
-                    });
-                    alert('Successfully connected to Binance Smart Chain');
-                } catch (error) {
-                    if (error.code === 4902) {
-                        // If BNB chain is not added, add it
-                        alert("BNB Chain not found. Trying to add BNB Chain...");
-                        try {
-                            await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [BNB_CHAIN_PARAMS],
-                            });
-                            alert('BNB Chain added to MetaMask and connected');
-                        } catch (addError) {
-                            alert('Failed to add BNB Chain to MetaMask: ' + addError.message);
-                        }
-                    } else {
-                        alert('Error while switching to Binance Smart Chain: ' + error.message);
-                    }
-                }
-    
-                // Listen for chain change
-                window.ethereum.on('chainChanged', (chainId) => {
-                    alert('Network changed: ' + chainId); // Alert when the network changes
+                // Proceed with WalletConnect
+                const provider = new WalletConnectProvider({
+                    infuraId: "YOUR_INFURA_ID", // Replace with your Infura ID
                 });
     
-            } else {
-                // For desktop, no specific action is needed other than detecting MetaMask
-                alert("MetaMask detected on Desktop");
-            }
+                await provider.enable();
+                const web3 = new Web3(provider);
     
+                const accounts = await web3.eth.getAccounts();
+                if (accounts.length > 0) {
+                    alert("Connected with account: " + accounts[0]);
+                } else {
+                    alert("No accounts found.");
+                }
+    
+                provider.on("chainChanged", (chainId) => {
+                    alert("Chain changed: " + chainId);
+                });
+    
+                provider.on("accountsChanged", (accounts) => {
+                    alert("Accounts changed: " + accounts);
+                });
+    
+                provider.on("disconnect", (code, reason) => {
+                    alert("Disconnected: " + reason);
+                });
+    
+            }
         } else {
-            // MetaMask is not detected, suggest installation
-            alert("MetaMask is not detected. Prompting user to install it.");
-    
-            // Provide instructions to open MetaMask manually on mobile
-            if (isMobile) {
-                alert("Please open the MetaMask app and make sure it's connected.");
-            }
-    
             setTitle("You need to Install a Wallet");
             setDescription("We recommend the MetaMask wallet.");
             setButton("Install MetaMask");
             setIcon("warning");
     
-            // Provide fallback option to connect via WalletConnect if MetaMask is not available
+            // Also offer WalletConnect as an alternative if MetaMask is not installed
             alert("Alternatively, use WalletConnect to connect your wallet.");
+        }
+    };
+    
+    // Use this function to trigger the MetaMask login on desktop
+    const connectMetaMask = async () => {
+        if (window.ethereum) {
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                alert("MetaMask connected!");
+            } catch (error) {
+                console.error("User denied account access", error);
+            }
+        } else {
+            alert("MetaMask not available.");
         }
     };
 

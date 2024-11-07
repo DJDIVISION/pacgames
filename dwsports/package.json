@@ -29,6 +29,7 @@
     "@tonconnect/sdk": "^3.0.5",
     "@tonconnect/ui-react": "^2.0.9",
     "@walletconnect/client": "^1.8.0",
+    "@walletconnect/web3-provider": "^1.8.0",
     "antd": "^5.20.3",
     "axios": "^1.7.5",
     "buffer": "^6.0.3",
