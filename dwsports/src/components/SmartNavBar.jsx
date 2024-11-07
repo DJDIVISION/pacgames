@@ -167,13 +167,15 @@ const SmartNavBar = ({toggleTheme}) => {
     const checkForWallet = async () => {
         // Function to detect mobile devices reliably
         const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+        alert("Is Mobile: " + isMobile);  // Alert to check mobile detection
     
         if (typeof window.ethereum !== 'undefined') {
-            // MetaMask or similar wallet is detected
+            alert("MetaMask or another wallet is detected!"); // Alert to confirm MetaMask is detected
     
             // Check if we're on mobile and MetaMask is available
             if (isMobile) {
-                // We don't need WalletConnect if MetaMask is available on mobile
+                alert("MetaMask is available on mobile! Proceeding with mobile logic."); // Mobile-specific logic
+    
                 setTitle("Connect your wallet");
                 setDescription("To begin, please connect your MetaMask wallet");
                 setButton("Connect MetaMask");
@@ -193,22 +195,28 @@ const SmartNavBar = ({toggleTheme}) => {
                 };
     
                 try {
+                    alert("Attempting to switch to BNB Chain..."); // Alert before network switch attempt
                     await window.ethereum.request({
                         method: 'wallet_switchEthereumChain',
                         params: [{ chainId: BNB_CHAIN_PARAMS.chainId }],
                     });
+                    alert('Successfully connected to Binance Smart Chain');
                     console.log('Successfully connected to Binance Smart Chain');
                 } catch (error) {
                     if (error.code === 4902) {
+                        alert("BNB Chain not found, trying to add it."); // Alert if chain is missing
                         try {
                             await window.ethereum.request({
                                 method: 'wallet_addEthereumChain',
                                 params: [BNB_CHAIN_PARAMS],
                             });
+                            alert('BNB Chain added to MetaMask and connected');
                             console.log('BNB Chain added to MetaMask and connected');
                         } catch (addError) {
                             console.error('Failed to add BNB Chain to MetaMask:', addError);
                         }
+                    } else {
+                        console.error("Error switching network:", error);
                     }
                 }
     
@@ -217,14 +225,18 @@ const SmartNavBar = ({toggleTheme}) => {
                 });
     
             } else {
-                // If we're not on mobile, this is desktop and we proceed as normal with MetaMask
+                // If we're not on mobile, proceed normally with MetaMask on desktop
+                alert("Desktop detected. Proceeding with MetaMask on desktop.");
+    
                 setTitle("Connect your wallet");
                 setDescription("To begin, please connect your MetaMask wallet");
                 setButton("Connect MetaMask");
                 setIcon("warning");
             }
+    
         } else {
-            // If MetaMask or any wallet isn't detected
+            // MetaMask is not detected, prompt to install it
+            alert("MetaMask is not detected. Prompting user to install it.");
             setTitle("You need to Install a Wallet");
             setDescription("We recommend the MetaMask wallet.");
             setButton("Install MetaMask");
