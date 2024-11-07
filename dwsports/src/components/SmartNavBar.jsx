@@ -15,8 +15,8 @@ import metamask from '../assets/logos/metamask.svg'
 import chip from '../assets/chip.png'
 import Onboarding from '@metamask/onboarding';
 import detectEthereumProvider from '@metamask/detect-provider';
-import WalletConnectProvider from "@walletconnect/client";
-import Web3 from 'web3';
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import Web3 from "web3";
 import fantasy from '../assets/fantasy.png'
 import deposit from '../assets/logos/deposit.png'
 import Swal from "sweetalert2";
