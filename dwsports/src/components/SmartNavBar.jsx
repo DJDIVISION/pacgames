@@ -62,65 +62,56 @@ const SmartNavBar = ({toggleTheme}) => {
     const [provider, setProvider] = useState(null);
     const [account, setAccount] = useState(null);
 
-    async function connectWallet() {
-        // Initialize the provider with your projectId and desired chains
-        const provider = await EthereumProvider.init({
-          projectId: '87ce01feb918e3377f943f901349cd66', // Replace with your WalletConnect projectId
-          chains: [1], // Ethereum Mainnet chainId is 1. Replace with other chains if needed
-          showQrModal: true, // Display the QR modal for mobile connection
-          metadata: {
-            name: 'PACTON',
-            description: 'Your app description',
-            url: 'https://pacgames-frontend.onrender.com',
-            icons: ['https://ibb.co/ggRJJQ0'],
-          }
-        });
-      
-        // Handle display_uri event to get the WalletConnect URI (for manual pairing, if needed)
-        provider.on('display_uri', (uri) => {
-          alert('Display URI:', uri);
-          // You can handle custom logic here, such as showing the QR code or handling the URI manually
-        });
-      
-        // Connect the provider (this will open the WalletConnect modal)
+    const connectWallet = async () => {
         try {
-          await provider.connect();
-          alert('Connected to wallet!');
-          
-          // You can also enable and request the accounts after connecting
-          await provider.enable();
-          
-          // Request user accounts
-          const accounts = await provider.request({ method: 'eth_requestAccounts' });
-          setAccount(accounts[0])
-          alert('Connected accounts:', accounts);
+          // Initialize the provider with the WalletConnect projectId and chainId
+          const newProvider = await EthereumProvider.init({
+            projectId: 'your-walletconnect-project-id', // Replace with your WalletConnect projectId
+            chains: [1], // Ethereum Mainnet chainId is 1
+            showQrModal: true, // This will show the QR modal for mobile connection
+            metadata: {
+              name: "PACTON'S GAMING ZONE",
+              description: 'Your app description',
+              url: "PACTON'S GAMING ZONE",
+              icons: ['https://ibb.co/ggRJJQ0'],
+            },
+          });
+    
+          // Handle QR code URI display event
+          newProvider.on('display_uri', (uri) => {
+            console.log('Display URI:', uri);
+          });
+    
+          // Connect to WalletConnect (this will display the QR code on mobile)
+          await newProvider.connect();
+          setProvider(newProvider); // Store the provider in state
+    
+          // Request user accounts after successful connection
+          await newProvider.enable();
+          const accounts = await newProvider.request({ method: "eth_requestAccounts" });
+          if (accounts && accounts.length > 0) {
+            setAccount(accounts[0]); // Store the first account address
+          }
+    
+          console.log("Connected account:", accounts[0]);
         } catch (error) {
-          alert('Failed to connect wallet:', error);
+          console.error("Error connecting wallet:", error);
         }
-      
-        // Subscribe to events like chain changes and account changes
-        provider.on('chainChanged', (chainId) => {
-          console.log('Chain changed:', chainId);
-        });
-      
-        provider.on('accountsChanged', (accounts) => {
-          console.log('Accounts changed:', accounts);
-        });
-      
-        provider.on('disconnect', () => {
-          console.log('Wallet disconnected');
-        });
-      }
-
-  // Disconnect wallet function
-  const disconnectWallet = () => {
-    if (provider && provider.disconnect) {
-      provider.disconnect();
-      setProvider(null);
-      setAccount(null);
-      console.log("Disconnected from wallet");
-    }
-  };
+      };
+    
+      // Function to disconnect the wallet
+      const disconnectWallet = async () => {
+        try {
+          if (provider) {
+            await provider.disconnect(); // Disconnect the WalletConnect session
+            setProvider(null); // Clear the provider from state
+            setAccount(null); // Clear the account address from state
+            console.log("Disconnected from wallet");
+          }
+        } catch (error) {
+          console.error("Error disconnecting wallet:", error);
+        }
+      };
     
 
     /* async function disconnectWallet() {
