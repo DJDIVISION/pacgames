@@ -92,6 +92,7 @@ const SmartNavBar = ({toggleTheme}) => {
           
           // Request user accounts
           const accounts = await provider.request({ method: 'eth_requestAccounts' });
+          setAccount(accounts[0])
           alert('Connected accounts:', accounts);
         } catch (error) {
           alert('Failed to connect wallet:', error);
