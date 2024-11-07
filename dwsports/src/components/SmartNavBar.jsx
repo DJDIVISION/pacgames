@@ -71,30 +71,30 @@ const SmartNavBar = ({toggleTheme}) => {
           metadata: {
             name: 'PACTON',
             description: 'Your app description',
-            url: 'https://yourapp.com',
-            icons: ['https://yourapp.com/icon.png'],
+            url: 'https://pacgames-frontend.onrender.com',
+            icons: ['https://ibb.co/ggRJJQ0'],
           }
         });
       
         // Handle display_uri event to get the WalletConnect URI (for manual pairing, if needed)
         provider.on('display_uri', (uri) => {
-          console.log('Display URI:', uri);
+          alert('Display URI:', uri);
           // You can handle custom logic here, such as showing the QR code or handling the URI manually
         });
       
         // Connect the provider (this will open the WalletConnect modal)
         try {
           await provider.connect();
-          console.log('Connected to wallet!');
+          alert('Connected to wallet!');
           
           // You can also enable and request the accounts after connecting
           await provider.enable();
           
           // Request user accounts
           const accounts = await provider.request({ method: 'eth_requestAccounts' });
-          console.log('Connected accounts:', accounts);
+          alert('Connected accounts:', accounts);
         } catch (error) {
-          console.error('Failed to connect wallet:', error);
+          alert('Failed to connect wallet:', error);
         }
       
         // Subscribe to events like chain changes and account changes
