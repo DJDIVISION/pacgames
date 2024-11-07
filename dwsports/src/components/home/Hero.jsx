@@ -49,7 +49,6 @@ const Hero = () => {
             console.error('Error fetching user data:', error.message);
         } 
         if(data){
-            console.log(data)
             if(data[0].hasReferrer === true){
                 setDisabledInput(true)
                 setReferrerValue(data[0].referrerLink)

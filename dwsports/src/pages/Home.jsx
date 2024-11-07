@@ -13,6 +13,7 @@ import { FantasyState } from '../context/FantasyContext'
 import DepositMenu from '../components/menus/DepositMenu'
 import { HeroSection } from '../components/home'
 import Hero from '../components/home/Hero'
+import SmartNavBar from '../components/SmartNavBar'
 
 
 
@@ -21,7 +22,17 @@ const Home = ({toggleTheme}) => {
   const {depositMenu, setDepositMenu} = FantasyState();
   const {walletBalance,setWalletBalance} = FantasyState();
   const { user } = useAuth();
-
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup the event listener on component unmount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const storeUserData = async (user) => {
     const { id, email, user_metadata } = user;
     const { full_name: name, avatar_url } = user_metadata || {};
@@ -96,8 +107,16 @@ const Home = ({toggleTheme}) => {
 
   return (
     <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
-    
-      <NavBar toggleTheme={toggleTheme}/>
+    {isMobile ? (
+          <SmartNavBar 
+            toggleTheme={toggleTheme}
+          />
+        ) : (
+          <NavBar 
+            toggleTheme={toggleTheme} 
+          />
+        )}
+      
       {/* {walletBalance && <WalletAmount>YOUR BALANCE IS: {walletBalance} TON</WalletAmount>} */}
       {/* {depositMenu && (
         <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} />

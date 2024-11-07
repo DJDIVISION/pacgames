@@ -9,7 +9,7 @@ import spain from '../assets/logos/spain.png'
 import italy from '../assets/logos/italy.png' 
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
-import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton } from './index';
+import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative } from './index';
 import { FantasyState } from '../context/FantasyContext';
 import { CircularProgress } from '@mui/material';
 import { startCountdown, useAuth, useGetTeams } from './functions';
@@ -21,6 +21,7 @@ import TeamStats from './TeamStats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 import {useTranslation} from "react-i18next";
 import { getBackgroundColor } from './functions';
+import { useNavigate } from 'react-router-dom';
 
 const NewFantasy = () => {
 
@@ -58,6 +59,7 @@ const NewFantasy = () => {
     ]
     const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
+    const navigate = useNavigate()
     const [startDate, setStartDate] = useState('2024-11-01')
     const [endDate, setEndDate] = useState('2024-11-05')
     const [allLeagues, setAllLeagues] = useState(leagues)
@@ -671,12 +673,14 @@ const toggleMenu = () => {
   return (
     <Section>
         {isDateExpanded ? <AbsoluteIconButton onClick={closeDate}><ArrowDown /></AbsoluteIconButton> : <AbsoluteIconButton onClick={closeDate}><ArrowUp /></AbsoluteIconButton>}
+        
         <Title initial="expanded"
         animate={isDateExpanded ? "expanded" : "collapsed"} 
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
             <h2>{t("fantasy.title1")} {startDate} {t("fantasy.title2")} {endDate}</h2>
         </Title>
+        <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
         <AnimatePresence>
           {openLeagueMenu && (
             <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
@@ -1586,6 +1590,7 @@ const AbsoluteIconButton = styled(IconButton)`
         padding: 5px;
         background: ${props => props.theme.body};
         scale: 1.2;
+        ${props => props.theme.displayFlexCenter}
         box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
         z-index: 1000;
         @media (max-width: 968px) {
@@ -1598,17 +1603,18 @@ const AbsoluteIconButton = styled(IconButton)`
 
 const AbsoluteIconButtonLeft = styled(IconButton)`
     &&&{
-        
+        position: absolute;
         top: 20px;
         left: 20px;
         padding: 5px;
         background: ${props => props.theme.body};
         scale: 1.2;
+        ${props => props.theme.displayFlexCenter}
         box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
         z-index: 1000;
         @media (max-width: 968px) {
         top: 15px;
-        right: 15px;
+        left: 15px;
         scale: 1.2;
         }
     }

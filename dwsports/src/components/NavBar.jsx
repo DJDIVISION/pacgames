@@ -26,8 +26,6 @@ import DepositMenu from './menus/DepositMenu';
 import ES from '../assets/svg/es.png';
 import FR from '../assets/svg/fr.png';
 import EN from '../assets/svg/uk.png';
-import SpeedDialAction from '@mui/material/SpeedDialAction';
-import SpeedDial from '@mui/material/SpeedDial';
 import { useTranslation } from 'react-i18next'
 
 const NavBar = ({toggleTheme}) => {
@@ -44,27 +42,9 @@ const NavBar = ({toggleTheme}) => {
     const { connected, account } = useTonConnectUI();
     const {walletBalance,setWalletBalance} = FantasyState();
     const [error, setError] = useState(null);
-    const theme = useTheme();
+    
     const {walletAddress, setWalletAddress} = FantasyState();
     const [t, i18n] = useTranslation("global");
-
-    console.log(i18n.translator.language);
-
-    const languages = [
-        {
-            icon: <img src={ES} alt="ES" onClick={() => i18n.changeLanguage("es")} />,
-            name: 'ES'
-        },
-        {
-            icon: <img src={FR} alt="FR" onClick={() => i18n.changeLanguage("fr")} />,
-            name: 'FR'
-        },
-        {
-            icon: <img src={EN} alt="EN" onClick={() => i18n.changeLanguage("en")} />,
-            name: 'EN'
-        }
-    ];
-    
 
     const client = new TonClient({
         endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
@@ -140,11 +120,7 @@ const NavBar = ({toggleTheme}) => {
         }
     }
 
-    const item={
-        initial: { height: 0, opacity: 0 },
-        animate: { height: "100vh", opacity: 1, transition: { duration: 0.5 } },
-        exit: { height: 0, opacity: 0, transition: { duration: 1 } }
-    }
+    
 
   return (
     <>
@@ -192,93 +168,7 @@ const NavBar = ({toggleTheme}) => {
         </NavColumn>
         
     </Nav>
-    <SmartNav scrollNavDown={scrollNavDown}>
-    <IconButton onClick={isOpen}><Burguer /></IconButton>
-    <TonConnectButton />
-    {open && (
-        <AnimatePresence>
-        <StyledMenu scrollNavDown={scrollNavDown} variants={item} 
-        initial="initial"
-        animate="animate"
-        exit="exit">
-        <IconButton onClick={isOpen}><CloseBurguer /></IconButton>
-        <StaggerContainer initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.3 },
-                },
-              }}>
-                {/* <StaggerAvatarRow initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }} style={{color: 'white'}}>
-                       {user ? (
-                        <>
-                        <StaggerAvatarHolder>
-                        <Avatar alt="Image" src={user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} onClick={handleLogout}/>
-                        </StaggerAvatarHolder>
-                        <StaggerAvatarName>{user.user_metadata.name}</StaggerAvatarName>
-                        </>
-                    ): (
-                        <div></div>
-                    )} 
-                          </StaggerAvatarRow> */}
-                          <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }} 
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.7 }} >
-                              <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
-                              <StaggerAvatarName>{t("navbar.sports")}</StaggerAvatarName>
-                          </StaggerRow></LinkR>
-                          <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.9 }} >
-                              <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
-                              <StaggerAvatarName>{t("navbar.fantasy")}</StaggerAvatarName>
-                          </StaggerRow></LinkR>
-                          <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 40 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 1.1 }} >
-                              <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
-                              <StaggerAvatarName>CASINO</StaggerAvatarName>
-                          </StaggerRow></LinkR>
-                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => setDepositMenu(true)}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 1.3 }} >
-                              <StaggerImageHolder><img src={deposit} alt="fantasy" /></StaggerImageHolder>
-                              <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
-                          </StaggerRow>
-                          <StaggerRow initial={{ opacity: 0, y: 40 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 1.5 }}> 
-                          <StaggerImageHolder>
-                          {theme === 'dark' ? <LightIcon onClick={toggleTheme}/> : <DarkIcon onClick={toggleTheme}/>}
-                          </StaggerImageHolder>
-                          <StaggerAvatarName>{t("navbar.switch")}</StaggerAvatarName>
-                          </StaggerRow>
-                      </StaggerContainer>
-                  </StyledMenu>
-                  {depositMenu && (
-                    <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} />
-                  )}
-                  <SpeedDial
-        ariaLabel="SpeedDial basic example"
-        sx={{ position: 'fixed', bottom: 30, left: 30 }}
-        icon={<Language />}
-      >
-       {languages.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-          />
-        ))}
-      </SpeedDial>
-                  </AnimatePresence>
-                  
-        )}
-        </SmartNav>
+    
     </>
   )
 }

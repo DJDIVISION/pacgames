@@ -23,6 +23,8 @@ import NewBets from './pages/NewBets';
 import Tonopoly from './pages/Tonopoly';
 import Airdrop from './pages/Airdrop';
 import NewFantasy from './pages/NewFantasy'; 
+import SmartNavBar from './components/SmartNavBar';
+import NavBar from './components/NavBar';
 
 
 function App() {
@@ -30,6 +32,10 @@ function App() {
   const [theme, setTheme] = useState('dark');
   const { user, loading } = useAuth(); 
   const themeObject = useMemo(() => themes[theme], [theme]);
+  
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  
 
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === 'dark' ? 'light' : 'dark'));

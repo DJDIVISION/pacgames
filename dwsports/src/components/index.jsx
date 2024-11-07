@@ -104,6 +104,7 @@ export const CloseBurguer = styled(MenuOpenIcon)`
         color: ${props => props.theme.text};
         font-weight: bold;
         scale: 1.5;
+        z-index: 9999;
     }
 `;
 
@@ -119,9 +120,24 @@ export const StyledMenu = styled(motion.div)`
     }
 `;
 
+export const WalletAddressButton = styled.div`
+    width: 120px;
+    height: 60%;
+    border: 2px solid black;
+    border-radius: 15px;
+    white-space: nowrap;      
+    overflow: hidden;         
+    text-overflow: ellipsis;
+    font-size: 18px;
+    padding: 5px;
+    ${props => props.theme.displayFlex};
+    font-weight: bold;
+    background: ${props => props.theme.pacColor} !important;
+`;
+
 export const StaggerContainer = styled(motion.div)`
     width: 100%;
-    height: calc(100vh - 80px);
+    height: 100vh ;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -193,6 +209,11 @@ export const SmartNav = styled.nav`
     padding: 0 20px;
     @media(min-width: 698px){
         display: none;
+    }
+    img{
+        width: 15%;
+        display: block;
+        object-fit: cover;
     }
 `;
 

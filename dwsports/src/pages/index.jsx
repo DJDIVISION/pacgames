@@ -967,7 +967,7 @@ export const ArrowLeftRelative = styled(KeyboardArrowDownIcon)`
     &&&{
         color: ${props => props.theme.text};
         scale: 1.5;
-        transform:  rotate(90deg) translateY(50%);;
+        transform:  rotate(90deg) translateY(50%);
         cursor: pointer;
     }
 `;
