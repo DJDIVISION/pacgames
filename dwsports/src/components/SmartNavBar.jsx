@@ -73,7 +73,7 @@ const SmartNavBar = ({toggleTheme}) => {
               name: "PACTON'S GAMING ZONE",
               description: 'A New Era of Gaming and Sports Betting',
               url: "https://pacgames-frontend.onrender.com",
-              icons: ['https://ibb.co/ggRJJQ0'],
+              icons: ['https://i.postimg.cc/XJPDxF3H/Group-2.png'],
             },
           });
     
@@ -90,13 +90,19 @@ const SmartNavBar = ({toggleTheme}) => {
           await newProvider.enable();
           const accounts = await newProvider.request({ method: "eth_requestAccounts" });
           if (accounts && accounts.length > 0) {
-            setAccount(accounts[0]); // Store the first account address
+            setAccount(accounts[0]); 
+            
           }
     
           console.log("Connected account:", accounts[0]);
         } catch (error) {
           console.error("Error connecting wallet:", error);
         }
+        Swal.fire({
+            title: "Wallet Connected!",
+            text: "Your Wallet is now connected",
+            icon: "success"
+          });
       };
     
       // Function to disconnect the wallet
@@ -111,6 +117,11 @@ const SmartNavBar = ({toggleTheme}) => {
         } catch (error) {
           console.error("Error disconnecting wallet:", error);
         }
+        Swal.fire({
+            title: "Wallet Disconnected!",
+            text: "Your Wallet is now disconnected",
+            icon: "success"
+          });
       };
     
 
@@ -230,7 +241,7 @@ const SmartNavBar = ({toggleTheme}) => {
     <SmartNav scrollNavDown={scrollNavDown}>
         <IconButton onClick={isOpen}><Burguer /></IconButton>
         {/* <TonConnectButton /> */}
-        {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectMetamask}>{account}</WalletAddressButton>}
+        {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectWallet}>{account}</WalletAddressButton>}
         <AnimatePresence>
             {open && (
                 <StyledMenu scrollNavDown={scrollNavDown} variants={item} 
