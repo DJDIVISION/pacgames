@@ -194,7 +194,7 @@ const SmartNavBar = ({toggleTheme}) => {
             setIcon("warning");
     
             const provider = new WalletConnectProvider({
-                infuraId: "YOUR_INFURA_ID",
+                infuraId: "513e757c3e244d1982a1c3854e286141",
             });
     
             await provider.enable();
