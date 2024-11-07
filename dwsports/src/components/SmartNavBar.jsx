@@ -168,10 +168,11 @@ const SmartNavBar = ({toggleTheme}) => {
         // Function to detect mobile devices reliably
         const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
         alert("Is Mobile: " + isMobile);  // Alert to check mobile detection
-    
+        alert("WINDOW ETH",window.ethereum);
+        // Check for MetaMask availability on window.ethereum with a small delay for mobile
         if (typeof window.ethereum !== 'undefined') {
             alert("MetaMask or another wallet is detected!"); // Alert to confirm MetaMask is detected
-    
+            
             // Check if we're on mobile and MetaMask is available
             if (isMobile) {
                 alert("MetaMask is available on mobile! Proceeding with mobile logic."); // Mobile-specific logic
