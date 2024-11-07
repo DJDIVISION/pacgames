@@ -13,8 +13,6 @@ import  { useTheme } from 'styled-components'
 import sportsIcon from '../assets/sportsIcon.png'
 import metamask from '../assets/logos/metamask.svg'
 import chip from '../assets/chip.png'
-import Onboarding from '@metamask/onboarding';
-import detectEthereumProvider from '@metamask/detect-provider';
 
 import fantasy from '../assets/fantasy.png'
 import deposit from '../assets/logos/deposit.png'
@@ -31,6 +29,8 @@ import EN from '../assets/svg/uk.png';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDial from '@mui/material/SpeedDial';
 import { useTranslation } from 'react-i18next'
+import { EthereumProvider } from "@walletconnect/ethereum-provider";
+import { ethers } from "ethers";
 
 
 
@@ -55,14 +55,74 @@ const SmartNavBar = ({toggleTheme}) => {
     const [open, setOpen] = useState(false);
     const theme = useTheme();
     const {depositMenu, setDepositMenu} = FantasyState();
-    const onboarding = new Onboarding();
     const [title, setTitle] = useState(null)
     const [description, setDescription] = useState(null)
     const [icon, setIcon] = useState(null)
     const [button, setButton] = useState(null)
-    const [connectedAccount, setConnectedAccount] = useState(null)
+    const [provider, setProvider] = useState(null);
+    const [account, setAccount] = useState(null);
 
-    async function disconnectWallet() {
+    async function connectWallet() {
+        // Initialize the provider with your projectId and desired chains
+        const provider = await EthereumProvider.init({
+          projectId: '87ce01feb918e3377f943f901349cd66', // Replace with your WalletConnect projectId
+          chains: [1], // Ethereum Mainnet chainId is 1. Replace with other chains if needed
+          showQrModal: true, // Display the QR modal for mobile connection
+          metadata: {
+            name: 'PACTON',
+            description: 'Your app description',
+            url: 'https://yourapp.com',
+            icons: ['https://yourapp.com/icon.png'],
+          }
+        });
+      
+        // Handle display_uri event to get the WalletConnect URI (for manual pairing, if needed)
+        provider.on('display_uri', (uri) => {
+          console.log('Display URI:', uri);
+          // You can handle custom logic here, such as showing the QR code or handling the URI manually
+        });
+      
+        // Connect the provider (this will open the WalletConnect modal)
+        try {
+          await provider.connect();
+          console.log('Connected to wallet!');
+          
+          // You can also enable and request the accounts after connecting
+          await provider.enable();
+          
+          // Request user accounts
+          const accounts = await provider.request({ method: 'eth_requestAccounts' });
+          console.log('Connected accounts:', accounts);
+        } catch (error) {
+          console.error('Failed to connect wallet:', error);
+        }
+      
+        // Subscribe to events like chain changes and account changes
+        provider.on('chainChanged', (chainId) => {
+          console.log('Chain changed:', chainId);
+        });
+      
+        provider.on('accountsChanged', (accounts) => {
+          console.log('Accounts changed:', accounts);
+        });
+      
+        provider.on('disconnect', () => {
+          console.log('Wallet disconnected');
+        });
+      }
+
+  // Disconnect wallet function
+  const disconnectWallet = () => {
+    if (provider && provider.disconnect) {
+      provider.disconnect();
+      setProvider(null);
+      setAccount(null);
+      console.log("Disconnected from wallet");
+    }
+  };
+    
+
+    /* async function disconnectWallet() {
         setConnectedAccount(null)
         Swal.fire({
             title: "Disconnected!",
@@ -74,7 +134,7 @@ const SmartNavBar = ({toggleTheme}) => {
             window.ethereum.removeListener('chainChanged', handleChainChanged);
         }
         
-    }
+    } */
 
     
 
@@ -145,11 +205,7 @@ const SmartNavBar = ({toggleTheme}) => {
         return result;
       };
 
-      if (typeof window.ethereum !== 'undefined') {
-        console.log('MetaMask is installed!');
-    } else {
-        alert('MetaMask is not installed. Please install MetaMask to use this app.');
-    }
+      
 
 
 
@@ -182,7 +238,7 @@ const SmartNavBar = ({toggleTheme}) => {
     <SmartNav scrollNavDown={scrollNavDown}>
         <IconButton onClick={isOpen}><Burguer /></IconButton>
         {/* <TonConnectButton /> */}
-        {connectedAccount === null ? <img src={metamask} alt="metamask" onClick={checkMetamask}/> : <WalletAddressButton onClick={disconnectMetamask}>{connectedAccount}</WalletAddressButton>}
+        {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectMetamask}>{account}</WalletAddressButton>}
         <AnimatePresence>
             {open && (
                 <StyledMenu scrollNavDown={scrollNavDown} variants={item} 
