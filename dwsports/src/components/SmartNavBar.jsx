@@ -166,56 +166,52 @@ const SmartNavBar = ({toggleTheme}) => {
 
     const checkForWallet = async () => {
         const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
-        alert("Is Mobile: " + isMobile); // This checks whether it's a mobile device
+        alert("isMobile: " + isMobile);
     
         if (typeof window.ethereum !== 'undefined') {
-            alert("MetaMask is available");
+            alert("MetaMask detected");
     
-            // If MetaMask is available and it's a mobile device, suggest WalletConnect
-            if (isMobile) {
-                alert("MetaMask detected on Mobile");
+            setTitle("Connect your Wallet");
+            setDescription("To begin, please connect your MetaMask wallet.");
+            setButton("Connect MetaMask");
+            setIcon("warning");
     
-                setTitle("Connect your Wallet");
-                setDescription("To begin, please connect your MetaMask wallet.");
-                setButton("Connect MetaMask");
-                setIcon("warning");
-    
-                // Proceed with WalletConnect
-                const provider = new WalletConnectProvider({
-                    infuraId: "YOUR_INFURA_ID", // Replace with your Infura ID
-                });
-    
-                await provider.enable();
-                const web3 = new Web3(provider);
-    
-                const accounts = await web3.eth.getAccounts();
-                if (accounts.length > 0) {
-                    alert("Connected with account: " + accounts[0]);
-                } else {
-                    alert("No accounts found.");
-                }
-    
-                provider.on("chainChanged", (chainId) => {
-                    alert("Chain changed: " + chainId);
-                });
-    
-                provider.on("accountsChanged", (accounts) => {
-                    alert("Accounts changed: " + accounts);
-                });
-    
-                provider.on("disconnect", (code, reason) => {
-                    alert("Disconnected: " + reason);
-                });
-    
+            // Attempt MetaMask connection for desktop or MetaMask browser on mobile
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                alert("MetaMask connected!");
+            } catch (error) {
+                alert("Error connecting to MetaMask: " + error.message);
             }
+    
+        } else if (isMobile) {
+            // WalletConnect setup as fallback for mobile
+            alert("MetaMask not found, using WalletConnect");
+    
+            setTitle("Connect your Wallet");
+            setDescription("To begin, please connect your Wallet via WalletConnect.");
+            setButton("Connect WalletConnect");
+            setIcon("warning");
+    
+            const provider = new WalletConnectProvider({
+                infuraId: "YOUR_INFURA_ID",
+            });
+    
+            await provider.enable();
+            const web3 = new Web3(provider);
+            const accounts = await web3.eth.getAccounts();
+            alert("Connected with account: " + (accounts[0] || "No accounts found"));
+    
+            provider.on("disconnect", (code, reason) => {
+                alert("Disconnected: " + reason);
+            });
+    
         } else {
+            // MetaMask not detected and not mobile
             setTitle("You need to Install a Wallet");
             setDescription("We recommend the MetaMask wallet.");
             setButton("Install MetaMask");
             setIcon("warning");
-    
-            // Also offer WalletConnect as an alternative if MetaMask is not installed
-            alert("Alternatively, use WalletConnect to connect your wallet.");
         }
     };
     
