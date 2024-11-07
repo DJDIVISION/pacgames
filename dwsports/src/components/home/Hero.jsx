@@ -350,7 +350,7 @@ const ContainerTitle = styled.div`
     text-align: center;
     color: ${props => props.theme.pacColor};
     //${props => props.theme.pacfont};
-    font-size: 1.9rem;
+    font-size: 20px;
     letter-spacing: 3;
     font-weight: bold;
 `;
@@ -363,7 +363,7 @@ const ContainerSamllTitle = styled.div`
     justify-content: center;
     color: ${props => props.theme.pacColor};
     //${props => props.theme.pacfont};
-    font-size: 1.5rem;
+    font-size: 16px;
     letter-spacing: 3;
     font-weight: bold;
 `;
