@@ -1,4 +1,4 @@
-import React, { useEffect,useState,useCallback } from 'react'
+import React, { useEffect,useState,useCallback,useRef } from 'react'
 import styled from 'styled-components'
 import { debounce } from 'lodash';
 import { supabase } from '../supabase/client'
@@ -9,10 +9,11 @@ import spain from '../assets/logos/spain.png'
 import italy from '../assets/logos/italy.png' 
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
+import field from '../assets/lineups/vertField.png' 
 import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative } from './index';
 import { FantasyState } from '../context/FantasyContext';
 import { CircularProgress } from '@mui/material';
-import { startCountdown, useAuth, useGetTeams } from './functions';
+import { AverageDisplay, BalanceDisplay, startCountdown, useAuth, useGetTeams } from './functions';
 import { useMediaQuery } from 'react-responsive';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { message } from 'antd';
@@ -22,9 +23,20 @@ import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 import {useTranslation} from "react-i18next";
 import { getBackgroundColor } from './functions';
 import { useNavigate } from 'react-router-dom';
+import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
+import { TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 const NewFantasy = () => {
 
+
+    const sensors = useSensors(
+        useSensor(MouseSensor),
+        useSensor(TouchSensor, {
+          activationConstraint: {
+            distance: 10, // Start dragging after 10px of movement
+          },
+        })
+      );
     const leagues = [
         {
             league: "Premier League",
@@ -59,6 +71,7 @@ const NewFantasy = () => {
     ]
     const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
+    
     const navigate = useNavigate()
     const [startDate, setStartDate] = useState('2024-11-01')
     const [endDate, setEndDate] = useState('2024-11-05')
@@ -69,6 +82,7 @@ const NewFantasy = () => {
     const {activeTeam, setActiveTeam} = FantasyState();
     const {activePlayer, setActivePlayer} = FantasyState();
     const [activePlayerSell, setActivePlayerSell] = useState(null)
+    const [activePlayerDrag, setActivePlayerDrag] = useState(null)
     const [openLeagueMenu, setOpenLeagueMenu] = useState(true)
     const [openTeamMenu, setOpenTeamMenu] = useState(false)
     const [openPlayerMenu, setOpenPlayerMenu] = useState(false)
@@ -88,14 +102,37 @@ const NewFantasy = () => {
     const [lastTraining, setLastTraining] = useState(null)
     const [teamRating, setTeamRating] = useState(null)
     const [trainingsNumber, setTrainingsNumber] = useState(null)
-    const [isDateExpanded, setIsDateExpanded] = useState(true)
+    const [isDateExpanded, setIsDateExpanded] = useState(false)
     const {playerToUpdate, setPlayerToUpdate} = FantasyState();
+    const {playersSelected, setPlayersSelected} = FantasyState();
     const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
     const { activeTeamId, setActiveTeamId } = FantasyState(); 
     const {teams,getTeams,loadingTeams,players,loadingPlayers,handleTeamChange,setPlayers,getPlayers,setTeams} = useGetTeams();
     const [droppedPlayers, setDroppedPlayers] = useState([])
     const [searchedPlayers, setSearchedPlayers] = useState([])
     const [playerToFind, setPlayerToFind] = useState("")
+    const [width, setWidth] = useState(0);
+    const [teamAverage, setTeamAverage] = useState(0)
+    const carroussel = useRef(null);
+    const [droppedTeamPlayers, setDroppedTeamPlayers] = useState({
+        area1: [],
+        area2: [],
+        area3: [],
+        area4: [],
+        area5: [],
+        area6: [],
+        area7: [],
+        area8: [],
+        area9: [],
+        area10: [],
+        area11: []
+      });
+
+      useEffect(() => {
+        if(droppedPlayers){
+            setWidth(droppedPlayers.length * 55)
+        }
+    }, [droppedPlayers]);
 
     const fetchPlayers = useCallback(debounce(async (searchTerm) => {
         if (!searchTerm) {
@@ -639,7 +676,7 @@ const toggleMenu = () => {
         position,
         players: droppedPlayers.filter((player) => player.position === position),
     }));
-    console.log(droppedPlayers.length)
+    
     const startTraining = async () => {
         if(droppedPlayers.length < 11){
             message.error("You need a full team to start trainings!")
@@ -665,9 +702,117 @@ const toggleMenu = () => {
         }
     }
 
+    const Player = ({ player }) => {
+        const playerIsDropped = Object.values(droppedTeamPlayers).some(area =>
+          area.find(droppedPlayer => droppedPlayer.id === player.id)
+        );
+        
+        const { attributes, listeners, setNodeRef, transform, isDragging  } = useDraggable({
+          id: `${player.id}`,
+          disabled: playerIsDropped,  
+          data: { value: player.value, image: player.photo, position: player.position, name: player.name, teamLogo: player.teamLogo, rating: player.rating, id: player.id },  // Passing chip value through drag data
+        });
+      
+        // Apply transform styles during drag
+        const style = {
+          transform: transform
+            ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+            : undefined,
+            opacity: isDragging ? 0 : 1,
+        };
+      
+        return (
+          <div className="dragged-player" ref={setNodeRef} style={style} {...listeners} {...attributes}>
+           <Avatar alt="Image" src={player.photo} sx={{
+                                        width: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 },
+                                        height: { xs: 50, sm: 50, md: 60, lg: 60, xl: 60 }
+                                    }} />
+          </div>
+        );
+      };
+
+    const BetArea = ({ id, children }) => {
+        const { isOver, setNodeRef } = useDroppable({
+            id,
+          });
+        
+          return (
+            <PlayerDroppingArea ref={setNodeRef} className="player-area" id={id}>
+              {children}
+            </PlayerDroppingArea>
+          );
+    };
+
+    const handleDragEnd = (event) => {
+        const { over, active } = event;
+        console.log(active)
+        if (over) {
+          const { value, image, position, name, teamLogo, rating, id } = active.data.current;
+          
+          if (value && image) {
+            
+            setPlayersSelected((prev) => [...prev, id])
+            
+            setDroppedTeamPlayers((prev) => ({
+              ...prev,
+              [over.id]: [{ id: id, value, image, teamLogo, overId: over.id, rating: rating, isDropped: true, name: name, lastMatchRating: null, position: position }], // Replace the existing player
+            }));
+            setActivePlayerDrag(null);
+            
+          } 
+        }
+        
+      }
+
+      
+
+      const getAveragePlayerRating = () => {
+        const allPlayers = Object.values(droppedTeamPlayers).flat(); 
+        const totalRating = allPlayers.reduce((sum, player) => sum + player.rating, 0);
+        const averageRating = totalRating / allPlayers.length;
+        return parseFloat(averageRating.toFixed(2));
+      };
     
+      useEffect(() => {
+        if (droppedTeamPlayers) {
+    
+          const allPlayers = Object.values(droppedTeamPlayers).flat();
+          
+          if(allPlayers.length > 0){
+            setTeamAverage(getAveragePlayerRating())
+          } else {
+            setTeamAverage(0)
+          }
+        }
+      }, [droppedTeamPlayers])
 
+      const date = new Date();
+      
 
+      const saveDroppedTeam = async () => {
+        const date = new Date();
+        const isAnyAreaEmpty = Object.values(droppedTeamPlayers).some(area => area.length === 0);
+        if(isAnyAreaEmpty){
+            message.error("You don't have a complete team!")
+            return
+        } else {
+            const updatedData = {
+                players: droppedTeamPlayers,
+                teamRating: teamAverage,
+                date: date
+            }
+            const { error: updateError } = await supabase
+                    .from('fantasyFootball')
+                    .update({ nextMatch: updatedData}) 
+                    .eq('id', user.id); // Identify which user to update
+    
+                if (updateError) {
+                    console.error('Error updating user data:', updateError.message);
+                } else {
+                    message.success("Your team has been saved!")
+                }
+        }
+      }
 
 
   return (
@@ -847,7 +992,7 @@ const toggleMenu = () => {
                                     <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
                                       width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
                                       height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
-                                  }} /><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
+                                  }} /><PlayerTeamLogoShort><img src={player.teamLogo} alt="logo" /></PlayerTeamLogoShort><PlayerTeamRatingShort style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRatingShort></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
                                 ))}
                            </MyPlayerRow>
                            </div>
@@ -926,16 +1071,168 @@ const toggleMenu = () => {
             </Container>
         )}
         {openStatsMenu && (
+            
              <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
              variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                
                  <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2.5%'}} variants={item}
                      initial="initial"
                      animate="animate"
                      exit="exit"
                      transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <MyBalanceRow><h2>STATS MENU</h2></MyBalanceRow>
+                     <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={(event) => {
+                setActivePlayerDrag(event.active.data.current);  // Set the active player when dragging starts
+              }}>
+                <MyPlayersRow ref={carroussel}>
+                    <MyPlayersInnerRow  drag="x" dragConstraints={{ right: 0, left: -width }} whileTap={{ cursor: 'grabbing' }}>
+                        {droppedPlayers.map((player) => {
+                            return(
+                                <MyTeamPlayerHolder>
+                                    <MyTeamAvatar><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating><Player key={player.id} player={player} /></MyTeamAvatar>
+                                    <MyTeamName><h2>{player.name}</h2></MyTeamName>
+                                </MyTeamPlayerHolder>
+                            )
+                        })}
+                    </MyPlayersInnerRow>
+                </MyPlayersRow>
+                <MyTeamRow>
+                    <AbsoluteDivLeft><StyledButton onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton></AbsoluteDivLeft>
+                    <AbsoluteDivRight><h3>TEAM AVERAGE: <span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span></h3></AbsoluteDivRight>
+                    <FieldWrapper className='layout1'>
+                    <BetArea id="area1" className='droppable-area'>
+                    {droppedTeamPlayers.area1.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                            
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                        <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>
+                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area2">
+                    {droppedTeamPlayers.area2.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                            
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                        <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>
+                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area3">
+                    {droppedTeamPlayers.area3.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                            
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area4">
+                    {droppedTeamPlayers.area4.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                            <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area5">
+                    {droppedTeamPlayers.area5.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area6">
+                    {droppedTeamPlayers.area6.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area7">
+                    {droppedTeamPlayers.area7.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area8">
+                    {droppedTeamPlayers.area8.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area9">
+                    {droppedTeamPlayers.area9.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area10">
+                    {droppedTeamPlayers.area10.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <BetArea id="area11">
+                    {droppedTeamPlayers.area11.map((player) => {
+                        return(
+                        <div key={player.id} style={{position: 'relative'}}>
+                        <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
+                        height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
+                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                        )
+                    })}
+                    </BetArea>
+                    <DragOverlay>
+                {activePlayerDrag ? (
+                  <Avatar
+                    alt="Image"
+                    src={activePlayerDrag.image}
+                    sx={{
+                      width: { xs: 50, sm: 50, md: 40, lg: 50, xl: 50 },
+                      height: { xs: 50, sm: 50, md: 40, lg: 50, xl: 50 },
+                    }}
+                  />
+                ) : null}
+              </DragOverlay>
+                    </FieldWrapper>
+                </MyTeamRow>
+                </DndContext>
                 </motion.div>
+                
                 </Container>
+                
         )}
          {openTrainingMenu && (
             <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
@@ -1099,6 +1396,39 @@ const toggleMenu = () => {
 
 export default NewFantasy
 
+const AbsoluteDivLeft = styled.div`
+    width: 130px;
+    height: 50px;
+    position: absolute;
+    border-radius: 10px;
+    border: 1px solid ${props => props.theme.text};
+    background: ${props => props.theme.body};
+    backdrop-filter: blur(10px);
+    top: 10px;
+    left: 20px;
+    z-index: 50;
+    ${props => props.theme.displayFlexCenter};
+`;
+
+const AbsoluteDivRight = styled.div`
+    width: 130px;
+    height: 50px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border-radius: 10px;
+    border: 1px solid ${props => props.theme.text};
+    background: ${props => props.theme.body};
+    backdrop-filter: blur(10px);
+    z-index: 50;
+    ${props => props.theme.displayFlexCenter};
+    h3{
+        color: ${props => props.theme.text};
+        font-size: 14px;
+        font-weight: bold;
+    }
+`;
+
 const PlayerTeamRating = styled.div`
     width: 30px;
     height: 30px;
@@ -1115,19 +1445,51 @@ const PlayerTeamRating = styled.div`
         width: 30px;
         height: 30px;
     }
+    @media(max-width: 490px){
+        font-size: 12px; 
+        width: 25px;
+        height: 25px;
+        bottom: -5px;
+        right: -5px;
+    }
+`;
+
+const PlayerTeamRatingShort = styled.div`
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    ${props => props.theme.displayFlexCenter};
+    z-index: 1000;
+    position: absolute; 
+    bottom: 0;
+    right: 0;
+    font-size: 14px;
+    font-weight: bold;
+    @media(max-width: 968px){
+        font-size: 14px; 
+        width: 30px;
+        height: 30px;
+    }
+    @media(max-width: 490px){
+        font-size: 12px; 
+        width: 25px;
+        height: 25px;
+        bottom: 5px;
+        right: 5px;
+    }
 `;
 
 const PlayerDroppingArea = styled.div`
-    width: 75px;
-    height: 75px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #2cf5fcac;
     @media(max-width: 968px){
-        width: 50px;
-        height: 50px; 
+        width: 40px;
+        height: 40px; 
     }
 `;
 
@@ -1199,6 +1561,28 @@ const PlayerTeamLogo = styled.div`
     position: absolute;
     top: 0px;
     left: 0px;
+    z-index: 10;
+    @media(max-width: 490px){
+        width: 25px;
+        height: 25px;
+        top: -5px;
+        left: -5px;
+    }
+`;
+const PlayerTeamLogoShort = styled.div`
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 10;
+    @media(max-width: 490px){
+        width: 25px;
+        height: 25px;
+        top: 5px;
+        left: 5px;
+    }
 `;
 
 
@@ -1251,6 +1635,88 @@ const MyPlayerPosition = styled.div`
         font-weight: bold; 
     }
 `;
+
+
+
+const FieldWrapper = styled.div`
+    width: 80%;
+    height: 420px;
+    position: relative;
+    background-image: url(${field});
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+`;
+
+const MyPlayersInnerRow = styled(motion.div)`
+    width: auto;
+    height: 100%;
+    ${props => props.theme.displayFlex}
+    
+    
+    h2{
+        color: ${props => props.theme.MainAccent};
+        font-size: 20px;
+        font-weight: bold; 
+    }
+`;
+
+const MyPlayersRow = styled(motion.div)`
+    width: 100%;
+    height: 15%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-top: 30px;
+    padding: 5px;
+    h2{
+        color: ${props => props.theme.MainAccent};
+        font-size: 20px;
+        font-weight: bold; 
+    }
+`;
+
+export const MyTeamPlayerHolder = styled.div`
+    width: 60px;
+    height: 100%;
+    margin: 0 10px;
+    ${props => props.theme.displayFlexColumn}
+`;
+
+export const MyTeamAvatar = styled.div`
+    width: 100%;
+    height: 70%;
+    ${props => props.theme.displayFlexCenter}
+    position: relative;
+`;
+
+export const MyTeamName = styled.div`
+    width: 100%;
+    height: 30%;
+    ${props => props.theme.displayFlexCenter}
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 12px;
+        font-weight: bold;  
+        transform: translateY(-3px);
+    }
+`;
+
+const MyTeamRow = styled(motion.div)`
+    width: 100%;
+    height: 85%;
+    position: relative;
+    ${props => props.theme.displayFlexCenter}
+    padding: 10px;
+    text-align: center;
+    h2{
+        color: ${props => props.theme.MainAccent};
+        font-size: 20px;
+        font-weight: bold; 
+    }
+`;
+
 const MyBalanceRow = styled.div`
     width: 100%;
     height: 5%;

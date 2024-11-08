@@ -91,19 +91,16 @@ const SmartNavBar = ({toggleTheme}) => {
           const accounts = await newProvider.request({ method: "eth_requestAccounts" });
           if (accounts && accounts.length > 0) {
             setAccount(accounts[0]); 
-            
-          }
-    
-          console.log("Connected account:", accounts[0]);
-        } catch (error) {
-          console.error("Error connecting wallet:", error);
-        }
-        if(account !== null){
             Swal.fire({
                 title: "Wallet Connected!",
                 text: "Your Wallet is now connected",
                 icon: "success"
               });
+          }
+    
+          console.log("Connected account:", accounts[0]);
+        } catch (error) {
+          console.error("Error connecting wallet:", error);
         }
       };
     

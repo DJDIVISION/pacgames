@@ -142,7 +142,7 @@ input::-webkit-inner-spin-button {
 
 #area1{
   position: absolute;
-  bottom: 10%;
+  bottom: 0%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
@@ -151,9 +151,10 @@ input::-webkit-inner-spin-button {
 }
 
 .layout1 #area2{
-  bottom: 30%;
+  bottom: 22.5%;
   left: 17.5%;
   transform: translate(-50%, -50%);
+  
 }
 .layout2 #area2{
   top: 25%;
@@ -191,9 +192,10 @@ input::-webkit-inner-spin-button {
 }
 
 .layout1 #area3{
-  bottom: 17.5%;
-  left: 30%;
+  bottom: 10%;
+  left: 32.5%;
   transform: translate(-50%, -50%);
+  
 }
 .layout2 #area3{
   top: 37.5%;
@@ -232,9 +234,10 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area4{
-  bottom: 17.5%;
-  right: 20%;
+  bottom: 10%;
+  right: 17.5%;
   transform: translate(-50%, -50%);
+  
 }
 .layout2 #area4{
   top: 60%;
@@ -272,9 +275,10 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area5{
-  bottom: 30%;
-  right: 5%;
+  bottom: 22.5%;
+  right: 2.5%;
   transform: translate(-50%, -50%);
+  
 }
 .layout2 #area5{
   top: 85%;
@@ -433,9 +437,10 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area9 {
-  top: 30%;
+  top: 20%;
   left: 30%;
   transform: translate(-50%, -50%);
+  
   
 }
 .layout2 #area9 {
@@ -474,9 +479,10 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area10 {
-  top: 30%;
+  top: 20%;
   right: 17.5%;
   transform: translate(-50%, -50%);
+  
   
 }
 .layout2 #area10 {
@@ -515,9 +521,10 @@ input::-webkit-inner-spin-button {
   position: absolute;
 }
 .layout1 #area11{
-  top: 20%;
+  top: 10%;
   left: 50%;
   transform: translate(-50%, -50%);
+  
 }
 .layout2 #area11{
   top: 65%;

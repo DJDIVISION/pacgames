@@ -176,13 +176,16 @@ export const BigTextHolderSlots = styled.div`
 `;
 
 export const EurosTextHolder = styled.div`
-  width: 250px;
-  height: 10vh;
+  width: 50%;
+  height: 100%;
   padding: 0 10px;
   color: gold;
   font-size: 24px;
-  ${props => props.theme.displayFlexCenter};
+  ${props => props.theme.displayFlexColumnCenter};
   font-weight: bold;
+  span{
+    font-weight: bold;
+  }
   @media(max-width: 968px){
     font-size: 16px;
     width: 175px;

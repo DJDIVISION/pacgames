@@ -152,7 +152,7 @@ export const AverageDisplay = ({ balance }) => {
       animate={{ opacity: [0, 1] }}
       transition={{ duration: 0.5 }}
     >
-     <EurosTextHolder style={{color: average > 7 ? "green" : "yellow"}}>TEAM AVERAGE: {parseFloat(displayBalance).toFixed(2)}</EurosTextHolder>
+     <EurosTextHolder>TEAM AVERAGE: <p><span style={{color: getBackgroundColor(average)}}>{parseFloat(displayBalance).toFixed(2)}</span></p></EurosTextHolder>
     </motion.div>
   );
 };
