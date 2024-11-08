@@ -30,6 +30,7 @@ import { useAuth } from './functions';
 import Badge from '@mui/material/Badge';
 import TeamStats from './TeamStats';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
 
 const NewBets = () => {
 
@@ -294,6 +295,67 @@ const NewBets = () => {
           
   }
     }
+
+
+    const sendOddsFour = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('teams')
+          .select('teamId')
+          .eq("league", activeLeague);
+        
+        if (error) {
+          console.error('Error fetching team IDs:', error.message);
+          return;
+        }
+    
+        // Use a for...of loop to handle async delays correctly
+        for (const team of data) {
+          console.log(team.teamId);
+          
+          // Set up the API request options for each team
+          const optionsThree = {
+            method: 'GET',
+            url: 'https://api-football-v1.p.rapidapi.com/v3/teams/statistics',
+            params: {
+              league: '61',
+              season: '2024',
+              team: team.teamId
+            },
+            headers: {
+              'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+              'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+            }
+          };
+    
+          try {
+            const response = await axios.request(optionsThree);
+            console.log(response.data);
+    
+            // Update the team stats in Supabase
+            const { error: updateError } = await supabase
+              .from('teams')
+              .update({ stats: response.data.response })
+              .eq('teamId', team.teamId); // Match the specific teamId for updating
+    
+            if (updateError) {
+              console.error("Error updating team stats:", updateError.message);
+            } else {
+              console.log("Team stats updated successfully for teamId:", team.teamId);
+            }
+    
+          } catch (error) {
+            console.error("Error fetching team statistics:", error.message);
+          }
+    
+          // Delay of 1 second before moving to the next request
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    
+      } catch (error) {
+        console.error("Unexpected error in sendOddsFour:", error.message);
+      }
+    };
     
     const handleBetClick = (match, betType) => {
         setSelectedBet((prevBets) => {
@@ -425,7 +487,7 @@ const NewBets = () => {
             </LoadingSection>
           ) : (
             <BetConatiner>
-              {/* <StyledButton onClick={sendOddsThree}>SEND</StyledButton> */}
+              <StyledButton onClick={sendOddsFour}>SEND</StyledButton>
     {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
         activeMatches.map((match, index) => {
           

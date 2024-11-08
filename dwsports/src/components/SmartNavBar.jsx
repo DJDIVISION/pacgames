@@ -67,7 +67,7 @@ const SmartNavBar = ({toggleTheme}) => {
           // Initialize the provider with the WalletConnect projectId and chainId
           const newProvider = await EthereumProvider.init({
             projectId: '87ce01feb918e3377f943f901349cd66', // Replace with your WalletConnect projectId
-            chains: [56], // Ethereum Mainnet chainId is 1
+            chains: [9008], // Ethereum Mainnet chainId is 1
             showQrModal: true, // This will show the QR modal for mobile connection
             metadata: {
               name: "PACTON'S GAMING ZONE",
@@ -241,7 +241,7 @@ const SmartNavBar = ({toggleTheme}) => {
     <SmartNav scrollNavDown={scrollNavDown}>
         <IconButton onClick={isOpen}><Burguer /></IconButton>
         {/* <TonConnectButton /> */}
-        {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectWallet}>{account}</WalletAddressButton>}
+        {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectMetamask}>{account}</WalletAddressButton>}
         <AnimatePresence>
             {open && (
                 <StyledMenu scrollNavDown={scrollNavDown} variants={item} 

@@ -1074,19 +1074,7 @@ const optionsFour = {
   }
 };
 
-const optionsThree = {
-  method: 'GET',
-  url: 'https://api-football-v1.p.rapidapi.com/v3/teams/statistics',
-  params: {
-    league: '135',
-    season: '2024',
-    team: '1579'
-  },
-  headers: {
-    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-  }
-};
+
 
 const optionsWWW = {
   method: 'GET',
@@ -1143,7 +1131,10 @@ const optionsFive = {
 } */
 
   const setData = async () => {
-    const { data, error } = await supabase
+    const str = localStorage.getItem("round");
+    const json = JSON.parse(str);
+    console.log(json)
+    /* const { data, error } = await supabase
       .from('footballPlayers')
       .select('id, laLigaStats')
       .eq('leagueName', 'Ligue 1');
@@ -1169,18 +1160,47 @@ const optionsFive = {
       } else {
         console.log("Rows updated successfully. IDs:", idsToUpdate);
       }
-    }
+    } */
   }
 
+  const optionsThree = {
+    method: 'GET',
+    url: 'https://api-football-v1.p.rapidapi.com/v3/teams/statistics',
+    params: {
+      league: '39',
+      season: '2024',
+      team: '66'
+    },
+    headers: {
+      'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+    }
+  };
+
 const fetchData = async () => {
-  try {
-    const response = await axios.request(optionsTwo);
+  /* try {
+    const response = await axios.request(optionsThree);
     console.log(response.data);
     localStorage.setItem("round", JSON.stringify(response.data))
     message.success("data fetched!")
   } catch (error) {
     console.error(error);
-  }
+  } */
+    const str = localStorage.getItem("round");
+    const json = JSON.parse(str);
+    console.log(json.response)
+    const { error: updateError } = await supabase
+        .from('teams')
+        .update({ stats: json.response })
+        .eq('teamId', 66); // Use the IDs from the filtered rows
+
+      if (updateError) {
+        console.error("Error updating rows:", updateError.message);
+      } else {
+        console.log("Rows updated successfully. 33:");
+        message.success("data gone")
+      }
+    
   /* const str = localStorage.getItem("update");
   const json = JSON.parse(str);
   //console.log(json.response);

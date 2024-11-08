@@ -53,7 +53,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/bets" element={<ProtectedRoute><NewBets /></ProtectedRoute>} />
         <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />
-        <Route path="/fantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />
+        <Route path="/fantasy" element={<ProtectedRoute><Fantasy /></ProtectedRoute>} />
         <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />
         <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
         <Route path="/texas" element={<ProtectedRoute><Texas /></ProtectedRoute>} />
