@@ -33,13 +33,15 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const [transactionHash, setTransactionHash] = useState(null);
     console.log("balance", balance)
     const {user} = useAuth();
+
+    const teamWalletAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
  
     const closeDepositMenu = () => {
         setDepositMenu(false)
     }
     
     const getTokenBalance = async () => {
-        const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; // Replace with your token's contract address
+         // Replace with your token's contract address
       
         // ABI for ERC-20 tokens with `balanceOf` and `decimals`
         const ERC20_ABI = [
@@ -51,7 +53,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         const ethersProvider = new ethers.providers.Web3Provider(provider);
         
         // Create a contract instance with ethers.js
-        const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, ethersProvider);
+        const tokenContract = new ethers.Contract(teamWalletAddress, ERC20_ABI, ethersProvider);
       
         try {
           // Get token balance in Wei
@@ -95,7 +97,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         <DepositWrapper>
             <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
             <DepositTitle><LinkInputField disabled={true} value={teamWalletAddress}/></DepositTitle>
-            <DepositTitle>YOUR BALANCE: {parseFloat(forma)}<span>TON</span></DepositTitle>
+            <DepositTitle>YOUR BALANCE: {parseFloat(balance)}<span>SHO</span></DepositTitle>
             <DepositTitle>AMOUNT TO DEPOSIT:</DepositTitle>
             <DepositTitle><BetInput style={{borderRadius: '10px'}} value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value))}/></DepositTitle>
@@ -104,7 +106,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
                 onChange={(e) => setAmount(parseFloat(e.target.value))}/>
             </DepositRow> */}
             <DepositTitle>
-                <StyledButton onClick={handleSendTransaction}>DEPOSIT</StyledButton>
+                <StyledButton /* onClick={handleSendTransaction} */>DEPOSIT</StyledButton>
             </DepositTitle>
             <span>{transactionStatus}</span>
         </DepositWrapper>
