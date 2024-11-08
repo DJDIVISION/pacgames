@@ -59,8 +59,9 @@ const SmartNavBar = ({toggleTheme}) => {
     const [description, setDescription] = useState(null)
     const [icon, setIcon] = useState(null)
     const [button, setButton] = useState(null)
-    const [provider, setProvider] = useState(null);
-    const [account, setAccount] = useState(null);
+    const {provider, setProvider} = FantasyState();
+    const {account, setAccount} = FantasyState();
+    
 
     const connectWallet = async () => {
         try {
@@ -121,71 +122,6 @@ const SmartNavBar = ({toggleTheme}) => {
             text: "Your Wallet is now disconnected",
             icon: "success"
           });
-      };
-    
-
-    /* async function disconnectWallet() {
-        setConnectedAccount(null)
-        Swal.fire({
-            title: "Disconnected!",
-            text: "Your Wallet is now disconnected",
-            icon: "success"
-          });
-        if (window.ethereum) {
-            window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-            window.ethereum.removeListener('chainChanged', handleChainChanged);
-        }
-        
-    } */
-
-    
-
-    const onClickInstallMetaMask = async () => {
-        console.log(title)
-        if(title === "You need to Install a Wallet"){
-            onboarding.startOnboarding();
-        } else if(title === "Connect your wallet") {
-            const provider = await detectEthereumProvider();
-            if (provider && provider.isMetaMask) {
-                console.log('MetaMask is installed!');
-                try {
-                    const accounts = await provider.request({ method: 'eth_requestAccounts' });
-                    console.log('Connected account:', accounts[0]);
-                    setConnectedAccount(accounts[0])
-                    Swal.fire({
-                        title: "Connected!",
-                        text: "Your Wallet is now connected",
-                        icon: "success"
-                      });
-                } catch (error) {
-                    console.error('User denied account access:', error);
-                }
-            }
-        }
-    }
-
-    const checkMetamask = async () => {
-        alert(window.ethereum)
-        if (typeof window.ethereum !== 'undefined') {
-            alert('MetaMask is installed!');
-        } else {
-            alert('MetaMask is not installed. Please install MetaMask to use this app.');
-        }
-        /* const result = await Swal.fire({
-            title: title,
-            text: description,
-            icon: icon,
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: button
-          }).then((result) => {
-            if (result.isConfirmed) {
-                onClickInstallMetaMask();
-            }
-          });
-      
-        return result; */
       };
 
 
@@ -291,6 +227,9 @@ const SmartNavBar = ({toggleTheme}) => {
                           </StaggerRow>
                       </StaggerContainer>
                 </StyledMenu>
+            )}
+            {depositMenu && (
+                <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu}/>
             )}
         </AnimatePresence>
     </SmartNav>

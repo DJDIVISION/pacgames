@@ -156,7 +156,7 @@ export const DepositWrapper = styled(motion.div)`
 export const DepositBigTitle = styled.div`
     width: 100%;
     height: 20%;
-    font-size: 32px;
+    font-size: 24px;
     font-weight: bold;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};

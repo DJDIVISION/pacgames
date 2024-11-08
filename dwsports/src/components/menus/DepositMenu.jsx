@@ -15,6 +15,9 @@ import { BalanceDisplay, useAuth } from '../../pages/functions';
 import { supabase } from '../../supabase/client';
 import { message } from 'antd';
 
+import { ethers } from "ethers";
+import { EthereumProvider } from "@walletconnect/ethereum-provider";
+
 
 const DepositMenu = ({depositMenu,setDepositMenu}) => {
 
@@ -25,6 +28,8 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const wallet = useTonWallet();
     const {balance, setBalance} = FantasyState();
     const {walletBalance,setWalletBalance} = FantasyState();
+    const {provider, setProvider} = FantasyState();
+    const {account, setAccount} = FantasyState();
     const [transactionHash, setTransactionHash] = useState(null);
     console.log("balance", balance)
     const {user} = useAuth();
@@ -32,110 +37,44 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const closeDepositMenu = () => {
         setDepositMenu(false)
     }
-    const teamWalletAddress = "kQDou06VuEO-u3S56M3TnXjQG98hN552PKyyltQJzbkqi06c"
     
-    const handleSendTransaction = () => {
-        // Transaction details based on tonConnectUI structure
-        const myTransaction = {
-            validUntil: Math.floor(Date.now() / 1000) + 60, // Transaction expiration in 60 seconds
-            messages: [
-                {
-                    address: 'kQDou06VuEO-u3S56M3TnXjQG98hN552PKyyltQJzbkqi06c', // Recipient Address
-                    amount: (amount * 1e9).toString(), // Amount in nanoTONs, here 1.5 TON
-                },
-            ],
-        };
-
-        const client = new TonClient({
-            endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-        });
-
+    const getTokenBalance = async () => {
+        const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; // Replace with your token's contract address
+      
+        // ABI for ERC-20 tokens with `balanceOf` and `decimals`
+        const ERC20_ABI = [
+          "function balanceOf(address owner) view returns (uint256)",
+          "function decimals() view returns (uint8)",
+        ];
+      
+        // Initialize a new ethers.js provider
+        const ethersProvider = new ethers.providers.Web3Provider(provider);
+        
+        // Create a contract instance with ethers.js
+        const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, ethersProvider);
+      
         try {
-            tonConnectUI.sendTransaction(myTransaction)
-                .then(async () => {
-                    setTransactionStatus('Transaction sent successfully.');
-                    const { data, error } = await supabase
-                        .from('users')
-                        .select('*')
-                        .eq('id', user.id);
-
-                    if (error) {
-                        console.error('Error fetching user data:', error.message);
-                    } else {
-                        if (data.length === 0) {
-                            message.error("This user does not exist in our database");
-                        } else {
-                            console.log(data);
-                            const userJsonData = data[0].deposits || {};
-                            const userBalance = data[0].appBalance || 0;
-                            userJsonData.deposits = userJsonData.deposits || [];
-                            const d = new Date();
-                            let date = d.toLocaleString();
-                            const updatedData = {
-                                token: "TON",
-                                amount: amount,
-                                date: date,
-                                senderAddress: wallet.account.address
-                            };
-
-                            // Add the updated data to the referrals array
-                            userJsonData.deposits.push(updatedData);
-
-                            // Update the user's jsonb column
-                            const { error: updateError } = await supabase
-                                .from('users')
-                                .update([{ deposits: userJsonData }]) // Update the jsonb column
-                                .eq('id', user.id); // Identify which user to update
-
-                            if (updateError) {
-                                console.error('Error updating user data:', updateError.message);
-                            } else {
-                                console.log('User data updated successfully:', userJsonData);
-                                message.success("Your balance has been updated!");
-                            }
-
-                            const newBalance = userBalance + (amount * 1000)
-
-                            const { error: updateReferral } = await supabase
-                                .from('users')
-                                .update({ appBalance: newBalance }) 
-                                .eq('id', user.id); 
-
-                            if (updateReferral) {
-                                console.error('Error updating user data:', updateReferral.message);
-                            } else {
-                                console.log("User data updated successfully!");
-                            }
-                        }
-                    }
-                    setBalance((prevBalance) => prevBalance + (amount * 1000));
-                })
-                .catch(error => {
-                    console.error('Transaction failed:', error);
-                    setTransactionStatus(`Transaction failed: ${error.message}`);
-                });
+          // Get token balance in Wei
+          const balance = await tokenContract.balanceOf(account);
+          
+          // Get the token's decimal count to format the balance
+          const decimals = await tokenContract.decimals();
+          const formattedBalance = ethers.utils.formatUnits(balance, decimals);
+      
+          console.log(`Token balance: ${formattedBalance}`);
+          
+          setBalance(formattedBalance)
+          alert(formattedBalance);
         } catch (error) {
-            console.error('Transaction initiation failed:', error);
-            setTransactionStatus(`Transaction initiation failed: ${error.message}`);
+          alert(error)
         }
     };
 
+    useEffect(() => {
+        getTokenBalance();
+    }, [])
 
-    const fetchBalance = async (address) => {
-        setLoading(true);
-        try {
-            const client = new TonClient({
-                endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC', // Change to mainnet when ready
-                apiKey: 'c4d8cb87-4cf0-4d8a-a173-2d945c113edc' // Replace with your API key from TON Center
-            });
-            const result = await client.getBalance(address);
-            setBalance(fromNano(result.balance)); // Convert balance from nanoTONs to TONs
-        } catch (error) {
-            console.error('Error fetching balance:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    
 
 
     const item={
@@ -150,13 +89,13 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     initial="initial"
     animate="animate"
     exit="exit">
-        <DepositBigTitle>RATIO: 1TON - 1000 PGZ</DepositBigTitle>
+        <DepositBigTitle>RATIO: 1 SHO - 1 PGZ</DepositBigTitle>
      <CloseStats onClick={closeDepositMenu} /> 
      
         <DepositWrapper>
             <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
             <DepositTitle><LinkInputField disabled={true} value={teamWalletAddress}/></DepositTitle>
-            <DepositTitle>YOUR BALANCE: {parseFloat(walletBalance)}<span>TON</span></DepositTitle>
+            <DepositTitle>YOUR BALANCE: {parseFloat(forma)}<span>TON</span></DepositTitle>
             <DepositTitle>AMOUNT TO DEPOSIT:</DepositTitle>
             <DepositTitle><BetInput style={{borderRadius: '10px'}} value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value))}/></DepositTitle>
