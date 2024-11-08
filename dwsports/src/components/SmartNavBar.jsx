@@ -101,11 +101,13 @@ const SmartNavBar = ({toggleTheme}) => {
         } catch (error) {
           console.error("Error connecting wallet:", error);
         }
-        Swal.fire({
-            title: "Wallet Connected!",
-            text: "Your Wallet is now connected",
-            icon: "success"
-          });
+        if(account !== null){
+            Swal.fire({
+                title: "Wallet Connected!",
+                text: "Your Wallet is now connected",
+                icon: "success"
+              });
+        }
       };
     
       // Function to disconnect the wallet
