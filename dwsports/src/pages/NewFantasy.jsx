@@ -1189,7 +1189,7 @@ const toggleMenu = () => {
                             
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                        <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>
+                        <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>
                         </div>
                         )
                     })}
@@ -1201,7 +1201,7 @@ const toggleMenu = () => {
                             
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
                         )
                     })}
                     </BetArea>
@@ -1211,7 +1211,7 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                            <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                            <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
                         )
                     })}
                     </BetArea>
@@ -1221,7 +1221,7 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
                         )
                     })}
                     </BetArea>
@@ -1231,7 +1231,7 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
                         )
                     })}
                     </BetArea>
@@ -1241,7 +1241,7 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
                         )
                     })}
                     </BetArea>
@@ -1251,7 +1251,7 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
                         )
                     })}
                     </BetArea>
@@ -1261,7 +1261,7 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
                         )
                     })}
                     </BetArea>
@@ -1271,7 +1271,7 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
                         )
                     })}
                     </BetArea>
@@ -1281,7 +1281,7 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
                         )
                     })}
                     </BetArea>

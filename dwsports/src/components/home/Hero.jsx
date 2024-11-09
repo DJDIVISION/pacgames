@@ -13,10 +13,12 @@ import { supabase } from '../../supabase/client';
 import { MiniArrowDown, MiniArrowup } from '../../pages';
 import { FantasyState } from '../../context/FantasyContext';
 import { useTranslation } from 'react-i18next'
+import { useMediaQuery } from 'react-responsive';
 
 const Hero = () => {
 
     const ref = useRef(null);
+    const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
     const [disabledInput, setDisabledInput] = useState(false)
@@ -215,7 +217,7 @@ const Hero = () => {
         <TopText>{t("hero.title")}</TopText>
       <motion.img src={Sho} 
                 alt="background" 
-                style={{ width: '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 0.75 }} 
+                style={{ width: isMobile ? "40%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 0.75 }} 
                 animate={controls} />
      
         </TopHeader>
@@ -327,6 +329,9 @@ const TopHeader = styled.div`
     margin: 10px;
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
+    @media(max-width: 490px){
+        min-height: 150px;
+    }
 `;
 
 const TopText = styled.div`
