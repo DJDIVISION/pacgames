@@ -158,7 +158,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
     };
 
     const fetchData = async () => {
-      /* const options = {
+      const options = {
         method: 'GET',
         url: 'https://api-football-v1.p.rapidapi.com/v3/players',
         params: {
@@ -176,8 +176,8 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
         setPlayerLeagueData(response.data.response[0].statistics);
       } catch (error) {
         console.error(error);
-      } */
-        const { data, error } = await supabase
+      }
+        /* const { data, error } = await supabase
         .from('footballPlayers')
         .select('*')
         .eq("id", playerToUpdate.id)
@@ -192,7 +192,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
           } else {
             console.log("no such data")
           }
-        }
+        } */
   }
 
   const setData = () => {

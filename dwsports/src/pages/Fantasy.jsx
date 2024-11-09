@@ -1049,7 +1049,7 @@ const optionsTwo = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
   params: {
-    league: '61',
+    league: '78',
     season: '2024'
   },
   headers: {
@@ -1064,9 +1064,9 @@ const optionsFour = {
   method: 'GET',
   url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
   params: {
-    league: '135',
+    league: '140',
     season: '2024',
-    round: 'Regular Season - 11'
+    round: 'Regular Season - 10'
   },
   headers: {
     'x-rapidapi-key': /*  */'5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
@@ -1178,15 +1178,15 @@ const optionsFive = {
   };
 
 const fetchData = async () => {
-  /* try {
-    const response = await axios.request(optionsThree);
+  try {
+    const response = await axios.request(optionsTwo);
     console.log(response.data);
     localStorage.setItem("round", JSON.stringify(response.data))
     message.success("data fetched!")
   } catch (error) {
     console.error(error);
-  } */
-    const str = localStorage.getItem("round");
+  }
+    /* const str = localStorage.getItem("round");
     const json = JSON.parse(str);
     console.log(json.response)
     const { error: updateError } = await supabase
@@ -1199,7 +1199,7 @@ const fetchData = async () => {
       } else {
         console.log("Rows updated successfully. 33:");
         message.success("data gone")
-      }
+      } */
     
   /* const str = localStorage.getItem("update");
   const json = JSON.parse(str);

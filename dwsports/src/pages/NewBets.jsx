@@ -2,14 +2,15 @@ import React, {useState, useEffect} from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { animationOne, transition } from '../animations'
 import { ArrowLeft, ArrowRight, BetSection, BetTitleRow, DateRow, MatchOdds, OddsColumn, SportsButtonRow, TeamLogoText, TeamLogoWrapper, TeamsLogo, TeamsResult,
-    LoadingSection,AllBets,AllBetsText,AllBetsBadge,OddsColumnBig,
+    LoadingSection,AllBets,AllBetsText,AllBetsBadge,OddsColumnBig,LiveWrapper,
     ResultRow,BigDateRow,VenueRow,
     ArrowDown,BackStyledIconButton,
     SmallArrowDown,
     StyledButton,
     ArrowLeftRelative,
     ArrowRightMiddle,
-    ArrowRightRelative
+    ArrowRightRelative,
+    SpinningBorder
  } from './index'
 import Stack from '@mui/material/Stack';
 import allBets from '../assets/allBets.png'
@@ -57,6 +58,7 @@ const NewBets = () => {
     const {selectedBet, setSelectedBet} = FantasyState();
     const {activeTeamId, setActiveTeamId} = FantasyState();
     const [selectedBetMenu, setSelectedBetMenu] = useState(false);
+    const [isLiveOpen, setIsLeaveOpen] = useState(false)
     const [allBetsMenu, setAllBetsMenu] = useState(false);
     const [disabledButton, setDisabledButton] = useState("Premier League");
     const { user } = useAuth();
@@ -68,7 +70,6 @@ const NewBets = () => {
     const {balance, setBalance} = FantasyState();
     const navigate = useNavigate()
 
-    console.log(balance)
 
     const raiseRound = () => {
         setActiveRound((prevRound) => prevRound + 1)
@@ -87,6 +88,33 @@ const NewBets = () => {
           } else {
             setAllFixtures(data[0].fixtures)
           }
+    }
+
+    const setLiveMatches = async () => {
+      const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+        params: {live: 'all'},
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+      
+      try {
+        const response = await axios.request(options);
+        console.log(response.data);
+        const matches = []
+        response.data.response.forEach((match) => {
+          if(match.league.id === 135 || match.league.id === 140 || match.league.id === 61 || match.league.id === 78 || match.league.id === 39){
+            matches.push(match)
+          }
+        })
+        setActiveMatches(matches)
+        setIsLeaveOpen(true)
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     useEffect(() => {
@@ -258,7 +286,7 @@ const NewBets = () => {
     console.log(activeMatches)
     const { data, error } = await supabase
             .from('fixtures')
-            .update([{"10": activeMatches}])
+            .update([{"11": activeMatches}])
             .eq("leagueName", activeLeague)
             if (error) {
                 console.error('Error inserting/updating user session data:', error.message)
@@ -454,6 +482,8 @@ const NewBets = () => {
       const goBack = () => {
         navigate(`/`)
       }
+
+      console.log(activeMatches)
       
   return (
       <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
@@ -480,9 +510,16 @@ const NewBets = () => {
       ))}
             </SportsButtonRow>
             <BetTitleRow>
-              <ArrowLeftRelative onClick={lowRound}></ArrowLeftRelative>
-              <h2>Round: {activeRound}</h2>
-              <ArrowRightRelative onClick={raiseRound}></ArrowRightRelative>
+              <LiveWrapper onClick={setLiveMatches}>
+              <SpinningBorder /> {/* Only this element will spin */}
+              <span>LIVE</span> {/* This text will remain static */}
+              </LiveWrapper>
+              
+              {isLiveOpen ? "" : <ArrowLeftRelative onClick={lowRound}></ArrowLeftRelative>}
+              
+              {isLiveOpen ? <h2>GO BACK</h2> : <h2>Round: {activeRound}</h2>}
+              {isLiveOpen ? "" : <ArrowRightRelative onClick={raiseRound}></ArrowRightRelative>}
+              
           </BetTitleRow>
           {loading ? (
             <LoadingSection>
@@ -490,7 +527,7 @@ const NewBets = () => {
             </LoadingSection>
           ) : (
             <BetConatiner>
-              {/* <StyledButton onClick={sendOddsFour}>SEND</StyledButton> */}
+             {/*  <StyledButton onClick={sendOddsTwo}>SEND</StyledButton> */}
     {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
         activeMatches.map((match, index) => {
           
@@ -515,9 +552,9 @@ const NewBets = () => {
                     </TeamsLogo>
                     <TeamsResult>
                         <DateRow>{date}</DateRow>
-                        {match.fixture.status.short === "FT" ? (
+                        {(match.fixture.status.short === "FT" || match.fixture.status.short === "1H" || match.fixture.status.short === "2H" || match.fixture.status.short === "HT") ? (
                             <>
-                            <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.score.fulltime.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.score.fulltime.away}</h2></ResultRow>
+                            <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
                             <BigDateRow>( {match.score.halftime.home} - {match.score.halftime.away} )</BigDateRow>
                             </>
                         ) : (

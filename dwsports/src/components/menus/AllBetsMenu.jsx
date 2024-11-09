@@ -555,10 +555,10 @@ const getFixtures = async (data) => {
                         )
                     })}
                     </TeamsStatus>
-                    <TypeofBet><HalfColumn>BET AMOUNT: <span>${bet.amount}</span></HalfColumn></TypeofBet>
+                    <TypeofBet><HalfColumn>BET AMOUNT: <span>{bet.amount} PGZ</span></HalfColumn></TypeofBet>
                     <TypeofBet>
                         <HalfColumn>
-                        POSSIBLE WINNINGS: <span>${bet.possibleWinnings}</span>
+                        POSSIBLE WINNINGS: <span>{bet.possibleWinnings} PGZ</span>
                         </HalfColumn>
                     </TypeofBet>
                     <TypeofBet>

@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { motion } from 'framer-motion';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
@@ -21,6 +21,15 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import {useTranslation} from "react-i18next";
+
+const spin = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
 
 export const PlayerSettingsIcon = styled(DisplaySettingsIcon)`
     &&&{
@@ -797,9 +806,36 @@ export const TopRow = styled.div`
     overflow-x: auto;
 `;
 
+export const LiveWrapper = styled.div`
+     width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 50%;
+  left: 12.5%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  span{
+    color: #00fd00;
+  }
+`;
+
+export const SpinningBorder = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 5px solid #ff0101;            /* Background border */
+  border-top-color: #00fd00;         /* Color of the animated segment */
+  animation: ${spin} 1s linear infinite;
+  position: absolute;                /* Position it to overlay LiveWrapper */
+  
+`;
+
+
 export const BetTitleRow = styled.div`
-    width: 50%;
-    height: 80px;
+    width: 100%;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;

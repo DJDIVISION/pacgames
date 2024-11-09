@@ -78,6 +78,7 @@ const Hero = () => {
           }
           if (data) {
             setBalance(data[0].appBalance)
+            console.log(data[0].appBalance)
           }
     }
 
