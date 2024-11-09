@@ -1,6 +1,6 @@
 import React,{useEffect, useState} from 'react'
 import {motion, AnimatePresence} from 'framer-motion'
-import { CloseStats,BetSection,DepositWrapper,LinkInputField,DepositRow,DepositTitle,DepositBigTitle,BalanceWrapper } from './index' 
+import { CloseStats,BetSection,DepositWrapper,LinkInputField,SmallDepositTitle,DepositTitle,DepositBigTitle,BalanceWrapper } from './index' 
 import {BetInput, StyledMenu} from '../../components/index'
 import { StyledButton } from '../../pages';
 import { TonClient, Address, internal } from '@ton/ton';
@@ -31,7 +31,6 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const {provider, setProvider} = FantasyState();
     const {account, setAccount} = FantasyState();
     const [transactionHash, setTransactionHash] = useState(null);
-    console.log("balance", balance)
     const {user} = useAuth();
     const theme = useTheme();
     /* const teamWalletAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; */
@@ -45,7 +44,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           console.error("Provider is undefined.");
           return;
         }
-        message.info("Please accept the transaction on your wallet", [5])
+        message.info("Please confirm the transaction on your wallet")
         const recipientAddress = "0x75a8AC284299e362830c49615459EeD8f66C0265"
         const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
         // Initialize Web3 with the provider
@@ -94,6 +93,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           }).then((result) => {
             if (result.isConfirmed) {
                 setDepositMenu(false)
+                writeData();
             }
           });
           return transaction; // Return transaction details if needed
@@ -101,6 +101,46 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           console.error("Error sending tokens:", error);
         }
       };
+
+      const writeData = async () => {
+        const newBalance = (amount / 11620 * 1000)
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          if (error) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            console.log('data:', data)
+            const userJsonData = data[0].deposits || {}; 
+            const userJsonBalance = data[0].appBalance
+            userJsonData.deposits = userJsonData.deposits || []; 
+            console.log(userJsonData)
+            
+            const lastBalance = userJsonBalance + newBalance
+            console.log(lastBalance)
+            const updatedData = {
+                name: user.user_metadata.name,
+                avatar: user.user_metadata.avatar_url,
+                email: user.email,
+                walletAddress: account,
+                user_id: user.id,
+                amount: amount,
+                token: "SHO"
+            }
+            userJsonData.deposits.push(updatedData);
+            const { error: updateError } = await supabase
+                    .from('users')
+                    .update({ deposits: userJsonData, appBalance: lastBalance }) // Update the jsonb column
+                    .eq('id', user.id); // Identify which user to update
+    
+                if (updateError) {
+                    console.error('Error updating user data:', updateError.message);
+                } else {
+                    console.log('User data updated successfully:', userJsonData);
+                }
+          }
+    }
 
     
 
@@ -111,6 +151,20 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
     } 
 
+    useEffect(() => {
+        // Toggle body overflow based on isMenuOpen state
+        if (depositMenu) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = ''; // Revert to original overflow
+        }
+
+        // Cleanup on unmount
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [depositMenu]);
+
   return (
     
     <StyledMenu variants={item}
@@ -118,13 +172,13 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     animate="animate"
     exit="exit"
     style={{alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
-        <DepositBigTitle>RATIO: 1 SHO - 1 PGZ</DepositBigTitle>
+        <DepositBigTitle>RATIO: 11620 SHO - 1000 PGZ</DepositBigTitle>
      <CloseStats onClick={closeDepositMenu} /> 
      
         <DepositWrapper>
             <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
             <DepositTitle><LinkInputField disabled={true} value="0x75a8AC284299e362830c49615459EeD8f66C0265"/></DepositTitle>
-            <DepositTitle>YOUR BALANCE: {parseFloat(walletBalance)}<span>SHO</span></DepositTitle>
+            <SmallDepositTitle>SHO BALANCE IN WALLET: {parseFloat(walletBalance)}<span>SHO</span></SmallDepositTitle>
             <DepositTitle>AMOUNT TO DEPOSIT:</DepositTitle>
             <DepositTitle><BetInput style={{borderRadius: '10px'}} value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value))}/></DepositTitle>
@@ -137,7 +191,6 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             </DepositTitle>
             <span>{transactionStatus}</span>
         </DepositWrapper>
-        <BalanceWrapper><h2>YOUR BALANCE: {balance} PGZ</h2></BalanceWrapper>
     </StyledMenu>
     
   )

@@ -186,6 +186,18 @@ export const DepositTitle = styled.div`
     }
 `;
 
+export const SmallDepositTitle = styled.div`
+    width: 100%;
+    height: 16.6%;
+    font-size: 14px;
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexCenter};
+    span{
+        color: ${props => props.theme.MainAccent};
+        margin: 5px;
+    }
+`;
+
 export const Section = styled.div`
     width: 100%;
     height: auto;

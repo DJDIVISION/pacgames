@@ -16,7 +16,7 @@ import Swal from "sweetalert2";
 import chip from '../assets/chip.png'
 
 import fantasy from '../assets/fantasy.png'
-import deposit from '../assets/logos/deposit.png'
+import deposit from '../assets/logos/shoDeposit.png'
 import metamask from '../assets/logos/metamask.svg'
 import { Avatar, Fab, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom'

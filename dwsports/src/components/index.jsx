@@ -119,6 +119,8 @@ export const StyledMenu = styled(motion.div)`
     padding: 20px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     }
 `;
 
@@ -143,7 +145,8 @@ export const StaggerContainer = styled(motion.div)`
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px 0;
+    justify-content: center;
+    padding: 100px 0 50px 0;
 `;
 
 export const TonWrapper = styled.div`
@@ -394,6 +397,9 @@ export const MatchHolder = styled.div`
     align-items: center;
     margin: 10px auto;
     border-radius: 10px;
+    @media(max-width: 490px){
+        width: 95%;
+    }
 `;
 
 export const BetTeams = styled.div`
@@ -759,20 +765,39 @@ export const CurrentBetText = styled.div`
 
 export const Switcher = styled.div`
     width: 100%;
-    height: 100px;
+    min-height: 150px;
     display: flex;
+    flex-direction: column;
     margin-top: 50px;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     padding: 20px;
     @media(max-width:698px){
         margin-top: 0px;
     }
 `;
 
+export const BalanceAmount = styled.div`
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: ${props => props.theme.text};
+    span{
+        color: ${props => props.theme.MainAccent};
+        margin: 0 5px;
+    }
+    @media(max-width: 490px){
+        height: 40px;
+        font-size: 18px;
+    }
+`;
+
 export const BetAmount = styled.div`
     width: 100%;
-    height: 50px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -780,6 +805,7 @@ export const BetAmount = styled.div`
     color: ${props => props.theme.text};
     @media(max-width: 698px){
         height: 40px;
+        font-size: 12px;
     }
 `;
 
@@ -798,6 +824,12 @@ export const PossibleWinningsAmount = styled.div`
         font-size: 32px;
         transform: translateY(-2px);
     }
+    @media(max-width: 490px){
+        font-size: 16px;
+        span{
+            font-size: 26px; 
+        }
+    }
 `;
 
 export const BetInput = styled.input.attrs({ type: 'number' })`
@@ -806,9 +838,10 @@ export const BetInput = styled.input.attrs({ type: 'number' })`
     padding: 8px; /* Add some padding */
     background-color: transparent; /* Transparent background */
     color: white; /* Text color */
-    height: 70%;
-    width: 100px;
-    font-size: 28px;
+    height: 90%;
+    border-radius: 10px;
+    width: 150px;
+    font-size: 22px;
     margin: 0 20px;
     text-align: center;
     /* Remove the arrows in WebKit browsers */

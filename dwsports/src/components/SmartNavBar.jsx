@@ -15,7 +15,7 @@ import metamask from '../assets/logos/metamask.svg'
 import chip from '../assets/chip.png'
 
 import fantasy from '../assets/fantasy.png'
-import deposit from '../assets/logos/deposit.png'
+import deposit from '../assets/logos/shoDeposit.png'
 import Swal from "sweetalert2";
 import { Avatar, Fab, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
@@ -148,7 +148,42 @@ const SmartNavBar = ({toggleTheme}) => {
           } catch (error) {
             console.error("Error fetching token balance:", error);
           }
-      };
+    };
+
+    const writeData = async () => {
+        const { data, error } = await supabase
+          .from('users')
+          .select('deposits')
+          .eq('id', user.id)
+          if (error) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            console.log('data:', data)
+            const userJsonData = data[0].deposits || {}; 
+            userJsonData.deposits = userJsonData.deposits || []; 
+            console.log(userJsonData)
+            const updatedData = {
+                name: user.user_metadata.name,
+                avatar: user.user_metadata.avatar_url,
+                email: user.email,
+                walletAddress: account,
+                user_id: user.id,
+                amount: amount,
+                token: "SHO"
+            }
+            userJsonData.deposits.push(updatedData);
+            const { error: updateError } = await supabase
+                    .from('users')
+                    .update({ deposits: userJsonData }) // Update the jsonb column
+                    .eq('id', user.id); // Identify which user to update
+    
+                if (updateError) {
+                    console.error('Error updating user data:', updateError.message);
+                } else {
+                    console.log('User data updated successfully:', userJsonData);
+                }
+          }
+    }
 
       
     
@@ -218,6 +253,20 @@ const SmartNavBar = ({toggleTheme}) => {
         exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
     }
 
+    useEffect(() => {
+        // Toggle body overflow based on isMenuOpen state
+        if (open) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = ''; // Revert to original overflow
+        }
+
+        // Cleanup on unmount
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [open]);
+
 
   return (
     <SmartNav scrollNavDown={scrollNavDown}>
@@ -229,8 +278,8 @@ const SmartNavBar = ({toggleTheme}) => {
                 <StyledMenu scrollNavDown={scrollNavDown} variants={item} 
                 initial="initial"
                 animate="animate"
-                exit="exit">
-                     <IconButton onClick={isOpen}><CloseBurguer /></IconButton>
+                exit="exit" style={{justifyContent: 'center'}}>
+                     <IconButton style={{position: 'absolute', top: '20px', left: '20px'}} onClick={isOpen}><CloseBurguer /></IconButton>
                      <StaggerContainer initial="hidden"
                         animate="visible"
                         variants={{
@@ -248,25 +297,25 @@ const SmartNavBar = ({toggleTheme}) => {
                           </StaggerRow></LinkR>
                           <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 0.9 }} >
+                              transition={{ delay: 0.8 }} >
                               <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
                               <StaggerAvatarName>{t("navbar.fantasy")}</StaggerAvatarName>
                           </StaggerRow></LinkR>
-                          <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 40 }}
+                          {/* <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 1.1 }} >
                               <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
                               <StaggerAvatarName>CASINO</StaggerAvatarName>
-                          </StaggerRow></LinkR>
+                          </StaggerRow></LinkR> */}
                           <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setDepositMenu(true);}}
                               animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 1.3 }} >
+                              transition={{ delay: 0.9 }} >
                               <StaggerImageHolder><img src={deposit} alt="fantasy" /></StaggerImageHolder>
                               <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
                           </StaggerRow>
                           <StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 1.5 }}> 
+                              transition={{ delay: 1 }}> 
                           <StaggerImageHolder>
                           {theme === 'dark' ? <LightIcon onClick={toggleTheme}/> : <DarkIcon onClick={toggleTheme}/>}
                           </StaggerImageHolder>

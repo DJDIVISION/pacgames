@@ -3,7 +3,8 @@ import styled from 'styled-components'
 import { motion, useTransform, useScroll, useAnimation, AnimatePresence } from 'framer-motion';
 import {HeroSection} from './index'
 import Ton from '../../assets/logos/ton.png'
-import { useAuth } from '../../pages/functions';
+import Sho from '../../assets/logos/sho.png'
+import { getUserBalance, useAuth } from '../../pages/functions';
 import { message } from 'antd';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import SendIcon from '@mui/icons-material/Send';
@@ -62,7 +63,21 @@ const Hero = () => {
         }
     }
 
-    
+    const getUserBalance = async (id) => {
+        console.log(id)
+        const { data, error } = await supabase
+            .from('users')
+            .select('appBalance')
+            .eq("id", id)
+      
+          if (error) {
+            console.error('Error fetching teams:', error.message);
+            return;
+          }
+          if (data) {
+            setBalance(data[0].appBalance)
+          }
+    }
 
     useEffect(() => {
         if(user){
@@ -71,6 +86,7 @@ const Hero = () => {
             const locale = date.toLocaleString();
             setDate(locale)
             getReferrer();
+            getUserBalance(user.id)
         }
     }, [user])
 
@@ -197,7 +213,7 @@ const Hero = () => {
       <AnimatePresence>
         <TopHeader>
         <TopText>{t("hero.title")}</TopText>
-      <motion.img src={Ton} 
+      <motion.img src={Sho} 
                 alt="background" 
                 style={{ width: '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 0.75 }} 
                 animate={controls} />

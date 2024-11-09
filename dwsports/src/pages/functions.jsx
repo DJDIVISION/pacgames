@@ -608,3 +608,21 @@ export const getBackgroundColor = (number) => {
   return 'white'; // Default background color if number is out of range
 };
 
+export const getUserBalance = async (id) => {
+  const {balance, setBalance} = FantasyState();
+  console.log(id)
+  const { data, error } = await supabase
+      .from('users')
+      .select('appBalance')
+      .eq("id", id)
+
+    if (error) {
+      console.error('Error fetching teams:', error.message);
+      return;
+    }
+
+    if (data) {
+      console.log(data)
+    }
+}
+

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { animationOne, transition } from '../animations'
 import { ArrowLeft, ArrowRight, BetSection, BetTitleRow, DateRow, MatchOdds, OddsColumn, SportsButtonRow, TeamLogoText, TeamLogoWrapper, TeamsLogo, TeamsResult,
     LoadingSection,AllBets,AllBetsText,AllBetsBadge,OddsColumnBig,
@@ -65,7 +65,10 @@ const NewBets = () => {
     const [betsToCheck, setBetsToCheck] = useState([])
     const [allFixtures, setAllFixtures] = useState([])
     const [expandedIndex, setExpandedIndex] = useState(null);
+    const {balance, setBalance} = FantasyState();
     const navigate = useNavigate()
+
+    console.log(balance)
 
     const raiseRound = () => {
         setActiveRound((prevRound) => prevRound + 1)
@@ -487,7 +490,7 @@ const NewBets = () => {
             </LoadingSection>
           ) : (
             <BetConatiner>
-              <StyledButton onClick={sendOddsFour}>SEND</StyledButton>
+              {/* <StyledButton onClick={sendOddsFour}>SEND</StyledButton> */}
     {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
         activeMatches.map((match, index) => {
           
@@ -646,6 +649,7 @@ const NewBets = () => {
           <BackStyledIconButton onClick={goBack}><ArrowLeftRelative style={{transform: 'scale(1.5) rotate(90deg)'}}/></BackStyledIconButton>
           <AllBetsText onClick={() => setAllBetsMenu(true)}><img src={aaa} alt="" /></AllBetsText>
           </BetSection>
+          <AnimatePresence>
           {selectedBetMenu && (
                 <SelectedBet selectedBetMenu={selectedBetMenu} setSelectedBetMenu={setSelectedBetMenu} />
             )}
@@ -655,6 +659,7 @@ const NewBets = () => {
             {selectedTeamMenu && (
                 <TeamStats selectedTeamMenu={selectedTeamMenu} setSelectedTeamMenu={setSelectedTeamMenu} />
             )}
+            </AnimatePresence>
       </motion.div>
   )
 }

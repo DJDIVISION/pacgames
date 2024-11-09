@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { motion,AnimatePresence } from 'framer-motion'
 import {CloseStats,MatchHolder,StatsStadium,StatsStadiumCapacity,BetTeams,BetTeamsLogo,BetTeamsName,PossibleWinningsAmount,
-  BetTeamsLogoHolder,BetTeamsColumn,BetBet,BetAmount,BetInput,AntSwitch,Switcher,BetTeamsLogoAway,BetTeamsHolder
+  BetTeamsLogoHolder,BetTeamsColumn,BetBet,BetAmount,BetInput,AntSwitch,Switcher,BetTeamsLogoAway,BetTeamsHolder,BalanceAmount
 } from '../index'
 import { BetState } from '../../context/BetsContext'
 import Stack from '@mui/material/Stack';
@@ -21,6 +21,7 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
   const {selectedBet, setSelectedBet} = FantasyState();
   const {betAmounts, setBetAmounts} = FantasyState();
   const {pendingBets, setPendingBets} = FantasyState();
+  const {balance, setBalance} = FantasyState();
   const { user } = useAuth();
 
   console.log(user)
@@ -81,6 +82,10 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
       message.error("You must enter the amount of the bet!")
       return
     }
+    if(amount > balance){
+      message.error("You don't have enough balance to place this bet!")
+      return
+    }
     setPendingBets((prevBets) => prevBets + 1)
     const winnings = calculateTotalWinnings();
     console.log(winnings)
@@ -95,6 +100,17 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
       possibleWinnings: winnings,
       status: "Pending"
     }
+    setBalance((prevBal) => prevBal - amount)
+    const newBalance = balance - amount
+    const { data: firstData, error: firstError } = await supabase
+      .from('users')
+      .update({appBalance: newBalance})
+      .eq('id', user.id)
+      if (firstError) {
+        console.error('Error inserting/updating user session data:', firstError.message)
+      } else {
+        console.log('User balance data saved:', firstData)
+      }
     const { data, error } = await supabase
       .from('bets')
       .insert([updatedData])
@@ -130,6 +146,7 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
     animate='animate'
     exit='exit' >
       <CloseStats onClick={closeBetsMenu} />
+      <BalanceAmount>YOUR BALANCE: <span>{parseFloat(balance.toFixed(2))} PGZ</span></BalanceAmount>
       {selectedBet.length > 0 ? (
       selectedBet.map((selectedBet, index) => (
     <MatchHolder key={index}>
@@ -209,17 +226,16 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
         SELECT AMOUNT: 
         <BetInput onChange={(e) => setAmount(e.target.value)}  />
       </BetAmount>
-      <PossibleWinningsAmount>POSSIBLE WINNINGS: <span>${calculateTotalWinnings()}</span> </PossibleWinningsAmount>
+      <PossibleWinningsAmount>POSSIBLE WINNINGS: <span>{calculateTotalWinnings()} PGZ</span> </PossibleWinningsAmount>
       <Switcher>
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center', margin: '0 30px' }}>
-        <Typography style={{color: 'white'}}>SIGN BET</Typography>
-        <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleSwitchSendBet}/>
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <Typography style={{color: 'white', fontFamily:'Quicksand'}}>MULTIPLE BET</Typography>
+        <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checkedMultiple} onChange={handleSwitchMultiple}/>
         <Typography></Typography>
       </Stack>
-      
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center', margin: '0 30px' }}>
-        <Typography style={{color: 'white'}}>MULTIPLE BET</Typography>
-        <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checkedMultiple} onChange={handleSwitchMultiple}/>
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <Typography style={{color: 'white', fontFamily:'Quicksand'}}>SIGN BET</Typography>
+        <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleSwitchSendBet}/>
         <Typography></Typography>
       </Stack>
       </Switcher>

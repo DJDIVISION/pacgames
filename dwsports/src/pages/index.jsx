@@ -890,7 +890,7 @@ export const AllBetsBadge = styled.div`
     font-size: 16px;
     ${props => props.theme.displayFlexCenter};
     cursor: pointer;
-    z-index: 1000;
+    z-index: 1;
     @media(max-width:968px){
         bottom: 50px;
         right: 20px;  

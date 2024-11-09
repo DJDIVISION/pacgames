@@ -94,6 +94,7 @@ const NewFantasy = () => {
     const [openSearchMenu, setOpenSearchMenu] = useState(false)
     const [openStatsMenu, setOpenStatsMenu] = useState(false)
     const [openTrainingMenu, setOpenTrainingMenu] = useState(false)
+    const [openRemovePlayerMenu, setOpenRemovePlayerMenu] = useState(false)
     const [selectedPlayerMenu, setSelectedPlayerMenu] = useState(false)
     const [areaId, setAreaId] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -114,6 +115,8 @@ const NewFantasy = () => {
     const [width, setWidth] = useState(0);
     const [teamAverage, setTeamAverage] = useState(0)
     const carroussel = useRef(null);
+    const [playerHasTeam, setPlayerHasTeam] = useState(false)
+    const [playerToRemove, setPlayerToRemove] = useState(null)
     const [droppedTeamPlayers, setDroppedTeamPlayers] = useState({
         area1: [],
         area2: [],
@@ -182,11 +185,16 @@ const NewFantasy = () => {
                             console.log("data inserted now!")
                         }
                     } else {
+                        console.log(data[0])
                         setBalance(data[0].balanceRemaining)
                         setDroppedPlayers(data[0].players.players)
                         setTeamRating(data[0].teamRating)
                         setLastTraining(data[0].lastTraining)
                         setTrainingsNumber(data[0].trainingsNumber)
+                        if(data[0].nextMatch !== null){
+                            setDroppedTeamPlayers(data[0].nextMatch.players)
+                            setPlayerHasTeam(true)
+                        }
                     }
                 }
       }
@@ -616,6 +624,30 @@ const toggleMenu = () => {
         }
     }
 
+    const confirmRemovePlayer = () => {
+        
+        for (let areaKey in droppedTeamPlayers) {
+            // Check if the area has a player and if their ID matches the playerId
+            if (droppedTeamPlayers[areaKey][0]?.id === playerToRemove.id) {
+                droppedTeamPlayers[areaKey] = []; // Set the area to an empty array if a match is found
+                setDroppedTeamPlayers(droppedTeamPlayers)
+            }
+        }
+        setOpenRemovePlayerMenu(false)
+        setPlayerToRemove(null)
+        setTimeout(() => {
+            setOpenStatsMenu(true)
+        }, 500)
+    }
+
+    const cancelRemovePlayer = () => {
+        setOpenRemovePlayerMenu(false)
+        setPlayerToRemove(null)
+        setTimeout(() => {
+            setOpenStatsMenu(true)
+        }, 500)
+    }
+
     const cancelPlayer = () => {
         setActivePlayer(null)
         setOpenConfirmMenu(false)
@@ -814,6 +846,14 @@ const toggleMenu = () => {
         }
       }
 
+      const removePlayer = (player) => {
+        setPlayerToRemove(player)
+        setOpenStatsMenu(false)
+        setTimeout(() => {
+            setOpenRemovePlayerMenu(true)
+        }, 500)
+      }
+
 
   return (
     <Section>
@@ -969,6 +1009,7 @@ const toggleMenu = () => {
                 </motion.div>
             </Container>
         )}
+          
         {openDropMenu && (
            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
@@ -1070,6 +1111,36 @@ const toggleMenu = () => {
                 </motion.div>
             </Container>
         )}
+        {openRemovePlayerMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2.5%'}} variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <BigTeamName style={{color: 'white'}}><h2>{t("fantasy.title3")}: {balance}M€</h2></BigTeamName>
+                <BigTeamName>
+                <h2>{playerHasTeam ? "YOU ALREADY HAVE ONE TEAM SAVED. IF YOU REMOVE THE PLAYER, YOU'LL NEED TO SAVE THE TEAM AGAIN" : "DO YOU WANT TO REMOVE THIS PLAYER?" }</h2>
+                </BigTeamName>
+                <BuyPlayerHolder>
+                    <BuyPlayerAvatar><Avatar alt="Image" src={playerToRemove.image} sx={{
+                                        width: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 },
+                                        height: { xs: 80, sm: 80, md: 70, lg: 80, xl: 80 }
+                                    }} /></BuyPlayerAvatar>
+                                    <BuyPlayerName><h2>{playerToRemove.name}</h2></BuyPlayerName>
+                                    <BuyPlayerName><span>{playerToRemove.value}M€</span></BuyPlayerName>
+                </BuyPlayerHolder>
+                <div style={{display: 'flex', width: '100%', height: '70px', alignItems: 'center', justifyContent: 'center'}}>
+                        {<>
+                            <StyledButton onClick={cancelRemovePlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.cancel")}</StyledButton>
+                            <StyledButton onClick={confirmRemovePlayer} style={{fontSize: '18px', margin: '0 5px'}}>{t("fantasy.confirm")}</StyledButton>
+                        </>}
+                
+                </div>
+                </motion.div>
+            </Container>
+        )}
         {openStatsMenu && (
             
              <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
@@ -1106,7 +1177,7 @@ const toggleMenu = () => {
                             
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                        <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>
+                        <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>
                         </div>
                         )
                     })}
@@ -1794,7 +1865,7 @@ const BigTeamName = styled.div`
     position: relative;
     h2{
         color: ${props => props.theme.text};
-        font-size: 24px;
+        font-size: 20px;
         font-weight: bold;
     }
 `;
