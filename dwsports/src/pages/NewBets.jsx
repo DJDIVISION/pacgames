@@ -517,7 +517,7 @@ const NewBets = () => {
               
               {isLiveOpen ? "" : <ArrowLeftRelative onClick={lowRound}></ArrowLeftRelative>}
               
-              {isLiveOpen ? <h2>GO BACK</h2> : <h2>Round: {activeRound}</h2>}
+              {isLiveOpen ? <h2>LIVE MATCHES</h2> : <h2>Round: {activeRound}</h2>}
               {isLiveOpen ? "" : <ArrowRightRelative onClick={raiseRound}></ArrowRightRelative>}
               
           </BetTitleRow>
