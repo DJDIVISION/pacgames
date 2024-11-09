@@ -138,6 +138,17 @@ export const BetSection = styled.div`
     }
 `;
 
+export const BalanceWrapper = styled.div`
+    width: 100%;
+    height: 50px;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 20px;
+        font-weight: bold;
+    }
+`;
+
 export const DepositWrapper = styled(motion.div)`
     width: 90%;
     height: 50vh;

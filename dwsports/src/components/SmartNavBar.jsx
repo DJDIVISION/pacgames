@@ -62,7 +62,7 @@ const SmartNavBar = ({toggleTheme}) => {
     const {provider, setProvider} = FantasyState();
     const {account, setAccount} = FantasyState();
     const {balance, setBalance} = FantasyState();
-    
+    const {walletBalance,setWalletBalance} = FantasyState();
 
     const connectWallet = async () => {
         try {
@@ -143,12 +143,14 @@ const SmartNavBar = ({toggleTheme}) => {
             // Format balance to a human-readable format (divide by the decimals factor)
             const formattedBalance = balanceBigInt / factor;
             console.log(`Token balance for ${tokenAddress}: ${formattedBalance.toString()}`);
-            setBalance(formattedBalance.toString())
+            setWalletBalance(formattedBalance.toString())
             return formattedBalance.toString(); // Return as string to avoid BigInt issues elsewhere
           } catch (error) {
             console.error("Error fetching token balance:", error);
           }
       };
+
+      
     
       // Function to disconnect the wallet
       const disconnectWallet = async () => {
@@ -256,7 +258,7 @@ const SmartNavBar = ({toggleTheme}) => {
                               <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
                               <StaggerAvatarName>CASINO</StaggerAvatarName>
                           </StaggerRow></LinkR>
-                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => setDepositMenu(true)}
+                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setDepositMenu(true);}}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 1.3 }} >
                               <StaggerImageHolder><img src={deposit} alt="fantasy" /></StaggerImageHolder>
