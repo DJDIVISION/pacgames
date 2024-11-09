@@ -300,6 +300,8 @@ function getMixedOrLosingBets(bets) {
   );
 }
 
+console.log(myBets)
+
 const writePendingBets = () => {
   
   const filteredArray = myBets.filter(entry =>
@@ -315,7 +317,19 @@ const writePendingBets = () => {
           const isWinningBet =
               (betType === "home" && home > away) ||
               (betType === "away" && away > home) ||
-              (betType === "draw" && home === away);
+              (betType === "draw" && home === away) ||
+              (betType === "homeOver2" && home >= 3) ||
+              (betType === "btts" && home >= 1 && away >= 1) ||
+              (betType === "awayOver2" && away >= 3) ||
+              (betType === "homeUnder2" && home <= 2) ||
+              (betType === "btnts" && home === 0 || away === 0) ||
+              (betType === "awayUnder2" && away <= 2) ||
+              (betType === "homeBTTS" && home > away && away >= 1) ||
+              (betType === "homeMinus1" && home > away + 1) ||
+              (betType === "awayBTTS" && away > home && home >= 1) ||
+              (betType === "homeBTNTS" && home > away && away === 0) ||
+              (betType === "awayMinus1" && away > home + 1) ||
+              (betType === "awayBTNTS" && away > home && home === 0);
   
           // Add a property to indicate if this is a winning bet
           bet.isWinningBet = isWinningBet;
