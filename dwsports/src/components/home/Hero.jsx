@@ -217,7 +217,7 @@ const Hero = () => {
         <TopText>{t("hero.title")}</TopText>
       <motion.img src={Sho} 
                 alt="background" 
-                style={{ width: isMobile ? "40%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 0.75 }} 
+                style={{ width: isMobile ? "40%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
                 animate={controls} />
      
         </TopHeader>
@@ -329,6 +329,7 @@ const TopHeader = styled.div`
     margin: 10px;
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
+    box-shadow: inset 0 0 25px ${props => props.theme.text};
     @media(max-width: 490px){
         min-height: 150px;
     }
@@ -360,6 +361,7 @@ const Header = styled(motion.div)`
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
     background: ${props => props.theme.cardTwo};
+    box-shadow: inset 0 0 25px ${props => props.theme.text};
 `;
 
 const ContainerTitle = styled.div`

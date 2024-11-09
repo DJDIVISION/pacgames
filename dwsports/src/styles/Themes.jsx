@@ -59,7 +59,8 @@ export const lightTheme = {
     textRgba: '255, 255, 255',
     textShadow:  '0px 1px 1px #ffffff',
     textShadowTwo:  '0px 1px 1px #000000',
-    MainShadow: '0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4',
+    MainShadow: '0 0 5px #03e9f4, 0 0 25px ${props => props.theme.text}, 0 0 50px #03e9f4, 0 0 100px #03e9f4',
+    MainInnerShadow: `inset 0 0 10px ${props => props.theme.text}`,
     pacBoxShadow: ' -4px 5px 8px -1px rgba(255, 255, 255, 0.75)',
     dosisAqua: {
       fontFamily: 'Dosis',
