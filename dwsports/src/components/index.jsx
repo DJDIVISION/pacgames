@@ -926,15 +926,61 @@ export const LowRower = styled.div`
     height: auto;
     ${props => props.theme.displayFlexColumn};
     overflow-y: auto;
-    padding: 10px 0;
+    
 `;
 
 export const RowerRow = styled.div`
     width: 100%;
-    height: auto;
-    ${props => props.theme.displayFlex};
-    justify-content: space-around;
+    height: 50px;
+    ${props => props.theme.displayFlexCenter};
+    //justify-content: space-around;
     margin: 5px 0;
+`;
+
+export const RowerFirstEvent = styled.div`
+    width: 30%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    text-align: center;
+    h2{
+        font-size: 12px;
+        color: ${props => props.theme.text};
+    }
+    img{
+        display: block;
+        width: 25%;
+        object-fit: cover;
+    }
+`;
+
+export const RowerRowEvent = styled.div`
+    width: 10%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        font-size: 14px;
+        color: ${props => props.theme.text};
+    }
+`;
+export const RowerTeamEvent = styled.div`
+    width: 30%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    img{
+        display: block;
+        width: 200%;
+        object-fit: cover;
+    }
+`;
+
+export const RowerRowName = styled.div`
+    width: 40%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        font-size: 14px;
+        color: ${props => props.theme.text};
+    }
 `;
 
 

@@ -16,7 +16,7 @@ import Stack from '@mui/material/Stack';
 import allBets from '../assets/allBets.png'
 import { useMediaQuery } from 'react-responsive';
 import { FantasyState } from '../context/FantasyContext'
-import { SmallStatsWrapper,Rower, SportIcon, SportName, SportWrapper, BetConatiner, StyledButtonBets, LowRower, RowerRow, TeamStatsRow } from '../components'
+import { SmallStatsWrapper,Rower,RowerRowEvent,RowerRowName,RowerTeamEvent,RowerFirstEvent, SportIcon, SportName, SportWrapper, BetConatiner, StyledButtonBets, LowRower, RowerRow, TeamStatsRow } from '../components'
 import { Avatar, Button, CircularProgress } from '@mui/material'
 import { supabase } from '../supabase/client'
 import premier from '../assets/premier.png'
@@ -34,6 +34,10 @@ import TeamStats from '../components/menus/TeamStats';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import LeagueStats from '../components/menus/LeagueStats';
+import ownGoal from '../assets/logos/ownGoal.png'
+import goal from '../assets/logos/goal.png'
+import redCard from '../assets/logos/redCard.png'
+import yellowCard from '../assets/logos/yellowCard.png'
 
 const NewBets = () => {
 
@@ -50,6 +54,10 @@ const NewBets = () => {
     const [homeUnderTwoFive, setHomeUnderTwoFive] = useState(null)
     const [awayOverTwoFive, setAwayOverTwoFive] = useState(null)
     const [awayUnderTwoFive, setAwayUnderTwoFive] = useState(null)
+    const [currentRoundLiveMaches, setCurrentRoundLiveMatches] = useState(null)
+    const [finishedMatches, setFinishedMatches] = useState(null)
+    const [roundMatches, setRoundMatches] = useState(null)
+    const [pendingMatches, setPendingMatches] = useState(null)
     const [btts, setBtts] = useState(null)
     const [btnts, setBtnts] = useState(null)
     const [homeBtts, setHomeBtts] = useState(null)
@@ -73,6 +81,7 @@ const NewBets = () => {
     const [expandedIndex, setExpandedIndex] = useState(null);
     const {balance, setBalance} = FantasyState();
     const navigate = useNavigate()
+    const [presentIds, setPresentIds] = useState([])
 
 
     const raiseRound = () => {
@@ -158,32 +167,7 @@ const NewBets = () => {
         }
       };
   
-      const fetchMatchesForRound = async (round) => {
-        console.log(activeRound)
-        setLoading(true);
-        try {
-            const string = round.toString();
-          const { data: matchData, error: matchError } = await supabase
-            .from('fixtures') // Assuming this is your table
-            .select(string) // Fetch all match data, or specify the columns you need
-            
-            .eq('leagueName', activeLeague); // Also filter by the active team/league
-    
-          if (matchError) throw new Error(matchError.message);
-          if (matchData && matchData.length > 0) {
-            //console.log(matchData[0][string])
-            setActiveMatches(matchData[0][string]); // Store the fetched matches in state
-            //console.log(`Matches for round ${round}:`, matchData[0][string]);
-          } else {
-            console.log('No matches found for the selected round');
-          }
-        } catch (error) {
-          console.error('Error fetching matches:', error);
-          setActiveMatches([])
-        } finally {
-          setLoading(false);
-        }
-      };
+      
   
     useEffect(() => {
         if (activeLeagueId) {
@@ -191,11 +175,11 @@ const NewBets = () => {
         }
     }, [activeLeagueId]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (activeRound !== null) {
             fetchMatchesForRound(activeRound); // Fetch matches for the active round
         }
-    }, [activeRound]);
+    }, [activeRound]); */
    
     const sendOdds = async (match) => {
         console.log(activeMatches)
@@ -267,12 +251,55 @@ const NewBets = () => {
         setHomeMinus1(null)
         setAwayMinus1(null)
     }
-
     
 
     const sendOddsTwo = async (match) => {
-    const str = localStorage.getItem("round")
-    const json = JSON.parse(str)
+      const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+        params: {
+          league: activeLeagueId,
+          season: '2024',
+          round: `Regular Season - ${activeRound}`
+        },
+        headers: {
+          'x-rapidapi-key': /*  */'5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+
+      try {
+        const response = await axios.request(options);
+        console.log(response.data.response);
+        const data = response.data.response
+        const findGoalDifferences = (arr1, arr2) => {
+          const diffs = [];
+        
+          // Create a map for efficient lookup by fixture.id
+          const map2 = new Map(arr2.map(item => [item.fixture.id, item]));
+        
+          // Loop through each item in arr1 and check goals.home in the corresponding item in arr2
+          arr1.forEach(item1 => {
+            const item2 = map2.get(item1.fixture.id);
+            if (item2 && item1.fixture.status.long !== item2.fixture.status.long) {
+              if(item1.fixture.status.short === "FT"){
+                diffs.push({ match: item1, match2: item2 });
+                item2.fixture = item1.fixture;
+                item2.goals = item1.goals;
+                item2.score = item1.score;
+                item2.teams = item1.teams;
+              }
+              console.log(item2)
+            }
+          });
+        
+          return diffs;
+        };
+        const goalDifferences = findGoalDifferences(data, activeMatches);
+        console.log(goalDifferences);
+      } catch (error) {
+        console.error(error);
+      }
     
     activeMatches.forEach((item2) => {
       // Find the corresponding item in array1 by matching the fixture id
@@ -287,8 +314,8 @@ const NewBets = () => {
       }
     });
 
-    console.log(activeMatches)
-    const { data, error } = await supabase
+    
+    /* const { data, error } = await supabase
             .from('fixtures')
             .update([{"11": activeMatches}])
             .eq("leagueName", activeLeague)
@@ -298,7 +325,7 @@ const NewBets = () => {
                 console.log("Status changed")
                 message.success("data successfully inserted on your ass")
                 
-        }
+        } */
     }
 
     const sendOddsThree = async () => {
@@ -413,32 +440,37 @@ const NewBets = () => {
     const handleButtonClick = (league) => {
         setDisabledButton(league.name);
         if(league.name === 'Premier League'){
-            setActiveMatches([])
+            setCurrentRoundLiveMatches(null)
             setActiveRound(null)
+            setPresentIds(null)
             setActiveLeagueId(39)
             setActiveLeague("Premier League")
         }
         if(league.name === 'La Liga'){
-            setActiveMatches([])
+          setCurrentRoundLiveMatches(null)
             setActiveRound(null)
+            setPresentIds(null)
             setActiveLeagueId(140)
             setActiveLeague("La Liga")
         }
         if(league.name === 'Serie A'){
-            setActiveMatches([])
+          setCurrentRoundLiveMatches(null)
             setActiveRound(null)
+            setPresentIds(null)
             setActiveLeagueId(135)
             setActiveLeague("Serie A")
         }
         if(league.name === 'Bundesliga'){
-            setActiveMatches([])
+          setCurrentRoundLiveMatches(null)
             setActiveRound(null)
+            setPresentIds(null)
             setActiveLeagueId(78)
             setActiveLeague("Bundesliga")
         }
         if(league.name === 'Ligue 1'){
-            setActiveMatches([])
+          setCurrentRoundLiveMatches(null)
             setActiveRound(null)
+            setPresentIds(null)
             setActiveLeagueId(61)
             setActiveLeague("Ligue 1")
         }
@@ -486,6 +518,156 @@ const NewBets = () => {
       const goBack = () => {
         navigate(`/`)
       }
+
+      const getLiveMatches = async () => {
+        setLoading(true)
+        const options = {
+          method: 'GET',
+          url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+          params: {live: 'all'},
+          headers: {
+            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+          }
+        };
+        
+        try {
+          const response = await axios.request(options);
+          console.log(response.data);
+          const matches = []
+          const presentIDs = []
+          response.data.response.forEach((match) => {
+            if(match.league.id === activeLeagueId){
+              matches.push(match)
+              presentIDs.push(match.fixture.id)
+            }
+          })
+          //setActiveMatches(matches)
+          setCurrentRoundLiveMatches(matches)
+          setPresentIds(prevIds => ({
+            ...prevIds,
+            ...presentIDs
+          }));
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      const getFinishedMatches = async () => {
+        const optionsFour = {
+          method: 'GET',
+          url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+          params: {
+            league: activeLeagueId,
+            season: '2024',
+            round: `Regular Season - ${activeRound}`
+          },
+          headers: {
+            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+          }
+        };
+        try {
+          const response = await axios.request(optionsFour);
+          const matches = []
+          const presentIDs = []
+          response.data.response.forEach((match) => {
+            if(match.fixture.status.short === "FT"){
+              matches.push(match)
+              presentIDs.push(match.fixture.id)
+            }
+          })
+          setFinishedMatches(matches)
+          setPresentIds(prevIds => ({
+            ...prevIds,
+            ...presentIDs
+          }));
+        } catch (error) {
+          console.error(error);
+        }
+        setLoading(false)
+      }
+
+      const fetchMatchesForRound = async (round) => {
+        console.log(activeRound)
+        
+        try {
+            const string = round.toString();
+          const { data: matchData, error: matchError } = await supabase
+            .from('fixtures') // Assuming this is your table
+            .select(string) // Fetch all match data, or specify the columns you need
+            
+            .eq('leagueName', activeLeague); // Also filter by the active team/league
+    
+          if (matchError) throw new Error(matchError.message);
+          if (matchData && matchData.length > 0) {
+            //console.log(matchData[0][string])
+            setActiveMatches(matchData[0][string]); // Store the fetched matches in state
+            //console.log(`Matches for round ${round}:`, matchData[0][string]);
+          } else {
+            console.log('No matches found for the selected round');
+          }
+        } catch (error) {
+          console.error('Error fetching matches:', error);
+          setActiveMatches([])
+        } 
+      };
+
+      const fetchPending = async () => {
+        console.log(activeRound)
+        
+        try {
+            const string = activeRound.toString();
+            console.log("string", string)
+          const { data: matchData, error: matchError } = await supabase
+            .from('fixtures') // Assuming this is your table
+            .select(string) // Fetch all match data, or specify the columns you need
+            
+            .eq('leagueName', activeLeague); // Also filter by the active team/league
+    
+          if (matchError) throw new Error(matchError.message);
+          if (matchData ) {
+            setRoundMatches(matchData[0][string])
+          
+          } else {
+            console.log('No matches found for the selected round');
+          }
+        } catch (error) {
+          console.error('Error fetching matches:', error);
+        } 
+      };
+      
+
+      const getLastMatches = () => {
+        if(roundMatches){
+          console.log(presentIds)
+        console.log(roundMatches)
+        const idsToKeep = Object.values(presentIds);
+        console.log(idsToKeep)
+        const filteredFixtures = roundMatches.filter(item => !idsToKeep.includes(item.fixture.id));
+        const secondFilter = filteredFixtures.filter(item => (item.fixture.status.short !== "PST" && item.fixture.status.short !== "FT"))
+        console.log(currentRoundLiveMaches)
+        const ids = []
+        currentRoundLiveMaches.forEach((match) => {
+          ids.push(match.fixture.id)
+        })
+        const lastFilter = secondFilter.filter(item => !ids.includes(item.fixture.id));
+        setPendingMatches(lastFilter)
+        }
+      }
+      
+
+      useEffect(() => {
+        getLiveMatches();
+      }, [activeLeagueId])
+      useEffect(() => {
+        getFinishedMatches();
+        fetchPending();
+      }, [activeLeagueId,activeRound])
+      useEffect(() => {
+        getLastMatches();
+      }, [roundMatches])
+      
 
       
       
@@ -539,8 +721,264 @@ const NewBets = () => {
               <TeamStatsRow>
                 {!isLiveOpen && <StyledButton onClick={() => setLeagueStatsMenu(true)} style={{fontSize: isMobile ? "14px" : "24px", padding: isMobile ? "10px 15px" : "10px 15px"}}>STANDINGS</StyledButton>}
               </TeamStatsRow>
-              {/* <StyledButton onClick={sendOddsThree}>SEND</StyledButton> */}
-        {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
+              <StyledButton style={{fontSize: '16px', padding: '10px 15px'}} onClick={sendOddsTwo}>SEND</StyledButton>
+              {currentRoundLiveMaches?.map((match, index) => {
+                  const date = new Date(match.fixture.date).toLocaleString();
+                  const dateMS = new Date(match.fixture.date).getTime();
+                  const dateNow = new Date();
+                  return (
+                    <SmallStatsWrapper key={index}
+                    initial={{ minHeight: '130px' }}
+                    animate={{ minHeight: expandedIndex === index ? '330px' : '130px' }}
+                    transition={{ duration: 0.5 }}>
+                      <Rower>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.home.name}</TeamLogoText>
+                        </TeamsLogo>
+                        <TeamsResult>
+                          <DateRow>{date}</DateRow>
+                          <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
+                          <BigDateRow>{match.fixture.status.long}</BigDateRow>
+  
+  
+                          <VenueRow>{match.fixture.venue.name}, {match.fixture.venue.city}</VenueRow>
+                          <SmallArrowDown onClick={() => toggleExpand(index)} />
+                        </TeamsResult>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.away.id)} alt="Away Team Logo" src={match.teams.away.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.away.name}</TeamLogoText>
+                        </TeamsLogo>
+                      </Rower>
+                      {expandedIndex === index && (
+                        <LowRower >
+                         {match?.events?.map((event) => {
+                          console.log(event)
+                          return(
+                            <RowerRow>
+                              <RowerFirstEvent>{event?.detail === "Own Goal" ? <img style={{transform: 'rotate(180deg)'}} src={ownGoal} alt ="owngoal" /> : event.detail === "Yellow Card" ? <img src={yellowCard} alt ="owngoal" /> :  event.detail === "Red Card" ? <img src={redCard} alt ="owngoal" /> : event.detail === "Normal Goal" ? <img src={goal} alt ="owngoal" /> : 
+                              event.detail.startsWith("Substitution") ? <h2>OUT: {event?.assist?.name}</h2> : event.detail.startsWith("Goal Disallowed") ? <img src={ownGoal} alt ="owngoal" /> : event?.detail}</RowerFirstEvent>
+                              <RowerRowName><h2>{event?.player?.name}</h2></RowerRowName>
+                              <RowerRowEvent><h2>{event?.time?.elapsed}'</h2></RowerRowEvent>
+                              <RowerRowEvent><RowerTeamEvent><img src={event?.team?.logo} alt ="owngoal" /></RowerTeamEvent></RowerRowEvent>
+                            </RowerRow>
+                          )
+                         })}
+                         
+                        </LowRower>
+                      )}
+                    </SmallStatsWrapper>
+                  )
+                })}
+                {finishedMatches?.map((match, index) => {
+                  const date = new Date(match.fixture.date).toLocaleString();
+                  const dateMS = new Date(match.fixture.date).getTime();
+                  const dateNow = new Date();
+                  return (
+                    <SmallStatsWrapper key={index}
+                    initial={{ minHeight: '130px' }}
+                    animate={{ minHeight: expandedIndex === index ? '330px' : '130px' }}
+                    transition={{ duration: 0.5 }}>
+                      <Rower>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.home.name}</TeamLogoText>
+                        </TeamsLogo>
+                        <TeamsResult>
+                          <DateRow>{date}</DateRow>
+                          <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
+                          <BigDateRow>{match.fixture.status.long}</BigDateRow>
+  
+  
+                          <VenueRow>{match.fixture.venue.name}, {match.fixture.venue.city}</VenueRow>
+                          {(match.fixture.status.short !== "FT") && <SmallArrowDown onClick={() => toggleExpand(index)}/>}
+                        </TeamsResult>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.away.id)} alt="Away Team Logo" src={match.teams.away.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.away.name}</TeamLogoText>
+                        </TeamsLogo>
+                      </Rower>
+                      {expandedIndex === index && (
+                        <LowRower >
+                         {match?.events?.map((event) => {
+                          console.log(event)
+                          return(
+                            <RowerRow>
+                              <RowerFirstEvent>{event?.detail === "Own Goal" ? <img style={{transform: 'rotate(180deg)'}} src={ownGoal} alt ="owngoal" /> : event.detail === "Yellow Card" ? <img src={yellowCard} alt ="owngoal" /> :  event.detail === "Red Card" ? <img src={redCard} alt ="owngoal" /> : event.detail === "Normal Goal" ? <img src={goal} alt ="owngoal" /> : 
+                              event.detail.startsWith("Substitution") ? <h2>OUT: {event?.assist?.name}</h2> : event.detail.startsWith("Goal Disallowed") ? <img src={ownGoal} alt ="owngoal" /> : event?.detail}</RowerFirstEvent>
+                              <RowerRowName><h2>{event?.player?.name}</h2></RowerRowName>
+                              <RowerRowEvent><h2>{event?.time?.elapsed}'</h2></RowerRowEvent>
+                              <RowerRowEvent><RowerTeamEvent><img src={event?.team?.logo} alt ="owngoal" /></RowerTeamEvent></RowerRowEvent>
+                            </RowerRow>
+                          )
+                         })}
+                         
+                        </LowRower>
+                      )}
+                    </SmallStatsWrapper>
+                  )
+                })}
+                {pendingMatches?.map((match, index) => {
+                  const date = new Date(match.fixture.date).toLocaleString();
+                  const dateMS = new Date(match.fixture.date).getTime();
+                  const dateNow = new Date();
+                  return (
+                    <SmallStatsWrapper key={index}
+                    initial={{ minHeight: '130px' }}
+                    animate={{ minHeight: expandedIndex === index ? '330px' : '130px' }}
+                    transition={{ duration: 0.5 }}>
+                      <Rower>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.home.name}</TeamLogoText>
+                        </TeamsLogo>
+                        <TeamsResult>
+                          <DateRow>{date}</DateRow>
+                          {(match.odds && dateNow < dateMS) ? (
+                            <MatchOdds>
+                            <OddsColumn
+                                id={`${match.fixture.id}-home`}
+                                isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'home'
+                                )}
+                                onClick={() => handleBetClick(match, 'home')}
+                            >
+                                {match.odds.home}
+                            </OddsColumn>
+                            <OddsColumn
+                                id={`${match.fixture.id}-draw`}
+                                isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'draw'
+                                )}
+                                onClick={() => handleBetClick(match, 'draw')}
+                            >
+                                {match.odds.draw}
+                            </OddsColumn>
+                            <OddsColumn
+                                id={`${match.fixture.id}-away`}
+                                isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'away'
+                                )}
+                                onClick={() => handleBetClick(match, 'away')}
+                            >
+                                {match.odds.away}
+                            </OddsColumn>
+                        </MatchOdds>
+                        ) : (
+                            <MatchOdds>
+                              <OddsColumn style={{width: '50%'}}>{match.fixture.status.short === "PST" ? "MATCH POSTPONED" : match.fixture.status.short === "NS" ? "NOT STARTED" : match.fixture.status.short === "TBD" ? "TIME NOT DEFINED" : "MATCH STARTED"}
+                                
+                              </OddsColumn>
+                                {/* <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
+                                <input style={{width: '50px'}} type='number' onChange={(e) => setDraw(e.target.value)} />
+                                <input style={{width: '50px'}} type='number' onChange={(e) => setTwo(e.target.value)} />
+                                <button onClick={() => sendOdds(match)}>SEND</button> */}
+                            </MatchOdds>
+                        )}
+  
+  
+                          <VenueRow>{match.fixture.venue.name}, {match.fixture.venue.city}</VenueRow>
+                          {(match.fixture.status.short !== "FT") && <SmallArrowDown onClick={() => toggleExpand(index)}/>}
+                        </TeamsResult>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.away.id)} alt="Away Team Logo" src={match.teams.away.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.away.name}</TeamLogoText>
+                        </TeamsLogo>
+                      </Rower>
+                      {expandedIndex === index && (
+            <LowRower >
+              <RowerRow>
+                {match?.odds?.homeOver2 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeOver2'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeOver2')}>{match.teams.home.name} OVER 2.5 : {match?.odds?.homeOver2}</OddsColumnBig> : <input type='number' placeholder="HOME OVER 2.5" onChange={(e) => setHomeOverTwoFive(e.target.value)} />}
+                {match?.odds?.btts ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btts'
+                                )}
+                                onClick={() => handleBetClick(match, 'btts')}>BOTH TEAMS SCORE : {match?.odds?.btts}</OddsColumnBig> : <input type='number' placeholder="BOTH TEAMS SCORE" onChange={(e) => setBtts(e.target.value)} />}
+                {match?.odds?.awayOver2 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayOver2'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayOver2')}>{match.teams.away.name} OVER 2.5 : {match?.odds?.awayOver2}</OddsColumnBig> : <input type='number' placeholder="AWAY OVER 2.5" onChange={(e) => setAwayOverTwoFive(e.target.value)} />}
+              </RowerRow>
+              <RowerRow>
+                {match?.odds?.homeUnder2 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeUnder2'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeUnder2')}>{match.teams.home.name} UNDER 2.5 : {match?.odds?.homeUnder2}</OddsColumnBig> : <input type='number' placeholder="HOME UNDER 2.5" onChange={(e) => setHomeUnderTwoFive(e.target.value)} />}
+                {match?.odds?.btnts ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btnts'
+                                )}
+                                onClick={() => handleBetClick(match, 'btnts')}>BOTH TEAMS NOT SCORE : {match?.odds?.btnts}</OddsColumnBig> : <input type='number' placeholder="BOTH TEAMS NOT SCORE" onChange={(e) => setBtnts(e.target.value)} />}
+                {match?.odds?.awayUnder2 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayUnder2'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayUnder2')}>{match.teams.away.name} UNDER 2.5 : {match?.odds?.awayUnder2}</OddsColumnBig> : <input type='number' placeholder="AWAY UNDER 2.5" onChange={(e) => setAwayUnderTwoFive(e.target.value)} />}
+              </RowerRow>
+              <RowerRow>
+              {match?.odds?.homeBTTS ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeBTTS')}>{match.teams.home.name} WINS BOTH TEAMS SCORE: {match?.odds?.homeBTTS}</OddsColumnBig> : <input type='number' placeholder="HOME BOTH TEAMS SCORE" onChange={(e) => setHomeBtts(e.target.value)} />}
+              {match?.odds?.homeMinus1 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeMinus1'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeMinus1')}>{match.teams.home.name} -1 : {match?.odds?.homeMinus1}</OddsColumnBig> : <input type='number' placeholder="HOME -1" onChange={(e) => setHomeMinus1(e.target.value)} />}
+                {match?.odds?.awayBTTS ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayBTTS')}>{match.teams.away.name} WINS BOTH TEAMS SCORE : {match?.odds?.awayBTTS}</OddsColumnBig> : <input type='number' placeholder="AWAY BOTH TEAMS SCORE" onChange={(e) => setAwayBtts(e.target.value)} />}
+              </RowerRow>
+              <RowerRow>
+              {match?.odds?.homeBTNTS ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTNTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeBTNTS')}>{match.teams.home.name} WINS BOTH TEAMS NOT SCORE : {match?.odds?.homeBTNTS}</OddsColumnBig> : <input type='number' placeholder="HOME BOTH TEAMS NOT SCORE" onChange={(e) => setHomeBtnts(e.target.value)} />}
+              {match?.odds?.awayMinus1 ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayMinus1'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayMinus1')}>{match.teams.away.name} -1 : {match?.odds?.awayMinus1}</OddsColumnBig> : <input type='number' placeholder="AWAY -1" onChange={(e) => setAwayMinus1(e.target.value)} />}
+                {match?.odds?.awayBTNTS ? <OddsColumnBig isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTNTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayBTNTS')}>{match.teams.away.name} WINS BOTH TEAMS NOT SCORE : {match?.odds?.awayBTNTS}</OddsColumnBig> : <input type='number' placeholder="AWAY BOTH NOT TEAMS SCORE" onChange={(e) => setAwayBtnts(e.target.value)} />}
+              </RowerRow>
+            </LowRower>
+          )}
+                    </SmallStatsWrapper>
+                  )
+                })}
+        {/* {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
         activeMatches.map((match, index) => {
           
             const date = new Date(match.fixture.date).toLocaleString();
@@ -606,10 +1044,10 @@ const NewBets = () => {
                               <OddsColumn style={{width: '50%'}}>{match.fixture.status.short === "PST" ? "MATCH POSTPONED" : match.fixture.status.short === "NS" ? "NOT STARTED" : match.fixture.status.short === "TBD" ? "TIME NOT DEFINED" : "MATCH STARTED"}
                                 
                               </OddsColumn>
-                               {/*  <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
+                                <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setDraw(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setTwo(e.target.value)} />
-                                <button onClick={() => sendOdds(match)}>SEND</button> */}
+                                <button onClick={() => sendOdds(match)}>SEND</button>
                             </MatchOdds>
                         )}
                             </>
@@ -691,7 +1129,7 @@ const NewBets = () => {
   })
 ) : (
   <LoadingSection>No matches found</LoadingSection>
-)}           
+)}            */}
             </BetConatiner>
           )}
           <AllBetsBadge>{pendingBets}</AllBetsBadge>
