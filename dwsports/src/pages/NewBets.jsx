@@ -721,7 +721,7 @@ const NewBets = () => {
               <TeamStatsRow>
                 {!isLiveOpen && <StyledButton onClick={() => setLeagueStatsMenu(true)} style={{fontSize: isMobile ? "14px" : "24px", padding: isMobile ? "10px 15px" : "10px 15px"}}>STANDINGS</StyledButton>}
               </TeamStatsRow>
-              <StyledButton style={{fontSize: '16px', padding: '10px 15px'}} onClick={sendOddsTwo}>SEND</StyledButton>
+             {/*  <StyledButton style={{fontSize: '16px', padding: '10px 15px'}} onClick={sendOddsTwo}>SEND</StyledButton> */}
               {currentRoundLiveMaches?.map((match, index) => {
                   const date = new Date(match.fixture.date).toLocaleString();
                   const dateMS = new Date(match.fixture.date).getTime();
