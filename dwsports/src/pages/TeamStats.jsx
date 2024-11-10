@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom'
 import {Link as LinkR} from 'react-router-dom'
 import { FantasyState } from '../context/FantasyContext';
 import { minWidth } from '@mui/system';
+import axios from 'axios';
 
 
 
@@ -30,6 +31,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
   const navigate = useNavigate()
   const {activeLeague, setActiveLeague} = FantasyState();
   const {activeTeamId, setActiveTeamId} = FantasyState();
+  const {activeLeagueId, setActiveLeagueId} = FantasyState();
   const [homeMatches, setHomeMatches] = useState([]);
   const [awayMatches, setAwayMatches] = useState([]);
   const [activeMatches, setActiveMatches] = useState([]);
@@ -98,39 +100,78 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
   
   const fetchData = async () => {
     setLoading(true);
-  
-    // First query: fetching fixtures data
-    const { data: fixtureData, error: fixtureError } = await supabase
-      .from('fixtures')
-      .select('fixtures')
-      .eq("leagueName", activeLeague);
+    const options = {
+      method: 'GET',
+      url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+      params: {
+        season: '2024',
+        team: activeTeamId
+      },
+      headers: {
+        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+      }
+    };
     
-    if (fixtureError) {
-      console.error('Error fetching fixture data:', fixtureError.message);
-    } else if (fixtureData && fixtureData.length > 0) {
+    try {
       
+      const response = await axios.request(options);
       
+      const data = response.data.response 
+      console.log(data);
       const homeMatches = [];
       const awayMatches = [];
-  
-      // Processing fixture data
-      fixtureData[0].fixtures.forEach((el) => {
+      data.forEach((el) => {
         if (el.teams.home.id === activeTeamId && el.goals.home !== null) {
           homeMatches.push(el);
         } else if (el.teams.away.id === activeTeamId && el.fixture.referee !== null) {
           awayMatches.push(el);
         }
-      });
-  
+      })
       setHomeMatches(homeMatches);
       setAwayMatches(awayMatches);
       setActiveMatches(homeMatches);
-    } else {
-      console.error('No fixture data found');
+    } catch (error) {
+      console.error(error);
+    }
+
+    const optionsTwo = {
+      method: 'GET',
+      url: 'https://api-football-v1.p.rapidapi.com/v3/teams/statistics',
+      params: {
+        league: activeLeagueId,
+        season: '2024',
+        team: activeTeamId
+      },
+      headers: {
+        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+      }
+    };
+    
+    try {
+      const response = await axios.request(optionsTwo);
+      console.log(response.data.response);
+      const data = response.data.response
+      setTeamData(data)
+      setLineUps(data.lineups)
+      setCleanSheets(data.clean_sheet)
+      setFailedToScore(data.failed_to_score)
+      setDraws(data.fixtures.draws)
+      setLoses(data.fixtures.loses)
+      setWins(data.fixtures.wins)
+      setForm(data.form)
+      setPlayed(data.fixtures.played)
+      setPenaltyMissed(data.penalty.missed)
+      setPenaltyScored(data.penalty.scored)
+      setGoalsAgainst(data.goals.against.total)
+      setGoalsFor(data.goals.for.total)
+    } catch (error) {
+      console.error(error);
     }
   
     // Second query: fetching team stats
-    const { data: teamStatsData, error: teamStatsError } = await supabase
+    /* const { data: teamStatsData, error: teamStatsError } = await supabase
       .from('teams')
       .select('stats')
       .eq("teamId", activeTeamId);
@@ -138,54 +179,23 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     if (teamStatsError) {
       console.error('Error fetching team stats data:', teamStatsError.message);
     } else if (teamStatsData && teamStatsData.length > 0) {
-      setTeamData(teamStatsData[0].stats)
-      setLineUps(teamStatsData[0].stats.lineups)
-      setCleanSheets(teamStatsData[0].stats.clean_sheet)
-      setFailedToScore(teamStatsData[0].stats.failed_to_score)
-      setDraws(teamStatsData[0].stats.fixtures.draws)
-      setLoses(teamStatsData[0].stats.fixtures.loses)
-      setWins(teamStatsData[0].stats.fixtures.wins)
-      setForm(teamStatsData[0].stats.form)
-      setPlayed(teamStatsData[0].stats.fixtures.played)
-      setPenaltyMissed(teamStatsData[0].stats.penalty.missed)
-      setPenaltyScored(teamStatsData[0].stats.penalty.scored)
-      setGoalsAgainst(teamStatsData[0].stats.goals.against.total)
-      setGoalsFor(teamStatsData[0].stats.goals.for.total)
+      setTeamData(data.stats)
+      setLineUps(data.stats.lineups)
+      setCleanSheets(data.stats.clean_sheet)
+      setFailedToScore(data.stats.failed_to_score)
+      setDraws(data.stats.fixtures.draws)
+      setLoses(data.stats.fixtures.loses)
+      setWins(data.stats.fixtures.wins)
+      setForm(data.stats.form)
+      setPlayed(data.stats.fixtures.played)
+      setPenaltyMissed(data.stats.penalty.missed)
+      setPenaltyScored(data.stats.penalty.scored)
+      setGoalsAgainst(data.stats.goals.against.total)
+      setGoalsFor(data.stats.goals.for.total)
     } else {
       console.error('No team stats data found for the given team ID');
-    }
-  
-    setLoading(false);
-  
-    /* const str2 = localStorage.getItem(activeTeamId);
-    if(str2 !== null){
-      const json2 = JSON.parse(str2);
-      setTeamData(json2.response)
-      setLineUps(json2.response.lineups)
-      setCleanSheets(json2.response.clean_sheet)
-      setFailedToScore(json2.response.failed_to_score)
-      setDraws(json2.response.fixtures.draws)
-      setLoses(json2.response.fixtures.loses)
-      setWins(json2.response.fixtures.wins)
-      setForm(json2.response.form)
-      setPlayed(json2.response.fixtures.played)
-      setPenaltyMissed(json2.response.penalty.missed)
-      setPenaltyScored(json2.response.penalty.scored)
-      setGoalsAgainst(json2.response.goals.against.total)
-      setGoalsFor(json2.response.goals.for.total)
-    } else {
-      setTeamData([])
     } */
-    
-    /* json.response.forEach((el) => {
-      if(el.teams.home.id === activeTeamId && el.goals.home !== null){
-        homeMatches.push(el)
-      } else if(el.teams.away.id === activeTeamId && el.fixture.referee !== null){
-        awayMatches.push(el)
-      }
-    })
-    setHomeMatches(homeMatches)
-    setAwayMatches(awayMatches) */
+    setLoading(false);
   }
 
   /* console.log(teamData)

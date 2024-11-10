@@ -807,8 +807,8 @@ export const TopRow = styled.div`
 `;
 
 export const LiveWrapper = styled.div`
-     width: 50px;
-  height: 50px;
+     width: 60px;
+  height: 60px;
   position: absolute;
   top: 50%;
   left: 12.5%;

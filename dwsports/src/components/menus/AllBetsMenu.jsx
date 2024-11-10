@@ -17,6 +17,7 @@ import { CloseStats,StatsWrapper,BetSection,TeamsLogo,AvatarHolder,TypeofBet,Tea
 import { Avatar, CircularProgress } from '@mui/material';
 import draw from "../../assets/draw.png"
 import {  StyledButtonBets } from '../../components'
+import axios from 'axios'
 
 
 
@@ -308,6 +309,7 @@ const writePendingBets = () => {
     entry.bet.every(bet => bet.match.goals.home !== null)
   );
   if(filteredArray.length > 0){
+    console.log(filteredArray)
     filteredArray.forEach(entry => {
       entry.bet.forEach(bet => {
           const { betType, match } = bet;
@@ -376,6 +378,55 @@ useEffect(() => {
   writePendingBets()
 }, [myBets])
 
+const writeFixtures = async () => {
+  const leagueIds = [39, 135, 140, 78, 61]; 
+  const season = '2024';
+  const apiKey = '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2';
+  const apiHost = 'api-football-v1.p.rapidapi.com';
+  try {
+    // Map each leagueId to an axios request
+    const requests = leagueIds.map(leagueId => {
+      const options = {
+        method: 'GET',
+        url: `https://${apiHost}/v3/fixtures`,
+        params: { league: leagueId, season },
+        headers: {
+          'x-rapidapi-key': apiKey,
+          'x-rapidapi-host': apiHost,
+        },
+      };
+
+      return axios.request(options);
+    });
+
+    // Execute all requests at once
+    const responses = await Promise.all(requests);
+
+    // Update Supabase JSONB column for each league’s response data
+    const updatePromises = responses.map((response, index) => {
+      const leagueId = leagueIds[index];  // Ensure each response corresponds to a leagueId
+      const fixturesData = response.data.response; // Modify this if response structure varies
+
+      // Update the Supabase table where the league ID matches
+      return supabase
+        .from('fixtures')              // Replace with your actual table name
+        .update({ fixtures: fixturesData }) // Update the JSONB column (`fixtures_data`) with new data
+        .eq('id', leagueId);           // Ensure correct league row is updated
+    });
+
+    // Wait for all updates to finish
+    const updateResults = await Promise.all(updatePromises);
+
+    console.log('Updated successfully:', updateResults);
+  } catch (error) {
+    console.error('Error fetching or updating fixtures:', error);
+  }
+}
+
+/* useEffect(() => {
+  writeFixtures();
+}, []) */
+
 const getFixtures = async (data) => {
     setMyBets([])
     setLoading(true)
@@ -394,16 +445,47 @@ const getFixtures = async (data) => {
   
         if (data && data[0]?.fixtures) {
           const id = match.match.fixture.id;
+          const date = match.match.fixture.date;
+          
+         /*  const firstMatchWithNoHomeGoals = data[0].fixtures.find(match => match.goals.home === null);
+          const matchDate = firstMatchWithNoHomeGoals.fixture.date
+          const dateInMs = new Date(matchDate).getTime();
+
+          // Get the current date in milliseconds
+          const currentDateInMs = Date.now();
+
+          // Compare the dates
+          if (dateInMs > currentDateInMs) {
+            return
+          } else if (dateInMs < currentDateInMs) {
+            console.log("The date is in the past.");
+            
+          } else {
+            console.log("The date is now.");
+            
+          } */
           const matchesWithFL = data[0].fixtures.filter(betFixture => betFixture.fixture?.id === id);
           
           if (matchesWithFL.length > 0 && matchesWithFL[0].fixture.status.short === "FT") {
             // Update match goals according to the fetched data
             
 
-            const isWinningBet =
+              const isWinningBet =
               (match.betType === "home" && matchesWithFL[0].goals.home > matchesWithFL[0].goals.away) ||
               (match.betType === "away" && matchesWithFL[0].goals.away > matchesWithFL[0].goals.home) ||
-              (match.betType === "draw" && matchesWithFL[0].goals.home === matchesWithFL[0].goals.away);
+              (match.betType === "draw" && matchesWithFL[0].goals.home === matchesWithFL[0].goals.away) ||
+              (match.betType === "homeOver2" && matchesWithFL[0].goals.home >= 3) ||
+              (match.betType === "btts" && matchesWithFL[0].goals.home >= 1 && matchesWithFL[0].goals.away >= 1) ||
+              (match.betType === "awayOver2" && matchesWithFL[0].goals.away >= 3) ||
+              (match.betType === "homeUnder2" && matchesWithFL[0].goals.home <= 2) ||
+              (match.betType === "btnts" && matchesWithFL[0].goals.home === 0 || matchesWithFL[0].goals.away === 0) ||
+              (match.betType === "awayUnder2" && matchesWithFL[0].goals.away <= 2) ||
+              (match.betType === "homeBTTS" && matchesWithFL[0].goals.home > matchesWithFL[0].goals.away && matchesWithFL[0].goals.away >= 1) ||
+              (match.betType === "homeMinus1" && matchesWithFL[0].goals.home > matchesWithFL[0].goals.away + 1) ||
+              (match.betType === "awayBTTS" && matchesWithFL[0].goals.away > matchesWithFL[0].goals.home && matchesWithFL[0].goals.home >= 1) ||
+              (match.betType === "homeBTNTS" && matchesWithFL[0].goals.home > matchesWithFL[0].goals.away && matchesWithFL[0].goals.away === 0) ||
+              (match.betType === "awayMinus1" && matchesWithFL[0].goals.away > matchesWithFL[0].goals.home + 1) ||
+              (match.betType === "awayBTNTS" && matchesWithFL[0].goals.away > matchesWithFL[0].goals.home && matchesWithFL[0].goals.home === 0);
   
           // Add a property to indicate if this is a winning bet
             match.isWinningBet = isWinningBet;

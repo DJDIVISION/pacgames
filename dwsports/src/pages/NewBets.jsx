@@ -155,6 +155,7 @@ const NewBets = () => {
       };
   
       const fetchMatchesForRound = async (round) => {
+        console.log(activeRound)
         setLoading(true);
         try {
             const string = round.toString();
@@ -226,26 +227,25 @@ const NewBets = () => {
         console.log(gameTwo)
         gameTwo[0].odds = odds
         console.log(allFixtures)
-        const { data, error } = await supabase
-          .from('fixtures')
-          .update([{"11": activeMatches}])
-          .eq("leagueName", activeLeague)
-          if (error) {
-            console.error('Error inserting/updating user session data:', error.message)
-          } else {
-            console.log('User session data saved:', data)
-            message.success("data inserted!")
-          }
-          const { data2, error2 } = await supabase
-          .from('fixtures')
-          .update([{fixtures: allFixtures}])
-          .eq("leagueName", activeLeague)
-          if (error2) {
-            console.error('Error inserting/updating user session data:', error.message)
-          } else {
-            console.log('User session data saved:', data2)
-            message.success("data inserted!")
-          }
+        const { error: updateError } = await supabase
+              .from('fixtures')
+              .update([{"11": activeMatches}])
+              .eq("leagueName", activeLeague)
+                if (updateError) {
+                    console.error('Error updating user data:', updateError.message);
+                } else {
+                  console.log("changing table")
+                  const { error: newError } = await supabase
+                  .from('fixtures')
+                    .update([{fixtures: allFixtures}])
+                    .eq("leagueName", activeLeague)
+                    if (newError) {
+                        console.error('Error updating user data:', newError.message);
+                    } else {
+                      message.success("data inserted!")
+                    }
+                }
+        
         //console.log(updatedData)
         setOne(null)
         setDraw(null)
@@ -307,14 +307,14 @@ const NewBets = () => {
       } else {
           const fixtures = []
           data[0].fixtures.forEach((fix) => {
-            if(fix.league.round === "Regular Season - 10"){
+            if(fix.league.round === "Regular Season - 13"){
               fixtures.push(fix)
             }
           })
           console.log("fixtures", fixtures)
           const { error: updateError } = await supabase
                     .from('fixtures')
-                    .update([{"10": fixtures}]) // Update the jsonb column
+                    .update([{"13": fixtures}]) // Update the jsonb column
                     .eq("leagueName", activeLeague); // Identify which user to update
     
                 if (updateError) {
@@ -483,7 +483,7 @@ const NewBets = () => {
         navigate(`/`)
       }
 
-      console.log(activeMatches)
+      
       
   return (
       <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
@@ -510,9 +510,14 @@ const NewBets = () => {
       ))}
             </SportsButtonRow>
             <BetTitleRow>
-              <LiveWrapper onClick={setLiveMatches}>
-              <SpinningBorder /> {/* Only this element will spin */}
-              <span>LIVE</span> {/* This text will remain static */}
+              <LiveWrapper onClick={() => {if(isLiveOpen){
+                fetchMatchesForRound(activeRound);
+                setIsLeaveOpen(false)
+              } else {
+                setLiveMatches();
+              }}}>
+              <SpinningBorder />
+              {isLiveOpen ? <span>BACK</span> : <span>LIVE</span>} 
               </LiveWrapper>
               
               {isLiveOpen ? "" : <ArrowLeftRelative onClick={lowRound}></ArrowLeftRelative>}
@@ -527,7 +532,7 @@ const NewBets = () => {
             </LoadingSection>
           ) : (
             <BetConatiner>
-             {/*  <StyledButton onClick={sendOddsTwo}>SEND</StyledButton> */}
+              {/* <StyledButton onClick={sendOddsThree}>SEND</StyledButton> */}
     {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
         activeMatches.map((match, index) => {
           
@@ -594,7 +599,7 @@ const NewBets = () => {
                               <OddsColumn style={{width: '50%'}}>{match.fixture.status.short === "PST" ? "MATCH POSTPONED" : match.fixture.status.short === "NS" ? "NOT STARTED" : match.fixture.status.short === "TBD" ? "TIME NOT DEFINED" : "MATCH STARTED"}
                                 
                               </OddsColumn>
-                                {/* <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
+                               {/*  <input style={{width: '50px'}} type='number' onChange={(e) => setOne(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setDraw(e.target.value)} />
                                 <input style={{width: '50px'}} type='number' onChange={(e) => setTwo(e.target.value)} />
                                 <button onClick={() => sendOdds(match)}>SEND</button> */}
