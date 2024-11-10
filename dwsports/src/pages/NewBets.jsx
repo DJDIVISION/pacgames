@@ -537,7 +537,7 @@ const NewBets = () => {
           ) : (
             <BetConatiner>
               <TeamStatsRow>
-                <StyledButton onClick={() => setLeagueStatsMenu(true)} style={{fontSize: isMobile ? "14px" : "24px", padding: isMobile ? "10px 15px" : "10px 15px"}}>LEAGUE STATS</StyledButton>
+                {!isLiveOpen && <StyledButton onClick={() => setLeagueStatsMenu(true)} style={{fontSize: isMobile ? "14px" : "24px", padding: isMobile ? "10px 15px" : "10px 15px"}}>STANDINGS</StyledButton>}
               </TeamStatsRow>
               {/* <StyledButton onClick={sendOddsThree}>SEND</StyledButton> */}
         {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
