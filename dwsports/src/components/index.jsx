@@ -904,6 +904,17 @@ export const BetConatiner = styled.div`
         padding-bottom: 80px;
     }
 `;
+
+export const TopTeamStatsRow = styled.div`
+    width: 100%;
+    min-height: 30px;
+    ${props => props.theme.displayFlexCenter};
+`;
+export const TeamStatsRow = styled.div`
+    width: 100%;
+    min-height: 60px;
+    ${props => props.theme.displayFlexCenter};
+`;
 export const Rower = styled.div`
     width: 100%;
     height: 130px;

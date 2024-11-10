@@ -18,7 +18,7 @@ import { useMediaQuery } from 'react-responsive';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { message } from 'antd';
 import { StyledButton } from '../components';
-import TeamStats from './TeamStats';
+import TeamStats from '../components/menus/TeamStats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 import {useTranslation} from "react-i18next";
 import { getBackgroundColor } from './functions';

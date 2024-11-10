@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
-import { supabase } from '../supabase/client';
+import { supabase } from '../../supabase/client';
 import {motion} from 'framer-motion'
 import {BetSection,ArrowUp,SportsButtonRow,item,BorderedMatch,BetWrapper,MatchColumn,MatchDate,TeamStatsLogo,AgeAverage,
   MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft,MiniArrowDown,MiniArrowup,TeamStatsSection,LeftColumn,
@@ -8,19 +8,15 @@ import {BetSection,ArrowUp,SportsButtonRow,item,BorderedMatch,BetWrapper,MatchCo
   TeamRatingTitle,TeamRating,AccordionTitle,SmallBorderedMatch,TeamMembers,Row,Column,ColumnIcon,SmallColumnText,BigColumnText,
   Stadium,Capacity,Coach,Foundation,RecentForm,TeamStatsRow,SmallBorderedMatchRight,ArrivalsText,ArrivalsTitle,ReadMore,
   TitleRow,TitleColumn,TeamsLogo,TeamsResult,DateRow,ResultRow,TeamLogoWrapper,TeamLogoText,NewHolder,TopRow
-} from './index'
+} from '../../pages/index'
 import {CloseStats,StatsSection,StatsWrapper,StatsStadium,StatsStadiumCapacity,MatchLineUp,
   StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Wrapper,PlayerDisplay,PlayerBigPicture
-} from '../components/index'
+} from '../index'
 import { Avatar, Button } from '@mui/material';
-import england from '../assets/england.png'
-import spain from '../assets/england.png'
-import italy from '../assets/england.png'
-import CountUp from '../animations/CountUp';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom'
 import {Link as LinkR} from 'react-router-dom'
-import { FantasyState } from '../context/FantasyContext';
+import { FantasyState } from '../../context/FantasyContext';
 import { minWidth } from '@mui/system';
 import axios from 'axios';
 

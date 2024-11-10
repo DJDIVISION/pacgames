@@ -38,7 +38,7 @@ import { PlayerDroppingAreas } from './fakeData';
 import { StyledButton } from '../components';
 import { StyledIconButtonHover } from '../components/chats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
-import TeamStats from './TeamStats';
+import TeamStats from '../components/menus/TeamStats';
 
 const balls = [
   {

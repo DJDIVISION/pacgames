@@ -11,7 +11,7 @@ import { CircularProgress } from '@mui/material';
 import Bets from './pages/Bets';
 import Home from './pages/Home';
 import PlayerStats from './pages/PlayerStats';
-import TeamStats from './pages/TeamStats';
+import TeamStats from './components/menus/TeamStats';
 import Login from './pages/Login';
 import Fantasy from './pages/Fantasy';
 import BlackJack from './pages/BlackJack';

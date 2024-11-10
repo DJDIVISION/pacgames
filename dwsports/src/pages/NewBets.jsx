@@ -14,8 +14,9 @@ import { ArrowLeft, ArrowRight, BetSection, BetTitleRow, DateRow, MatchOdds, Odd
  } from './index'
 import Stack from '@mui/material/Stack';
 import allBets from '../assets/allBets.png'
+import { useMediaQuery } from 'react-responsive';
 import { FantasyState } from '../context/FantasyContext'
-import { SmallStatsWrapper,Rower, SportIcon, SportName, SportWrapper, BetConatiner, StyledButtonBets, LowRower, RowerRow } from '../components'
+import { SmallStatsWrapper,Rower, SportIcon, SportName, SportWrapper, BetConatiner, StyledButtonBets, LowRower, RowerRow, TeamStatsRow } from '../components'
 import { Avatar, Button, CircularProgress } from '@mui/material'
 import { supabase } from '../supabase/client'
 import premier from '../assets/premier.png'
@@ -29,9 +30,10 @@ import SelectedBet from '../components/menus/SelectedBet'
 import AllBetsMenu from '../components/menus/AllBetsMenu'
 import { useAuth } from './functions';
 import Badge from '@mui/material/Badge';
-import TeamStats from './TeamStats';
+import TeamStats from '../components/menus/TeamStats';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
+import LeagueStats from '../components/menus/LeagueStats';
 
 const NewBets = () => {
 
@@ -39,6 +41,7 @@ const NewBets = () => {
     const {activeLeague, setActiveLeague} = FantasyState();
     const {activeLeagueId, setActiveLeagueId} = FantasyState();
     const {activeRound,setActiveRound} = FantasyState();
+    const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const [loading, setLoading] = useState(false)
     const [one, setOne] = useState(null)
     const [two, setTwo] = useState(null)
@@ -60,6 +63,7 @@ const NewBets = () => {
     const [selectedBetMenu, setSelectedBetMenu] = useState(false);
     const [isLiveOpen, setIsLeaveOpen] = useState(false)
     const [allBetsMenu, setAllBetsMenu] = useState(false);
+    const [leagueStatsMenu, setLeagueStatsMenu] = useState(false);
     const [disabledButton, setDisabledButton] = useState("Premier League");
     const { user } = useAuth();
     const {pendingBets, setPendingBets} = FantasyState();
@@ -532,8 +536,11 @@ const NewBets = () => {
             </LoadingSection>
           ) : (
             <BetConatiner>
+              <TeamStatsRow>
+                <StyledButton onClick={() => setLeagueStatsMenu(true)} style={{fontSize: isMobile ? "14px" : "24px", padding: isMobile ? "10px 15px" : "10px 15px"}}>LEAGUE STATS</StyledButton>
+              </TeamStatsRow>
               {/* <StyledButton onClick={sendOddsThree}>SEND</StyledButton> */}
-    {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
+        {Array.isArray(activeMatches) && activeMatches.length > 0 ? (
         activeMatches.map((match, index) => {
           
             const date = new Date(match.fixture.date).toLocaleString();
@@ -700,6 +707,9 @@ const NewBets = () => {
             )}
             {selectedTeamMenu && (
                 <TeamStats selectedTeamMenu={selectedTeamMenu} setSelectedTeamMenu={setSelectedTeamMenu} />
+            )}
+            {leagueStatsMenu && (
+              <LeagueStats leagueStatsMenu={leagueStatsMenu} setLeagueStatsMenu={setLeagueStatsMenu}/>
             )}
             </AnimatePresence>
       </motion.div>

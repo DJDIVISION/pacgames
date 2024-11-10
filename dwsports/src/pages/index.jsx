@@ -1225,8 +1225,9 @@ export const TeamLogoText = styled.div`
     @media(max-width: 968px){
         font-size: 16px;
     }
-    @media(max-width: 698px){
-        font-size: 14px;
+    @media(max-width: 490px){
+        font-size: 12px;
+        transform: translateY(-10px);
     }
 `;
 
@@ -1267,6 +1268,9 @@ export const DateRow = styled.div`
     ${props => props.theme.displayFlexCenter};
     text-align: center;
     font-weight: bold;
+    @media(max-width: 490px){
+        font-size: 14px; 
+    }
 `;
 
 export const VenueRow = styled.div`
