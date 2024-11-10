@@ -146,7 +146,7 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
     animate='animate'
     exit='exit' >
       <CloseStats onClick={closeBetsMenu} />
-      <BalanceAmount>YOUR BALANCE: <span>{parseFloat(balance.toFixed(2))} PGZ</span></BalanceAmount>
+      <BalanceAmount>YOUR BALANCE: <span>{parseFloat(balance?.toFixed(2))} PGZ</span></BalanceAmount>
       {selectedBet.length > 0 ? (
       selectedBet.map((selectedBet, index) => (
     <MatchHolder key={index}>
