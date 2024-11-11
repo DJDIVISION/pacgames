@@ -28,6 +28,7 @@ import { supabase } from '../supabase/client';
 import Skeleton from '@mui/material/Skeleton';
 import LeagueStats from '../components/menus/LeagueStats';
 import { useAuth } from './functions';
+import { CrossAnimation, TickAnimation } from '../animations';
 
 const Bets = () => {
 
@@ -525,10 +526,10 @@ const getOdd = (betType, match) => {
 
 const getWinnings = (el) => {
   if(el.isWinningBet === true){
-    return '✅'
+    return <TickAnimation />
   }
   if(el.isWinningBet === false){
-    return '❌'
+    return <CrossAnimation />
   }
   return ''
 }
