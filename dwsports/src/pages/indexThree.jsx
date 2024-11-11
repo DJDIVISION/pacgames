@@ -68,7 +68,6 @@ export const Container = styled(motion.div)`
     height: 70vh;
     @media(max-width: 498px){
         height: 80vh;
-        border: 1px solid blue;
     }
 `;
 

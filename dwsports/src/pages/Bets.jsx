@@ -124,6 +124,8 @@ const Bets = () => {
     setOpenMatchesMenu(false)
     setOpenLiveMatchesMenu(false)
    setCurrentRoundMatches([])
+   setActiveLeague("Premier League")
+   setActiveLeagueId(39)
     setTimeout(() => {
       setOpenLeagueMenu(true); 
     }, 500)
@@ -241,7 +243,7 @@ useEffect(() => {
   return (
     <Section>
       {isDateExpanded ? <AbsoluteIconButton onClick={closeDate}><ArrowDown /></AbsoluteIconButton> : <AbsoluteIconButton onClick={closeDate}><ArrowUp /></AbsoluteIconButton>}
-      <Title initial="expanded" style={{border: '1px solid red'}}
+      <Title initial="expanded" 
         animate={isDateExpanded ? "expanded" : "collapsed"} 
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
