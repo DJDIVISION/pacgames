@@ -923,10 +923,10 @@ export const Rower = styled.div`
 
 export const LowRower = styled.div`
     width: 100%;
-    height: auto;
+    height: 100%;
     ${props => props.theme.displayFlexColumn};
-    overflow-y: auto;
-    
+    overflow-y: auto !important;
+    border: 1px solid red;
 `;
 
 export const RowerRow = styled.div`

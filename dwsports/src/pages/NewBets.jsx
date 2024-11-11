@@ -519,74 +519,7 @@ const NewBets = () => {
         navigate(`/`)
       }
 
-      const getLiveMatches = async () => {
-        setLoading(true)
-        const options = {
-          method: 'GET',
-          url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-          params: {live: 'all'},
-          headers: {
-            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-          }
-        };
-        
-        try {
-          const response = await axios.request(options);
-          console.log(response.data);
-          const matches = []
-          const presentIDs = []
-          response.data.response.forEach((match) => {
-            if(match.league.id === activeLeagueId){
-              matches.push(match)
-              presentIDs.push(match.fixture.id)
-            }
-          })
-          //setActiveMatches(matches)
-          setCurrentRoundLiveMatches(matches)
-          setPresentIds(prevIds => ({
-            ...prevIds,
-            ...presentIDs
-          }));
-        } catch (error) {
-          console.error(error);
-        }
-      }
-
-      const getFinishedMatches = async () => {
-        const optionsFour = {
-          method: 'GET',
-          url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-          params: {
-            league: activeLeagueId,
-            season: '2024',
-            round: `Regular Season - ${activeRound}`
-          },
-          headers: {
-            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-          }
-        };
-        try {
-          const response = await axios.request(optionsFour);
-          const matches = []
-          const presentIDs = []
-          response.data.response.forEach((match) => {
-            if(match.fixture.status.short === "FT"){
-              matches.push(match)
-              presentIDs.push(match.fixture.id)
-            }
-          })
-          setFinishedMatches(matches)
-          setPresentIds(prevIds => ({
-            ...prevIds,
-            ...presentIDs
-          }));
-        } catch (error) {
-          console.error(error);
-        }
-        setLoading(false)
-      }
+      
 
       const fetchMatchesForRound = async (round) => {
         console.log(activeRound)
@@ -655,18 +588,84 @@ const NewBets = () => {
         setPendingMatches(lastFilter)
         }
       }
+
+      const getAllTypeMatches = async () => {
+        setLoading(true)
+        const options = {
+          method: 'GET',
+          url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+          params: {live: 'all'},
+          headers: {
+            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+          }
+        };
+        
+        try {
+          const response = await axios.request(options);
+          console.log(response.data);
+          const matches = []
+          const presentIDs = []
+          response.data.response.forEach((match) => {
+            if(match.league.id === activeLeagueId){
+              matches.push(match)
+              presentIDs.push(match.fixture.id)
+            }
+          })
+          setCurrentRoundLiveMatches(matches)
+          setPresentIds(prevIds => ({
+            ...prevIds,
+            ...presentIDs
+          }));
+        } catch (error) {
+          console.error(error);
+        }
+
+        const optionsFour = {
+          method: 'GET',
+          url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+          params: {
+            league: activeLeagueId,
+            season: '2024',
+            round: `Regular Season - ${activeRound}`
+          },
+          headers: {
+            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+          }
+        };
+        try {
+          const response = await axios.request(optionsFour);
+          const matches = []
+          const presentIDs = []
+          response.data.response.forEach((match) => {
+            if(match.fixture.status.short === "FT"){
+              matches.push(match)
+              presentIDs.push(match.fixture.id)
+            }
+          })
+          setFinishedMatches(matches)
+          setPresentIds(prevIds => ({
+            ...prevIds,
+            ...presentIDs
+          }));
+        } catch (error) {
+          console.error(error);
+        }
+        setLoading(false)
+      }
       
 
       useEffect(() => {
-        getLiveMatches();
-      }, [activeLeagueId])
-      useEffect(() => {
+        getAllTypeMatches();
+      }, [activeLeagueId,activeRound])
+      /* useEffect(() => {
         getFinishedMatches();
         fetchPending();
-      }, [activeLeagueId,activeRound])
-      useEffect(() => {
+      }, [activeLeagueId,activeRound]) */
+      /* useEffect(() => {
         getLastMatches();
-      }, [roundMatches])
+      }, [roundMatches]) */
       
 
       

@@ -51,7 +51,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home toggleTheme={toggleTheme}/>} />
         <Route path="/login" element={<Login />} />
-        <Route path="/bets" element={<ProtectedRoute><NewBets /></ProtectedRoute>} />
+        <Route path="/bets" element={<ProtectedRoute><Bets /></ProtectedRoute>} />
         <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />
         <Route path="/fantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />
         <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />

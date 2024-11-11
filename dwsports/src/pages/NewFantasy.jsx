@@ -15,7 +15,7 @@ import { FantasyState } from '../context/FantasyContext';
 import { CircularProgress } from '@mui/material';
 import { AverageDisplay, BalanceDisplay, startCountdown, useAuth, useGetTeams } from './functions';
 import { useMediaQuery } from 'react-responsive';
-import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+
 import { message } from 'antd';
 import { StyledButton } from '../components';
 import TeamStats from '../components/menus/TeamStats';
@@ -25,6 +25,9 @@ import { getBackgroundColor } from './functions';
 import { useNavigate } from 'react-router-dom';
 import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
+import {Section,BottomRow,IconHolder,Container,LeagueRow,item,LeagueHolder,AbsoluteIconButton,ArrowUp,ArrowDown,
+    Title,AbsoluteIconButtonLeft,TeamCircularRow,TeamRow,TeamHolder
+} from './indexThree'
 
 const NewFantasy = () => {
 
@@ -267,11 +270,7 @@ const NewFantasy = () => {
     }, [startDate, endDate, allLeagues]);
 
 
-    const item={
-        initial: { opacity: 0 },
-        animate: { opacity: 1, transition: { duration: 0.7 } },
-        exit: { opacity: 0, transition: { duration: 0.7 } }
-    }
+    
 
     const openLeague = () => {
         if(openLeagueMenu){
@@ -1884,65 +1883,15 @@ const TeamName = styled.div`
     }
 `;
 
-const TeamHolder = styled(motion.div)`
-    width: 90%;
-    min-height: 100px;
-    border: 1px solid ${props => props.theme.card};
-    background: ${props => props.theme.cardTwo};
-    ${props => props.theme.displayFlexCenter}
-    border-radius: 5px;
-    cursor: pointer;
-    position: relative;
-    padding: 10px;
-`;
 
-const LeagueHolder = styled(motion.div)`
-    width: 18%;
-    height: 95%;
-    border: 1px solid ${props => props.theme.card};
-    background: ${props => props.theme.cardTwo};
-    border-radius: 5px;
-    cursor: pointer;
-    @media(max-width: 498px){
-        width: 60%; 
-        margin: 5px 0;
-    }
-`;
 
-const LeagueRow = styled(motion.div)`
-    width: 100%;
-    height: 35vh;
-    padding: 10px;
-    ${props => props.theme.displayFlexCenter}
-    justify-content: space-around;
-    @media(max-width: 498px){
-        height: 80vh; 
-        flex-direction: column;
-        overflow-y: auto;
-    }
-`;
 
-const TeamCircularRow = styled.div`
-    width: 100%;
-    height: 100%;
-    padding: 10px;
-    ${props => props.theme.displayFlexCenter}
-`;
 
-const TeamRow = styled(motion.div)`
-    width: 100%;
-    padding: 20px;
-    height: 100%;
-    display: grid;
-    place-items: center;
-    grid-template-columns: repeat(4, 1fr); /* 2 columns */
-    grid-template-rows: repeat(5, 1fr); /* 10 rows */
-    gap: 10px;
-    overflow-y: auto;
-    @media(max-width: 498px){
-        grid-template-columns: repeat(1, 1fr);
-    }
-`;
+
+
+
+
+
 
 const MyPlayerContainer = styled.div`
     width: 60%;
@@ -1998,37 +1947,7 @@ const PlayerRow = styled(motion.div)`
     }
 `;
 
-const IconHolder = styled.div`
-    position: relative; /* Ensure the parent div is relative */
-    width: 10%;
-    height: 100%;
-    background: #3f3e3e;
-    color: ${props => props.theme.text};
-    ${props => props.theme.displayFlexCenter};
-    padding: 5px;
-    cursor: pointer;
-    h2{
-        font-size: 12px !important;
-        font-weight: bold; 
-    }
 
-    /* Triangle pointing up */
-    &::before {
-        content: '';
-        position: absolute;
-        top: -12px; /* Adjust this value to move the triangle higher or lower */
-        left: 50%;
-        transform: translateX(-50%);
-        border-left: 12px solid transparent; /* Wider base */
-        border-right: 12px solid transparent;
-        border-bottom: 12px solid #3f3e3e; /* Match background color */
-        z-index: 1; /* Bring triangle to the front if needed */
-    }
-    @media(max-width: 498px){
-        height: 100%;
-        width: 24%;  
-    }
-`;
 
 const FilterRow = styled.div`
     width: 70%;
@@ -2043,56 +1962,10 @@ const FilterRow = styled.div`
     }
 `;
 
-const BottomRow = styled.div`
-    width: 100%;
-    height: 15vh;
-    position: absolute;
-    top: 85vh;
-    left: 0;
-    color: ${props => props.theme.text};
-    ${props => props.theme.displayFlexCenter}
-    justify-content: space-around;
-    text-align: center;
-    h2{
-        font-size: 24px;
-    }
-    @media(max-width: 498px){
-        height: 10vh;
-        width: 100%;  
-        top: 90vh;
-    }
-`;
 
-const Title = styled(motion.div)`
-    width: 100%;
-    height: 15vh;
-    color: ${props => props.theme.text};
-    ${props => props.theme.displayFlexCenter}
-    justify-content: space-around;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    h2{
-        font-size: 18px;
-        width: 80%;
-    }
-    @media(max-width: 498px){
-        height: 10vh;
-        h2{
-            font-size: 14px;
-            width: 70%;
-        }
-    }
-`;
 
-const Container = styled(motion.div)`
-    width: 100%;
-    ${props => props.theme.displayFlexCenter}
-    height: 70vh;
-    @media(max-width: 498px){
-        height: 80vh;
-    }
-`;
+
+
 
 const FoldingMenu = styled(motion.div)`
     position: absolute;
@@ -2111,61 +1984,9 @@ const FantasyFoldingMenu = styled(motion.div)`
 `;
 
 
-const Section = styled.div`
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    ${props => props.theme.displayFlexColumn}
-    background: ${props => props.theme.body};
-`;
 
-const AbsoluteIconButton = styled(IconButton)`
-    &&&{
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        padding: 5px;
-        background: ${props => props.theme.body};
-        scale: 1.2;
-        ${props => props.theme.displayFlexCenter}
-        box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
-        z-index: 1000;
-        @media (max-width: 968px) {
-        top: 15px;
-        right: 15px;
-        scale: 1.2;
-        }
-    }
-`;
 
-const AbsoluteIconButtonLeft = styled(IconButton)`
-    &&&{
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        padding: 5px;
-        background: ${props => props.theme.body};
-        scale: 1.2;
-        ${props => props.theme.displayFlexCenter}
-        box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
-        z-index: 1000;
-        @media (max-width: 968px) {
-        top: 15px;
-        left: 15px;
-        scale: 1.2;
-        }
-    }
-`;
 
-const ArrowDown = styled(ArrowCircleLeftIcon)`
-    &&&{
-        color: ${props => props.theme.text};
-        transform: rotate(90deg)
-    }
-`;
-const ArrowUp = styled(ArrowCircleLeftIcon)`
-    &&&{
-        color: ${props => props.theme.text};
-        transform: rotate(270deg)
-    }
-`;
+
+
+
