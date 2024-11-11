@@ -107,6 +107,7 @@ export const item = {
 export const LeagueHolder = styled(motion.div)`
 width: 18%;
 height: 95%;
+user-select: none;
 border: 1px solid ${props => props.theme.card};
 background: ${props => props.theme.cardTwo};
 border-radius: 5px;

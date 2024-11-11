@@ -90,6 +90,7 @@ export const CountryBall = styled(motion.div)`
     width: 80%;
     height: 100%;
     ${props => props.theme.displayFlexCenter};
+    user-select: none;
 `;
 
 export const CountryBallTeam = styled(motion.div)`

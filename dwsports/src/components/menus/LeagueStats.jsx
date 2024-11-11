@@ -48,10 +48,7 @@ const LeagueStats = ({leagueStatsMenu,setLeagueStatsMenu}) => {
       }
 
   return (
-    <StyledMenu variants={item} 
-                initial="initial"
-                animate="animate"
-                exit="exit" style={{justifyContent: 'space-around'}}>
+    <StyledMenu>
       <CloseStats onClick={closeLeagueMenu} style={{top: '60px', left: '50px'}}/>
       <LeagueHolder>
         <LeagueName><h2>{league.name}</h2></LeagueName>

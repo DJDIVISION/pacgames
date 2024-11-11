@@ -425,7 +425,10 @@ useEffect(() => {
           </Container>
         )} 
         {leagueStatsMenu && (
-              <LeagueStats leagueStatsMenu={leagueStatsMenu} setLeagueStatsMenu={setLeagueStatsMenu}/>
+              <LeagueStats variants={item} 
+              initial="initial"
+              animate="animate"
+              exit="exit" style={{justifyContent: 'space-around'}} leagueStatsMenu={leagueStatsMenu} setLeagueStatsMenu={setLeagueStatsMenu}/>
             )}
       </AnimatePresence>
       <BottomRow>
