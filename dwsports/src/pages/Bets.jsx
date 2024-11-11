@@ -242,6 +242,12 @@ const Bets = () => {
     const { home, away } = match.goals;
   
     switch (betType) {
+      case "home":
+        return home > away;
+        case "away":
+        return away > home;
+        case "draw":
+        return home === away;
       case "homeOver2":
         return home >= 3;
       case "homeUnder2":
