@@ -29,6 +29,7 @@ import Skeleton from '@mui/material/Skeleton';
 import LeagueStats from '../components/menus/LeagueStats';
 import { useAuth } from './functions';
 import { CrossAnimation, TickAnimation } from '../animations';
+import { message } from 'antd';
 
 const Bets = () => {
 
@@ -88,6 +89,8 @@ const Bets = () => {
   const [activeBall, setActiveBall] = useState(1)
   const [currentLiveMaches, setCurrentLiveMatches] = useState([])
   const [currentRoundMaches, setCurrentRoundMatches] = useState([])
+  const [winningBets, setWinningBets] = useState([])
+  const [lostBets, setLostBets] = useState([])
   const [myBets, setMyBets] = useState([])
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [leagueStatsMenu, setLeagueStatsMenu] = useState(false);
@@ -172,6 +175,7 @@ const Bets = () => {
   }
 
   const getBets = async () => {
+    setLoadingBets(true)
     if(user){
       const { data, error } = await supabase
           .from('bets')
@@ -183,7 +187,34 @@ const Bets = () => {
           console.error('Error retrieving data from Supabase:', error.message);
         }
         if(data){
-          setMyBets(data)
+          const updatedBets = data.map(bet => ({
+            ...bet,
+            bet: bet.bet.map(matchBet => {
+              const fixtureId = matchBet.match.fixture.id;
+              const league = matchBet.match.league.name;
+        
+              // Fetch matches for the league from local storage
+              const matches = JSON.parse(localStorage.getItem(league));
+        
+              // Find and update the matching match with its goals
+              const matchedGame = matches?.find(match => match.fixture.id === fixtureId);
+              if (matchedGame) {
+                
+                return {
+                  ...matchBet,
+                  match: {
+                    ...matchBet.match,
+                    goals: matchedGame.goals,
+                    teams: matchedGame.teams,
+                    fixture: matchedGame.fixture
+                  },
+                };
+              }
+              return matchBet; // Return unchanged if no match found
+            })
+          }));
+          setMyBets(updatedBets)
+          setLoadingBets(false)
         }
     }
   }
@@ -201,22 +232,7 @@ const Bets = () => {
         // Find and update the matching match with its goals
         const matchedGame = matches?.find(match => match.fixture.id === fixtureId);
         if (matchedGame) {
-          /* const isWinningBet =
-              (matchedGame.betType === "home" && matchedGame.goals.home > matchedGame.goals.away) ||
-              (matchedGame.betType === "away" && matchedGame.goals.away > matchedGame.goals.home) ||
-              (matchedGame.betType === "draw" && matchedGame.goals.home === matchedGame.goals.away) ||
-              (matchedGame.betType === "homeOver2" && matchedGame.goals.home >= 3) ||
-              (matchedGame.betType === "btts" && matchedGame.goals.home >= 1 && matchedGame.goals.away >= 1) ||
-              (matchedGame.betType === "awayOver2" && matchedGame.goals.away >= 3) ||
-              (matchedGame.betType === "homeUnder2" && matchedGame.goals.home <= 2) ||
-              (matchedGame.betType === "btnts" && matchedGame.goals.home === 0 || matchedGame.goals.away === 0) ||
-              (matchedGame.betType === "awayUnder2" && matchedGame.goals.away <= 2) ||
-              (matchedGame.betType === "homeBTTS" && matchedGame.goals.home > matchedGame.goals.away && matchedGame.goals.away >= 1) ||
-              (matchedGame.betType === "homeMinus1" && matchedGame.goals.home > matchedGame.goals.away + 1) ||
-              (matchedGame.betType === "awayBTTS" && matchedGame.goals.away > matchedGame.goals.home && matchedGame.goals.home >= 1) ||
-              (matchedGame.betType === "homeBTNTS" && matchedGame.goals.home > matchedGame.goals.away && matchedGame.goals.away === 0) ||
-              (matchedGame.betType === "awayMinus1" && matchedGame.goals.away > matchedGame.goals.home + 1) ||
-              (matchedGame.betType === "awayBTNTS" && matchedGame.goals.away > matchedGame.goals.home && matchedGame.goals.home === 0); */
+          
           return {
             ...matchBet,
             match: {
@@ -286,13 +302,64 @@ const Bets = () => {
       myBets.forEach(bet => {
         bet.bet.forEach(matchBet => {
           const isFulfilled = isBetFulfilled(matchBet);
-          console.log(`Bet Type: ${matchBet.betType}, Fulfilled: ${isFulfilled}`);
           
           // Optionally update the bet object with the result
           matchBet.isWinningBet = isFulfilled;
         });
+        
       });
+      
     }
+    const winningBets = myBets.filter(bet => 
+      bet.bet.every(matchBet => matchBet.isWinningBet === true)
+    );
+
+    winningBets.forEach(async (bet) => {
+      if(balance){
+        const { data: searchData, error: updateError } = await supabase
+                    .from('users')
+                    .select('appBalance') // Update the jsonb column
+                    .eq('id', user.id); // Identify which user to update
+    
+                if (updateError) {
+                    console.error('Error updating user data:', updateError.message);
+                } else {
+                    const balance = searchData[0].appBalance
+                    const newBalance = balance + bet.possibleWinnings
+                    console.log(newBalance)
+                    const { data: userData, error: userError } = await supabase
+                          .from('users')
+                          .update({appBalance: newBalance}) // Update the jsonb column
+                          .eq('id', user.id); // Identify which user to update
+          
+                          if (userError) {
+                              console.error('Error updating user data:', userError.message);
+                          } else {
+                            const { data: betData, error: betError } = await supabase
+                                .from('bets')
+                                .update({status: "Won"}) // Update the jsonb column
+                                .eq('id', bet.id); // Identify which user to update
+                
+                                if (betError) {
+                                    console.error('Error updating user data:', betError.message);
+                                } else {
+                                  message.success("You have been won your bet!")
+                                }
+                                
+                          }
+                          
+                }
+      }
+    })
+    console.log(winningBets)
+    const nonWinningBets = myBets.filter(bet => 
+      !bet.bet.every(matchBet => matchBet.isWinningBet === true)
+    );
+    
+    nonWinningBets.forEach((bet) => {
+      bet.status = "Lost"
+    })
+    console.log(nonWinningBets)
   }
 
   useEffect(() => {
@@ -300,7 +367,9 @@ const Bets = () => {
   }, [user])
 
   useEffect(() => {
-    checkBets();
+    if(myBets){
+      checkBets();
+    }
   }, [myBets])
 
   
@@ -308,7 +377,6 @@ const Bets = () => {
   useEffect(() => {
     if(openMyBetsMenu){
       getFixtures();
-      writePendingBets();
     }
   }, [openMyBetsMenu])
 
@@ -441,8 +509,6 @@ useEffect(() => {
       fetchCurrentMatches(activeRound); 
   }
 }, [activeRound]);
-
-  console.log(activeRound)
 
   useEffect(() => {
     if(openLiveMatchesMenu){
