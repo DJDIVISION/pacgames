@@ -97,6 +97,8 @@ const Bets = () => {
   const [ligue1, setLigue1] = useState([])
   const [laLiga, setLaLiga] = useState([])
 
+  
+
   const getFixtures = async () => {
     const leagueIds = [39, 135, 140, 78, 61]; 
     const season = '2024';
@@ -232,44 +234,52 @@ const Bets = () => {
     setMyBets(updatedBets);
   } 
 
+  
+  
   function isBetFulfilled(bet) {
     const { betType, match } = bet;
     const { home, away } = match.goals;
   
     switch (betType) {
       case "homeOver2":
-        return home > 2;
+        return home >= 3;
       case "homeUnder2":
-        return home < 2;
+        return home <= 2;
       case "homeBTTS":
+        return home > 0 && away > 0;
       case "awayBTTS":
         return home > 0 && away > 0;
       case "homeBTNTS":
+        return home > away && away === 0;
       case "awayBTNTS":
-        return home === 0 || away === 0;
+        return away > home || home === 0;
       case "btts":
         return home > 0 && away > 0;
       case "btnts":
         return home === 0 || away === 0;
       case "homeMinus1":
-        return home - away >= 1;
+        return home - away >= 2;
       case "awayMinus1":
-        return away - home >= 1;
+        return away - home >= 2;
       case "awayOver2":
-        return away > 2;
+        return away >= 3;
       case "awayUnder2":
-        return away < 2;
+        return away <= 2;
       default:
         return false;
     }
   }
+  
+  // Loop through each bet and check conditions
+ 
+
 
   const checkBets = () => {
     if(myBets){
       myBets.forEach(bet => {
         bet.bet.forEach(matchBet => {
           const isFulfilled = isBetFulfilled(matchBet);
-          console.log(`Bet Type: ${matchBet.betType}, isWinningBet: ${isFulfilled}`);
+          console.log(`Bet Type: ${matchBet.betType}, Fulfilled: ${isFulfilled}`);
           
           // Optionally update the bet object with the result
           matchBet.isWinningBet = isFulfilled;

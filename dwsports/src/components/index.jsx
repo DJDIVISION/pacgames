@@ -1015,7 +1015,7 @@ export const RowerRowEvent = styled.div`
     ${props => props.theme.displayFlexCenter};
     position: relative;
     h2{
-        font-size: 34px;
+        font-size: 36px;
         z-index: 3;
         color: ${props => props.theme.text};
         text-shadow: ${props => props.theme.textShadowTwo};
