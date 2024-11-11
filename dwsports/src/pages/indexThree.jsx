@@ -111,10 +111,24 @@ border: 1px solid ${props => props.theme.card};
 background: ${props => props.theme.cardTwo};
 border-radius: 5px;
 cursor: pointer;
+position: relative;
 @media(max-width: 498px){
     width: 60%; 
     margin: 5px 0;
 }
+`;
+
+export const  AbsoluteChart = styled.div`
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%,-50%);
+    background: ${props => props.theme.cardTwo};
+    border: 1px solid ${props => props.theme.card};
+    padding: 3px;
 `;
 
 export const AbsoluteIconButton = styled(IconButton)`

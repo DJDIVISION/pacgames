@@ -11,7 +11,7 @@ const LeagueStats = ({leagueStatsMenu,setLeagueStatsMenu}) => {
     const {activeLeagueId, setActiveLeagueId} = FantasyState();
     const [teams, setTeams] = useState({})
     const [league, setLeague] = useState({})
-
+    console.log(activeLeagueId)
     const fetchStandings = async () => {
         const options = {
             method: 'GET',
@@ -28,6 +28,7 @@ const LeagueStats = ({leagueStatsMenu,setLeagueStatsMenu}) => {
           
           try {
               const response = await axios.request(options);
+              console.log(response)
               setTeams(response.data.response[0].league.standings);
               setLeague(response.data.response[0].league)
           } catch (error) {
@@ -37,7 +38,7 @@ const LeagueStats = ({leagueStatsMenu,setLeagueStatsMenu}) => {
 
     useEffect(() => {
         fetchStandings();
-    }, [])
+    }, [activeLeagueId])
 
     console.log(teams[0])
     console.log(league)
@@ -51,7 +52,7 @@ const LeagueStats = ({leagueStatsMenu,setLeagueStatsMenu}) => {
                 initial="initial"
                 animate="animate"
                 exit="exit" style={{justifyContent: 'space-around'}}>
-      <CloseStats onClick={closeLeagueMenu}/>
+      <CloseStats onClick={closeLeagueMenu} style={{top: '60px', left: '50px'}}/>
       <LeagueHolder>
         <LeagueName><h2>{league.name}</h2></LeagueName>
         <LeagueLogo>

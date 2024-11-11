@@ -11,8 +11,10 @@ import spain from '../assets/logos/spain.png'
 import italy from '../assets/logos/italy.png' 
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
+import chart from '../assets/logos/chart.png' 
 import {Section,BottomRow,IconHolder,LeagueRowBets,Container,item,LeagueHolder,AbsoluteIconButton,ArrowUp,ArrowDown,
-  Title,AbsoluteIconButtonLeft,TeamCircularRow,TeamRow,TeamBetsHolder,ArrowsHolder,ArrowIconHolder,RoundNameHolder
+  Title,AbsoluteIconButtonLeft,TeamCircularRow,TeamRow,TeamBetsHolder,ArrowsHolder,ArrowIconHolder,RoundNameHolder,
+  AbsoluteChart
 } from './indexThree' 
 import { FantasyState } from '../context/FantasyContext';
 import axios from 'axios';
@@ -23,6 +25,7 @@ import yellowCard from '../assets/logos/yellowCard.png'
 import { LowRower, Rower, RowerFirstEvent, RowerRow, RowerRowEvent, RowerRowName, RowerTeamEvent } from '../components';
 import { supabase } from '../supabase/client';
 import Skeleton from '@mui/material/Skeleton';
+import LeagueStats from '../components/menus/LeagueStats';
 
 const Bets = () => {
 
@@ -75,11 +78,12 @@ const Bets = () => {
   const {activeLeague, setActiveLeague} = FantasyState();
   const {activeRound,setActiveRound} = FantasyState();
   const {balance, setBalance} = FantasyState();
-  const [activeLeagueId, setActiveLeagueId] = useState(null)
+  const {activeLeagueId, setActiveLeagueId} = FantasyState();
   const [activeBall, setActiveBall] = useState(1)
   const [currentLiveMaches, setCurrentLiveMatches] = useState([])
   const [currentRoundMaches, setCurrentRoundMatches] = useState([])
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const [leagueStatsMenu, setLeagueStatsMenu] = useState(false);
   const navigate = useNavigate()
 
   const toggleExpand = (index) => {
@@ -222,6 +226,11 @@ useEffect(() => {
       setActiveRound((prevRound) => prevRound - 1)
   }
 
+  const setOpenLeague = (league) => {
+    setActiveLeagueId(league.id)
+    setLeagueStatsMenu(true)
+  }
+
 
   return (
     <Section>
@@ -230,7 +239,7 @@ useEffect(() => {
         animate={isDateExpanded ? "expanded" : "collapsed"} 
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
-            <h2>YOUR BALANCE: {parseFloat(balance.toFixed(2))} PGZ</h2>
+            <h2>YOUR BALANCE: {parseFloat(balance?.toFixed(2))} PGZ</h2>
         </Title>
         <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
       <AnimatePresence>
@@ -243,11 +252,13 @@ useEffect(() => {
               exit="exit"
               transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
               {availableLeagues?.map((league, index) => {
+                console.log(league)
                 return (
 
-                  <LeagueHolder whileHover={{ scale: 1.05 }} key={league.name} onClick={() => handleButtonClick(league)}>
+                  <LeagueHolder whileHover={{ scale: 1.05 }} key={league.name} >
+                    <AbsoluteChart onClick={() => setOpenLeague(league)}><img src={chart} alt="chart" /></AbsoluteChart>
                     <BallColumn key={league.id}>
-                      <CountryBall><img src={league.logo} alt="england" /></CountryBall>
+                      <CountryBall onClick={() => handleButtonClick(league)}><img src={league.logo} alt="england" /></CountryBall>
                       <CountryBallTextTop>{league.name === "England" && `${t("fantasy.england")}`}{league.name === "Spain" && `${t("fantasy.spain")}`}{league.name === "Italy" && `${t("fantasy.italy")}`}
                         {league.name === "Germany" && `${t("fantasy.germany")}`}{league.name === "France" && `${t("fantasy.france")}`}</CountryBallTextTop><CountryBallTextTop>{league.league}</CountryBallTextTop>
                     </BallColumn>
@@ -413,6 +424,9 @@ useEffect(() => {
 
           </Container>
         )} 
+        {leagueStatsMenu && (
+              <LeagueStats leagueStatsMenu={leagueStatsMenu} setLeagueStatsMenu={setLeagueStatsMenu}/>
+            )}
       </AnimatePresence>
       <BottomRow>
         <IconHolder onClick={startAll}><h2 style={{color: openLeagueMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title20")}</h2></IconHolder>
