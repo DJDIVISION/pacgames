@@ -31,31 +31,35 @@ const Bets = () => {
         league: "Premier League",
         logo: england,
         name: "England",
-        id: 39
+        id: 39,
+        currentRound: 12
     },
     {
         league: "La Liga",
         logo: spain,
         name: "Spain",
-        id: 140
+        id: 140,
+        currentRound: 14
     },
     {
         league: "Serie A",
         logo: italy,
         name: "Italy",
-        id: 135
+        id: 135,
+        currentRound: 13
     },
     {
         league: "Ligue 1",
         logo: france,
         name: "France",
-        id: 61
+        id: 12
     },
     {
         league: "Bundesliga",
         logo: germany,
         name: "Germany",
-        id: 78
+        id: 78,
+        currentRound: 11
     }
 ]
 
@@ -81,14 +85,7 @@ const Bets = () => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  const handleButtonClick = (league) => {
-    setActiveLeagueId(league.id)
-    setActiveLeague(league.league)
-    setOpenLeagueMenu(false)
-    setTimeout(() => {
-      setOpenMatchesMenu(true)
-    })
-  };
+  
 
   const variants = {
     expanded: {
@@ -167,26 +164,7 @@ const Bets = () => {
     }
   }
 
-  const fetchCurrentRound = async () => {
-    setLoadingMatches(true)
-    try {
-      const { data: roundData, error: roundError } = await supabase
-        .from('fixtures') // Assuming this is your table
-        .select('currentRound')
-        .eq('leagueName', activeLeague); // Match the active team id (or league id)
-
-      if (roundError) throw new Error(roundError.message);
-      if (roundData) {
-        console.log(roundData)
-        setActiveRound(roundData[0].currentRound)
-        setLoadingMatches(false)
-      } else {
-        console.error('No current round found for the team');
-      }
-    } catch (error) {
-      console.error('Error fetching current round:', error);
-    } 
-  };
+  console.log(currentLiveMaches)
 
   const fetchCurrentMatches = async () => {
     const options = {
@@ -210,11 +188,15 @@ const Bets = () => {
     }
   }
 
-  useEffect(() => {
-    if (activeLeagueId) {
-        fetchCurrentRound(activeLeagueId); 
-    }
-}, [activeLeagueId]);
+  const handleButtonClick = (league) => {
+    setActiveLeagueId(league.id)
+    setActiveLeague(league.league)
+    setActiveRound(league.currentRound)
+    setOpenLeagueMenu(false)
+    setTimeout(() => {
+      setOpenMatchesMenu(true)
+    })
+  };
 
 useEffect(() => {
   if (activeRound) {
@@ -370,7 +352,9 @@ useEffect(() => {
                 animate="animate"
                 exit="exit"
                 transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                {currentLiveMaches?.map((match, index) => {
+                {currentLiveMaches.length > 0 ? (
+                    <>
+                      {currentLiveMaches?.map((match, index) => {
                   const date = new Date(match.fixture.date).toLocaleString();
                   return (
                     <TeamBetsHolder key={index}
@@ -425,6 +409,12 @@ useEffect(() => {
                     </TeamBetsHolder>
                   )
                 })}
+                    </>
+                ) : (
+                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
+                  <h2 style={{fontSize: '18px', fontWeight: 'bold', color: 'aqua', width: '70%'}}>THERE ARE NO LIVE EVENTS AT THIS MOMENT</h2>
+                  </div>
+                )}
               </TeamRow>
 
             )}

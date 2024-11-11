@@ -207,6 +207,7 @@ grid-template-columns: repeat(4, 1fr); /* 2 columns */
 grid-template-rows: repeat(5, 1fr); /* 10 rows */
 gap: 10px;
 overflow-y: auto;
+
 @media(max-width: 498px){
     grid-template-columns: repeat(1, 1fr);
 }
