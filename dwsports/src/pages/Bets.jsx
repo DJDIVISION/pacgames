@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import {motion,AnimatePresence} from 'framer-motion'
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom';
-import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo, TeamLogoWrapper, TeamLogoText, TeamsResult, DateRow, ResultRow, BigDateRow, VenueRow, ArrowRightRelative } from './index';
+import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo, TeamLogoWrapper, TeamLogoText, TeamsResult, DateRow, ResultRow, BigDateRow, VenueRow, ArrowRightRelative, StyledButton } from './index';
 import {useTranslation} from "react-i18next";
 import { Avatar, CircularProgress } from '@mui/material';
 import england from '../assets/logos/england.png'
@@ -74,6 +74,7 @@ const Bets = () => {
   const [loadingLiveMatches, setLoadingLiveMatches] = useState(false)
   const {activeLeague, setActiveLeague} = FantasyState();
   const {activeRound,setActiveRound} = FantasyState();
+  const {balance, setBalance} = FantasyState();
   const [activeLeagueId, setActiveLeagueId] = useState(null)
   const [activeBall, setActiveBall] = useState(1)
   const [currentLiveMaches, setCurrentLiveMatches] = useState([])
@@ -229,7 +230,7 @@ useEffect(() => {
         animate={isDateExpanded ? "expanded" : "collapsed"} 
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
-            <h2></h2>
+            <h2>YOUR BALANCE: {parseFloat(balance.toFixed(2))} PGZ</h2>
         </Title>
         <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
       <AnimatePresence>
@@ -275,6 +276,7 @@ useEffect(() => {
                     <ArrowIconHolder><ArrowRightRelative onClick={raiseRound} style={{transform: 'translateX(-15px) rotate(270deg)'}}></ArrowRightRelative></ArrowIconHolder>
                   </ArrowsHolder>
                 {currentRoundMaches?.map((match, index) => {
+                  console.log(match)
                   const date = new Date(match.fixture.date).toLocaleString();
                   return (
                     <TeamBetsHolder key={index} style={{margin: '0'}}
@@ -314,19 +316,9 @@ useEffect(() => {
                       </Rower>
                       {expandedIndex === index && (
                         <LowRower >
-                          {match?.events?.map((event) => {
-                            console.log(event)
-                            return (
-                              <RowerRow>
-                                <RowerRowEvent><RowerTeamEvent><img src={event?.team?.logo} alt="owngoal" /></RowerTeamEvent></RowerRowEvent>
-                                <RowerFirstEvent>{event?.detail === "Own Goal" ? <img style={{ transform: 'rotate(180deg)' }} src={ownGoal} alt="owngoal" /> : event.detail === "Yellow Card" ? <img src={yellowCard} alt="owngoal" /> : event.detail === "Red Card" ? <img src={redCard} alt="owngoal" /> : event.detail === "Normal Goal" ? <img src={goal} alt="owngoal" /> :
-                                  event.detail.startsWith("Substitution") ? <h2>OUT: {event?.assist?.name}</h2> : event.detail.startsWith("Goal Disallowed") ? <img src={ownGoal} alt="owngoal" /> : event?.detail}</RowerFirstEvent>
-                                <RowerRowName><h2>{event?.player?.name}</h2></RowerRowName>
-                                <RowerRowEvent><h2>{event?.time?.elapsed}'</h2></RowerRowEvent>
-
-                              </RowerRow>
-                            )
-                          })}
+                          <RowerRow>
+                              {match.fixture.status.short === "FT" ? <StyledButton>MATCH STATS</StyledButton> : ""}  
+                          </RowerRow>
 
                         </LowRower>
                       )}

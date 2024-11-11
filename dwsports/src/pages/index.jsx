@@ -720,14 +720,11 @@ export const StyledButton = styled(Button)`
         font-weight: bold;
     }
     @media(max-width: 968px){
-        font-size: 12px;
-        padding: 2px 10px;
-        line-height: 1.1;
+    
     }
-    @media(max-width: 698px){
-        font-size: 10px;
-        padding: 2px 10px;
-        line-height: 1.1;
+    @media(max-width: 490px){
+        font-size: 14px;
+        padding: 0px 10px;
     }
     }
 `;

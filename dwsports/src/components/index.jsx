@@ -926,8 +926,8 @@ export const LowRower = styled.div`
     height: 100%;
     ${props => props.theme.displayFlexColumn};
     overflow-y: auto !important;
-    border: 1px solid red;
 `;
+
 
 export const RowerRow = styled.div`
     width: 100%;
