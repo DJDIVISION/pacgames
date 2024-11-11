@@ -921,6 +921,43 @@ export const Rower = styled.div`
     ${props => props.theme.displayFlexCenter};
 `;
 
+export const RowerColumn = styled.div`
+    width: 100%;
+    height: 130px;
+    ${props => props.theme.displayFlexColumn};
+`;
+
+export const MiniRower = styled.div`
+    width: 100%;
+    height: 33%;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 20px;
+        font-weight: bold;
+    }
+`;
+export const MiniRowerType = styled.div`
+    width: 60%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumn};
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 20px;
+        font-weight: bold;
+    }
+`;
+export const MiniRowerAmount = styled.div`
+    width: 40%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumn};
+    span{
+        color: ${props => props.theme.MainAccent};
+        font-size: 20px;
+        font-weight: bold;
+    }
+`;
+
 export const LowRower = styled.div`
     width: 100%;
     height: 100%;
@@ -931,17 +968,37 @@ export const LowRower = styled.div`
 
 export const RowerRow = styled.div`
     width: 100%;
-    height: 50px;
+    min-height: 50px;
     ${props => props.theme.displayFlexCenter};
-    //justify-content: space-around;
     margin: 5px 0;
 `;
 
+export const RowerRowBets = styled.div`
+    width: 100%;
+    min-height: 50px;
+    ${props => props.theme.displayFlex};
+    margin: 5px 0;
+    h2{
+        font-size: 12px;
+        color: ${props => props.theme.text};
+    }
+`;
+
+export const AbsoluteScore = styled.h2`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 14px;
+    color: ${props => props.theme.text};
+    transform: translate(-50%, -50%);
+`;
+
 export const RowerFirstEvent = styled.div`
-    width: 30%;
+    width: 50%;
     height: 100%;
     ${props => props.theme.displayFlexCenter};
     text-align: center;
+    border: 1px solid orange;
     h2{
         font-size: 12px;
         color: ${props => props.theme.text};
@@ -954,18 +1011,42 @@ export const RowerFirstEvent = styled.div`
 `;
 
 export const RowerRowEvent = styled.div`
-    width: 10%;
+    width: 15%;
     height: 100%;
+    ${props => props.theme.displayFlexColumn};
+    border: 1px solid red;
+    position: relative;
+    h2{
+        font-size: 34px;
+        z-index: 3;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
+`;
+
+export const RowerRowEventTop = styled.div`
+    width: 15%;
+    height: 100%;
+    ${props => props.theme.displayFlexColumn};
+    border: 1px solid red;
+    h3{
+        font-size: 34px;
+        z-index: 3;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
+`;
+
+
+export const RowerTeamEvent = styled.div`
+    width: 5%;
+    height: 100%;
+    border: 1px solid grey;
     ${props => props.theme.displayFlexCenter};
     h2{
         font-size: 14px;
         color: ${props => props.theme.text};
     }
-`;
-export const RowerTeamEvent = styled.div`
-    width: 30%;
-    height: 100%;
-    ${props => props.theme.displayFlexCenter};
     img{
         display: block;
         width: 200%;

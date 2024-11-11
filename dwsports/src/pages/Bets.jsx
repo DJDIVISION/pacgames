@@ -21,11 +21,13 @@ import axios from 'axios';
 import ownGoal from '../assets/logos/ownGoal.png'
 import goal from '../assets/logos/goal.png'
 import redCard from '../assets/logos/redCard.png'
+import penalty from '../assets/logos/penalty.png'
 import yellowCard from '../assets/logos/yellowCard.png'
-import { LowRower, Rower, RowerFirstEvent, RowerRow, RowerRowEvent, RowerRowName, RowerTeamEvent } from '../components';
+import { LowRower,Rower,RowerColumn,RowerRowBets,MiniRower,MiniRowerType,MiniRowerAmount,RowerFirstEvent, RowerRow, RowerRowEvent, RowerRowName, RowerTeamEvent, AbsoluteScore } from '../components';
 import { supabase } from '../supabase/client';
 import Skeleton from '@mui/material/Skeleton';
 import LeagueStats from '../components/menus/LeagueStats';
+import { useAuth } from './functions';
 
 const Bets = () => {
 
@@ -67,14 +69,17 @@ const Bets = () => {
 ]
 
   const [openLeagueMenu, setOpenLeagueMenu] = useState(true)
+  const { user } = useAuth();
   const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
   const [availableLeagues, setAvailableLeagues] = useState(leagues)
   const [t, i18n] = useTranslation("global");
   const [isDateExpanded, setIsDateExpanded] = useState(false)
   const [openMatchesMenu, setOpenMatchesMenu] = useState(false)
   const [openLiveMatchesMenu, setOpenLiveMatchesMenu] = useState(false)
+  const [openMyBetsMenu, setOpenMyBetsMenu] = useState(false)
   const [loadingMatches, setLoadingMatches] = useState(false)
   const [loadingLiveMatches, setLoadingLiveMatches] = useState(false)
+  const [loadingBets, setLoadingBets] = useState(false)
   const {activeLeague, setActiveLeague} = FantasyState();
   const {activeRound,setActiveRound} = FantasyState();
   const {balance, setBalance} = FantasyState();
@@ -82,9 +87,145 @@ const Bets = () => {
   const [activeBall, setActiveBall] = useState(1)
   const [currentLiveMaches, setCurrentLiveMatches] = useState([])
   const [currentRoundMaches, setCurrentRoundMatches] = useState([])
+  const [myBets, setMyBets] = useState([])
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [leagueStatsMenu, setLeagueStatsMenu] = useState(false);
   const navigate = useNavigate()
+  const [premier, setPremier] = useState([])
+  const [serieA, setSerieA] = useState([])
+  const [bundesliga, setBundesliga] = useState([])
+  const [ligue1, setLigue1] = useState([])
+  const [laLiga, setLaLiga] = useState([])
+
+  const getFixtures = async () => {
+    const leagueIds = [39, 135, 140, 78, 61]; 
+    const season = '2024';
+    const apiKey = '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2';
+    const apiHost = 'api-football-v1.p.rapidapi.com';
+    const premier = localStorage.getItem("Premier League")
+    if(premier === null){
+      try {
+        // Map each leagueId to an axios request
+        const requests = leagueIds.map(leagueId => {
+          const options = {
+            method: 'GET',
+            url: `https://${apiHost}/v3/fixtures`,
+            params: { league: leagueId, season },
+            headers: {
+              'x-rapidapi-key': apiKey,
+              'x-rapidapi-host': apiHost,
+            },
+          };
+    
+          return axios.request(options);
+        });
+    
+        // Execute all requests at once
+        const responses = await Promise.all(requests);
+        responses.forEach((res) => {
+          if(res.data.parameters.league === "39"){
+            setPremier(res.data.response)
+            const str = JSON.stringify(res.data.response)
+            localStorage.setItem("Premier League", str)
+          } else if(res.data.parameters.league === "140"){
+            setLaLiga(res.data.response)
+            const str = JSON.stringify(res.data.response)
+            localStorage.setItem("La Liga", str)
+          } else if(res.data.parameters.league === "135"){
+            setSerieA(res.data.response)
+            const str = JSON.stringify(res.data.response)
+            localStorage.setItem("Serie A", str)
+          } else if(res.data.parameters.league === "61"){
+            setLigue1(res.data.response)
+            const str = JSON.stringify(res.data.response)
+            localStorage.setItem("Ligue 1", str)
+          } else if(res.data.parameters.league === "78"){
+            setBundesliga(res.data.response)
+            const str = JSON.stringify(res.data.response)
+            localStorage.setItem("Bundesliga", str)
+          }
+        })
+      } catch (error) {
+        console.error('Error fetching or updating fixtures:', error);
+      }
+    } else {
+      console.log("this is from local")
+      const prem = localStorage.getItem("Premier League")
+      const json = JSON.parse(prem)
+      setPremier(json)
+      const prem2 = localStorage.getItem("La Liga")
+      const json2 = JSON.parse(prem2)
+      setLaLiga(json2)
+      const prem3 = localStorage.getItem("Serie A")
+      const json3 = JSON.parse(prem3)
+      setSerieA(json3)
+      const prem4 = localStorage.getItem("Ligue 1")
+      const json4 = JSON.parse(prem4)
+      setLigue1(json4)
+      const prem5 = localStorage.getItem("Bundesliga")
+      const json5 = JSON.parse(prem5)
+      setBundesliga(json5)
+    }
+  }
+
+  const getBets = async () => {
+    if(user){
+      const { data, error } = await supabase
+          .from('bets')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('status', "Pending");
+  
+        if (error) {
+          console.error('Error retrieving data from Supabase:', error.message);
+        }
+        if(data){
+          setMyBets(data)
+        }
+    }
+  }
+
+  const writePendingBets = async () => {
+    const updatedBets = myBets.map(bet => ({
+      ...bet,
+      bet: bet.bet.map(matchBet => {
+        const fixtureId = matchBet.match.fixture.id;
+        const league = matchBet.match.league.name;
+  
+        // Fetch matches for the league from local storage
+        const matches = JSON.parse(localStorage.getItem(league));
+  
+        // Find and update the matching match with its goals
+        const matchedGame = matches?.find(match => match.fixture.id === fixtureId);
+        if (matchedGame) {
+          return {
+            ...matchBet,
+            match: {
+              ...matchBet.match,
+              goals: matchedGame.goals,
+              teams: matchedGame.teams,
+              fixture: matchedGame.fixture,
+            },
+          };
+        }
+        return matchBet; // Return unchanged if no match found
+      })
+    }));
+  
+    // Update state with the modified bets array
+    setMyBets(updatedBets);
+  } 
+
+  useEffect(() => {
+    getBets();
+  }, [user])
+
+  useEffect(() => {
+    if(openMyBetsMenu){
+      getFixtures();
+      writePendingBets();
+    }
+  }, [openMyBetsMenu])
 
   const toggleExpand = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
@@ -125,6 +266,7 @@ const Bets = () => {
   const startAll = (league) => {
     setOpenMatchesMenu(false)
     setOpenLiveMatchesMenu(false)
+    setOpenMyBetsMenu(false)
    setCurrentRoundMatches([])
    setActiveLeague("Premier League")
    setActiveLeagueId(39)
@@ -134,9 +276,17 @@ const Bets = () => {
   }
   const openLiveMatches = () => {
     setOpenLeagueMenu(false); 
+    setOpenMyBetsMenu(false)
     setOpenMatchesMenu(false)
     setTimeout(() => {
       setOpenLiveMatchesMenu(true)
+    }, 500)
+  }
+  const openBets = () => {
+    setOpenLeagueMenu(false); 
+    setOpenMatchesMenu(false)
+    setTimeout(() => {
+      setOpenMyBetsMenu(true)
     }, 500)
   }
 
@@ -169,7 +319,7 @@ const Bets = () => {
     }
   }
 
-  console.log(currentLiveMaches)
+  console.log(myBets)
 
   const fetchCurrentMatches = async () => {
     const options = {
@@ -230,6 +380,82 @@ useEffect(() => {
     setActiveLeagueId(league.id)
     setLeagueStatsMenu(true)
   }
+
+  const fetchBets = async () => {
+    const { data, error } = await supabase
+          .from('bets')
+          .select('*')
+          .eq('leagueName', match.match.league.name);
+  
+        if (error) {
+          console.error('Error retrieving data from Supabase:', error.message);
+          return match; // Return the match as-is if there's an error
+        }
+  }
+
+  const getURL = (betType, match) => {
+    if(betType === "home") return match.teams.home.logo
+    if(betType === "away") return match.teams.away.logo
+    if(betType === "awayOver2") return match.teams.away.logo
+    if(betType === "awayUnder2") return match.teams.away.logo
+    if(betType === "awayBTTS") return match.teams.away.logo
+    if(betType === "awayBTNTS") return match.teams.away.logo
+    if(betType === "awayMinus1") return match.teams.away.logo
+    if(betType === "homeOver2") return match.teams.home.logo
+    if(betType === "homeBTTS") return match.teams.home.logo
+    if(betType === "homeUnder2") return match.teams.home.logo
+    if(betType === "homeBTNTS") return match.teams.home.logo
+    if(betType === "homeMinus1") return match.teams.home.logo
+    return ''
+};
+
+const getName = (betType, match) => {
+    if(betType === "home") return `${match.teams.home.name} wins to ${match.teams.away.name}`
+    if(betType === "away") return `${match.teams.away.name} wins to ${match.teams.home.name}`
+    if(betType === "draw") return `${match.teams.home.name} draws with ${match.teams.away.name}`
+    if(betType === "homeOver2") return `${match.teams.home.name} OVER 2.5`
+    if(betType === "btts") return `${match.teams.home.name} & ${match.teams.away.name} score`
+    if(betType === "homeBTTS") return `${match.teams.home.name} Wins both teams score`
+    if(betType === "btnts") return `${match.teams.home.name} & ${match.teams.away.name} both not score`
+    if(betType === "awayOver2") return `${match.teams.away.name} over 2.5`
+    if(betType === "homeUnder2") return `${match.teams.home.name} under 2.5`
+    if(betType === "awayUnder2") return `${match.teams.away.name} under 2.5`
+    if(betType === "homeMinus1") return `${match.teams.home.name} - 1`
+    if(betType === "awayBTTS") return `${match.teams.away.name} Wins both teams score`
+    if(betType === "homeBTNTS") return `${match.teams.home.name} Wins both teams not score`
+    if(betType === "awayMinus1") return `${match.teams.away.name} - 1`
+    if(betType === "awayBTNTS") return `${match.teams.away.name} Wins both teams not score`
+    return ''
+};
+
+const getOdd = (betType, match) => {
+    if(betType === "home") return match.odds.home
+    if(betType === "away") return match.odds.away
+    if(betType === "draw") return match.odds.draw
+    if(betType === "homeOver2") return match.odds.homeOver2
+    if(betType === "btts") return match.odds.btts
+    if(betType === "awayOver2") return match.odds.awayOver2
+    if(betType === "homeUnder2") return match.odds.homeUnder2
+    if(betType === "btnts") return match.odds.btnts
+    if(betType === "awayUnder2") return match.odds.awayUnder2
+    if(betType === "homeBTTS") return match.odds.homeBTTS
+    if(betType === "homeMinus1") return match.odds.homeMinus1
+    if(betType === "awayBTTS") return match.odds.awayBTTS
+    if(betType === "homeBTNTS") return match.odds.homeBTNTS
+    if(betType === "awayMinus1") return match.odds.awayMinus1
+    if(betType === "awayBTNTS") return match.odds.awayBTNTS
+    return ''
+};
+
+const getWinnings = (el) => {
+  if(el.isWinningBet === true){
+    return '✅'
+  }
+  if(el.isWinningBet === false){
+    return '❌'
+  }
+  return ''
+}
 
 
   return (
@@ -399,7 +625,7 @@ useEffect(() => {
                               <RowerRow>
                                 <RowerRowEvent><RowerTeamEvent><img src={event?.team?.logo} alt="owngoal" /></RowerTeamEvent></RowerRowEvent>
                                 <RowerFirstEvent>{event?.detail === "Own Goal" ? <img style={{ transform: 'rotate(180deg)' }} src={ownGoal} alt="owngoal" /> : event.detail === "Yellow Card" ? <img src={yellowCard} alt="owngoal" /> : event.detail === "Red Card" ? <img src={redCard} alt="owngoal" /> : event.detail === "Normal Goal" ? <img src={goal} alt="owngoal" /> :
-                                  event.detail.startsWith("Substitution") ? <h2>OUT: {event?.assist?.name}</h2> : event.detail.startsWith("Goal Disallowed") ? <img src={ownGoal} alt="owngoal" /> : event?.detail}</RowerFirstEvent>
+                                  event.detail.startsWith("Substitution") ? <h2>OUT: {event?.assist?.name}</h2> : event.detail.startsWith("Goal Disallowed") ? <img src={ownGoal} alt="owngoal" /> : event.detail === "Penalty" ? <img src={penalty} alt="owngoal" /> : event?.detail}</RowerFirstEvent>
                                 <RowerRowName><h2>{event?.player?.name}</h2></RowerRowName>
                                 <RowerRowEvent><h2>{event?.time?.elapsed}'</h2></RowerRowEvent>
 
@@ -424,12 +650,72 @@ useEffect(() => {
 
           </Container>
         )} 
+        {openMyBetsMenu && (
+          <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} >
+            {loadingMatches ? (
+              <TeamCircularRow>
+                <CircularProgress sx={{ width: 80, height: 80 }} />
+              </TeamCircularRow>
+            ) : (
+              <TeamRow variants={item}
+                initial="initial"
+                animate="animate"
+                exit="exit"  style={{paddingTop: '60px'}}
+                transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                
+                {myBets?.map((bet, index) => {
+                  const type = bet.bet.length === 1 ? "SINGLE BET" : "MULTIPLE BET"
+                  const date = bet.created_at
+                  const newdate = new Date(date);
+                  const localDateTime = newdate.toLocaleString();
+                  return (
+                    <TeamBetsHolder key={index} style={{margin: '0'}}
+                      initial={{ height: '130px' }}
+                      animate={{ height: expandedIndex === index ? '330px' : '130px' }}
+                      transition={{ duration: 0.5 }}>
+                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                      <RowerColumn>
+                          <MiniRower><MiniRowerType><h2>{type}</h2></MiniRowerType><MiniRowerAmount><span>{bet.amount} PGZ</span></MiniRowerAmount></MiniRower>
+                          <MiniRower><h2>{localDateTime}</h2></MiniRower>
+                          <MiniRower><MiniRowerType><h2 style={{fontSize: isMobile ? "16px" : "20px", transform: isMobile ? "translateY(5px)" : "translateY(10px)"}}>POSSIBLE WINNINGS</h2></MiniRowerType><MiniRowerAmount><span>{bet.possibleWinnings} PGZ</span></MiniRowerAmount></MiniRower>
+                      </RowerColumn>
+                      {expandedIndex === index && (
+                        <LowRower >
+                          {bet.bet.map((match) => {
+                            console.log(match)
+                            const url = getURL(match.betType, match.match);
+                            const homeLogo = getURL("home", match.match);
+                            const awayLogo = getURL("away", match.match);
+                            const name = getName(match.betType, match.match)
+                            const winnings = getWinnings(match)
+                            console.log(name)
+                            return(
+                              <RowerRowBets style={{border: '1px solid orange'}}>
+                                <RowerFirstEvent><h2>{name}</h2></RowerFirstEvent>
+                                <RowerRowEvent style={{backgroundImage: `url(${homeLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.home.winner === true ? '#2cff02' : match.match.teams.home.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.home}</h2></AbsoluteScore></RowerRowEvent>
+                                <RowerTeamEvent><h2>-</h2></RowerTeamEvent>
+                                <RowerRowEvent style={{backgroundImage: `url(${awayLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.away.winner === true ? '#2cff02' : match.match.teams.away.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.away}</h2></AbsoluteScore></RowerRowEvent>
+                                <RowerRowEvent>{winnings}</RowerRowEvent>
+                              </RowerRowBets>
+                            )
+                          })}
+
+                        </LowRower>
+                      )}
+                    </TeamBetsHolder>
+                  )
+                })}
+              </TeamRow>
+            )}
+          </Container>
+        )}
         {leagueStatsMenu && (
               <LeagueStats variants={item} 
               initial="initial"
               animate="animate"
               exit="exit" style={{justifyContent: 'space-around'}} leagueStatsMenu={leagueStatsMenu} setLeagueStatsMenu={setLeagueStatsMenu}/>
-            )}
+        )}
       </AnimatePresence>
       <BottomRow>
         <IconHolder onClick={startAll}><h2 style={{color: openLeagueMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title20")}</h2></IconHolder>
@@ -437,7 +723,7 @@ useEffect(() => {
           {openMatchesMenu ? <h2 style={{color: openMatchesMenu ? "rgba(244,215,21,1)" : ""}}>PICK A MATCH</h2> : <h2 onClick={() => openLiveMatches(true)}>LIVE MATCHES</h2>}
         </IconHolder>
         <IconHolder></IconHolder>
-        <IconHolder></IconHolder>
+        <IconHolder onClick={() => openBets()}><h2>YOUR BETS</h2></IconHolder>
       </BottomRow>
     </Section>
   )

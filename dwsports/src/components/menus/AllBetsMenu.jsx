@@ -374,9 +374,9 @@ const writePendingBets = () => {
   } 
 }
 
-useEffect(() => {
+/* useEffect(() => {
   writePendingBets()
-}, [myBets])
+}, [myBets]) */
 
 const writeFixtures = async () => {
   const leagueIds = [39, 135, 140, 78, 61]; 
