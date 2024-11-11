@@ -12,6 +12,8 @@ import italy from '../assets/logos/italy.png'
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
 import chart from '../assets/logos/chart.png' 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {Section,BottomRow,IconHolder,LeagueRowBets,Container,item,LeagueHolder,AbsoluteIconButton,ArrowUp,ArrowDown,
   Title,AbsoluteIconButtonLeft,TeamCircularRow,TeamRow,TeamBetsHolder,ArrowsHolder,ArrowIconHolder,RoundNameHolder,
   AbsoluteChart
@@ -324,6 +326,8 @@ const Bets = () => {
                 if (updateError) {
                     console.error('Error updating user data:', updateError.message);
                 } else {
+                    const filter = myBets.filter((el) => el.id !== bet.id)
+                    setMyBets(filter)
                     const balance = searchData[0].appBalance
                     const newBalance = balance + bet.possibleWinnings
                     console.log(newBalance)
@@ -343,7 +347,16 @@ const Bets = () => {
                                 if (betError) {
                                     console.error('Error updating user data:', betError.message);
                                 } else {
-                                  message.success("You have been won your bet!")
+                                  toast('You have won your bet! 🤑🤑🤑  ', {
+                                    position: "top-center",
+                                    autoClose: 5000,
+                                    hideProgressBar: true,
+                                    closeOnClick: true,
+                                    pauseOnHover: true,
+                                    draggable: true,
+                                    progress: undefined,
+                                    theme: "dark"
+                                    });
                                 }
                                 
                           }
@@ -356,8 +369,19 @@ const Bets = () => {
       !bet.bet.every(matchBet => matchBet.isWinningBet === true)
     );
     
-    nonWinningBets.forEach((bet) => {
-      bet.status = "Lost"
+    nonWinningBets.forEach(async (bet) => {
+                    const filter = myBets.filter((el) => el.id !== bet.id)
+                    setMyBets(filter)
+                                const { data: betData, error: betError } = await supabase
+                                .from('bets')
+                                .update({status: "Lost"}) // Update the jsonb column
+                                .eq('id', bet.id); // Identify which user to update
+                
+                                if (betError) {
+                                    console.error('Error updating user data:', betError.message);
+                                } else {
+                                  console.log("one added")
+                                }
     })
     console.log(nonWinningBets)
   }
@@ -609,6 +633,18 @@ const getWinnings = (el) => {
 
   return (
     <Section>
+      <ToastContainer
+      position="top-center"
+      autoClose={5000}
+      hideProgressBar={true}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="dark"
+      />
       {isDateExpanded ? <AbsoluteIconButton onClick={closeDate}><ArrowDown /></AbsoluteIconButton> : <AbsoluteIconButton onClick={closeDate}><ArrowUp /></AbsoluteIconButton>}
       <Title initial="expanded" 
         animate={isDateExpanded ? "expanded" : "collapsed"} 
@@ -872,6 +908,7 @@ const getWinnings = (el) => {
         <IconHolder></IconHolder>
         <IconHolder onClick={() => openBets()}><h2>YOUR BETS</h2></IconHolder>
       </BottomRow>
+      <ToastContainer />
     </Section>
   )
 }
