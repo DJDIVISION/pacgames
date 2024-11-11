@@ -998,7 +998,6 @@ export const RowerFirstEvent = styled.div`
     height: 100%;
     ${props => props.theme.displayFlexCenter};
     text-align: center;
-    border: 1px solid orange;
     h2{
         font-size: 12px;
         color: ${props => props.theme.text};
@@ -1013,8 +1012,7 @@ export const RowerFirstEvent = styled.div`
 export const RowerRowEvent = styled.div`
     width: 15%;
     height: 100%;
-    ${props => props.theme.displayFlexColumn};
-    border: 1px solid red;
+    ${props => props.theme.displayFlexCenter};
     position: relative;
     h2{
         font-size: 34px;
@@ -1028,7 +1026,6 @@ export const RowerRowEventTop = styled.div`
     width: 15%;
     height: 100%;
     ${props => props.theme.displayFlexColumn};
-    border: 1px solid red;
     h3{
         font-size: 34px;
         z-index: 3;
@@ -1041,7 +1038,6 @@ export const RowerRowEventTop = styled.div`
 export const RowerTeamEvent = styled.div`
     width: 5%;
     height: 100%;
-    border: 1px solid grey;
     ${props => props.theme.displayFlexCenter};
     h2{
         font-size: 14px;

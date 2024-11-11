@@ -198,13 +198,29 @@ const Bets = () => {
         // Find and update the matching match with its goals
         const matchedGame = matches?.find(match => match.fixture.id === fixtureId);
         if (matchedGame) {
+          /* const isWinningBet =
+              (matchedGame.betType === "home" && matchedGame.goals.home > matchedGame.goals.away) ||
+              (matchedGame.betType === "away" && matchedGame.goals.away > matchedGame.goals.home) ||
+              (matchedGame.betType === "draw" && matchedGame.goals.home === matchedGame.goals.away) ||
+              (matchedGame.betType === "homeOver2" && matchedGame.goals.home >= 3) ||
+              (matchedGame.betType === "btts" && matchedGame.goals.home >= 1 && matchedGame.goals.away >= 1) ||
+              (matchedGame.betType === "awayOver2" && matchedGame.goals.away >= 3) ||
+              (matchedGame.betType === "homeUnder2" && matchedGame.goals.home <= 2) ||
+              (matchedGame.betType === "btnts" && matchedGame.goals.home === 0 || matchedGame.goals.away === 0) ||
+              (matchedGame.betType === "awayUnder2" && matchedGame.goals.away <= 2) ||
+              (matchedGame.betType === "homeBTTS" && matchedGame.goals.home > matchedGame.goals.away && matchedGame.goals.away >= 1) ||
+              (matchedGame.betType === "homeMinus1" && matchedGame.goals.home > matchedGame.goals.away + 1) ||
+              (matchedGame.betType === "awayBTTS" && matchedGame.goals.away > matchedGame.goals.home && matchedGame.goals.home >= 1) ||
+              (matchedGame.betType === "homeBTNTS" && matchedGame.goals.home > matchedGame.goals.away && matchedGame.goals.away === 0) ||
+              (matchedGame.betType === "awayMinus1" && matchedGame.goals.away > matchedGame.goals.home + 1) ||
+              (matchedGame.betType === "awayBTNTS" && matchedGame.goals.away > matchedGame.goals.home && matchedGame.goals.home === 0); */
           return {
             ...matchBet,
             match: {
               ...matchBet.match,
               goals: matchedGame.goals,
               teams: matchedGame.teams,
-              fixture: matchedGame.fixture,
+              fixture: matchedGame.fixture
             },
           };
         }
@@ -216,9 +232,61 @@ const Bets = () => {
     setMyBets(updatedBets);
   } 
 
+  function isBetFulfilled(bet) {
+    const { betType, match } = bet;
+    const { home, away } = match.goals;
+  
+    switch (betType) {
+      case "homeOver2":
+        return home > 2;
+      case "homeUnder2":
+        return home < 2;
+      case "homeBTTS":
+      case "awayBTTS":
+        return home > 0 && away > 0;
+      case "homeBTNTS":
+      case "awayBTNTS":
+        return home === 0 || away === 0;
+      case "btts":
+        return home > 0 && away > 0;
+      case "btnts":
+        return home === 0 || away === 0;
+      case "homeMinus1":
+        return home - away >= 1;
+      case "awayMinus1":
+        return away - home >= 1;
+      case "awayOver2":
+        return away > 2;
+      case "awayUnder2":
+        return away < 2;
+      default:
+        return false;
+    }
+  }
+
+  const checkBets = () => {
+    if(myBets){
+      myBets.forEach(bet => {
+        bet.bet.forEach(matchBet => {
+          const isFulfilled = isBetFulfilled(matchBet);
+          console.log(`Bet Type: ${matchBet.betType}, isWinningBet: ${isFulfilled}`);
+          
+          // Optionally update the bet object with the result
+          matchBet.isWinningBet = isFulfilled;
+        });
+      });
+    }
+  }
+
   useEffect(() => {
     getBets();
   }, [user])
+
+  useEffect(() => {
+    checkBets();
+  }, [myBets])
+
+  
 
   useEffect(() => {
     if(openMyBetsMenu){
@@ -318,8 +386,6 @@ const Bets = () => {
       console.error(error);
     }
   }
-
-  console.log(myBets)
 
   const fetchCurrentMatches = async () => {
     const options = {
@@ -478,9 +544,7 @@ const getWinnings = (el) => {
               exit="exit"
               transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
               {availableLeagues?.map((league, index) => {
-                console.log(league)
                 return (
-
                   <LeagueHolder whileHover={{ scale: 1.05 }} key={league.name} >
                     <AbsoluteChart onClick={() => setOpenLeague(league)}><img src={chart} alt="chart" /></AbsoluteChart>
                     <BallColumn key={league.id}>
@@ -683,20 +747,20 @@ const getWinnings = (el) => {
                       {expandedIndex === index && (
                         <LowRower >
                           {bet.bet.map((match) => {
-                            console.log(match)
+                           
                             const url = getURL(match.betType, match.match);
                             const homeLogo = getURL("home", match.match);
                             const awayLogo = getURL("away", match.match);
                             const name = getName(match.betType, match.match)
                             const winnings = getWinnings(match)
-                            console.log(name)
+                            
                             return(
-                              <RowerRowBets style={{border: '1px solid orange'}}>
+                              <RowerRowBets>
                                 <RowerFirstEvent><h2>{name}</h2></RowerFirstEvent>
                                 <RowerRowEvent style={{backgroundImage: `url(${homeLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.home.winner === true ? '#2cff02' : match.match.teams.home.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.home}</h2></AbsoluteScore></RowerRowEvent>
                                 <RowerTeamEvent><h2>-</h2></RowerTeamEvent>
                                 <RowerRowEvent style={{backgroundImage: `url(${awayLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.away.winner === true ? '#2cff02' : match.match.teams.away.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.away}</h2></AbsoluteScore></RowerRowEvent>
-                                <RowerRowEvent>{winnings}</RowerRowEvent>
+                                <RowerRowEvent><h2 style={{fontSize: '22px'}}>{winnings}</h2></RowerRowEvent>
                               </RowerRowBets>
                             )
                           })}
