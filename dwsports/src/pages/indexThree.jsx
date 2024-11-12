@@ -249,15 +249,20 @@ padding: 10px;
 
 export const TeamBetsHolder = styled(motion.div)`
 width: 98%;
-border: 1px solid ${props => props.theme.card};
+border: 2px solid ${props => props.theme.card};
 background: ${props => props.theme.cardTwo};
 ${props => props.theme.displayFlexColumnCenter}
 box-shadow: inset 0 0 25px ${props => props.theme.text};
-border-radius: 5px;
+border-radius: 10px;
 cursor: pointer;
 position: relative;
 padding: 10px;
 margin: 10px 0;
+h2{
+    color: ${props => props.theme.text};
+    font-size: 18px;
+    font-weight: bold;
+}
 `;
 
 

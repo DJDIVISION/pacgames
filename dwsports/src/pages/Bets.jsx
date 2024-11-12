@@ -32,6 +32,8 @@ import LeagueStats from '../components/menus/LeagueStats';
 import { useAuth } from './functions';
 import { CrossAnimation, TickAnimation } from '../animations';
 import { message } from 'antd';
+import TeamStats from '../components/menus/TeamStats';
+import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 
 const Bets = () => {
 
@@ -82,9 +84,13 @@ const Bets = () => {
   const [openWonBetsMenu, setOpenWonBetsMenu] = useState(false)
   const [openLostBetsMenu, setOpenLostBetsMenu] = useState(false)
   const [openLiveMatchesMenu, setOpenLiveMatchesMenu] = useState(false)
+  const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
+  const {activeTeamId, setActiveTeamId} = FantasyState();
+  const {playerToUpdate, setPlayerToUpdate} = FantasyState();
   const [openMyBetsMenu, setOpenMyBetsMenu] = useState(false)
   const [loadingMatches, setLoadingMatches] = useState(false)
   const [loadingLiveMatches, setLoadingLiveMatches] = useState(false)
+  const [selectedPlayerMenu, setSelectedPlayerMenu] = useState(false)
   const [loadingWonBets, setLoadingWonBets] = useState(false)
   const [loadingLostBets, setLoadingLostBets] = useState(false)
   const [loadingBets, setLoadingBets] = useState(false)
@@ -431,7 +437,7 @@ const Bets = () => {
                 }
       }
     })
-    console.log(winningBets)
+    
     const nonWinningBets = myBets.filter(bet => 
       !bet.bet.every(matchBet => matchBet.isWinningBet === true)
     );
@@ -450,7 +456,6 @@ const Bets = () => {
                                   console.log("one added")
                                 }
     })
-    console.log(nonWinningBets)
   }
 
   useEffect(() => {
@@ -468,8 +473,6 @@ const Bets = () => {
       getWinOrLost("Won");
     }
   }, [openWonBetsMenu])
-
-  console.log(winOrLostBets)
 
   useEffect(() => {
     if(myBets){
@@ -507,6 +510,14 @@ const Bets = () => {
           height: isMobile ? '80vh' : '75vh'
       },
   };
+  const openTeamMenu = (id) => {
+    setActiveTeamId(id)
+    setSelectedTeamMenu(true)
+  }
+  const openPlayerStatsMenu = (player) => {
+    setPlayerToUpdate(player)
+    setSelectedPlayerMenu(true)
+}
   const closeDate = () => {
     setIsDateExpanded((prev) => !prev);
   }
@@ -793,7 +804,6 @@ const getWinnings = (el) => {
                     <ArrowIconHolder><ArrowRightRelative onClick={raiseRound} style={{transform: 'translateX(-15px) rotate(270deg)'}}></ArrowRightRelative></ArrowIconHolder>
                   </ArrowsHolder>
                 {currentRoundMaches?.map((match, index) => {
-                  console.log(match)
                   const date = new Date(match.fixture.date).toLocaleString();
                   return (
                     <TeamBetsHolder key={index} style={{margin: '0'}}
@@ -807,7 +817,7 @@ const getWinnings = (el) => {
                             <Skeleton variant="circular" width={50} height={50} />
                           ) : (
                             <TeamLogoWrapper>
-                            <Avatar /* onClick={() => openTeamMenu(match.teams.home.id)} */ alt="Home Team Logo" src={match.teams.home.logo} sx={{
+                            <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{
                               width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
                               height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
                             }} />
@@ -834,7 +844,11 @@ const getWinnings = (el) => {
                       {expandedIndex === index && (
                         <LowRower >
                           <RowerRow>
+                              {match.fixture.status.short === "NS" ? <StyledButton>HEAD TO HEAD</StyledButton> : ""}  
                               {match.fixture.status.short === "FT" ? <StyledButton>MATCH STATS</StyledButton> : ""}  
+                          </RowerRow>
+                          <RowerRow>
+                              
                           </RowerRow>
 
                         </LowRower>
@@ -1019,7 +1033,7 @@ const getWinnings = (el) => {
                   return (
                     <TeamBetsHolder key={index} style={{margin: '0'}}
                       initial={{ height: '130px' }}
-                      animate={{ height: expandedIndex === index ? '330px' : '130px' }}
+                      animate={{ height: expandedIndex === index ? '250px' : '130px' }}
                       transition={{ duration: 0.5 }}>
                       {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
                       <RowerColumn>
@@ -1078,7 +1092,7 @@ const getWinnings = (el) => {
                   return (
                     <TeamBetsHolder key={index} style={{margin: '0'}}
                       initial={{ height: '130px' }}
-                      animate={{ height: expandedIndex === index ? '330px' : '130px' }}
+                      animate={{ height: expandedIndex === index ? '250px' : '130px' }}
                       transition={{ duration: 0.5 }}>
                       {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
                       <RowerColumn>
@@ -1121,6 +1135,12 @@ const getWinnings = (el) => {
               initial="initial"
               animate="animate"
               exit="exit" style={{justifyContent: 'space-around'}} leagueStatsMenu={leagueStatsMenu} setLeagueStatsMenu={setLeagueStatsMenu}/>
+        )}
+        {selectedTeamMenu && (
+                <TeamStats selectedTeamMenu={selectedTeamMenu} setSelectedTeamMenu={setSelectedTeamMenu} />
+        )}
+        {selectedPlayerMenu && (
+        <PlayerStatsMenu selectedPlayerMenu={selectedPlayerMenu} setSelectedPlayerMenu={setSelectedPlayerMenu} />
         )}
       </AnimatePresence>
       <BottomRow>

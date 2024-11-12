@@ -1242,13 +1242,15 @@ export const NewHolder = styled.div`
     border-radius: 10px;
     margin: 10px 0;
     ${props => props.theme.displayFlexColumnCenter};
+    box-shadow: inset 0 0 25px ${props => props.theme.text};
     background: rgba(170, 167, 167, 0.1);
     backdrop-filter: blur(10px);
     h3{
-        font-size: 22px;
+        color: ${props => props.theme.MainAccent};
+        font-size: 20px;
+        font-weight: bold;
+        text-shadow: ${props => props.theme.textShadowTwo};
         margin: 5px 0 15px 0;
-        color: aqua;
-        text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
     }
     span{
         color: ${props => props.theme.text};

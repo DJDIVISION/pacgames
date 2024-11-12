@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import styled from 'styled-components';
 import { supabase } from '../../supabase/client';
-import {motion} from 'framer-motion'
+import {motion } from 'framer-motion'
 import {BetSection,ArrowUp,SportsButtonRow,item,BorderedMatch,BetWrapper,MatchColumn,MatchDate,TeamStatsLogo,AgeAverage,
   MatchOdds,OddsColumn,StatsIcon,MatchWrapper,MatchTeam,ArrowLeft,MiniArrowDown,MiniArrowup,TeamStatsSection,LeftColumn,
   RightColumn,TeamStatsWrapper,TeamStatsName,TeamStatCountry,StatsCountryAvatar,StatsCountryLocation,TeamStatsRating,
   TeamRatingTitle,TeamRating,AccordionTitle,SmallBorderedMatch,TeamMembers,Row,Column,ColumnIcon,SmallColumnText,BigColumnText,
   Stadium,Capacity,Coach,Foundation,RecentForm,TeamStatsRow,SmallBorderedMatchRight,ArrivalsText,ArrivalsTitle,ReadMore,
-  TitleRow,TitleColumn,TeamsLogo,TeamsResult,DateRow,ResultRow,TeamLogoWrapper,TeamLogoText,NewHolder,TopRow
+  TitleRow,TitleColumn,TeamsLogo,TeamsResult,DateRow,ResultRow,TeamLogoWrapper,TeamLogoText,NewHolder,TopRow,
+  SmallArrowDown
 } from '../../pages/index'
 import {CloseStats,StatsSection,StatsWrapper,StatsStadium,StatsStadiumCapacity,MatchLineUp,
-  StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Wrapper,PlayerDisplay,PlayerBigPicture
+  StatsPlayers,StatPlayer,PlayerPicture,PlayerName,PlayerNumber,PlayerPosition,Wrapper,PlayerDisplay,PlayerBigPicture,
+  RowerColumn,
+  LowRower,RowerNameEvent,
+  RowerRowBets,RowerSmall,RowerLongNameEvent,RowerRowEventLong,
+  RowerRowEvent,
+  RowerTeamEvent
 } from '../index'
+import {useInView} from "react-intersection-observer";
+
 import { Avatar, Button } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom'
@@ -19,6 +27,8 @@ import {Link as LinkR} from 'react-router-dom'
 import { FantasyState } from '../../context/FantasyContext';
 import { minWidth } from '@mui/system';
 import axios from 'axios';
+import shirt from '../../assets/logos/shirt.png'
+import { TeamBetsHolder, TeamRow } from '../../pages/indexThree';
 
 
 
@@ -29,7 +39,11 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
   const {activeTeamId, setActiveTeamId} = FantasyState();
   const {activeLeagueId, setActiveLeagueId} = FantasyState();
   const [homeMatches, setHomeMatches] = useState([]);
+  const [homeRestMatches, setHomeRestMatches] = useState([]);
   const [awayMatches, setAwayMatches] = useState([]);
+  const [awayRestMatches, setAwayRestMatches] = useState([]);
+  const [allMatches, setAllMatches] = useState([]);
+  const [squad, setSquad] = useState([])
   const [activeMatches, setActiveMatches] = useState([]);
   const [teamData, setTeamData] = useState([])
   const [lineUps, setLineUps] = useState([])
@@ -46,6 +60,33 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
   const [form, setForm] = useState([])
   const [loading, setLoading] = useState(false)
   const [activeBackground, setActiveBackground] = useState('home')
+  const [expandedIndex, setExpandedIndex] = useState(null);
+  const [expandedIndexAway, setExpandedIndexAway] = useState(null);
+  const [expandedIndexPlayers, setExpandedIndexPlayers] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const refs = useRef([]);
+
+  // Update refs when activeMatches change
+  useEffect(() => {
+    refs.current = refs.current.slice(0, activeMatches.length);
+  }, [activeMatches]);
+
+  const handleInView = (index, inView) => {
+    if (inView && activeIndex !== index) {
+      setActiveIndex(index);
+      console.log(`Match ${index} is in view`);
+    }
+  };
+
+  const ObserverComponent = ({ index, onChange }) => {
+    const { ref, inView } = useInView({
+      threshold: 0.5,
+      triggerOnce: false,
+      onChange: (inView) => onChange(index, inView), // Handle visibility change
+    });
+  
+    return <div ref={ref} style={{ height: '0px', visibility: 'hidden' }} />;
+  };
 
   const GraphWrapper = styled.div`
     display: flex;
@@ -93,6 +134,16 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     );
   };
 
+  const toggleExpand = () => {
+    setExpandedIndex(expandedIndex === false ? true : false);
+  };
+  const toggleExpandAway = () => {
+    setExpandedIndexAway(expandedIndexAway === false ? true : false);
+  };
+  const toggleExpandPlayers = () => {
+    setExpandedIndexPlayers(expandedIndexPlayers === false ? true : false);
+  };
+
   
   const fetchData = async () => {
     setLoading(true);
@@ -116,17 +167,27 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
       const data = response.data.response 
       console.log(data);
       const homeMatches = [];
+      const homeRestMatches = [];
       const awayMatches = [];
+      const awayRestMatches = [];
       data.forEach((el) => {
         if (el.teams.home.id === activeTeamId && el.goals.home !== null) {
           homeMatches.push(el);
-        } else if (el.teams.away.id === activeTeamId && el.fixture.referee !== null) {
+        } else if (el.teams.away.id === activeTeamId && el.goals.away !== null) {
           awayMatches.push(el);
         }
+        if (el.teams.home.id === activeTeamId && el.goals.home === null) {
+          homeRestMatches.push(el);
+        } else if (el.teams.away.id === activeTeamId && el.goals.away === null) {
+          awayRestMatches.push(el);
+        }
       })
-      setHomeMatches(homeMatches);
-      setAwayMatches(awayMatches);
-      setActiveMatches(homeMatches);
+      setAllMatches(data)
+      setHomeMatches(homeMatches)
+      setHomeRestMatches(homeRestMatches)
+      setAwayMatches(awayMatches)
+      setAwayRestMatches(awayRestMatches)
+      setActiveMatches(homeMatches)
     } catch (error) {
       console.error(error);
     }
@@ -165,32 +226,26 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     } catch (error) {
       console.error(error);
     }
-  
-    // Second query: fetching team stats
-    /* const { data: teamStatsData, error: teamStatsError } = await supabase
-      .from('teams')
-      .select('stats')
-      .eq("teamId", activeTeamId);
+
+    const optionsThree = {
+      method: 'GET',
+      url: 'https://api-football-v1.p.rapidapi.com/v3/players/squads',
+      params: {team: activeTeamId},
+      headers: {
+        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+      }
+    };
     
-    if (teamStatsError) {
-      console.error('Error fetching team stats data:', teamStatsError.message);
-    } else if (teamStatsData && teamStatsData.length > 0) {
-      setTeamData(data.stats)
-      setLineUps(data.stats.lineups)
-      setCleanSheets(data.stats.clean_sheet)
-      setFailedToScore(data.stats.failed_to_score)
-      setDraws(data.stats.fixtures.draws)
-      setLoses(data.stats.fixtures.loses)
-      setWins(data.stats.fixtures.wins)
-      setForm(data.stats.form)
-      setPlayed(data.stats.fixtures.played)
-      setPenaltyMissed(data.stats.penalty.missed)
-      setPenaltyScored(data.stats.penalty.scored)
-      setGoalsAgainst(data.stats.goals.against.total)
-      setGoalsFor(data.stats.goals.for.total)
-    } else {
-      console.error('No team stats data found for the given team ID');
-    } */
+    try {
+      const response = await axios.request(optionsThree);
+      console.log(response.data.response);
+      setSquad(response.data.response[0].players)
+    } catch (error) {
+      console.error(error);
+    }
+  
+
     setLoading(false);
   }
 
@@ -213,6 +268,8 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     
   }
 
+  
+
   return (
     <motion.div className="menu-container-one" variants={item}
               initial="initial"
@@ -221,6 +278,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
     <TeamStatsSection>
       <CloseStats onClick={() => setSelectedTeamMenu(false)}/>
       {loading ? (
+        
         <CircularProgress color="secondary" />
       ) : (
             <>
@@ -229,10 +287,14 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                 <TitleColumn><StyledButton className={`button ${activeBackground === 'away' ? 'active' : ''}`} id="away" onClick={(e) => changeMatches(e)}>AWAY</StyledButton></TitleColumn>
               </TitleRow>
               <TopRow>
-              {activeMatches?.map((match) => {
-                    const date = new Date(match.fixture.date).toLocaleString();
+              {activeMatches?.map((match,index) => {
+                  const date = new Date(match.fixture.date).toLocaleString();
+                  console.log(index)
                     return (
-                      <StatsWrapper>
+                      <StatsWrapper key={index}
+                      ref={(el) => {
+                        refs.current[index] = el;
+                      }}>
                         <TeamsLogo>
                           <TeamLogoWrapper>
                             <Avatar alt="Image" src={match.teams.home.logo} sx={{
@@ -257,10 +319,102 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                           </TeamLogoWrapper>
                           <TeamLogoText>{match.teams.away.name}</TeamLogoText>
                         </TeamsLogo>
+                        <ObserverComponent index={index} onChange={handleInView} />
                       </StatsWrapper>
                     )
                   })}
+                  
               </TopRow>
+              <div style={{ display: "flex", justifyContent: "center", marginTop: "-20px", marginBottom: '30px' }}>
+          {activeMatches?.map((_, index) => (
+            <motion.div
+            key={index}
+            onClick={() => setActiveIndex(index)}
+            initial={{ scale: 1 }}
+            animate={{
+              scale: activeIndex === index ? 1.5 : 1, // Larger scale for active dot
+              backgroundColor: activeIndex === index ? "blue" : "gray",
+            }}
+            transition={{ duration: 0.3 }}
+            style={{
+              width: "10px",
+              height: "10px",
+              borderRadius: "50%",
+              margin: "0 5px",
+              cursor: "pointer",
+            }}
+          />
+          ))}
+        </div>
+              
+                    <TeamBetsHolder style={{margin: '0',width: '90%',margin: '10px 0'}}
+                      initial={{ minHeight: '80px' }}
+                      animate={{ minHeight: expandedIndex === true ? '330px' : '80px' }}
+                      transition={{ duration: 0.5 }}>
+                      {expandedIndex === true ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand()} /> : <SmallArrowDown onClick={() => toggleExpand()} />}
+                      <RowerSmall><h2>NEXT HOME MATCHES</h2></RowerSmall>
+                      {expandedIndex === true && (
+                        <LowRower >
+                          {homeRestMatches?.map((match) => {
+                            return(
+                              <RowerRowBets>
+                              <RowerRowEvent style={{backgroundImage: `url(${match.teams.home.logo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}></RowerRowEvent>
+                              <RowerNameEvent><h2>{match.teams.home.name}</h2></RowerNameEvent>
+                              <RowerTeamEvent><h2>Vs.</h2></RowerTeamEvent>
+                              <RowerNameEvent><h2>{match.teams.away.name}</h2></RowerNameEvent>
+                              <RowerRowEvent style={{backgroundImage: `url(${match.teams.away.logo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}></RowerRowEvent>
+                              </RowerRowBets>
+                            )
+                          })}
+                        </LowRower>
+                      )}
+                      </TeamBetsHolder>
+                    <TeamBetsHolder style={{margin: '0',width: '90%',margin: '10px 0'}}
+                      initial={{ minHeight: '80px' }}
+                      animate={{ minHeight: expandedIndexAway === true ? '330px' : '80px' }}
+                      transition={{ duration: 0.5 }}>
+                      {expandedIndexAway === true ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpandAway()} /> : <SmallArrowDown onClick={() => toggleExpandAway()} />}
+                      <RowerSmall><h2>NEXT AWAY MATCHES</h2></RowerSmall>
+                      {expandedIndexAway === true && (
+                        <LowRower >
+                          {awayRestMatches?.map((match) => {
+                            return(
+                              <RowerRowBets>
+                              <RowerRowEvent style={{backgroundImage: `url(${match.teams.home.logo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}></RowerRowEvent>
+                              <RowerNameEvent><h2>{match.teams.home.name}</h2></RowerNameEvent>
+                              <RowerTeamEvent><h2>Vs.</h2></RowerTeamEvent>
+                              <RowerNameEvent><h2>{match.teams.away.name}</h2></RowerNameEvent>
+                              <RowerRowEvent style={{backgroundImage: `url(${match.teams.away.logo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}></RowerRowEvent>
+                              </RowerRowBets>
+                            )
+                          })}
+                        </LowRower>
+                      )}
+                      </TeamBetsHolder>
+                      <TeamBetsHolder style={{margin: '0',width: '90%',margin: '10px 0'}}
+                      initial={{ minHeight: '80px' }}
+                      animate={{ minHeight: expandedIndexPlayers === true ? '330px' : '80px' }}
+                      transition={{ duration: 0.5 }}>
+                      {expandedIndexPlayers === true ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpandPlayers()} /> : <SmallArrowDown onClick={() => toggleExpandPlayers()} />}
+                      <RowerSmall><h2>SQUAD</h2></RowerSmall>
+                      {expandedIndexPlayers === true && (
+                        <LowRower >
+                          {squad?.map((player) => {
+                            return(
+                              <RowerRowBets>
+                              <RowerRowEventLong><img src={player.photo} alt={player.name} style={{borderRadius:'50%'}}/></RowerRowEventLong>
+                              <RowerLongNameEvent><h2>{player.name}</h2></RowerLongNameEvent>
+                              <RowerRowEventLong><h4>{player.position.charAt(0)}</h4></RowerRowEventLong>
+                              <RowerRowEventLong style={{backgroundImage: `url(${shirt})`, backgroundSize: '50%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><h4 style={{color: 'black'}}>{player.number}</h4></RowerRowEventLong>
+                              {/* <RowerTeamEvent><h2>Vs.</h2></RowerTeamEvent>
+                              <RowerNameEvent><h2>{match.teams.away.name}</h2></RowerNameEvent>
+                              <RowerRowEvent style={{backgroundImage: `url(${match.teams.away.logo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}></RowerRowEvent> */}
+                              </RowerRowBets>
+                            )
+                          })}
+                        </LowRower>
+                      )}
+                      </TeamBetsHolder>
               <NewHolder>
                 <h3>RECENT FORM</h3>
                 <BarGraph results={form} />

@@ -891,6 +891,7 @@ export const StatsWrapper = styled.div`
     backdrop-filter: blur(10px);
     margin: 10px;
     ${props => props.theme.displayFlexCenter};
+    box-shadow: inset 0 0 25px ${props => props.theme.text};
 `;
 
 export const BetConatiner = styled.div`
@@ -925,6 +926,18 @@ export const RowerColumn = styled.div`
     width: 100%;
     height: 130px;
     ${props => props.theme.displayFlexColumn};
+`;
+
+export const RowerSmall = styled.div`
+    width: 100%;
+    height: 60px;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        color: ${props => props.theme.MainAccent};
+        font-size: 20px;
+        font-weight: bold;
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
 `;
 
 export const MiniRower = styled.div`
@@ -1017,6 +1030,66 @@ export const RowerRowEvent = styled.div`
     h2{
         font-size: 36px;
         z-index: 3;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
+    h3{
+        font-size: 18px;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
+    h4{
+        font-size: 14px;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
+`;
+export const RowerRowEventLong = styled.div`
+    width: 20%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    position: relative;
+    h2{
+        font-size: 36px;
+        z-index: 3;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
+    h3{
+        font-size: 18px;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
+    h4{
+        font-size: 14px;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
+    img{
+        width: 75%;
+    }
+`;
+
+export const RowerNameEvent = styled.div`
+    width: 32.5%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    position: relative;
+    text-align: center;
+    h2{
+        font-size: 14px;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+    }
+`;
+export const RowerLongNameEvent = styled.div`
+    width: 40%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    position: relative;
+    text-align: center;
+    h2{
+        font-size: 14px;
         color: ${props => props.theme.text};
         text-shadow: ${props => props.theme.textShadowTwo};
     }
