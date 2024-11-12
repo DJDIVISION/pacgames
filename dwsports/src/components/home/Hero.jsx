@@ -14,6 +14,7 @@ import { MiniArrowDown, MiniArrowup } from '../../pages';
 import { FantasyState } from '../../context/FantasyContext';
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive';
+import { useNavigate } from 'react-router-dom'
 
 const Hero = () => {
 
@@ -26,6 +27,7 @@ const Hero = () => {
     const [referrals, setReferrals] = useState([])
     const [isExpanded, setIsExpanded] = useState(false)
     const {balance, setBalance} = FantasyState();
+    const navigate = useNavigate()
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
     const textScale = useTransform(scrollYProgress, [0, 0.5], [1.7, 1]);
@@ -65,8 +67,10 @@ const Hero = () => {
         }
     }
 
+    
+
     const getUserBalance = async (id) => {
-        console.log(id)
+        
         const { data, error } = await supabase
             .from('users')
             .select('appBalance')
@@ -78,7 +82,6 @@ const Hero = () => {
           }
           if (data) {
             setBalance(data[0].appBalance)
-            console.log(data[0].appBalance)
           }
     }
 
@@ -225,8 +228,10 @@ const Hero = () => {
         <Header>
         <ContainerTitle><Avatar onClick={handleLogout} alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} /></ContainerTitle>
         <ContainerSamllTitle>{user && user.user_metadata.full_name}</ContainerSamllTitle>
-        <ContainerSamllTitle></ContainerSamllTitle>
         <ContainerSamllTitle>{user && user.email}</ContainerSamllTitle>
+        <ContainerSamllTitle></ContainerSamllTitle>
+        <ContainerSamllTitle>BALANCE: {parseFloat(balance?.toFixed(2))} PGZ</ContainerSamllTitle>
+        
         <ContainerSamllTitle></ContainerSamllTitle>
         <ContainerSamllTitle>{t("hero.title2")}</ContainerSamllTitle>
         <ContainerSamllTitle>{date}</ContainerSamllTitle>
@@ -409,7 +414,7 @@ const LinkInputField = styled.input`
   color: ${props => props.theme.pacColor};
   background-color: transparent;
   box-shadow: -2px 4px 8px rgb(255, 255, 255);
-  width: 320px;
+  width: 300px;
   z-index: 1;
   height: 40px;
   text-align: center;

@@ -121,6 +121,7 @@ export const StyledMenu = styled(motion.div)`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    z-index: 1000;
     }
 `;
 
@@ -838,7 +839,7 @@ export const BetInput = styled.input.attrs({ type: 'number' })`
     padding: 8px; /* Add some padding */
     background-color: transparent; /* Transparent background */
     color: white; /* Text color */
-    height: 90%;
+    height: 40px;
     border-radius: 10px;
     width: 150px;
     font-size: 22px;

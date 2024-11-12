@@ -118,9 +118,9 @@ const Home = ({toggleTheme}) => {
         )}
       
       {/* {walletBalance && <WalletAmount>YOUR BALANCE IS: {walletBalance} TON</WalletAmount>} */}
-      {/* {depositMenu && (
+      {depositMenu && (
         <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} />
-      )} */}
+      )}
     <Hero />
     </motion.div>
   )

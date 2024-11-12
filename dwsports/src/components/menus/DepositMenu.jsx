@@ -8,16 +8,18 @@ import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { mnemonicNew, mnemonicToPrivateKey } from "@ton/crypto";
 import Swal from "sweetalert2";
 import  { useTheme } from 'styled-components'
+import { useNavigate } from 'react-router-dom'
 /* import TonWeb from 'tonweb'; */
 import axios from 'axios';
 import { FantasyState } from '../../context/FantasyContext';
 import { BalanceDisplay, useAuth } from '../../pages/functions';
 import { supabase } from '../../supabase/client';
 import { message } from 'antd';
-
+import { Navigate } from 'react-router-dom';
 import { ethers } from "ethers";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import Web3 from "web3";
+import { useMediaQuery } from 'react-responsive';
 
 const DepositMenu = ({depositMenu,setDepositMenu}) => {
 
@@ -31,24 +33,48 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const {provider, setProvider} = FantasyState();
     const {account, setAccount} = FantasyState();
     const [transactionHash, setTransactionHash] = useState(null);
+    const [notConnected, setNotConnected] = useState(false)
     const {user} = useAuth();
     const theme = useTheme();
+    const navigate = useNavigate()
+    const isDesktop = useMediaQuery({ query: '(min-width: 798px)' });
     /* const teamWalletAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; */
+    console.log(walletBalance)
+    useEffect(() => {
+      if(walletBalance === null){
+        setNotConnected(true)
+      }
+    }, [walletBalance])
  
     const closeDepositMenu = () => {
         setDepositMenu(false)
     }
     
     const sendTokens = async () => {
-        if (!provider) {
-          console.error("Provider is undefined.");
-          return;
-        }
+      const newProvider = await EthereumProvider.init({
+        projectId: '87ce01feb918e3377f943f901349cd66', // Replace with your WalletConnect projectId
+        chains: [9008],
+        rpcMap: {
+            9008: 'https://rpc-nodes.shidoscan.com', // Add the RPC URL here
+          }, // Ethereum Mainnet chainId is 1
+        showQrModal: true, // This will show the QR modal for mobile connection
+        metadata: {
+          name: "PACTON'S GAMING ZONE",
+          description: 'A New Era of Gaming and Sports Betting',
+          url: "https://pacgames-frontend.onrender.com",
+          icons: ['https://i.postimg.cc/XJPDxF3H/Group-2.png'],
+        },
+      })
         message.info("Please confirm the transaction on your wallet")
         const recipientAddress = "0x75a8AC284299e362830c49615459EeD8f66C0265"
         const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
         // Initialize Web3 with the provider
-        const web3 = new Web3(provider);
+        let web3
+        if(!provider){
+          web3 = new Web3(newProvider)
+        } else {
+          web3 = new Web3(provider)
+        }
       
         // ERC-20 ABI with only the transfer function
         const ERC20_ABI = [
@@ -175,7 +201,10 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         <DepositBigTitle>RATIO: 11620 SHO - 1000 PGZ</DepositBigTitle>
      <CloseStats onClick={closeDepositMenu} /> 
      
-        <DepositWrapper>
+        {notConnected ? (
+          <DepositTitle>YOU HAVE TO CONNECT OR FUND YOUR WALLET FIRST</DepositTitle>
+        ) : (
+          <DepositWrapper>
             <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
             <DepositTitle><LinkInputField disabled={true} value="0x75a8AC284299e362830c49615459EeD8f66C0265"/></DepositTitle>
             <SmallDepositTitle>SHO BALANCE IN WALLET: {parseFloat(walletBalance)}<span>SHO</span></SmallDepositTitle>
@@ -191,6 +220,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             </DepositTitle>
             <span>{transactionStatus}</span>
         </DepositWrapper>
+        )}
     </StyledMenu>
     
   )

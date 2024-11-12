@@ -150,8 +150,8 @@ export const BalanceWrapper = styled.div`
 `;
 
 export const DepositWrapper = styled(motion.div)`
-    width: 90%;
-    height: 50vh;
+    width: 60%;
+    height: 60vh;
     border: 2px solid ${props => props.theme.text};
     ${props => props.theme.displayFlexColumn};
     text-align: center;
@@ -161,6 +161,10 @@ export const DepositWrapper = styled(motion.div)`
     span{
         color: ${props => props.theme.MainAccent};
         margin: 5px;
+    }
+    @media(max-width: 490px){
+        width: 90%; 
+        height: 50vh;
     }
 `;
 
@@ -342,10 +346,12 @@ export const LinkInputField = styled.input`
     color: ${props => props.theme.pacColor};
     background-color: transparent;
     box-shadow: ${props => props.theme.pacBoxShadow};
-    width: 100%;
+    width: 60%;
     z-index: 4000;
     height: 80%;
-    
+    @media(max-width: 490px){
+        width: 95%;
+    }
 `;
 
 export const DepositRow = styled.div`
