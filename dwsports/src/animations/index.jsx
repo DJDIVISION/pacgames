@@ -70,8 +70,8 @@ export const transitionLong = {
 export const TickAnimation = () => {
     return (
       <motion.svg
-        width="30"
-        height="30"
+        width="20"
+        height="20"
         viewBox="0 0 24 24"
         initial="hidden"
         animate="visible"
@@ -123,8 +123,8 @@ export const TickAnimation = () => {
 export const CrossAnimation = () => {
     return (
       <motion.svg
-        width="30"
-        height="30"
+        width="20"
+        height="20"
         viewBox="0 0 24 24"
         initial="hidden"
         animate="visible"

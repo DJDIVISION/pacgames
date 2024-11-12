@@ -223,7 +223,13 @@ grid-template-columns: repeat(4, 1fr); /* 2 columns */
 grid-template-rows: repeat(5, 1fr); /* 10 rows */
 gap: 10px;
 overflow-y: auto;
-
+text-align: center;
+h3{
+    width: 60%;
+    color: ${props => props.theme.text};
+    font-size: 18px;
+    font-weight: bold;
+}
 @media(max-width: 498px){
     grid-template-columns: repeat(1, 1fr);
 }

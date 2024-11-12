@@ -79,10 +79,14 @@ const Bets = () => {
   const [t, i18n] = useTranslation("global");
   const [isDateExpanded, setIsDateExpanded] = useState(false)
   const [openMatchesMenu, setOpenMatchesMenu] = useState(false)
+  const [openWonBetsMenu, setOpenWonBetsMenu] = useState(false)
+  const [openLostBetsMenu, setOpenLostBetsMenu] = useState(false)
   const [openLiveMatchesMenu, setOpenLiveMatchesMenu] = useState(false)
   const [openMyBetsMenu, setOpenMyBetsMenu] = useState(false)
   const [loadingMatches, setLoadingMatches] = useState(false)
   const [loadingLiveMatches, setLoadingLiveMatches] = useState(false)
+  const [loadingWonBets, setLoadingWonBets] = useState(false)
+  const [loadingLostBets, setLoadingLostBets] = useState(false)
   const [loadingBets, setLoadingBets] = useState(false)
   const {activeLeague, setActiveLeague} = FantasyState();
   const {activeRound,setActiveRound} = FantasyState();
@@ -94,6 +98,7 @@ const Bets = () => {
   const [winningBets, setWinningBets] = useState([])
   const [lostBets, setLostBets] = useState([])
   const [myBets, setMyBets] = useState([])
+  const [winOrLostBets, setWinOrLostBets] = useState([])
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [leagueStatsMenu, setLeagueStatsMenu] = useState(false);
   const navigate = useNavigate()
@@ -176,6 +181,59 @@ const Bets = () => {
     }
   }
 
+  const getWinOrLost = async (status) => {
+    setLoadingBets(true)
+    const { data, error } = await supabase
+          .from('bets')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('status', status);
+  
+        if (error) {
+          console.error('Error retrieving data from Supabase:', error.message);
+        }
+        if(data){
+          console.log(data)
+          const updatedBets = data.map(bet => ({
+            ...bet,
+            bet: bet.bet.map(matchBet => {
+              const fixtureId = matchBet.match.fixture.id;
+              const league = matchBet.match.league.name;
+        
+              // Fetch matches for the league from local storage
+              const matches = JSON.parse(localStorage.getItem(league));
+        
+              // Find and update the matching match with its goals
+              const matchedGame = matches?.find(match => match.fixture.id === fixtureId);
+              if (matchedGame) {
+                
+                return {
+                  ...matchBet,
+                  match: {
+                    ...matchBet.match,
+                    goals: matchedGame.goals,
+                    teams: matchedGame.teams,
+                    fixture: matchedGame.fixture
+                  },
+                };
+              }
+              return matchBet; // Return unchanged if no match found
+            })
+          }));
+          updatedBets.forEach(bet => {
+            bet.bet.forEach(matchBet => {
+              const isFulfilled = isBetFulfilled(matchBet);
+              
+              // Optionally update the bet object with the result
+              matchBet.isWinningBet = isFulfilled;
+            });
+            
+          });
+          setWinOrLostBets(updatedBets)
+          setLoadingBets(false)
+        }
+  }
+
   const getBets = async () => {
     setLoadingBets(true)
     if(user){
@@ -251,6 +309,15 @@ const Bets = () => {
   
     // Update state with the modified bets array
     setMyBets(updatedBets);
+    updatedBets.forEach(bet => {
+      bet.bet.forEach(matchBet => {
+        const isFulfilled = isBetFulfilled(matchBet);
+        
+        // Optionally update the bet object with the result
+        matchBet.isWinningBet = isFulfilled;
+      });
+      
+    });
   } 
 
   
@@ -391,6 +458,20 @@ const Bets = () => {
   }, [user])
 
   useEffect(() => {
+    if(openLostBetsMenu){
+      getWinOrLost("Lost");
+    }
+  }, [openLostBetsMenu])
+
+  useEffect(() => {
+    if(openWonBetsMenu){
+      getWinOrLost("Won");
+    }
+  }, [openWonBetsMenu])
+
+  console.log(winOrLostBets)
+
+  useEffect(() => {
     if(myBets){
       checkBets();
     }
@@ -429,21 +510,12 @@ const Bets = () => {
   const closeDate = () => {
     setIsDateExpanded((prev) => !prev);
   }
-  const setAllTeams = (league) => {
-    console.log(league)
-    setActiveLeague(league.legue); 
-    setActiveBall(league.id)
-    setActiveLeagueId(league.id)
-    setOpenLeagueMenu(false); 
-    setOpenLiveMatchesMenu(false)
-    setTimeout(() => {
-      setOpenMatchesMenu(true)
-    }, 500)
-  }
   const startAll = (league) => {
     setOpenMatchesMenu(false)
     setOpenLiveMatchesMenu(false)
     setOpenMyBetsMenu(false)
+    setOpenLostBetsMenu(false)
+    setOpenWonBetsMenu(false)
    setCurrentRoundMatches([])
    setActiveLeague("Premier League")
    setActiveLeagueId(39)
@@ -455,15 +527,51 @@ const Bets = () => {
     setOpenLeagueMenu(false); 
     setOpenMyBetsMenu(false)
     setOpenMatchesMenu(false)
+    setOpenWonBetsMenu(false)
+    setOpenLostBetsMenu(false)
     setTimeout(() => {
       setOpenLiveMatchesMenu(true)
     }, 500)
   }
   const openBets = () => {
-    setOpenLeagueMenu(false); 
+    setActiveLeague(null)
+    setOpenLeagueMenu(false)
+    setWinOrLostBets([])
     setOpenMatchesMenu(false)
+    setOpenWonBetsMenu(false)
+    setOpenLostBetsMenu(false)
     setTimeout(() => {
       setOpenMyBetsMenu(true)
+    }, 500)
+  }
+  const openWonBets = () => {
+    setOpenLeagueMenu(false); 
+    setWinOrLostBets([])
+    setOpenMatchesMenu(false)
+    setOpenMyBetsMenu(false)
+    setOpenLostBetsMenu(false)
+    setTimeout(() => {
+      setOpenWonBetsMenu(true)
+    }, 500)
+  }
+  const openLostBets = () => {
+    setOpenLeagueMenu(false); 
+    setOpenMatchesMenu(false)
+    setWinOrLostBets([])
+    setOpenWonBetsMenu(false)
+    setOpenMyBetsMenu(false)
+    setTimeout(() => {
+      setOpenLostBetsMenu(true)
+    }, 500)
+  }
+
+  const closeBet = () => {
+    setActiveLeague("Premier League")
+    setOpenWonBetsMenu(false)
+    setOpenLostBetsMenu(false)
+    setOpenMyBetsMenu(false)
+    setTimeout(() => {
+      setOpenLeagueMenu(true)
     }, 500)
   }
 
@@ -552,18 +660,6 @@ useEffect(() => {
   const setOpenLeague = (league) => {
     setActiveLeagueId(league.id)
     setLeagueStatsMenu(true)
-  }
-
-  const fetchBets = async () => {
-    const { data, error } = await supabase
-          .from('bets')
-          .select('*')
-          .eq('leagueName', match.match.league.name);
-  
-        if (error) {
-          console.error('Error retrieving data from Supabase:', error.message);
-          return match; // Return the match as-is if there's an error
-        }
   }
 
   const getURL = (betType, match) => {
@@ -841,13 +937,139 @@ const getWinnings = (el) => {
                 <CircularProgress sx={{ width: 80, height: 80 }} />
               </TeamCircularRow>
             ) : (
-              <TeamRow variants={item}
+              myBets.length > 0 ? (
+                <TeamRow variants={item}
                 initial="initial"
                 animate="animate"
                 exit="exit"  style={{paddingTop: '60px'}}
                 transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                 
                 {myBets?.map((bet, index) => {
+                  const type = bet.bet.length === 1 ? "SINGLE BET" : "MULTIPLE BET"
+                  const date = bet.created_at
+                  const newdate = new Date(date);
+                  const localDateTime = newdate.toLocaleString();
+                  return (
+                    <TeamBetsHolder key={index} style={{margin: '0'}}
+                      initial={{ height: '130px' }}
+                      animate={{ height: expandedIndex === index ? '330px' : '130px' }}
+                      transition={{ duration: 0.5 }}>
+                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                      <RowerColumn>
+                          <MiniRower><MiniRowerType><h2>{type}</h2></MiniRowerType><MiniRowerAmount><span>{bet.amount} PGZ</span></MiniRowerAmount></MiniRower>
+                          <MiniRower><h2>{localDateTime}</h2></MiniRower>
+                          <MiniRower><MiniRowerType><h2 style={{fontSize: isMobile ? "16px" : "20px", transform: isMobile ? "translateY(5px)" : "translateY(10px)"}}>POSSIBLE WINNINGS</h2></MiniRowerType><MiniRowerAmount><span>{bet.possibleWinnings} PGZ</span></MiniRowerAmount></MiniRower>
+                      </RowerColumn>
+                      {expandedIndex === index && (
+                        <LowRower >
+                          {bet.bet.map((match) => {
+                           
+                            const url = getURL(match.betType, match.match);
+                            const homeLogo = getURL("home", match.match);
+                            const awayLogo = getURL("away", match.match);
+                            const name = getName(match.betType, match.match)
+                            const winnings = getWinnings(match)
+                            
+                            return(
+                              <RowerRowBets>
+                                <RowerFirstEvent><h2>{name}</h2></RowerFirstEvent>
+                                <RowerRowEvent style={{backgroundImage: `url(${homeLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.home.winner === true ? '#2cff02' : match.match.teams.home.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.home}</h2></AbsoluteScore></RowerRowEvent>
+                                <RowerTeamEvent><h2>-</h2></RowerTeamEvent>
+                                <RowerRowEvent style={{backgroundImage: `url(${awayLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.away.winner === true ? '#2cff02' : match.match.teams.away.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.away}</h2></AbsoluteScore></RowerRowEvent>
+                                <RowerRowEvent><h2 style={{fontSize: '22px'}}>{winnings}</h2></RowerRowEvent>
+                              </RowerRowBets>
+                            )
+                          })}
+
+                        </LowRower>
+                      )}
+                    </TeamBetsHolder>
+                  )
+                })}
+              </TeamRow>
+              ) : (
+                <TeamRow variants={item}
+                initial="initial"
+                animate="animate"
+                exit="exit"  style={{paddingTop: '60px'}}
+                transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}><h3>YOU HAVE NO PENDING BETS</h3></TeamRow>
+              )
+            )}
+          </Container>
+        )}
+        {openWonBetsMenu && (
+          <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} >
+            {loadingWonBets ? (
+              <TeamCircularRow>
+                <CircularProgress sx={{ width: 80, height: 80 }} />
+              </TeamCircularRow>
+            ) : (
+              <TeamRow variants={item}
+                initial="initial"
+                animate="animate"
+                exit="exit"  style={{paddingTop: '60px'}}
+                transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                {winOrLostBets?.map((bet, index) => {
+                  const type = bet.bet.length === 1 ? "SINGLE BET" : "MULTIPLE BET"
+                  const date = bet.created_at
+                  const newdate = new Date(date);
+                  const localDateTime = newdate.toLocaleString();
+                  return (
+                    <TeamBetsHolder key={index} style={{margin: '0'}}
+                      initial={{ height: '130px' }}
+                      animate={{ height: expandedIndex === index ? '330px' : '130px' }}
+                      transition={{ duration: 0.5 }}>
+                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                      <RowerColumn>
+                          <MiniRower><MiniRowerType><h2>{type}</h2></MiniRowerType><MiniRowerAmount><span>{bet.amount} PGZ</span></MiniRowerAmount></MiniRower>
+                          <MiniRower><h2>{localDateTime}</h2></MiniRower>
+                          <MiniRower><MiniRowerType><h2 style={{fontSize: isMobile ? "16px" : "20px", transform: isMobile ? "translateY(5px)" : "translateY(10px)"}}>POSSIBLE WINNINGS</h2></MiniRowerType><MiniRowerAmount><span>{bet.possibleWinnings} PGZ</span></MiniRowerAmount></MiniRower>
+                      </RowerColumn>
+                      {expandedIndex === index && (
+                        <LowRower >
+                          {bet.bet.map((match) => {
+                           
+                            const url = getURL(match.betType, match.match);
+                            const homeLogo = getURL("home", match.match);
+                            const awayLogo = getURL("away", match.match);
+                            const name = getName(match.betType, match.match)
+                            const winnings = getWinnings(match)
+                            
+                            return(
+                              <RowerRowBets>
+                                <RowerFirstEvent><h2>{name}</h2></RowerFirstEvent>
+                                <RowerRowEvent style={{backgroundImage: `url(${homeLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.home.winner === true ? '#2cff02' : match.match.teams.home.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.home}</h2></AbsoluteScore></RowerRowEvent>
+                                <RowerTeamEvent><h2>-</h2></RowerTeamEvent>
+                                <RowerRowEvent style={{backgroundImage: `url(${awayLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.away.winner === true ? '#2cff02' : match.match.teams.away.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.away}</h2></AbsoluteScore></RowerRowEvent>
+                                <RowerRowEvent><h2 style={{fontSize: '22px'}}>{winnings}</h2></RowerRowEvent>
+                              </RowerRowBets>
+                            )
+                          })}
+
+                        </LowRower>
+                      )}
+                    </TeamBetsHolder>
+                  )
+                })}
+              </TeamRow>
+            )}
+          </Container>
+        )}
+        {openLostBetsMenu && (
+          <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} >
+            {loadingWonBets ? (
+              <TeamCircularRow>
+                <CircularProgress sx={{ width: 80, height: 80 }} />
+              </TeamCircularRow>
+            ) : (
+              <TeamRow variants={item}
+                initial="initial"
+                animate="animate"
+                exit="exit"  style={{paddingTop: '60px'}}
+                transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                {winOrLostBets?.map((bet, index) => {
                   const type = bet.bet.length === 1 ? "SINGLE BET" : "MULTIPLE BET"
                   const date = bet.created_at
                   const newdate = new Date(date);
@@ -901,12 +1123,16 @@ const getWinnings = (el) => {
         )}
       </AnimatePresence>
       <BottomRow>
-        <IconHolder onClick={startAll}><h2 style={{color: openLeagueMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title20")}</h2></IconHolder>
+        <IconHolder onClick={startAll}>{(activeLeague === null) ? (
+            <h2 style={{color: openMyBetsMenu ? "rgba(244,215,21,1)" : ""}} onClick={closeBet}>GO BACK</h2>
+        ) : (
+            <h2 style={{color: openMyBetsMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title20")}</h2>
+        )}</IconHolder>
         <IconHolder>
-          {openMatchesMenu ? <h2 style={{color: openMatchesMenu ? "rgba(244,215,21,1)" : ""}}>PICK A MATCH</h2> : <h2 onClick={() => openLiveMatches(true)}>LIVE MATCHES</h2>}
+          {(activeLeague === null) ? <h2 onClick={openLostBets} style={{color: openLostBetsMenu ? "rgba(244,215,21,1)" : ""}}>LOST BETS</h2> : <h2 onClick={() => openLiveMatches(true)}>LIVE MATCHES</h2>}
         </IconHolder>
-        <IconHolder></IconHolder>
-        <IconHolder onClick={() => openBets()}><h2>YOUR BETS</h2></IconHolder>
+        <IconHolder>{(activeLeague === null) ? <h2 onClick={openWonBets} style={{color: openWonBetsMenu ? "rgba(244,215,21,1)" : ""}}>WON BETS</h2> : ""}</IconHolder>
+        <IconHolder onClick={() => openBets()}>{openMyBetsMenu ? <h2 style={{color: openMyBetsMenu ? "rgba(244,215,21,1)" : ""}}>PENDING BETS</h2> : <h2>YOUR BETS</h2>}</IconHolder>
       </BottomRow>
       <ToastContainer />
     </Section>
