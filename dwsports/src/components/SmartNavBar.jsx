@@ -97,6 +97,21 @@ const SmartNavBar = ({toggleTheme}) => {
           if (accounts && accounts.length > 0) {
             setAccount(accounts[0]); 
             getTokenBalance(accounts[0], newProvider);
+            const updatedData = {
+              name: user.user_metadata.name,
+              avatar: user.user_metadata.avatar_url,
+              email: user.email,
+              walletAddress: accounts[0],
+              user_id: user.id
+            }
+            const { data, error } = await supabase
+            .from('user_wallets')
+            .insert([updatedData])
+            if (error) {
+              console.error('Error inserting/updating user session data:', error.message)
+            } else {
+              console.log('User session data saved:', data)
+            }
             Swal.fire({
                 title: "Wallet Connected!",
                 text: "Your Wallet is now connected",

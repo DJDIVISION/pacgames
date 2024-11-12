@@ -142,7 +142,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             const userJsonBalance = data[0].appBalance
             userJsonData.deposits = userJsonData.deposits || []; 
             console.log(userJsonData)
-            
+            const dateNow = new Date();
             const lastBalance = userJsonBalance + newBalance
             console.log(lastBalance)
             const updatedData = {
@@ -152,7 +152,8 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
                 walletAddress: account,
                 user_id: user.id,
                 amount: amount,
-                token: "SHO"
+                token: "SHO",
+                date: dateNow
             }
             userJsonData.deposits.push(updatedData);
             const { error: updateError } = await supabase
