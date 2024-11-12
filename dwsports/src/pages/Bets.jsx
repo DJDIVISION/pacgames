@@ -539,6 +539,7 @@ const Bets = () => {
     setWinOrLostBets([])
     setOpenMatchesMenu(false)
     setOpenWonBetsMenu(false)
+    setOpenLiveMatchesMenu(false)
     setOpenLostBetsMenu(false)
     setTimeout(() => {
       setOpenMyBetsMenu(true)

@@ -124,7 +124,7 @@ export const  AbsoluteChart = styled.div`
     height: 60px;
     border-radius: 50%;
     position: absolute;
-    top: 50%;
+    top: 80%;
     left: 0%;
     transform: translate(-50%,-50%);
     background: ${props => props.theme.cardTwo};
