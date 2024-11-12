@@ -34,6 +34,7 @@ import { CrossAnimation, TickAnimation } from '../animations';
 import { message } from 'antd';
 import TeamStats from '../components/menus/TeamStats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
+import SendOdds from '../components/menus/SendOdds';
 
 const Bets = () => {
 
@@ -84,10 +85,12 @@ const Bets = () => {
   const [openWonBetsMenu, setOpenWonBetsMenu] = useState(false)
   const [openLostBetsMenu, setOpenLostBetsMenu] = useState(false)
   const [openLiveMatchesMenu, setOpenLiveMatchesMenu] = useState(false)
+  const [selectedOddsMenu, setSelectedOddsMenu] = useState(false)
   const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
   const {activeTeamId, setActiveTeamId} = FantasyState();
   const {playerToUpdate, setPlayerToUpdate} = FantasyState();
   const [openMyBetsMenu, setOpenMyBetsMenu] = useState(false)
+  const [openCurrentBetMenu, setOpenCurrentMenu] = useState(false)
   const [loadingMatches, setLoadingMatches] = useState(false)
   const [loadingLiveMatches, setLoadingLiveMatches] = useState(false)
   const [selectedPlayerMenu, setSelectedPlayerMenu] = useState(false)
@@ -521,9 +524,17 @@ const Bets = () => {
   const closeDate = () => {
     setIsDateExpanded((prev) => !prev);
   }
+
+  const closeSendOdds = () => {
+    setOpenCurrentMenu(false)
+    setTimeout(() => {
+      setSelectedOddsMenu(!selectedOddsMenu)
+    }, 500)
+  }
   const startAll = (league) => {
     setOpenMatchesMenu(false)
     setOpenLiveMatchesMenu(false)
+    setOpenCurrentMenu(false)
     setOpenMyBetsMenu(false)
     setOpenLostBetsMenu(false)
     setOpenWonBetsMenu(false)
@@ -534,10 +545,22 @@ const Bets = () => {
       setOpenLeagueMenu(true); 
     }, 500)
   }
+  const openCurrentBet = () => {
+    setOpenLeagueMenu(false); 
+    setOpenMyBetsMenu(false)
+    setOpenMatchesMenu(false)
+    setOpenLiveMatchesMenu(false)
+    setOpenWonBetsMenu(false)
+    setOpenLostBetsMenu(false)
+    setTimeout(() => {
+      setOpenCurrentMenu(true)
+    }, 500)
+  }
   const openLiveMatches = () => {
     setOpenLeagueMenu(false); 
     setOpenMyBetsMenu(false)
     setOpenMatchesMenu(false)
+    setOpenCurrentMenu(false)
     setOpenWonBetsMenu(false)
     setOpenLostBetsMenu(false)
     setTimeout(() => {
@@ -550,6 +573,7 @@ const Bets = () => {
     setWinOrLostBets([])
     setOpenMatchesMenu(false)
     setOpenWonBetsMenu(false)
+    setOpenCurrentMenu(false)
     setOpenLiveMatchesMenu(false)
     setOpenLostBetsMenu(false)
     setTimeout(() => {
@@ -560,6 +584,7 @@ const Bets = () => {
     setOpenLeagueMenu(false); 
     setWinOrLostBets([])
     setOpenMatchesMenu(false)
+    setOpenCurrentMenu(false)
     setOpenMyBetsMenu(false)
     setOpenLostBetsMenu(false)
     setTimeout(() => {
@@ -571,6 +596,7 @@ const Bets = () => {
     setOpenMatchesMenu(false)
     setWinOrLostBets([])
     setOpenWonBetsMenu(false)
+    setOpenCurrentMenu(false)
     setOpenMyBetsMenu(false)
     setTimeout(() => {
       setOpenLostBetsMenu(true)
@@ -581,6 +607,7 @@ const Bets = () => {
     setActiveLeague("Premier League")
     setOpenWonBetsMenu(false)
     setOpenLostBetsMenu(false)
+    setOpenCurrentMenu(false)
     setOpenMyBetsMenu(false)
     setTimeout(() => {
       setOpenLeagueMenu(true)
@@ -736,7 +763,23 @@ const getWinnings = (el) => {
     return <CrossAnimation />
   }
   return ''
-}
+  }
+
+  const getFixture = async () => {
+    const { data, error } = await supabase
+      .from("fixtures").select('fixtures').eq('leagueName', "La Liga")
+      if(error){
+        console.log(error)
+      }
+      if(data){
+        console.log(data)
+        data[0].fixtures.forEach((el) => {
+          if(el.teams.home.name === "Osasuna" && el.teams.away.name === "Villarreal"){
+            console.log(el)
+          }
+        })
+      }
+  }
 
 
   return (
@@ -844,7 +887,7 @@ const getWinnings = (el) => {
                       {expandedIndex === index && (
                         <LowRower >
                           <RowerRow>
-                              {match.fixture.status.short === "NS" ? <StyledButton>HEAD TO HEAD</StyledButton> : ""}  
+                              {match.fixture.status.short === "NS" ? <StyledButton>PLACE A BET</StyledButton> : ""}  
                               {match.fixture.status.short === "FT" ? <StyledButton>MATCH STATS</StyledButton> : ""}  
                           </RowerRow>
                           <RowerRow>
@@ -1130,6 +1173,19 @@ const getWinnings = (el) => {
             )}
           </Container>
         )}
+        {openCurrentBetMenu && (
+          <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} >
+            <TeamRow variants={item}
+                initial="initial"
+                animate="animate"
+                exit="exit"  style={{paddingTop: '60px'}}
+                transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <StyledButton onClick={getFixture}>GET FIXTURE</StyledButton>
+                <StyledButton onClick={closeSendOdds}>OPEN ODDS</StyledButton>
+              </TeamRow>
+          </Container>
+        )}
         {leagueStatsMenu && (
               <LeagueStats variants={item} 
               initial="initial"
@@ -1142,6 +1198,9 @@ const getWinnings = (el) => {
         {selectedPlayerMenu && (
         <PlayerStatsMenu selectedPlayerMenu={selectedPlayerMenu} setSelectedPlayerMenu={setSelectedPlayerMenu} />
         )}
+        {selectedOddsMenu && (
+        <SendOdds selectedOddsMenu={selectedOddsMenu} setSelectedOddsMenu={setSelectedOddsMenu} />
+        )}
       </AnimatePresence>
       <BottomRow>
         <IconHolder onClick={startAll}>{(activeLeague === null) ? (
@@ -1152,7 +1211,7 @@ const getWinnings = (el) => {
         <IconHolder>
           {(activeLeague === null) ? <h2 onClick={openLostBets} style={{color: openLostBetsMenu ? "rgba(244,215,21,1)" : ""}}>LOST BETS</h2> : <h2 onClick={() => openLiveMatches(true)}>LIVE MATCHES</h2>}
         </IconHolder>
-        <IconHolder>{(activeLeague === null) ? <h2 onClick={openWonBets} style={{color: openWonBetsMenu ? "rgba(244,215,21,1)" : ""}}>WON BETS</h2> : ""}</IconHolder>
+        <IconHolder>{(activeLeague === null) ? <h2 onClick={openWonBets} style={{color: openWonBetsMenu ? "rgba(244,215,21,1)" : ""}}>WON BETS</h2> : <h2 style={{color: openCurrentBetMenu ? "rgba(244,215,21,1)" : ""}} onClick={() => openCurrentBet(true)}>CURRENT BET</h2>}</IconHolder>
         <IconHolder onClick={() => openBets()}>{openMyBetsMenu ? <h2 style={{color: openMyBetsMenu ? "rgba(244,215,21,1)" : ""}}>PENDING BETS</h2> : <h2>YOUR BETS</h2>}</IconHolder>
       </BottomRow>
       <ToastContainer />

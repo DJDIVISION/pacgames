@@ -47,25 +47,12 @@ const NewBets = () => {
     const {activeRound,setActiveRound} = FantasyState();
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const [loading, setLoading] = useState(false)
-    const [one, setOne] = useState(null)
-    const [two, setTwo] = useState(null)
-    const [draw, setDraw] = useState(null)
-    const [homeOverTwoFive, setHomeOverTwoFive] = useState(null)
-    const [homeUnderTwoFive, setHomeUnderTwoFive] = useState(null)
-    const [awayOverTwoFive, setAwayOverTwoFive] = useState(null)
-    const [awayUnderTwoFive, setAwayUnderTwoFive] = useState(null)
+    
     const [currentRoundLiveMaches, setCurrentRoundLiveMatches] = useState(null)
     const [finishedMatches, setFinishedMatches] = useState(null)
     const [roundMatches, setRoundMatches] = useState(null)
     const [pendingMatches, setPendingMatches] = useState(null)
-    const [btts, setBtts] = useState(null)
-    const [btnts, setBtnts] = useState(null)
-    const [homeBtts, setHomeBtts] = useState(null)
-    const [awayBtts, setAwayBtts] = useState(null)
-    const [homeBtnts, setHomeBtnts] = useState(null)
-    const [homeMinus1, setHomeMinus1] = useState(null)
-    const [awayBtnts, setAwayBtnts] = useState(null)
-    const [awayMinus1, setAwayMinus1] = useState(null)
+    
     const {selectedBet, setSelectedBet} = FantasyState();
     const {activeTeamId, setActiveTeamId} = FantasyState();
     const [selectedBetMenu, setSelectedBetMenu] = useState(false);
@@ -181,76 +168,7 @@ const NewBets = () => {
         }
     }, [activeRound]); */
    
-    const sendOdds = async (match) => {
-        console.log(activeMatches)
-        
-        if(one === null || draw === null || two === null){
-            message.error("Some data missing")
-            return
-        }
-        const odds = {
-            home: one,
-            draw: draw,
-            away: two,
-            homeOver2: homeOverTwoFive,
-            homeUnder2: homeUnderTwoFive,
-            awayOver2: awayOverTwoFive,
-            awayUnder2: awayUnderTwoFive,
-            btts: btts,
-            btnts: btnts,
-            homeBTTS: homeBtts,
-            homeBTNTS: homeBtnts,
-            awayBTTS: awayBtts,
-            awayBTNTS: awayBtnts,
-            homeMinus1: homeMinus1,
-            awayMinus1: awayMinus1
-        }
-        
-       
-        const game = activeMatches.filter((el) => el.fixture.id === match.fixture.id)
-        console.log(game[0])
-        game[0].odds = odds
-        console.log(game)
-        const gameTwo = allFixtures.filter((el) => el.fixture.id === match.fixture.id)
-        console.log(gameTwo)
-        gameTwo[0].odds = odds
-        console.log(allFixtures)
-        const { error: updateError } = await supabase
-              .from('fixtures')
-              .update([{"11": activeMatches}])
-              .eq("leagueName", activeLeague)
-                if (updateError) {
-                    console.error('Error updating user data:', updateError.message);
-                } else {
-                  console.log("changing table")
-                  const { error: newError } = await supabase
-                  .from('fixtures')
-                    .update([{fixtures: allFixtures}])
-                    .eq("leagueName", activeLeague)
-                    if (newError) {
-                        console.error('Error updating user data:', newError.message);
-                    } else {
-                      message.success("data inserted!")
-                    }
-                }
-        
-        //console.log(updatedData)
-        setOne(null)
-        setDraw(null)
-        setTwo(null)
-        setHomeOverTwoFive(null)
-        setHomeUnderTwoFive(null)
-        setAwayOverTwoFive(null)
-        setAwayUnderTwoFive(null)
-        setBtts(null)
-        setBtnts(null)
-        setHomeBtnts(null)
-        setAwayBtnts(null)
-        setHomeBtts(null)
-        setAwayBtts(null)
-        setHomeMinus1(null)
-        setAwayMinus1(null)
-    }
+    
     
 
     const sendOddsTwo = async (match) => {
