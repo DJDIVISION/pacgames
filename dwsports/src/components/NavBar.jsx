@@ -31,6 +31,8 @@ import { useTranslation } from 'react-i18next'
 import Onboarding from '@metamask/onboarding';
 import Web3 from "web3";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
+import { useMediaQuery } from 'react-responsive';
+import detectEthereumProvider from '@metamask/detect-provider';
 
 const NavBar = ({toggleTheme}) => {
 
@@ -51,6 +53,9 @@ const NavBar = ({toggleTheme}) => {
     const [t, i18n] = useTranslation("global");
     const {provider, setProvider} = FantasyState();
     const {account, setAccount} = FantasyState();
+    const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
+
+    
 
     const disconnectMetamask = async () => {
         const result = await Swal.fire({
@@ -119,8 +124,24 @@ const NavBar = ({toggleTheme}) => {
           }
     }
 
+    
+
     async function connectMetaMask() {
-        if (typeof window.ethereum !== 'undefined') {
+      const provider = await detectEthereumProvider();
+
+        if (provider && provider.isMetaMask) {
+            alert('MetaMask is installed!');
+            try {
+                const accounts = await provider.request({ method: 'eth_requestAccounts' });
+                alert('Connected account:', accounts[0]);
+            } catch (error) {
+                console.error('User denied account access:', error);
+            }
+        } else {
+            onboarding.startOnboarding();
+        }
+      
+        /* if (typeof window.ethereum !== 'undefined') {
             console.log("metamask is installed")
             try {
                 // Request account access if needed
@@ -154,7 +175,7 @@ const NavBar = ({toggleTheme}) => {
             }
         } else {
             onboarding.startOnboarding();
-        }
+        } */
     }
 
     const getTokenBalance = async (account, provider) => {
