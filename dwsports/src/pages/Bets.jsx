@@ -1424,15 +1424,18 @@ const getWinnings = (el) => {
                       onDragStart={() => setDragIntensity(0.1)} // Initial light red shadow on drag start
                       onDrag={(event, info) => {
                         // Calculate intensity based on drag distance (between 0 and 1)
-                        const intensity = Math.min(Math.abs(info.point.x) / (window.innerWidth * 0.4), 1);
+                        const intensity = Math.min(Math.abs(info.point.x) / (window.innerWidth * 0.9), 1);
                         setDragIntensity(intensity);
                       }}
                       onDragEnd={(event, info) => {
-                        if (Math.abs(info.point.x) > window.innerWidth * 0.4) {
+                        // Check if drag distance is enough to remove the element
+                        if (Math.abs(info.point.x) > window.innerWidth * 0.9) {
                           handleRemoveBet(selectedBet.betType, selectedBet.match);
-                          setDragIntensity(0);
+                        } else {
+                          setDragIntensity(0); // Reset intensity to 0 to revert to initial shadow
                         }
                       }}
+                      
                       //style={{ width: "90vw", margin: "10px auto", cursor: "grab" }}
                     >
                     <CurrentBetHolder  boxShadow={
