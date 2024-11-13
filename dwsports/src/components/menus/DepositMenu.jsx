@@ -33,7 +33,6 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const {account, setAccount} = FantasyState();
     const [transactionHash, setTransactionHash] = useState(null);
     const [notConnected, setNotConnected] = useState(false)
-    const [hash, setHash] = useState(null)
     const {user} = useAuth();
     const theme = useTheme();
     const navigate = useNavigate()
@@ -114,7 +113,6 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             .send({ from: account })
             .on("transactionHash", (hash) => {
               console.log("Transaction sent with hash:", hash);
-              setHash(hash)
               return Swal.fire({
                 title: "Transaction Sent",
                 text: `Transaction sent with hash: ${hash}`,
@@ -299,8 +297,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
                 user_id: user.id,
                 amount: amount,
                 token: "SHO",
-                date: dateNow,
-                hash: hash
+                date: dateNow
             }
             userJsonData.deposits.push(updatedData);
             const { error: updateError } = await supabase
