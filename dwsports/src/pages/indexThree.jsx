@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { IconButton } from "@mui/material";
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 export const Section = styled.div`
 width: 100vw;
@@ -151,6 +152,13 @@ export const AbsoluteIconButton = styled(IconButton)`
 }
 `;
 
+export const AddIcon = styled(AddCircleOutlineIcon)`
+    &&&{
+        color: ${props => props.theme.text};
+        transform: scale(1.4);
+        margin: 0 10px;
+    }
+`;
 export const ArrowDown = styled(ArrowCircleLeftIcon)`
     &&&{
         color: ${props => props.theme.text};

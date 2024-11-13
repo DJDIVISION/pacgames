@@ -5,7 +5,7 @@ import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom';
 import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo, TeamLogoWrapper, TeamLogoText, TeamsResult, DateRow, ResultRow, BigDateRow, VenueRow, ArrowRightRelative, StyledButton, OddsColumn, OddsColumnBig, AllBetsBadge } from './index';
 import {useTranslation} from "react-i18next";
-import { Avatar, CircularProgress } from '@mui/material';
+import { Avatar, CircularProgress, IconButton, Switch } from '@mui/material';
 import england from '../assets/logos/england.png'
 import spain from '../assets/logos/spain.png'
 import italy from '../assets/logos/italy.png' 
@@ -21,7 +21,8 @@ import {Section,BottomRow,IconHolder,LeagueRowBets,Container,item,LeagueHolder,A
   AbsoluteChart,
   CurrentBetHolder,
   CurrentBetLogoHolder,
-  CurrentBetNameHolder
+  CurrentBetNameHolder,
+  AddIcon
 } from './indexThree' 
 import { FantasyState } from '../context/FantasyContext';
 import axios from 'axios';
@@ -135,7 +136,41 @@ const Bets = () => {
   const [laLiga, setLaLiga] = useState([])
   const [checked, setChecked] = useState(false);
   const [amount, setAmount] = useState(null)
-  const [dragIntensity, setDragIntensity] = useState(0);
+  const [dragIntensities, setDragIntensities] = useState(
+    Array(selectedBet.length).fill(0)
+  );
+
+  const handleRemoveBet = (index) => {
+    setSelectedBet((prevBets) => prevBets.filter((_, i) => i !== index));
+    setDragIntensities((prevIntensities) =>
+      prevIntensities.filter((_, i) => i !== index)
+    );
+  };
+
+  const handleDrag = (index, distance) => {
+    // Calculate intensity based on drag distance (between 0 and 1)
+    const intensity = Math.min(Math.abs(distance) / (window.innerWidth * 0.4), 1);
+
+    // Update the drag intensity of the specific item
+    setDragIntensities((prevIntensities) => {
+      const updatedIntensities = [...prevIntensities];
+      updatedIntensities[index] = intensity;
+      return updatedIntensities;
+    });
+  };
+
+  const handleDragEnd = (index, distance) => {
+    if (Math.abs(distance) > window.innerWidth * 0.4) {
+      handleRemoveBet(index); // Remove the item if dragged far enough
+    } else {
+      // Reset intensity to 0 for this item if not removed
+      setDragIntensities((prevIntensities) => {
+        const updatedIntensities = [...prevIntensities];
+        updatedIntensities[index] = 0;
+        return updatedIntensities;
+      });
+    }
+  };
 
   console.log(selectedBet.length)
 
@@ -572,12 +607,14 @@ const Bets = () => {
   }
   const openCurrentBet = () => {
     setOpenLeagueMenu(false); 
+    
     setOpenMyBetsMenu(false)
     setOpenMatchesMenu(false)
     setOpenLiveMatchesMenu(false)
     setOpenWonBetsMenu(false)
     setOpenLostBetsMenu(false)
     setTimeout(() => {
+      setCheckedMultiple(false)
       setOpenCurrentMenu(true)
     }, 500)
   }
@@ -593,7 +630,8 @@ const Bets = () => {
     }, 500)
   }
 
-  const handleSwitchMultiple = () => {
+  const handleSwitchMultiple = (e) => {
+    setCheckedMultiple(e.target.checked);
     setOpenCurrentMenu(false)
     setTimeout(() => {
       setOpenMatchesMenu(true)
@@ -840,8 +878,23 @@ const getWinnings = (el) => {
       }
   }
 
-  const handleBetClick = (match, betType) => {
-    setSelectedBet((prevBets) => {
+  const handleBetClick = (match, betType, filter) => {
+    
+    console.log(filter)
+    if(filter !== undefined){
+      toast('You can not bet on the same event twice! ❌', {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark"
+      });
+      return
+    } else {
+      setSelectedBet((prevBets) => {
       const isAlreadySelected = prevBets.some(
         (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === betType
       );
@@ -852,12 +905,15 @@ const getWinnings = (el) => {
         );
       } else {
         setOpenMatchesMenu(false)
+        setExpandedIndex(null)
         setTimeout(() => {
           setOpenCurrentMenu(true)
         }, 500)
         return [...prevBets, { match, betType }];
       }
     });
+    }
+    
   };
 
   const calculateTotalWinnings = () => {
@@ -935,13 +991,13 @@ const getWinnings = (el) => {
       }
   };
 
-  const handleRemoveBet = (betType, match) => {
+  /* const handleRemoveBet = (betType, match) => {
     setSelectedBet((prevBets) => {
       return prevBets.filter(
         (bet) => !(bet.match.fixture.id === match.fixture.id && bet.betType === betType)
       );
     });
-  };
+  }; */
 
 
   return (
@@ -1010,9 +1066,11 @@ const getWinnings = (el) => {
                   </ArrowsHolder>
                 {currentRoundMaches?.map((match, index) => {
                   const date = new Date(match.fixture.date).toLocaleString();
-      
+                  console.log(selectedBet)
+                  const filter = selectedBet.find((el) => el.match.fixture.id === match.fixture.id)
+                  console.log(filter)
                   return (
-                    <TeamBetsHolder key={index} style={{margin: '0'}}
+                    <TeamBetsHolder key={index} style={{margin: '0', boxShadow: filter ? `inset 0 0 25px green` : `inset 0 0 25px ${theme.text}`}}
                       initial={{ height: '130px' }}
                       animate={{ height: expandedIndex === index ? '330px' : '130px' }}
                       transition={{ duration: 0.5 }}>
@@ -1042,7 +1100,7 @@ const getWinnings = (el) => {
                                 isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'home'
                                 )}
-                                onClick={() => handleBetClick(match, 'home')}
+                                onClick={() => handleBetClick(match, 'home', filter)}
                             >
                                 {match.odds.home}
                             </OddsColumn>
@@ -1051,7 +1109,7 @@ const getWinnings = (el) => {
                                 isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'draw'
                                 )}
-                                onClick={() => handleBetClick(match, 'draw')}
+                                onClick={() => handleBetClick(match, 'draw', filter)}
                             >
                                 {match.odds.draw}
                             </OddsColumn>
@@ -1060,7 +1118,7 @@ const getWinnings = (el) => {
                                 isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'away'
                                 )}
-                                onClick={() => handleBetClick(match, 'away')}
+                                onClick={() => handleBetClick(match, 'away', filter)}
                             >
                                 {match.odds.away}
                             </OddsColumn>
@@ -1083,51 +1141,51 @@ const getWinnings = (el) => {
                         <LowRower >
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeOver2'
-                                )} onClick={() => handleBetClick(match, 'homeOver2')}><h2>{match.teams.home.name} Over 2.5 - {match?.odds?.homeOver2}</h2></RowerRowBet>
+                                )} onClick={() => handleBetClick(match, 'homeOver2', filter)}><h2>{match.teams.home.name} Over 2.5 - {match?.odds?.homeOver2}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayOver2'
                                 )}
-                                onClick={() => handleBetClick(match, 'awayOver2')}><h2>{match.teams.away.name} Over 2.5 - {match?.odds?.awayOver2}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'awayOver2', filter)}><h2>{match.teams.away.name} Over 2.5 - {match?.odds?.awayOver2}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeUnder2'
                                 )}
-                                onClick={() => handleBetClick(match, 'homeUnder2')}><h2>{match.teams.home.name} Under 2.5 - {match?.odds?.homeUnder2}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'homeUnder2', filter)}><h2>{match.teams.home.name} Under 2.5 - {match?.odds?.homeUnder2}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayUnder2'
                                 )}
-                                onClick={() => handleBetClick(match, 'awayUnder2')}><h2>{match.teams.away.name} Under 2.5 - {match?.odds?.awayUnder2}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'awayUnder2', filter)}><h2>{match.teams.away.name} Under 2.5 - {match?.odds?.awayUnder2}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btts'
                                 )}
-                                onClick={() => handleBetClick(match, 'btts')}><h2>Both teams score - {match?.odds?.btts}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'btts', filter)}><h2>Both teams score - {match?.odds?.btts}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btnts'
                                 )}
-                                onClick={() => handleBetClick(match, 'btnts')}><h2>Both teams not score - {match?.odds?.btnts}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'btnts', filter)}><h2>Both teams not score - {match?.odds?.btnts}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTTS'
                                 )}
-                                onClick={() => handleBetClick(match, 'homeBTTS')}><h2>{match.teams.home.name} wins & both teams score - {match?.odds?.homeBTTS}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'homeBTTS', filter)}><h2>{match.teams.home.name} wins & both teams score - {match?.odds?.homeBTTS}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTNTS'
                                 )}
-                                onClick={() => handleBetClick(match, 'homeBTNTS')}><h2>{match.teams.home.name} wins & both teams not score - {match?.odds?.homeBTNTS}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'homeBTNTS', filter)}><h2>{match.teams.home.name} wins & both teams not score - {match?.odds?.homeBTNTS}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTTS'
                                 )}
-                                onClick={() => handleBetClick(match, 'awayBTTS')}><h2>{match.teams.away.name} wins & both teams score - {match?.odds?.awayBTTS}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'awayBTTS', filter)}><h2>{match.teams.away.name} wins & both teams score - {match?.odds?.awayBTTS}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTNTS'
                                 )}
-                                onClick={() => handleBetClick(match, 'awayBTNTS')}><h2>{match.teams.away.name} wins & both teams not score - {match?.odds?.awayBTNTS}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'awayBTNTS', filter)}><h2>{match.teams.away.name} wins & both teams not score - {match?.odds?.awayBTNTS}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeMinus1'
                                 )}
-                                onClick={() => handleBetClick(match, 'homeMinus1')}><h2>{match.teams.home.name} - 1 - {match?.odds?.homeMinus1}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'homeMinus1', filter)}><h2>{match.teams.home.name} - 1 - {match?.odds?.homeMinus1}</h2></RowerRowBet>
                           <RowerRowBet isSelected={selectedBet.some(
                                     (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayMinus1'
                                 )}
-                                onClick={() => handleBetClick(match, 'awayMinus1')}><h2>{match.teams.away.name} - 1 - {match?.odds?.awayMinus1}</h2></RowerRowBet>
+                                onClick={() => handleBetClick(match, 'awayMinus1', filter)}><h2>{match.teams.away.name} - 1 - {match?.odds?.awayMinus1}</h2></RowerRowBet>
                           
 
                         </LowRower>
@@ -1419,7 +1477,7 @@ const getWinnings = (el) => {
                 transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                 {/* <StyledButton onClick={getFixture}>GET FIXTURE</StyledButton>
                 <StyledButton onClick={closeSendOdds}>OPEN ODDS</StyledButton> */}
-                {selectedBet?.map((selectedBet) => {
+                {selectedBet?.map((selectedBet,index) => {
                   console.log(selectedBet)
                   const name = getName(selectedBet.betType, selectedBet.match)
                   const odd = getOdd(selectedBet.betType, selectedBet.match)
@@ -1429,26 +1487,15 @@ const getWinnings = (el) => {
                       drag="x"
                       dragConstraints={{ left: 0, right: 0 }}
                       dragElastic={0.2}
-                      onDragStart={() => setDragIntensity(0.1)} // Initial light red shadow on drag start
-                      onDrag={(event, info) => {
-                        // Calculate intensity based on drag distance (between 0 and 1)
-                        const intensity = Math.min(Math.abs(info.point.x) / (window.innerWidth * 0.9), 1);
-                        setDragIntensity(intensity);
-                      }}
-                      onDragEnd={(event, info) => {
-                        // Check if drag distance is enough to remove the element
-                        if (Math.abs(info.point.x) > window.innerWidth * 0.9) {
-                          handleRemoveBet(selectedBet.betType, selectedBet.match);
-                        } else {
-                          setDragIntensity(0); // Reset intensity to 0 to revert to initial shadow
-                        }
-                      }}
+                      onDragStart={() => handleDrag(index, 0.1)} // Initial light red shadow on drag start
+                      onDrag={(event, info) => handleDrag(index, info.point.x)}
+                      onDragEnd={(event, info) => handleDragEnd(index, info.point.x)}
                       
-                      //style={{ width: "90vw", margin: "10px auto", cursor: "grab" }}
+                      
                     >
                     <CurrentBetHolder  boxShadow={
-                      dragIntensity > 0
-                        ? `inset 0 0 25px rgba(255, 0, 0, ${dragIntensity})`
+                      dragIntensities[index] > 0
+                        ? `inset 0 0 25px rgba(255, 0, 0, ${dragIntensities[index]})`
                         : `inset 0 0 25px ${theme.text}`
                     }>
                     <CurrentBetLogoHolder>
@@ -1471,12 +1518,12 @@ const getWinnings = (el) => {
       <Switcher>
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Typography style={{color: 'white', fontFamily:'Quicksand'}}>SIGN BET</Typography>
-        <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleSwitchSendBet}/>
+        <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleSwitchSendBet}/>
         <Typography></Typography>
       </Stack>
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Typography style={{color: 'white', fontFamily:'Quicksand'}}>MULTIPLE BET</Typography>
-        <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checkedMultiple} onChange={handleSwitchMultiple}/>
+        <IconButton><AddIcon onClick={handleSwitchMultiple} /></IconButton>
         <Typography></Typography>
       </Stack>
       </Switcher>
