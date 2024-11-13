@@ -488,11 +488,11 @@ const Bets = () => {
     }
   }, [openWonBetsMenu])
 
-  useEffect(() => {
+  /* useEffect(() => {
     if(myBets){
       checkBets();
     }
-  }, [myBets])
+  }, [myBets]) */
 
   
 
