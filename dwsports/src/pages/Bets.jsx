@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import {motion,AnimatePresence} from 'framer-motion'
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom';
-import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo, TeamLogoWrapper, TeamLogoText, TeamsResult, DateRow, ResultRow, BigDateRow, VenueRow, ArrowRightRelative, StyledButton } from './index';
+import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo, TeamLogoWrapper, TeamLogoText, TeamsResult, DateRow, ResultRow, BigDateRow, VenueRow, ArrowRightRelative, StyledButton, OddsColumn, OddsColumnBig } from './index';
 import {useTranslation} from "react-i18next";
 import { Avatar, CircularProgress } from '@mui/material';
 import england from '../assets/logos/england.png'
@@ -25,7 +25,9 @@ import goal from '../assets/logos/goal.png'
 import redCard from '../assets/logos/redCard.png'
 import penalty from '../assets/logos/penalty.png'
 import yellowCard from '../assets/logos/yellowCard.png'
-import { LowRower,Rower,RowerColumn,RowerRowBets,MiniRower,MiniRowerType,MiniRowerAmount,RowerFirstEvent, RowerRow, RowerRowEvent, RowerRowName, RowerTeamEvent, AbsoluteScore } from '../components';
+import { LowRower,Rower,RowerColumn,RowerRowBets,MiniRower,MiniRowerType,MiniRowerAmount,RowerFirstEvent, RowerRow, RowerRowEvent, RowerRowName, RowerTeamEvent, AbsoluteScore,
+  RowerRowBet
+ } from '../components';
 import { supabase } from '../supabase/client';
 import Skeleton from '@mui/material/Skeleton';
 import LeagueStats from '../components/menus/LeagueStats';
@@ -35,6 +37,7 @@ import { message } from 'antd';
 import TeamStats from '../components/menus/TeamStats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 import SendOdds from '../components/menus/SendOdds';
+import SelectedBet from '../components/menus/SelectedBet';
 
 const Bets = () => {
 
@@ -64,7 +67,8 @@ const Bets = () => {
         league: "Ligue 1",
         logo: france,
         name: "France",
-        id: 12
+        id: 61,
+        currentRound: 13
     },
     {
         league: "Bundesliga",
@@ -80,7 +84,7 @@ const Bets = () => {
   const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
   const [availableLeagues, setAvailableLeagues] = useState(leagues)
   const [t, i18n] = useTranslation("global");
-  const [isDateExpanded, setIsDateExpanded] = useState(false)
+  const [isDateExpanded, setIsDateExpanded] = useState(true)
   const [openMatchesMenu, setOpenMatchesMenu] = useState(false)
   const [openWonBetsMenu, setOpenWonBetsMenu] = useState(false)
   const [openLostBetsMenu, setOpenLostBetsMenu] = useState(false)
@@ -88,6 +92,8 @@ const Bets = () => {
   const [selectedOddsMenu, setSelectedOddsMenu] = useState(false)
   const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
   const {activeTeamId, setActiveTeamId} = FantasyState();
+  const {selectedBet, setSelectedBet} = FantasyState();
+  const [selectedBetMenu, setSelectedBetMenu] = useState(false);
   const {playerToUpdate, setPlayerToUpdate} = FantasyState();
   const [openMyBetsMenu, setOpenMyBetsMenu] = useState(false)
   const [openCurrentBetMenu, setOpenCurrentMenu] = useState(false)
@@ -120,6 +126,7 @@ const Bets = () => {
   
 
   const getFixtures = async () => {
+    setLoadingMatches(true)
     const leagueIds = [39, 135, 140, 78, 61]; 
     const season = '2024';
     const apiKey = '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2';
@@ -171,9 +178,11 @@ const Bets = () => {
         console.error('Error fetching or updating fixtures:', error);
       }
     } else {
+      
       console.log("this is from local")
       const prem = localStorage.getItem("Premier League")
       const json = JSON.parse(prem)
+      console.log(json)
       setPremier(json)
       const prem2 = localStorage.getItem("La Liga")
       const json2 = JSON.parse(prem2)
@@ -188,7 +197,9 @@ const Bets = () => {
       const json5 = JSON.parse(prem5)
       setBundesliga(json5)
     }
+    setLoadingMatches(false)
   }
+
 
   const getWinOrLost = async (status) => {
     setLoadingBets(true)
@@ -658,8 +669,33 @@ const Bets = () => {
       }
     };
     try {
-      const response = await axios.request(options);
-      setCurrentRoundMatches(response.data.response);
+      const { data, error } = await supabase
+      .from("fixtures").select('odds').eq('id', activeLeagueId)
+      if(error){
+        console.log(error)
+      }
+      if(data){
+        if(data[0].odds === null){
+          const response = await axios.request(options);
+          setCurrentRoundMatches(response.data.response);
+        } else {
+          const odds = data[0].odds.odds
+          const oddsLookup = odds.reduce((acc, obj) => {
+            const fixtureId = Object.keys(obj)[0];
+            acc[fixtureId] = obj[fixtureId];
+            return acc;
+          }, {});
+          const response = await axios.request(options);
+          const mergedMatches = response.data.response.map((match) => {
+            const fixtureId = match.fixture.id;
+            if (oddsLookup[fixtureId]) {
+              return { ...match, odds: oddsLookup[fixtureId] };
+            }
+            return match; 
+          });
+          setCurrentRoundMatches(mergedMatches);
+        }
+      }
     } catch (error) {
       console.error(error);
     }
@@ -674,6 +710,8 @@ const Bets = () => {
       setOpenMatchesMenu(true)
     })
   };
+
+  
 
 useEffect(() => {
   if (activeRound) {
@@ -767,19 +805,38 @@ const getWinnings = (el) => {
 
   const getFixture = async () => {
     const { data, error } = await supabase
-      .from("fixtures").select('fixtures').eq('leagueName', "La Liga")
+      .from("fixtures").select('fixtures').eq('leagueName', "Bundesliga")
       if(error){
         console.log(error)
       }
       if(data){
         console.log(data)
         data[0].fixtures.forEach((el) => {
-          if(el.teams.home.name === "Osasuna" && el.teams.away.name === "Villarreal"){
+          if(el.teams.home.id === 91 && el.teams.away.id === 160){
             console.log(el)
           }
         })
       }
   }
+
+  const handleBetClick = (match, betType) => {
+    setSelectedBet((prevBets) => {
+      const isAlreadySelected = prevBets.some(
+        (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === betType
+      );
+      
+      if (isAlreadySelected) {
+        return prevBets.filter(
+          (bet) => !(bet.match.fixture.id === match.fixture.id && bet.betType === betType)
+        );
+      } else {
+        setSelectedBetMenu(true)
+        return [...prevBets, { match, betType }];
+      }
+    });
+  };
+
+  
 
 
   return (
@@ -848,6 +905,7 @@ const getWinnings = (el) => {
                   </ArrowsHolder>
                 {currentRoundMaches?.map((match, index) => {
                   const date = new Date(match.fixture.date).toLocaleString();
+      
                   return (
                     <TeamBetsHolder key={index} style={{margin: '0'}}
                       initial={{ height: '130px' }}
@@ -870,7 +928,39 @@ const getWinnings = (el) => {
                         </TeamsLogo>
                         <TeamsResult>
                           <DateRow>{date}</DateRow>
-                          <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
+                          {match.odds === undefined ? (
+                            <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
+                          ) : (
+                            <ResultRow>
+                              <OddsColumn
+                                id={`${match.fixture.id}-home`}
+                                isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'home'
+                                )}
+                                onClick={() => handleBetClick(match, 'home')}
+                            >
+                                {match.odds.home}
+                            </OddsColumn>
+                            <OddsColumn
+                                id={`${match.fixture.id}-draw`}
+                                isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'draw'
+                                )}
+                                onClick={() => handleBetClick(match, 'draw')}
+                            >
+                                {match.odds.draw}
+                            </OddsColumn>
+                            <OddsColumn
+                                id={`${match.fixture.id}-away`}
+                                isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'away'
+                                )}
+                                onClick={() => handleBetClick(match, 'away')}
+                            >
+                                {match.odds.away}
+                            </OddsColumn>
+                            </ResultRow>
+                          )}
                           <BigDateRow>{match.fixture.status.long}</BigDateRow>
                           <VenueRow>{match.fixture.venue.name}, {match.fixture.venue.city}</VenueRow>
                         </TeamsResult>
@@ -886,13 +976,54 @@ const getWinnings = (el) => {
                       </Rower>
                       {expandedIndex === index && (
                         <LowRower >
-                          <RowerRow>
-                              {match.fixture.status.short === "NS" ? <StyledButton>PLACE A BET</StyledButton> : ""}  
-                              {match.fixture.status.short === "FT" ? <StyledButton>MATCH STATS</StyledButton> : ""}  
-                          </RowerRow>
-                          <RowerRow>
-                              
-                          </RowerRow>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeOver2'
+                                )} onClick={() => handleBetClick(match, 'homeOver2')}><h2>{match.teams.home.name} Over 2.5 - {match?.odds?.homeOver2}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayOver2'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayOver2')}><h2>{match.teams.away.name} Over 2.5 - {match?.odds?.awayOver2}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeUnder2'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeUnder2')}><h2>{match.teams.home.name} Under 2.5 - {match?.odds?.homeUnder2}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayUnder2'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayUnder2')}><h2>{match.teams.away.name} Under 2.5 - {match?.odds?.awayUnder2}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btts'
+                                )}
+                                onClick={() => handleBetClick(match, 'btts')}><h2>Both teams score - {match?.odds?.btts}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btnts'
+                                )}
+                                onClick={() => handleBetClick(match, 'btnts')}><h2>Both teams not score - {match?.odds?.btnts}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeBTTS')}><h2>{match.teams.home.name} wins & both teams score - {match?.odds?.homeBTTS}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTNTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeBTNTS')}><h2>{match.teams.home.name} wins & both teams not score - {match?.odds?.homeBTNTS}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayBTTS')}><h2>{match.teams.away.name} wins & both teams score - {match?.odds?.awayBTTS}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTNTS'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayBTNTS')}><h2>{match.teams.away.name} wins & both teams not score - {match?.odds?.awayBTNTS}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeMinus1'
+                                )}
+                                onClick={() => handleBetClick(match, 'homeMinus1')}><h2>{match.teams.home.name} - 1 - {match?.odds?.homeMinus1}</h2></RowerRowBet>
+                          <RowerRowBet isSelected={selectedBet.some(
+                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayMinus1'
+                                )}
+                                onClick={() => handleBetClick(match, 'awayMinus1')}><h2>{match.teams.away.name} - 1 - {match?.odds?.awayMinus1}</h2></RowerRowBet>
+                          
 
                         </LowRower>
                       )}
@@ -1201,6 +1332,9 @@ const getWinnings = (el) => {
         {selectedOddsMenu && (
         <SendOdds selectedOddsMenu={selectedOddsMenu} setSelectedOddsMenu={setSelectedOddsMenu} />
         )}
+        {selectedBetMenu && (
+                <SelectedBet selectedBetMenu={selectedBetMenu} setSelectedBetMenu={setSelectedBetMenu} />
+            )}
       </AnimatePresence>
       <BottomRow>
         <IconHolder onClick={startAll}>{(activeLeague === null) ? (

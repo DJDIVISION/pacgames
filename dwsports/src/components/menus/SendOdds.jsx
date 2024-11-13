@@ -55,7 +55,7 @@ const SendOdds = ({selectedOddsMenu,setSelectedOddsMenu}) => {
             return
         }
         const odds2 = {
-            1208613: {
+            1224072: {
                 home: one,
                 draw: draw,
                 away: two,
@@ -77,7 +77,7 @@ const SendOdds = ({selectedOddsMenu,setSelectedOddsMenu}) => {
         const { data, error } = await supabase
           .from('fixtures')
           .select('odds')
-          .eq('id', 140)
+          .eq('id', 61)
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
@@ -90,7 +90,7 @@ const SendOdds = ({selectedOddsMenu,setSelectedOddsMenu}) => {
             const { error: updateError } = await supabase
                     .from('fixtures')
                     .update({ odds: userJsonData }) // Update the jsonb column
-                    .eq('id', 39); // Identify which user to update
+                    .eq('id', 61); // Identify which user to update
     
                 if (updateError) {
                     console.error('Error updating user data:', updateError.message);

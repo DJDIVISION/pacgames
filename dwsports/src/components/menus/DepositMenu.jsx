@@ -40,11 +40,11 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const isDesktop = useMediaQuery({ query: '(min-width: 798px)' });
     /* const teamWalletAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; */
     console.log(walletBalance)
-    useEffect(() => {
+    /* useEffect(() => {
       if(walletBalance === null){
         setNotConnected(true)
       }
-    }, [walletBalance])
+    }, [walletBalance]) */
  
     const closeDepositMenu = () => {
         setDepositMenu(false)

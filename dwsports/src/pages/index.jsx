@@ -1464,9 +1464,10 @@ export const BetWrapper = styled.div`
 
 export const OddsColumn = styled.div`
     width: 33%;
-    height: 50%;
+    height: 80%;
     display: flex;
     text-align: center;
+    transform: translateY(5px);
     border: 1px solid ${props => props.theme.red};
     background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
     display: flex;
@@ -1562,7 +1563,7 @@ export const MatchTime = styled.div`
 `;
 export const MatchOdds = styled.div`
     width: 100%;
-    height: 60%;
+    height: 40%;
     color: ${props => props.theme.text};
 
     font-size: 32px;

@@ -980,6 +980,22 @@ export const LowRower = styled.div`
 `;
 
 
+export const RowerRowBet = styled.div`
+    width: 100%;
+    min-height: 40px;
+    border: 1px solid ${props => props.theme.text};
+    border-radius: 8px;
+    ${props => props.theme.displayFlexCenter};
+    margin: 5px 0;
+    background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
+    h2{
+        font-size: 14px;
+        color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.textShadowTwo};
+        width: 80%;
+    }
+`;
+
 export const RowerRow = styled.div`
     width: 100%;
     min-height: 50px;
