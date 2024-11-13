@@ -548,6 +548,7 @@ const Bets = () => {
   useEffect(() => {
     if(openMyBetsMenu){
       getFixtures();
+      getBets();
     }
   }, [openMyBetsMenu])
 
@@ -599,8 +600,8 @@ const Bets = () => {
     setOpenLostBetsMenu(false)
     setOpenWonBetsMenu(false)
    setCurrentRoundMatches([])
+   setCurrentRoundMatches([])
    setActiveLeague("Premier League")
-   setActiveLeagueId(39)
     setTimeout(() => {
       setOpenLeagueMenu(true); 
     }, 500)
@@ -783,6 +784,11 @@ useEffect(() => {
       getAllLiveMatches();
     }
   }, [openLiveMatchesMenu])
+  useEffect(() => {
+    if(activeLeagueId){
+      fetchCurrentMatches();
+    }
+  }, [activeLeagueId])
 
   const raiseRound = () => {
     setCurrentRoundMatches([])
@@ -985,9 +991,18 @@ const getWinnings = (el) => {
         console.error('Error inserting/updating user session data:', error.message)
       } else {
         console.log('User session data saved:', data)
-        setSelectedBetMenu(false)
+        setOpenCurrentMenu(false)
         setSelectedBet([])
-        message.success("Your bet has been registered")
+        toast('You have placed your bet. Good luck!🤞', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark"
+          });
       }
   };
 
@@ -1254,7 +1269,7 @@ const getWinnings = (el) => {
                             console.log(event)
                             return (
                               <RowerRow>
-                                <RowerRowEvent><RowerTeamEvent><img src={event?.team?.logo} alt="owngoal" /></RowerTeamEvent></RowerRowEvent>
+                                <RowerRowEvent><img src={event?.team?.logo} alt="owngoal" /></RowerRowEvent>
                                 <RowerFirstEvent>{event?.detail === "Own Goal" ? <img style={{ transform: 'rotate(180deg)' }} src={ownGoal} alt="owngoal" /> : event.detail === "Yellow Card" ? <img src={yellowCard} alt="owngoal" /> : event.detail === "Red Card" ? <img src={redCard} alt="owngoal" /> : event.detail === "Normal Goal" ? <img src={goal} alt="owngoal" /> :
                                   event.detail.startsWith("Substitution") ? <h2>OUT: {event?.assist?.name}</h2> : event.detail.startsWith("Goal Disallowed") ? <img src={ownGoal} alt="owngoal" /> : event.detail === "Penalty" ? <img src={penalty} alt="owngoal" /> : event?.detail}</RowerFirstEvent>
                                 <RowerRowName><h2>{event?.player?.name}</h2></RowerRowName>

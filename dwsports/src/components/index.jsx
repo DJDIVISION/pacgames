@@ -1045,7 +1045,7 @@ export const RowerRowEvent = styled.div`
     ${props => props.theme.displayFlexCenter};
     position: relative;
     h2{
-        font-size: 36px;
+        font-size: 18px;
         z-index: 3;
         color: ${props => props.theme.text};
         text-shadow: ${props => props.theme.textShadowTwo};
@@ -1060,6 +1060,10 @@ export const RowerRowEvent = styled.div`
         color: ${props => props.theme.text};
         text-shadow: ${props => props.theme.textShadowTwo};
     }
+    img{
+        width: 50%;
+    }
+    
 `;
 export const RowerRowEventLong = styled.div`
     width: 20%;
@@ -1135,7 +1139,7 @@ export const RowerTeamEvent = styled.div`
     }
     img{
         display: block;
-        width: 200%;
+        width: 400%;
         object-fit: cover;
     }
 `;

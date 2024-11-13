@@ -1309,7 +1309,7 @@ export const ResultRow = styled.div`
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
     h2{
-        font-size: 42px;
+        font-size: 42px !important;
         font-weight: bold;
         margin: 10px;
     }
