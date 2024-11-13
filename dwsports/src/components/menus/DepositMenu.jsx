@@ -51,6 +51,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     }
     
     const sendTokens = async () => {
+      setDepositMenu(false)
       const newProvider = await EthereumProvider.init({
         projectId: '87ce01feb918e3377f943f901349cd66', // Replace with your WalletConnect projectId
         chains: [9008],
@@ -66,7 +67,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         },
       })
         message.info("Please confirm the transaction on your wallet")
-        const recipientAddress = "0x75a8AC284299e362830c49615459EeD8f66C0265"
+        const recipientAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"
         const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
         // Initialize Web3 with the provider
         let web3
@@ -105,26 +106,78 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           // Send the transaction
           const transaction = await tokenContract.methods.transfer(recipientAddress, amountToSend.toString()).send({
             from: account
+          }).on('sent', sent => {
+            console.log('Sent:', sent);
+            
+          })
+          .on("transactionHash", (hash) => {
+            console.log("Transaction sent with hash:", hash);
+            Swal.fire({
+              title: "Transaction Sent",
+              text: `"Transaction sent with hash:" ${hash}`,
+              icon: "info"
+            });
+          })
+          .on("receipt", (receipt) => {
+            console.log("Transaction confirmed:", receipt);
+            
+          })
+          .on('confirmation', confirmation => {
+            console.log('Confirmation:', confirmation);
+            setBalance((prevBal) => prevBal + amount)
+            setDepositMenu(false)
+            writeData();
+            Swal.fire({
+              title: "Transaction Confirmed",
+              text: "Your balance has been updated.",
+              icon: "success"
+            });
+            process.exit(0);
+            
+          })
+          .on("error", (error) => {
+            console.error("Transaction error:", error);
+            Swal.fire({
+              title: "Transaction Failed",
+              text: error.message,
+              icon: "error"
+            });
           });
-          setBalance(amount)
+          
           console.log(`Transaction successful:`, transaction);
-          const result = await Swal.fire({
-            title: "Transaction approved",
-            text: "Your balance has been updated",
-            icon: "success",
-            showCancelButton: false,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "OK"
-          }).then((result) => {
-            if (result.isConfirmed) {
-                setDepositMenu(false)
-                writeData();
-            }
-          });
           return transaction; // Return transaction details if needed
         } catch (error) {
-          console.error("Error sending tokens:", error);
+          console.log(error.message)
+          
+          if (error.message.includes("User denied transaction")) {
+            console.log("Transaction rejected by user.");
+            Swal.fire({
+              title: "Transaction Rejected",
+              text: "You canceled the transaction.",
+              icon: "error",
+              confirmButtonColor: "#d33",
+              confirmButtonText: "OK"
+            });
+          } else if (error.message.includes("insufficient funds")) {
+            console.error("Insufficient funds for transaction:", error);
+            Swal.fire({
+              title: "Insufficient Funds",
+              text: "You do not have enough tokens or gas for this transaction.",
+              icon: "warning",
+              confirmButtonColor: "#d33",
+              confirmButtonText: "OK"
+            });
+          } else {
+            // Generic error message for other issues
+            console.error("Error sending tokens:", error);
+            Swal.fire({
+              title: "Transaction Failed",
+              text: error.message,
+              icon: "error",
+              confirmButtonColor: "#d33",
+              confirmButtonText: "OK"
+            });
+          }
         }
       };
 

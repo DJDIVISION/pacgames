@@ -63,7 +63,7 @@ const SmartNavBar = ({toggleTheme}) => {
     const {account, setAccount} = FantasyState();
     const {balance, setBalance} = FantasyState();
     const {walletBalance,setWalletBalance} = FantasyState();
-
+    const { user } = useAuth(); 
     const connectWallet = async () => {
         try {
           // Initialize the provider with the WalletConnect projectId and chainId
@@ -111,12 +111,13 @@ const SmartNavBar = ({toggleTheme}) => {
               console.error('Error inserting/updating user session data:', error.message)
             } else {
               console.log('User session data saved:', data)
-            }
-            Swal.fire({
+              Swal.fire({
                 title: "Wallet Connected!",
                 text: "Your Wallet is now connected",
                 icon: "success"
               });
+            }
+            
           }
     
           console.log("Connected account:", accounts[0]);
