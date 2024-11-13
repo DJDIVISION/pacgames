@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react'
-import styled from 'styled-components'
+import { useTheme } from 'styled-components'
 import {motion,AnimatePresence} from 'framer-motion'
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom';
-import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo, TeamLogoWrapper, TeamLogoText, TeamsResult, DateRow, ResultRow, BigDateRow, VenueRow, ArrowRightRelative, StyledButton, OddsColumn, OddsColumnBig } from './index';
+import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo, TeamLogoWrapper, TeamLogoText, TeamsResult, DateRow, ResultRow, BigDateRow, VenueRow, ArrowRightRelative, StyledButton, OddsColumn, OddsColumnBig, AllBetsBadge } from './index';
 import {useTranslation} from "react-i18next";
 import { Avatar, CircularProgress } from '@mui/material';
 import england from '../assets/logos/england.png'
@@ -12,11 +12,16 @@ import italy from '../assets/logos/italy.png'
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
 import chart from '../assets/logos/chart.png' 
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {Section,BottomRow,IconHolder,LeagueRowBets,Container,item,LeagueHolder,AbsoluteIconButton,ArrowUp,ArrowDown,
   Title,AbsoluteIconButtonLeft,TeamCircularRow,TeamRow,TeamBetsHolder,ArrowsHolder,ArrowIconHolder,RoundNameHolder,
-  AbsoluteChart
+  AbsoluteChart,
+  CurrentBetHolder,
+  CurrentBetLogoHolder,
+  CurrentBetNameHolder
 } from './indexThree' 
 import { FantasyState } from '../context/FantasyContext';
 import axios from 'axios';
@@ -26,7 +31,12 @@ import redCard from '../assets/logos/redCard.png'
 import penalty from '../assets/logos/penalty.png'
 import yellowCard from '../assets/logos/yellowCard.png'
 import { LowRower,Rower,RowerColumn,RowerRowBets,MiniRower,MiniRowerType,MiniRowerAmount,RowerFirstEvent, RowerRow, RowerRowEvent, RowerRowName, RowerTeamEvent, AbsoluteScore,
-  RowerRowBet
+  RowerRowBet,
+  BetInput,
+  BetAmount,
+  PossibleWinningsAmount,
+  Switcher,
+  AntSwitch
  } from '../components';
 import { supabase } from '../supabase/client';
 import Skeleton from '@mui/material/Skeleton';
@@ -78,7 +88,7 @@ const Bets = () => {
         currentRound: 11
     }
 ]
-
+  const theme = useTheme();
   const [openLeagueMenu, setOpenLeagueMenu] = useState(true)
   const { user } = useAuth();
   const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
@@ -122,6 +132,9 @@ const Bets = () => {
   const [bundesliga, setBundesliga] = useState([])
   const [ligue1, setLigue1] = useState([])
   const [laLiga, setLaLiga] = useState([])
+  const [checked, setChecked] = useState(false);
+  const [amount, setAmount] = useState(null)
+  const [dragIntensity, setDragIntensity] = useState(0);
 
   console.log(selectedBet.length)
 
@@ -830,13 +843,97 @@ const getWinnings = (el) => {
           (bet) => !(bet.match.fixture.id === match.fixture.id && bet.betType === betType)
         );
       } else {
-        setSelectedBetMenu(true)
+        setOpenMatchesMenu(false)
+        setTimeout(() => {
+          setOpenCurrentMenu(true)
+        }, 500)
         return [...prevBets, { match, betType }];
       }
     });
   };
 
+  const calculateTotalWinnings = () => {
+    return selectedBet.reduce((total, bet) => {
+      // Get the odds for the selected bet type (home, draw, away)
+      let odds = 0;
+      if (bet.betType === 'home') odds = bet.match.odds.home;
+      else if (bet.betType === 'draw') odds = bet.match.odds.draw;
+      else if (bet.betType === 'away') odds = bet.match.odds.away;
+      else if (bet.betType === 'homeOver2') odds = bet.match.odds.homeOver2;
+      else if (bet.betType === 'btts') odds = bet.match.odds.btts;
+      else if (bet.betType === 'awayOver2') odds = bet.match.odds.awayOver2;
+      else if (bet.betType === 'homeUnder2') odds = bet.match.odds.homeUnder2;
+      else if (bet.betType === 'btnts') odds = bet.match.odds.btnts;
+      else if (bet.betType === 'awayUnder2') odds = bet.match.odds.awayUnder2;
+      else if (bet.betType === 'homeBTTS') odds = bet.match.odds.homeBTTS;
+      else if (bet.betType === 'homeMinus1') odds = bet.match.odds.homeMinus1;
+      else if (bet.betType === 'awayBTTS') odds = bet.match.odds.awayBTTS;
+      else if (bet.betType === 'homeBTNTS') odds = bet.match.odds.homeBTNTS;
+      else if (bet.betType === 'awayMinus1') odds = bet.match.odds.awayMinus1;
+      else if (bet.betType === 'awayBTNTS') odds = bet.match.odds.awayBTNTS;
   
+      // Calculate winnings for this bet
+      const winnings = amount * odds;
+  
+      // Add it to the total
+      return parseInt(total + winnings);
+    }, 0);  // Start with 0 as the initial total
+  };
+
+  const handleSwitchSendBet = async (event) => {
+    if(amount === null){
+      message.error("You must enter the amount of the bet!")
+      return
+    }
+    if(amount > balance){
+      message.error("You don't have enough balance to place this bet!")
+      return
+    }
+    //setPendingBets((prevBets) => prevBets + 1)
+    const winnings = calculateTotalWinnings();
+    console.log(winnings)
+    setChecked(event.target.checked);
+    const updatedData = {
+      email: user.email,
+      name: user.user_metadata.full_name,
+      user_id: user.id,
+      bet: selectedBet,
+      amount: amount,
+      user_avatar: user.user_metadata.avatar_url,
+      possibleWinnings: winnings,
+      status: "Pending"
+    }
+    setBalance((prevBal) => prevBal - amount)
+    const newBalance = balance - amount
+    const { data: firstData, error: firstError } = await supabase
+      .from('users')
+      .update({appBalance: newBalance})
+      .eq('id', user.id)
+      if (firstError) {
+        console.error('Error inserting/updating user session data:', firstError.message)
+      } else {
+        console.log('User balance data saved:', firstData)
+      }
+    const { data, error } = await supabase
+      .from('bets')
+      .insert([updatedData])
+      if (error) {
+        console.error('Error inserting/updating user session data:', error.message)
+      } else {
+        console.log('User session data saved:', data)
+        setSelectedBetMenu(false)
+        setSelectedBet([])
+        message.success("Your bet has been registered")
+      }
+  };
+
+  const handleRemoveBet = (betType, match) => {
+    setSelectedBet((prevBets) => {
+      return prevBets.filter(
+        (bet) => !(bet.match.fixture.id === match.fixture.id && bet.betType === betType)
+      );
+    });
+  };
 
 
   return (
@@ -1314,6 +1411,59 @@ const getWinnings = (el) => {
                 transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                 {/* <StyledButton onClick={getFixture}>GET FIXTURE</StyledButton>
                 <StyledButton onClick={closeSendOdds}>OPEN ODDS</StyledButton> */}
+                {selectedBet?.map((selectedBet) => {
+                  console.log(selectedBet)
+                  const name = getName(selectedBet.betType, selectedBet.match)
+                  const odd = getOdd(selectedBet.betType, selectedBet.match)
+                  return(
+                    <motion.div
+                      key={selectedBet.id}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={0.2}
+                      onDragStart={() => setDragIntensity(0.1)} // Initial light red shadow on drag start
+                      onDrag={(event, info) => {
+                        // Calculate intensity based on drag distance (between 0 and 1)
+                        const intensity = Math.min(Math.abs(info.point.x) / (window.innerWidth * 0.4), 1);
+                        setDragIntensity(intensity);
+                      }}
+                      onDragEnd={(event, info) => {
+                        if (Math.abs(info.point.x) > window.innerWidth * 0.4) {
+                          handleRemoveBet(selectedBet.betType, selectedBet.match);
+                          setDragIntensity(0);
+                        }
+                      }}
+                      //style={{ width: "90vw", margin: "10px auto", cursor: "grab" }}
+                    >
+                    <CurrentBetHolder  boxShadow={
+                      dragIntensity > 0
+                        ? `inset 0 0 25px rgba(255, 0, 0, ${dragIntensity})`
+                        : `inset 0 0 25px ${theme.text}`
+                    }>
+                    <CurrentBetLogoHolder>
+                    <img src={selectedBet?.match?.teams?.home?.logo} alt="homeTeamLogo" />
+                    </CurrentBetLogoHolder>
+                    <CurrentBetNameHolder><h2>{name}</h2></CurrentBetNameHolder>
+                    <CurrentBetLogoHolder>
+                    <img src={selectedBet?.match?.teams?.away?.logo} alt="awayTeamLogo" />
+                    </CurrentBetLogoHolder>
+                    <CurrentBetLogoHolder><h2>{odd}</h2></CurrentBetLogoHolder>
+                    </CurrentBetHolder>
+                    </motion.div>
+                  )
+                })}
+                      <BetAmount>
+        SELECT AMOUNT: 
+        <BetInput onChange={(e) => setAmount(e.target.value)}  />
+      </BetAmount>
+      <PossibleWinningsAmount>POSSIBLE WINNINGS: <span>{calculateTotalWinnings()} PGZ</span> </PossibleWinningsAmount>
+      <Switcher>
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <Typography style={{color: 'white', fontFamily:'Quicksand'}}>SIGN BET</Typography>
+        <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleSwitchSendBet}/>
+        <Typography></Typography>
+      </Stack>
+      </Switcher>
               </TeamRow>
           </Container>
         )}
@@ -1332,9 +1482,9 @@ const getWinnings = (el) => {
         {selectedOddsMenu && (
         <SendOdds selectedOddsMenu={selectedOddsMenu} setSelectedOddsMenu={setSelectedOddsMenu} />
         )}
-        {selectedBetMenu && (
+        {/* {selectedBetMenu && (
                 <SelectedBet selectedBetMenu={selectedBetMenu} setSelectedBetMenu={setSelectedBetMenu} />
-            )}
+            )} */}
       </AnimatePresence>
       <BottomRow>
         <IconHolder onClick={startAll}>{(activeLeague === null) ? (
@@ -1345,7 +1495,7 @@ const getWinnings = (el) => {
         <IconHolder>
           {(activeLeague === null) ? <h2 onClick={openLostBets} style={{color: openLostBetsMenu ? "rgba(244,215,21,1)" : ""}}>LOST BETS</h2> : <h2 onClick={() => openLiveMatches(true)}>LIVE MATCHES</h2>}
         </IconHolder>
-        <IconHolder>{(activeLeague === null) ? <h2 onClick={openWonBets} style={{color: openWonBetsMenu ? "rgba(244,215,21,1)" : ""}}>WON BETS</h2> : <h2 style={{color: openCurrentBetMenu ? "rgba(244,215,21,1)" : ""}} onClick={() => openCurrentBet(true)}>CURRENT BET</h2>}</IconHolder>
+        <IconHolder>{(activeLeague && selectedBet.length !== 0) && <AllBetsBadge>{selectedBet.length}</AllBetsBadge>}{(activeLeague === null) ? <h2 onClick={openWonBets} style={{color: openWonBetsMenu ? "rgba(244,215,21,1)" : ""}}>WON BETS</h2> : <h2 style={{color: openCurrentBetMenu ? "rgba(244,215,21,1)" : ""}} onClick={() => openCurrentBet(true)}>CURRENT BET</h2>}</IconHolder>
         <IconHolder onClick={() => openBets()}>{openMyBetsMenu ? <h2 style={{color: openMyBetsMenu ? "rgba(244,215,21,1)" : ""}}>PENDING BETS</h2> : <h2>YOUR BETS</h2>}</IconHolder>
       </BottomRow>
       <ToastContainer />

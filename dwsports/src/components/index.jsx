@@ -812,7 +812,7 @@ export const BetAmount = styled.div`
 
 export const PossibleWinningsAmount = styled.div`
     width: 100%;
-    min-height: 80px;
+    min-height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;

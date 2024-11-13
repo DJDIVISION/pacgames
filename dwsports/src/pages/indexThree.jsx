@@ -267,6 +267,19 @@ h2{
 
 
 
+export const CurrentBetHolder = styled(motion.div)`
+width: 98%;
+height: 100px;
+border: 1px solid ${props => props.theme.card};
+background: ${props => props.theme.cardTwo};
+${props => props.theme.displayFlexCenter}
+box-shadow: ${(props) => props.boxShadow};
+border-radius: 5px;
+cursor: pointer;
+position: relative;
+padding: 10px;
+margin: 5px 0;
+`
 export const ArrowsHolder = styled(motion.div)`
 width: 98%;
 height: 60px;
@@ -292,6 +305,30 @@ export const RoundNameHolder = styled.div`
     ${props => props.theme.displayFlexCenter}
     h2{
         font-size: 18px;
+        color: ${props => props.theme.text};
+        font-weight: bold;
+    }
+`;
+
+export const CurrentBetLogoHolder = styled.div`
+    width: 20%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter}
+    img{
+        width: 75%;
+    }
+    h2{
+        font-size: 14px;
+        color: ${props => props.theme.text};
+        font-weight: bold;
+    }
+`;
+export const CurrentBetNameHolder = styled.div`
+    width: 40%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter}
+    h2{
+        font-size: 14px;
         color: ${props => props.theme.text};
         font-weight: bold;
     }

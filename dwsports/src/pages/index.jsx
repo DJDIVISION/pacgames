@@ -916,18 +916,19 @@ export const AllBetsBadge = styled.div`
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #ff2600;
+    background: #ff2600da;
     position: absolute;
-    bottom: 60px;
-    right: 40px;
+    bottom: 50px;
+    right: 20px;  
     color: ${props => props.theme.text};
     font-size: 16px;
     ${props => props.theme.displayFlexCenter};
+    text-align: center;
     cursor: pointer;
     z-index: 1;
     @media(max-width:968px){
-        bottom: 50px;
-        right: 20px;  
+        bottom: 45px;
+        right: 5px;  
     }
     /* img{
         width: 100%;
