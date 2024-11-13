@@ -68,7 +68,7 @@ const Bets = () => {
         logo: france,
         name: "France",
         id: 61,
-        currentRound: 13
+        currentRound: 12
     },
     {
         league: "Bundesliga",
@@ -123,7 +123,7 @@ const Bets = () => {
   const [ligue1, setLigue1] = useState([])
   const [laLiga, setLaLiga] = useState([])
 
-  
+  console.log(selectedBet.length)
 
   const getFixtures = async () => {
     setLoadingMatches(true)
@@ -805,14 +805,14 @@ const getWinnings = (el) => {
 
   const getFixture = async () => {
     const { data, error } = await supabase
-      .from("fixtures").select('fixtures').eq('leagueName', "Bundesliga")
+      .from("fixtures").select('fixtures').eq('leagueName', "Ligue 1")
       if(error){
         console.log(error)
       }
       if(data){
         console.log(data)
         data[0].fixtures.forEach((el) => {
-          if(el.teams.home.id === 91 && el.teams.away.id === 160){
+          if(el.teams.home.name === "Nice" && el.teams.away.name === "Strasbourg"){
             console.log(el)
           }
         })
@@ -1312,8 +1312,8 @@ const getWinnings = (el) => {
                 animate="animate"
                 exit="exit"  style={{paddingTop: '60px'}}
                 transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                <StyledButton onClick={getFixture}>GET FIXTURE</StyledButton>
-                <StyledButton onClick={closeSendOdds}>OPEN ODDS</StyledButton>
+                {/* <StyledButton onClick={getFixture}>GET FIXTURE</StyledButton>
+                <StyledButton onClick={closeSendOdds}>OPEN ODDS</StyledButton> */}
               </TeamRow>
           </Container>
         )}

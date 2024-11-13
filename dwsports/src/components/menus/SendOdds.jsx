@@ -55,7 +55,7 @@ const SendOdds = ({selectedOddsMenu,setSelectedOddsMenu}) => {
             return
         }
         const odds2 = {
-            1224072: {
+            1213848: {
                 home: one,
                 draw: draw,
                 away: two,
