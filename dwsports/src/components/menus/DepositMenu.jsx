@@ -30,156 +30,249 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const wallet = useTonWallet();
     const {balance, setBalance} = FantasyState();
     const {walletBalance,setWalletBalance} = FantasyState();
-    const {provider, setProvider} = FantasyState();
     const {account, setAccount} = FantasyState();
     const [transactionHash, setTransactionHash] = useState(null);
     const [notConnected, setNotConnected] = useState(false)
+    const [hash, setHash] = useState(null)
     const {user} = useAuth();
     const theme = useTheme();
     const navigate = useNavigate()
+    const [provider, setProvider] = useState(null);
     const isDesktop = useMediaQuery({ query: '(min-width: 798px)' });
     /* const teamWalletAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; */
     console.log(walletBalance)
-    /* useEffect(() => {
-      if(walletBalance === null){
-        setNotConnected(true)
+    const initializeProvider = async () => {
+      try {
+        if (provider) {
+          await provider.disconnect(); // Ensure any previous sessions are disconnected
+        }
+        const newProvider = await EthereumProvider.init({
+          projectId: '87ce01feb918e3377f943f901349cd66',
+          chains: [9008],
+          rpcMap: {
+            9008: 'https://rpc-nodes.shidoscan.com',
+          },
+          showQrModal: true,
+          metadata: {
+            name: "PACTON'S GAMING ZONE",
+            description: 'A New Era of Gaming and Sports Betting',
+            url: "https://pacgames-frontend.onrender.com",
+            icons: ['https://i.postimg.cc/J0LFkY8Z/logo.jpg'],
+          },
+        });
+    
+        newProvider.on("display_uri", (uri) => console.log("WalletConnect QR Code URI:", uri));
+        setProvider(newProvider);
+        console.log(newProvider)
+      } catch (error) {
+        console.error("Error initializing provider:", error);
       }
-    }, [walletBalance]) */
+    };
+    
+    useEffect(() => {
+      initializeProvider();
+    }, []);
  
     const closeDepositMenu = () => {
         setDepositMenu(false)
     }
-    
+
     const sendTokens = async () => {
-      setDepositMenu(false)
-      const newProvider = await EthereumProvider.init({
-        projectId: '87ce01feb918e3377f943f901349cd66', // Replace with your WalletConnect projectId
-        chains: [9008],
-        rpcMap: {
-            9008: 'https://rpc-nodes.shidoscan.com', // Add the RPC URL here
-          }, // Ethereum Mainnet chainId is 1
-        showQrModal: true, // This will show the QR modal for mobile connection
-        metadata: {
-          name: "PACTON'S GAMING ZONE",
-          description: 'A New Era of Gaming and Sports Betting',
-          url: "https://pacgames-frontend.onrender.com",
-          icons: ['https://i.postimg.cc/XJPDxF3H/Group-2.png'],
-        },
-      })
-        message.info("Please confirm the transaction on your wallet")
-        const recipientAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"
+        const recipientAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
         const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
-        // Initialize Web3 with the provider
-        let web3
-        if(!provider){
-          web3 = new Web3(newProvider)
-        } else {
-          web3 = new Web3(provider)
-        }
-      
-        // ERC-20 ABI with only the transfer function
-        const ERC20_ABI = [
-          {
-            "constant": false,
-            "inputs": [
-              { "name": "_to", "type": "address" },
-              { "name": "_value", "type": "uint256" }
-            ],
-            "name": "transfer",
-            "outputs": [{ "name": "success", "type": "bool" }],
-            "type": "function"
-          },
-          { "constant": true, "inputs": [], "name": "decimals", "outputs": [{ "name": "", "type": "uint8" }], "type": "function" }
-        ];
-      
-        // Create the token contract instance
-        const tokenContract = new web3.eth.Contract(ERC20_ABI, tokenAddress);
-      
+
+        const web3 = new Web3(provider)
         try {
-          // Get the token's decimal places
+          setDepositMenu(false);
+          
+      
+          // Show confirmation prompt to user
+          message.info("Please confirm the transaction on your wallet");
+      
+          const ERC20_ABI = [
+            {
+              constant: false,
+              inputs: [{ name: "_to", type: "address" }, { name: "_value", type: "uint256" }],
+              name: "transfer",
+              outputs: [{ name: "success", type: "bool" }],
+              type: "function",
+            },
+            { constant: true, inputs: [], name: "decimals", outputs: [{ name: "", type: "uint8" }], type: "function" },
+          ];
+      
+          const tokenContract = new web3.eth.Contract(ERC20_ABI, tokenAddress);
+      
+          // Get token decimals and convert amount
           const decimals = await tokenContract.methods.decimals().call();
           const decimalsBigInt = BigInt(decimals);
-            const str = amount.toString();
-          // Convert the amount to the correct token denomination
+          const str = amount.toString();
           const amountToSend = BigInt(str) * BigInt(10) ** decimalsBigInt;
-      
+          
           // Send the transaction
-          const transaction = await tokenContract.methods.transfer(recipientAddress, amountToSend.toString()).send({
-            from: account
-          }).on('sent', sent => {
-            console.log('Sent:', sent);
-            
-          })
+          const transaction = await tokenContract.methods
+            .transfer(recipientAddress, amountToSend.toString())
+            .send({ from: account })
+            .on("transactionHash", (hash) => {
+              console.log("Transaction sent with hash:", hash);
+              setHash(hash)
+              return Swal.fire({
+                title: "Transaction Sent",
+                text: `Transaction sent with hash: ${hash}`,
+                icon: "info",
+              });
+            })
+            .on("receipt", (receipt) => {
+              console.log("Transaction confirmed:", receipt);
+              setBalance((prevBal) => prevBal + amount);
+              setDepositMenu(false);
+              writeData();
+              return Swal.fire({
+                title: "Transaction Confirmed",
+                text: "Your balance has been updated.",
+                icon: "success",
+              });
+            })
+            .on("error", (error) => {
+              if (error.message.includes("User denied transaction")) {
+                return Swal.fire({
+                  title: "Transaction Rejected",
+                  text: "You canceled the transaction.",
+                  icon: "error",
+                  confirmButtonColor: "#d33",
+                  confirmButtonText: "OK",
+                });
+              } else if (error.message.includes("insufficient funds")) {
+                return Swal.fire({
+                  title: "Insufficient Funds",
+                  text: "You do not have enough tokens or gas for this transaction.",
+                  icon: "warning",
+                  confirmButtonColor: "#d33",
+                  confirmButtonText: "OK",
+                });
+              } else {
+                console.error("Error sending tokens:", error);
+                return Swal.fire({
+                  title: "Transaction Failed",
+                  text: error.message,
+                  icon: "error",
+                  confirmButtonColor: "#d33",
+                  confirmButtonText: "OK",
+                });
+              }
+            });
+      
+          return transaction; // Return transaction details if needed
+      
+        } catch (error) {
+          console.error("General Error:", error);
+          Swal.fire({
+            title: "Transaction Failed",
+            text: error.message || "An unknown error occurred.",
+            icon: "error",
+            confirmButtonColor: "#d33",
+            confirmButtonText: "OK",
+          });
+        }
+        
+    }
+    
+    /* const sendTokens = async () => {
+      try {
+        setDepositMenu(false);
+        
+    
+        // Show confirmation prompt to user
+        message.info("Please confirm the transaction on your wallet");
+    
+        const recipientAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
+        const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
+    
+        let web3 = provider ? new Web3(provider) : new Web3(provider);
+    
+        const ERC20_ABI = [
+          {
+            constant: false,
+            inputs: [{ name: "_to", type: "address" }, { name: "_value", type: "uint256" }],
+            name: "transfer",
+            outputs: [{ name: "success", type: "bool" }],
+            type: "function",
+          },
+          { constant: true, inputs: [], name: "decimals", outputs: [{ name: "", type: "uint8" }], type: "function" },
+        ];
+    
+        const tokenContract = new web3.eth.Contract(ERC20_ABI, tokenAddress);
+    
+        // Get token decimals and convert amount
+        const decimals = await tokenContract.methods.decimals().call();
+        const decimalsBigInt = BigInt(decimals);
+        const str = amount.toString();
+        const amountToSend = BigInt(str) * BigInt(10) ** decimalsBigInt;
+    
+        // Send the transaction
+        const transaction = await tokenContract.methods
+          .transfer(recipientAddress, amountToSend.toString())
+          .send({ from: account })
           .on("transactionHash", (hash) => {
             console.log("Transaction sent with hash:", hash);
-            Swal.fire({
+            return Swal.fire({
               title: "Transaction Sent",
-              text: `"Transaction sent with hash:" ${hash}`,
-              icon: "info"
+              text: `Transaction sent with hash: ${hash}`,
+              icon: "info",
             });
           })
           .on("receipt", (receipt) => {
             console.log("Transaction confirmed:", receipt);
-            
-          })
-          .on('confirmation', confirmation => {
-            console.log('Confirmation:', confirmation);
-            setBalance((prevBal) => prevBal + amount)
-            setDepositMenu(false)
+            setBalance((prevBal) => prevBal + amount);
+            setDepositMenu(false);
             writeData();
-            Swal.fire({
+            return Swal.fire({
               title: "Transaction Confirmed",
               text: "Your balance has been updated.",
-              icon: "success"
+              icon: "success",
             });
-            process.exit(0);
-            
           })
           .on("error", (error) => {
-            console.error("Transaction error:", error);
-            Swal.fire({
-              title: "Transaction Failed",
-              text: error.message,
-              icon: "error"
-            });
+            if (error.message.includes("User denied transaction")) {
+              return Swal.fire({
+                title: "Transaction Rejected",
+                text: "You canceled the transaction.",
+                icon: "error",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "OK",
+              });
+            } else if (error.message.includes("insufficient funds")) {
+              return Swal.fire({
+                title: "Insufficient Funds",
+                text: "You do not have enough tokens or gas for this transaction.",
+                icon: "warning",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "OK",
+              });
+            } else {
+              console.error("Error sending tokens:", error);
+              return Swal.fire({
+                title: "Transaction Failed",
+                text: error.message,
+                icon: "error",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "OK",
+              });
+            }
           });
-          
-          console.log(`Transaction successful:`, transaction);
-          return transaction; // Return transaction details if needed
-        } catch (error) {
-          console.log(error.message)
-          
-          if (error.message.includes("User denied transaction")) {
-            console.log("Transaction rejected by user.");
-            Swal.fire({
-              title: "Transaction Rejected",
-              text: "You canceled the transaction.",
-              icon: "error",
-              confirmButtonColor: "#d33",
-              confirmButtonText: "OK"
-            });
-          } else if (error.message.includes("insufficient funds")) {
-            console.error("Insufficient funds for transaction:", error);
-            Swal.fire({
-              title: "Insufficient Funds",
-              text: "You do not have enough tokens or gas for this transaction.",
-              icon: "warning",
-              confirmButtonColor: "#d33",
-              confirmButtonText: "OK"
-            });
-          } else {
-            // Generic error message for other issues
-            console.error("Error sending tokens:", error);
-            Swal.fire({
-              title: "Transaction Failed",
-              text: error.message,
-              icon: "error",
-              confirmButtonColor: "#d33",
-              confirmButtonText: "OK"
-            });
-          }
-        }
-      };
+    
+        return transaction; // Return transaction details if needed
+    
+      } catch (error) {
+        console.error("General Error:", error);
+        Swal.fire({
+          title: "Transaction Failed",
+          text: error.message || "An unknown error occurred.",
+          icon: "error",
+          confirmButtonColor: "#d33",
+          confirmButtonText: "OK",
+        });
+      }
+    }; */
 
       const writeData = async () => {
         const newBalance = (amount / 11620 * 1000)
@@ -206,7 +299,8 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
                 user_id: user.id,
                 amount: amount,
                 token: "SHO",
-                date: dateNow
+                date: dateNow,
+                hash: hash
             }
             userJsonData.deposits.push(updatedData);
             const { error: updateError } = await supabase

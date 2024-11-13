@@ -230,7 +230,7 @@ const Hero = () => {
         <ContainerSamllTitle>{user && user.user_metadata.full_name}</ContainerSamllTitle>
         <ContainerSamllTitle>{user && user.email}</ContainerSamllTitle>
         <ContainerSamllTitle></ContainerSamllTitle>
-        <ContainerSamllTitle>BALANCE: {parseFloat(balance?.toFixed(2))} PGZ</ContainerSamllTitle>
+        <ContainerSamllTitle style={{color: 'aqua'}}>BALANCE: {parseFloat(balance?.toFixed(2))} PGZ</ContainerSamllTitle>
         
         <ContainerSamllTitle></ContainerSamllTitle>
         <ContainerSamllTitle>{t("hero.title2")}</ContainerSamllTitle>

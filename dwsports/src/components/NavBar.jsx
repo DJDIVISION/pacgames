@@ -134,6 +134,7 @@ const NavBar = ({toggleTheme}) => {
             try {
                 const accounts = await provider.request({ method: 'eth_requestAccounts' });
                 alert('Connected account:', accounts[0]);
+                setAccount(accounts[0])
             } catch (error) {
                 console.error('User denied account access:', error);
             }
