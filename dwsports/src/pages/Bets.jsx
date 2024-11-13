@@ -89,6 +89,7 @@ const Bets = () => {
     }
 ]
   const theme = useTheme();
+  const [checkedMultiple, setCheckedMultiple] = useState(false);
   const [openLeagueMenu, setOpenLeagueMenu] = useState(true)
   const { user } = useAuth();
   const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
@@ -589,6 +590,13 @@ const Bets = () => {
     setOpenLostBetsMenu(false)
     setTimeout(() => {
       setOpenLiveMatchesMenu(true)
+    }, 500)
+  }
+
+  const handleSwitchMultiple = () => {
+    setOpenCurrentMenu(false)
+    setTimeout(() => {
+      setOpenMatchesMenu(true)
     }, 500)
   }
   const openBets = () => {
@@ -1464,6 +1472,11 @@ const getWinnings = (el) => {
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Typography style={{color: 'white', fontFamily:'Quicksand'}}>SIGN BET</Typography>
         <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleSwitchSendBet}/>
+        <Typography></Typography>
+      </Stack>
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <Typography style={{color: 'white', fontFamily:'Quicksand'}}>MULTIPLE BET</Typography>
+        <AntSwitch inputProps={{ 'aria-label': 'ant design' }} checked={checkedMultiple} onChange={handleSwitchMultiple}/>
         <Typography></Typography>
       </Stack>
       </Switcher>

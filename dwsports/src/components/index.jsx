@@ -766,7 +766,7 @@ export const CurrentBetText = styled.div`
 
 export const Switcher = styled.div`
     width: 100%;
-    min-height: 150px;
+    min-height: 140px;
     display: flex;
     flex-direction: column;
     margin-top: 50px;
