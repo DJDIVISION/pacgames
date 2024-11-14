@@ -149,33 +149,33 @@ export const BalanceWrapper = styled.div`
     }
 `;
 
-export const DepositWrapper = styled(motion.div)`
+export const DepositWrapper = styled.div`
     width: 60%;
-    height: 60vh;
+    height: 20vh;
     border: 2px solid ${props => props.theme.text};
-    ${props => props.theme.displayFlexColumn};
+    ${props => props.theme.displayFlexCenter};
     text-align: center;
     border-radius: 10px;
     padding: 10px;
-    transform: translateY(-10vh);
+    margin: 10px 0;
+    overflow: hidden;
     span{
         color: ${props => props.theme.MainAccent};
         margin: 5px;
     }
     @media(max-width: 490px){
         width: 90%; 
-        height: 50vh;
+        height: 20vh;
     }
 `;
 
 export const DepositBigTitle = styled.div`
     width: 100%;
-    height: 20%;
+    height: 10%;
     font-size: 24px;
     font-weight: bold;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
-    transform: translateY(-5vh);
 `;
 
 export const DepositTitle = styled.div`

@@ -975,7 +975,51 @@ const getWinnings = (el) => {
     }
     setBalance((prevBal) => prevBal - amount)
     const newBalance = balance - amount
-    const { data: firstData, error: firstError } = await supabase
+    const {data:setData, error: setError} = await supabase
+    .from('users')
+      .select('wagerBalance')
+      .eq('id', user.id)
+      if(setError){
+        console.log(setError)
+      } else {
+        console.log("shitty data:", setData)
+        const wager = setData[0].wagerBalance
+        const newWager = +wager + +amount;
+        console.log(newWager)
+        
+        const { data: firstData, error: firstError } = await supabase
+        .from('users')
+        .update({appBalance: newBalance, wagerBalance: newWager})
+        .eq('id', user.id)
+        if (firstError) {
+          console.error('Error inserting/updating user session data:', firstError.message)
+        } else {
+          console.log('User balance data saved:', firstData)
+          const { data, error } = await supabase
+      .from('bets')
+      .insert([updatedData])
+      if (error) {
+        console.error('Error inserting/updating user session data:', error.message)
+      } else {
+        console.log('User session data saved:', data)
+        setOpenCurrentMenu(false)
+        setSelectedBet([])
+        setAmount(null)
+        toast('You have placed your bet. Good luck!🤞', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark"
+          });
+      }
+        }
+        setOpenLeagueMenu(true)
+      }
+    /* const { data: firstData, error: firstError } = await supabase
       .from('users')
       .update({appBalance: newBalance})
       .eq('id', user.id)
@@ -1003,7 +1047,7 @@ const getWinnings = (el) => {
           progress: undefined,
           theme: "dark"
           });
-      }
+      } */
   };
 
   /* const handleRemoveBet = (betType, match) => {

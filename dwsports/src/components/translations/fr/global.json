@@ -46,7 +46,8 @@
         "sports": "PARIS SPORTIFS",
         "fantasy": "FOOTBALL FANTAISIE",
         "deposit": "DÉPÔT",
-        "switch": "CHANGER DE THÈME"
+        "switch": "CHANGER DE THÈME",
+        "wallet": "PORTEFEUILLE"
     },
     "hero": {
         "message1": "Vous ne pouvez pas lier un autre référent!",

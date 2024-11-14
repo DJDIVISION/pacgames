@@ -82,4 +82,7 @@ export default defineConfig({
       },
     }),
   ],
+  optimizeDeps: {
+    include: ['@tonconnect/ui-react']
+  }
 })

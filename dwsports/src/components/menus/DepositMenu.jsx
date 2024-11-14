@@ -342,8 +342,8 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     initial="initial"
     animate="animate"
     exit="exit"
-    style={{alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
-        <DepositBigTitle>RATIO: 11620 SHO - 1000 PGZ</DepositBigTitle>
+    style={{alignItems: 'center', overflow: 'hidden'}}>
+        <DepositBigTitle style={{border: '1px solid red'}}>RATIO: 11620 SHO - 1000 PGZ</DepositBigTitle>
      <CloseStats onClick={closeDepositMenu} /> 
      
         {notConnected ? (

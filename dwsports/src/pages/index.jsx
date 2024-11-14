@@ -981,6 +981,26 @@ export const SmallArrowDown = styled(KeyboardArrowDownIcon)`
         }
     }
 `;
+export const SmallArrowDownFlex = styled(KeyboardArrowDownIcon)`
+    &&&{
+        color: ${props => props.theme.pacColor};
+        
+    }
+`;
+
+export const MiniIconButton = styled(IconButton)`
+    &&&{
+        scale: 1.2;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        ${props => props.theme.displayFlexCenter};
+        @media(max-width: 968px){
+            top: 10px;
+            left: 10px; 
+        }
+    }
+`;
 
 
 

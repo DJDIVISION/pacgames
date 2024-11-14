@@ -77,6 +77,8 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
   }
 
   console.log(betAmounts)
+
+  
   const handleSwitchSendBet = async (event) => {
     if(amount === null){
       message.error("You must enter the amount of the bet!")
@@ -102,7 +104,20 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
     }
     setBalance((prevBal) => prevBal - amount)
     const newBalance = balance - amount
-    const { data: firstData, error: firstError } = await supabase
+    const {data:setData, error: setError} = await supabase
+    .from('users')
+      .select('wagerBalance')
+      .eq('id', user.id)
+      if(setError){
+        console.log(setError)
+      } else {
+        console.log("shitty data:", setData)
+      }
+
+
+
+
+    /* const { data: firstData, error: firstError } = await supabase
       .from('users')
       .update({appBalance: newBalance})
       .eq('id', user.id)
@@ -121,7 +136,7 @@ const SelectedBet = ({setSelectedBetMenu,selectedBetMenu}) => {
         setSelectedBetMenu(false)
         setSelectedBet([])
         message.success("Your bet has been registered")
-      }
+      } */
   };
 
   const handleSwitchMultiple = (event) => {

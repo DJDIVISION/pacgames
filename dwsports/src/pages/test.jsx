@@ -1,6 +1,6 @@
 <SmartNav scrollNavDown={scrollNavDown}>
     <IconButton onClick={isOpen}><Burguer /></IconButton>
-    <TonConnectButton />
+    {/* <TonConnectButton /> */}
     {open && (
         <AnimatePresence>
         <StyledMenu scrollNavDown={scrollNavDown} variants={item} 

@@ -1,20 +1,26 @@
 import React, { useEffect, useState, useRef } from 'react';
-import styled from 'styled-components'
+import styled, {useTheme} from 'styled-components'
 import { motion, useTransform, useScroll, useAnimation, AnimatePresence } from 'framer-motion';
-import {HeroSection} from './index'
+import {HeroSection, StyledButton} from './index'
 import Ton from '../../assets/logos/ton.png'
 import Sho from '../../assets/logos/sho.png'
+import connect from '../../assets/logos/connect.png'
+import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
 import { getUserBalance, useAuth } from '../../pages/functions';
 import { message } from 'antd';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import SendIcon from '@mui/icons-material/Send';
 import { Avatar, Button, IconButton } from '@mui/material';
 import { supabase } from '../../supabase/client';
-import { MiniArrowDown, MiniArrowup } from '../../pages';
+import { MiniArrowDown, MiniArrowup, SmallArrowDownFlex, MiniIconButton } from '../../pages';
 import { FantasyState } from '../../context/FantasyContext';
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom'
+import { RowerSmall,LowRower,RowerRowBets,TeamBetsHolder,AvatarRowBets } from './index';
+import googleDark from '../../assets/logos/googleDark.png'
+import googleLight from '../../assets/logos/googleLight.png'
+import { toast } from 'react-toastify';
 
 const Hero = () => {
 
@@ -22,6 +28,7 @@ const Hero = () => {
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
+    const theme = useTheme();
     const [disabledInput, setDisabledInput] = useState(false)
     const [referrerValue, setReferrerValue] = useState("")
     const [referrals, setReferrals] = useState([])
@@ -30,14 +37,7 @@ const Hero = () => {
     const navigate = useNavigate()
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-    const textScale = useTransform(scrollYProgress, [0, 0.5], [1.7, 1]);
-    const imageTopScale = useTransform(scrollYProgress, [0, 0.5], [1.2, 0.9]);
-    const textY = useTransform(scrollYProgress, [0, 0.5], ["3vh", "40vh"]); // Moves downward
-    const textOpacity = useTransform(scrollYProgress, [0.4, 0.6], [1, 0]); // Fades out closer to the image
-    const imageOpacity = useTransform(scrollYProgress, [0.6, 0.4], [1, 0]); 
-    // Define scale and position for image
-    const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.65]);
-    const imageY = useTransform(scrollYProgress, [0, 1], [10, 50]);
+    const [expandedProfile, setExpandedProfile] = useState(null);
     const controls = useAnimation();
 
     const expandDiv = () => {
@@ -202,21 +202,107 @@ const Hero = () => {
         } else {
           console.log('User logged out successfully')
           // Redirect to the login page or home page
-          navigate('/login')
+          navigate('/')
         }
-      }
+    }
+
+    const toggleProfile = () => {
+        setExpandedProfile(!expandedProfile);
+    };
+
+    const handleGoogleSignIn = async () => {
+        
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+        })
+    
+        if (error) {
+          console.error('Error with Google sign-in:', error.message)
+        } 
+        if(data){
+            console.error('Google sign-in successful:', data) 
+        }
+    }
+
+    const storeUserData = async (user) => {
+        const { id, email, user_metadata } = user;
+        const { full_name: name, avatar_url } = user_metadata || {};
+    
+        try {
+            // Insert or update user login data
+            const { error: loginError } = await supabase
+                .from('user_logins')
+                .upsert([{ user_id: id, email: email, name: name, avatar: avatar_url }]);
+    
+            if (loginError) throw loginError;
+            console.log('User login data saved successfully:', { id, email, name, avatar_url });
+        } catch (error) {
+            console.error('Error storing user login data:', error.message);
+        }
+    
+        try {
+            // Check if user already exists in the users table
+            const { data: existingUser, error: fetchError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', id)
+                .limit(1); // Limit to 1 row to avoid multiple rows error
+    
+            // Check for errors in fetching
+            if (fetchError) {
+                console.error('Error checking user existence:', fetchError.message);
+                return;
+            }
+    
+            // Check if any users were returned
+            if (existingUser.length === 0) {
+                // If user does not exist, proceed to save data
+                const { data, error } = await supabase
+                    .from('users')
+                    .upsert([{ 
+                        id: id, // Assign the user's ID to the 'id' column
+                        email: email, 
+                        name: name, 
+                        avatar: avatar_url, 
+                        referralLink: `PACTONGZ/${id}` 
+                    }]);
+    
+                if (error) {
+                    console.error('Error storing user data:', error.message);
+                    return;
+                }
+    
+                console.log('User data saved successfully:', data);
+            } else {
+                console.log('User already exists in the database. No data saved:', existingUser);
+            }
+        } catch (error) {
+            console.error('Unexpected error storing user data:', error.message);
+        }
+    };
+
+    useEffect(() => {
+        const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                console.log('User has been authorized:', session.user);
+                storeUserData(session.user)
+                toast('Welcome to PacTON Gaming Zone! 👋');
+            }
+        });
+    
+        // Clean up the listener on component unmount
+        return () => {
+            authListener.subscription.unsubscribe();
+        };
+    }, []);
+
+    
+
+    
 
   return (
     <HeroSection ref={ref}>
-        {/* <motion.div 
-        style={{ scale: imageTopScale, y: textY, position: 'absolute', top: '0', left: '0', zIndex: 1, 
-        width: '100%', height: '20vh', display: 'flex', alignItems: 'center'}}>
-      <motion.img src={Ton} 
-                alt="background" 
-                style={{ width: '100%', height: 'auto', objectFit: 'cover' }} 
-                animate={controls} />
-      </motion.div> */}
-      <AnimatePresence>
+      
         <TopHeader>
         <TopText>{t("hero.title")}</TopText>
       <motion.img src={Sho} 
@@ -225,9 +311,56 @@ const Hero = () => {
                 animate={controls} />
      
         </TopHeader>
-        <Header>
+
+              <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
+                  initial={{ height: '80px' }}
+                  animate={{ height: expandedProfile === true ? '350px' : '80px' }}
+                  transition={{ duration: 0.5 }}
+                  >
+                    <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
+                  {/* {expandedProfile === true ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDown onClick={() => toggleProfile()} />} */}
+                  <RowerSmall><h2 onClick={() => toggleProfile()}>YOUR PROFILE</h2></RowerSmall>
+                  {expandedProfile === true && (
+                      <LowRower >
+                        {user ? (
+                            <>
+                                <AvatarRowBets>
+                                <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
+                                </AvatarRowBets>
+                                <RowerRowBets>
+                                <h2>{user && user.user_metadata.full_name}</h2>
+                                </RowerRowBets>
+                                <RowerRowBets>
+                                <h3>{user && user.email}</h3>
+                                </RowerRowBets>
+                                <RowerRowBets>
+                                <h2>BALANCE: <span>{parseFloat(balance?.toFixed(2))} PGZ</span></h2>
+                                </RowerRowBets>
+                                <RowerRowBets style={{ height: '70px' }}>
+                                    <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
+                                </RowerRowBets>
+                            </>
+                        ) : (
+                            <>
+                                <AvatarRowBets>
+                                <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
+                                </AvatarRowBets>
+                                <RowerRowBets></RowerRowBets>
+                                <RowerRowBets style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}>
+                                {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
+                                </RowerRowBets>
+                                <RowerRowBets></RowerRowBets>
+                                <RowerRowBets></RowerRowBets>
+                            </>
+                            
+                        )}
+                            
+                      </LowRower>
+                  )}
+              </TeamBetsHolder>
+        {/* <Header>
         <ContainerTitle><Avatar onClick={handleLogout} alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} /></ContainerTitle>
-        <ContainerSamllTitle>{user && user.user_metadata.full_name}</ContainerSamllTitle>
+        <ContainerSamllTitle></ContainerSamllTitle>
         <ContainerSamllTitle>{user && user.email}</ContainerSamllTitle>
         <ContainerSamllTitle></ContainerSamllTitle>
         <ContainerSamllTitle >BALANCE: <span style={{color: 'aqua', margin: '0 5px'}}>{parseFloat(balance?.toFixed(2))} PGZ</span></ContainerSamllTitle>
@@ -267,8 +400,8 @@ const Hero = () => {
                 )}   
                 {(referrals.length > 0 && !isExpanded) && <MiniArrowDown onClick={expandDiv}/> } 
                 {(referrals.length > 0 && isExpanded) && <MiniArrowup onClick={expandDiv}/> } 
-      </Header>
-      </AnimatePresence>
+      </Header> */}
+      
     </HeroSection>
   )
 }

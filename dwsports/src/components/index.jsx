@@ -112,7 +112,7 @@ export const StyledMenu = styled(motion.div)`
     &&&{
     background-color: ${({ theme }) => theme.darkBg};
     width: 100vw;
-    max-height: 100vh;
+    height: 100vh;
     position: absolute;
     top: 0;
     left: 0;
@@ -120,7 +120,7 @@ export const StyledMenu = styled(motion.div)`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    //justify-content: center;
     z-index: 1000;
     }
 `;

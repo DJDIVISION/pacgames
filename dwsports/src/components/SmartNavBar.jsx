@@ -5,7 +5,6 @@ import {Nav,NavColumn,NavIcon,NavText,SmartNav,Burguer,CloseBurguer,StaggerConta
     LightIcon,StyledMenu,Language,
     DarkIcon
 } from './index'
-import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
 import { TonClient, Address } from '@ton/ton';
 import {Link as LinkR} from 'react-router-dom'
 import {motion,AnimatePresence} from 'framer-motion'
@@ -26,15 +25,17 @@ import DepositMenu from './menus/DepositMenu';
 import ES from '../assets/svg/es.png';
 import FR from '../assets/svg/fr.png';
 import EN from '../assets/svg/uk.png';
+import wallet from '../assets/logos/wallet.png';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDial from '@mui/material/SpeedDial';
 import { useTranslation } from 'react-i18next'
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import { ethers } from "ethers";
 import Web3 from "web3";
+import WalletMenu from './menus/WalletMenu';
 
 
-const SmartNavBar = ({toggleTheme}) => {
+const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
 
     const languages = [
         {
@@ -283,11 +284,9 @@ const SmartNavBar = ({toggleTheme}) => {
         };
     }, [open]);
 
-
   return (
     <SmartNav scrollNavDown={scrollNavDown}>
         <IconButton onClick={isOpen}><Burguer /></IconButton>
-        {/* <TonConnectButton /> */}
         {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectMetamask}>{account}</WalletAddressButton>}
         <AnimatePresence>
             {open && (
@@ -323,17 +322,17 @@ const SmartNavBar = ({toggleTheme}) => {
                               <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
                               <StaggerAvatarName>CASINO</StaggerAvatarName>
                           </StaggerRow></LinkR> */}
-                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setDepositMenu(true);}}
+                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setWalletMenu(true);}}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 0.9 }} >
-                              <StaggerImageHolder><img src={deposit} alt="fantasy" /></StaggerImageHolder>
-                              <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
+                              <StaggerImageHolder><img src={wallet} alt="wallet" /></StaggerImageHolder>
+                              <StaggerAvatarName>{t("navbar.wallet")}</StaggerAvatarName>
                           </StaggerRow>
                           <StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 1 }}> 
                           <StaggerImageHolder>
-                          {theme === 'dark' ? <LightIcon onClick={toggleTheme}/> : <DarkIcon onClick={toggleTheme}/>}
+                          {theme.body === '#202020' ? <LightIcon onClick={toggleTheme}/> : <DarkIcon onClick={toggleTheme}/>}
                           </StaggerImageHolder>
                           <StaggerAvatarName>{t("navbar.switch")}</StaggerAvatarName>
                           </StaggerRow>
@@ -341,7 +340,10 @@ const SmartNavBar = ({toggleTheme}) => {
                 </StyledMenu>
             )}
             {depositMenu && (
-                <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu}/>
+                <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="depositmenusmart"/>
+            )}
+            {walletMenu && (
+                <WalletMenu walletMenu={walletMenu} setWalletMenu={setWalletMenu} key="walletMenusmart"/>
             )}
         </AnimatePresence>
     </SmartNav>

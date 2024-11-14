@@ -6,8 +6,7 @@ import {Nav,NavColumn,NavIcon,NavText,SmartNav,Burguer,CloseBurguer,StaggerConta
     DarkIcon,
     WalletAddressButton
 } from './index'
-import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
-import { TonClient, Address } from '@ton/ton';
+
 import {Link as LinkR} from 'react-router-dom'
 import {motion,AnimatePresence} from 'framer-motion'
 import  { useTheme } from 'styled-components'

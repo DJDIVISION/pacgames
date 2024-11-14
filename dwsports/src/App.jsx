@@ -25,6 +25,8 @@ import Airdrop from './pages/Airdrop';
 import NewFantasy from './pages/NewFantasy'; 
 import SmartNavBar from './components/SmartNavBar';
 import NavBar from './components/NavBar';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 
 function App() {
@@ -47,10 +49,21 @@ function App() {
   
   return (
     <ThemeProvider theme={themeObject}>
+      <ToastContainer 
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={true}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
     <Router>
       <Routes>
         <Route path="/" element={<Home toggleTheme={toggleTheme}/>} />
-        <Route path="/login" element={<Login />} />
         <Route path="/bets" element={<ProtectedRoute><Bets /></ProtectedRoute>} />
         <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />
         <Route path="/fantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />
@@ -79,7 +92,7 @@ const ProtectedRoute = ({ children }) => {
 
   if (!user) {
     // If no user, redirect to the login page
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   // If user exists, render the children components (protected content)

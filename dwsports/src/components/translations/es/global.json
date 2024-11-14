@@ -46,7 +46,8 @@
         "sports": "APUESTAS DEPORTIVAS",
         "fantasy": "FÚTBOL FANTASÍA",
         "deposit": "DEPÓSITO",
-        "switch": "CAMBIAR MODO"
+        "switch": "CAMBIAR MODO",
+        "wallet": "CARTERA"
     },
     "hero": {
         "message1": "¡No puedes vincular a otro referente!",
