@@ -87,7 +87,7 @@ export const WalletsRow = styled.div`
     ${props => props.theme.displayFlexCenter};
     background: ${props => props.theme.body};
     margin: 15px 0;
-    box-shadow: inset 0 0 25px ${props => props.theme.text};
+    //box-shadow: inset 0 0 25px ${props => props.theme.text};
     img{
         width: 80%;
         display: block;

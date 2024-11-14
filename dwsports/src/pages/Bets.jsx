@@ -1124,6 +1124,7 @@ const getWinnings = (el) => {
                     <ArrowIconHolder><ArrowRightRelative onClick={raiseRound} style={{transform: 'translateX(-15px) rotate(270deg)'}}></ArrowRightRelative></ArrowIconHolder>
                   </ArrowsHolder>
                 {currentRoundMaches?.map((match, index) => {
+                  console.log(match)
                   const date = new Date(match.fixture.date).toLocaleString();
                   console.log(selectedBet)
                   const filter = selectedBet.find((el) => el.match.fixture.id === match.fixture.id)

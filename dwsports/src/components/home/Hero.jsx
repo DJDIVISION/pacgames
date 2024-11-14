@@ -22,6 +22,9 @@ import googleDark from '../../assets/logos/googleDark.png'
 import googleLight from '../../assets/logos/googleLight.png'
 import metamask from '../../assets/logos/metamask.svg'
 import Swal from "sweetalert2";
+import { EthereumProvider } from "@walletconnect/ethereum-provider";
+import Web3 from "web3";
+import axios from 'axios';
 
 const Hero = () => {
 
@@ -34,8 +37,13 @@ const Hero = () => {
     const [referrerValue, setReferrerValue] = useState("")
     const [referrals, setReferrals] = useState([])
     const [isExpanded, setIsExpanded] = useState(false)
+    const {provider, setProvider} = FantasyState();
+    const {account, setAccount} = FantasyState();
     const {balance, setBalance} = FantasyState();
-    const {walletAddress, setWalletAddress} = FantasyState();
+    const {metaMaskWalletBalance,setMetaMaskWalletBalance} = FantasyState();
+    const {tonWalletBalance,setTonWalletBalance} = FantasyState();
+    const {metaMaskWalletAddress, setMetaMaskWalletAddress} = FantasyState();
+    const {tonWalletAddress, setTonWalletAddress} = FantasyState();
     const navigate = useNavigate()
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -44,6 +52,15 @@ const Hero = () => {
     const [expandedReferrals, setExpandedReferrals] = useState(false);
     const [expandedLinks, setExpandedLinks] = useState(false);
     const controls = useAnimation();
+    const userFriendlyAddress = useTonAddress();
+    
+
+    console.log(userFriendlyAddress)
+    useEffect(() => {
+        if(userFriendlyAddress){
+            setTonWalletAddress(userFriendlyAddress)
+        }
+    }, [userFriendlyAddress])
 
     const expandDiv = () => {
         setIsExpanded((prev) => !prev);
@@ -210,6 +227,23 @@ const Hero = () => {
     };
     
     const handleLogout = async () => {
+        /* const options = {
+            method: 'GET',
+            url: 'https://api-football-v1.p.rapidapi.com/v3/odds',
+            params: {fixture: '1208137'},
+            headers: {
+              'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+              'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+            }
+          };
+          
+          
+          try {
+              const response = await axios.request(options);
+              console.log(response.data.response);
+          } catch (error) {
+              console.error(error);
+          } */
         setExpandedReferrals(false)
         setExpandedWallet(false)
         const { error } = await supabase.auth.signOut()
@@ -340,8 +374,107 @@ const Hero = () => {
         }
     };
 
+    const getTokenBalance = async (account, provider) => {
+        if (!provider) {
+          console.error("Provider is undefined.");
+          return;
+        }
+      
+        // Wrap the WalletConnect provider with Web3
+        const web3 = new Web3(provider);
+      
+        const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; // Replace with your token's contract address
+      
+        // ERC-20 ABI for balanceOf and decimals
+        const ERC20_ABI = [
+            { "constant": true, "inputs": [{ "name": "_owner", "type": "address" }], "name": "balanceOf", "outputs": [{ "name": "balance", "type": "uint256" }], "type": "function" },
+            { "constant": true, "inputs": [], "name": "decimals", "outputs": [{ "name": "", "type": "uint8" }], "type": "function" }
+          ];
+        
+          // Create the contract instance
+          const tokenContract = new web3.eth.Contract(ERC20_ABI, tokenAddress);
+        
+          try {
+            // Get balance and decimals
+            const balance = await tokenContract.methods.balanceOf(account).call();
+            const decimals = await tokenContract.methods.decimals().call();
+        
+            // Convert balance and decimals to BigInt for precise calculation
+            const balanceBigInt = BigInt(balance);
+            const decimalsBigInt = BigInt(decimals);
+            const factor = BigInt(10) ** decimalsBigInt; // Equivalent to 10^decimals
+        
+            // Format balance to a human-readable format (divide by the decimals factor)
+            const formattedBalance = balanceBigInt / factor;
+            console.log(`Token balance for ${tokenAddress}: ${formattedBalance.toString()}`);
+            setMetaMaskWalletBalance(formattedBalance.toString())
+            return formattedBalance.toString(); // Return as string to avoid BigInt issues elsewhere
+          } catch (error) {
+            console.error("Error fetching token balance:", error);
+          }
+    };
 
-    console.log(referrals)
+    const connectWallet = async () => {
+        try {
+          // Initialize the provider with the WalletConnect projectId and chainId
+          const newProvider = await EthereumProvider.init({
+            projectId: '87ce01feb918e3377f943f901349cd66', // Replace with your WalletConnect projectId
+            chains: [9008],
+            rpcMap: {
+                9008: 'https://rpc-nodes.shidoscan.com', // Add the RPC URL here
+              }, // Ethereum Mainnet chainId is 1
+            showQrModal: true, // This will show the QR modal for mobile connection
+            metadata: {
+              name: "PACTON'S GAMING ZONE",
+              description: 'A New Era of Gaming and Sports Betting',
+              url: "https://pacgames-frontend.onrender.com",
+              icons: ['https://i.postimg.cc/XJPDxF3H/Group-2.png'],
+            },
+          });
+    
+          // Handle QR code URI display event
+          newProvider.on('display_uri', (uri) => {
+            console.log('Display URI:', uri);
+          });
+    
+          // Connect to WalletConnect (this will display the QR code on mobile)
+          await newProvider.connect();
+          setProvider(newProvider); // Store the provider in state
+    
+          // Request user accounts after successful connection
+          await newProvider.enable();
+          const accounts = await newProvider.request({ method: "eth_requestAccounts" });
+          if (accounts && accounts.length > 0) {
+            setMetaMaskWalletAddress(accounts[0]); 
+            getTokenBalance(accounts[0], newProvider);
+            const updatedData = {
+              name: user.user_metadata.name,
+              avatar: user.user_metadata.avatar_url,
+              email: user.email,
+              walletAddress: accounts[0],
+              user_id: user.id
+            }
+            const { data, error } = await supabase
+            .from('user_wallets')
+            .insert([updatedData])
+            if (error) {
+              console.error('Error inserting/updating user session data:', error.message)
+            } else {
+              console.log('User session data saved:', data)
+              Swal.fire({
+                title: "Wallet Connected!",
+                text: "Your Wallet is now connected",
+                icon: "success"
+              });
+            }
+            
+          }
+    
+          console.log("Connected account:", accounts[0]);
+        } catch (error) {
+          console.error("Error connecting wallet:", error);
+        }
+      };
     
 
   return (
@@ -402,27 +535,55 @@ const Hero = () => {
 
               <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
                   initial={{ height: '80px' }}
-                  animate={{ height: expandedWallet === true ? '350px' : '80px' }}
+                  animate={{ height: expandedWallet === true ? '380px' : '80px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedWallet === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleWallet()} /> : <SmallArrowDownFlex onClick={() => toggleWallet()} />}</MiniIconButton>
-                  <RowerSmall><h2>WALLET</h2></RowerSmall>
+                  <RowerSmall><h2>WALLETS</h2></RowerSmall>
                   {expandedWallet === true && (
                       <LowRower >
-                        {!walletAddress ? (
+                                <RowerRowBets>
+                                <h2>BALANCE: <span>{parseFloat(balance?.toFixed(2))} PGZ</span></h2>
+                                </RowerRowBets>
+                                <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
+                                {!metaMaskWalletAddress ? (
+                                    <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
+                                ) : (
+                                    <>
+                                    <RowerRowBets>
+                                        <h2>CONNECTED SHIDO ADDRESS</h2>
+                                    </RowerRowBets>
+                                    <RowerRowBets>
+                                        <LinkInputField disabled={true} value={metaMaskWalletAddress} />
+                                    </RowerRowBets>
+                                    </>
+                                )}
+                                {!tonWalletAddress ? (
+                                    <WalletsRow><TonConnectButton /></WalletsRow>
+                                ) : (
+                                    <>
+                                    <RowerRowBets>
+                                        <h2>CONNECTED TON ADDRESS</h2>
+                                    </RowerRowBets>
+                                    <RowerRowBets>
+                                        <LinkInputField disabled={true} value={tonWalletAddress} />
+                                    </RowerRowBets>
+                                    </>
+                                )}
+                       {/*  {!metaMaskWalletAddress ? (
                             <>
                                 <RowerRowBets>
                                 <h2>BALANCE: <span>{parseFloat(balance?.toFixed(2))} PGZ</span></h2>
                                 </RowerRowBets>
                                 <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
-                                <WalletsRow><img src={connect} alt="connect" /></WalletsRow>
+                                <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
                                 <WalletsRow><TonConnectButton /></WalletsRow>
                             </>
                         ) : (
                             <>
                             
                             </>
-                        )}
+                        )} */}
                             
                       </LowRower>
                   )}

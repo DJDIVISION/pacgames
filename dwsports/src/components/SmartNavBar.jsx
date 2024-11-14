@@ -345,6 +345,7 @@ const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
             {walletMenu && (
                 <WalletMenu walletMenu={walletMenu} setWalletMenu={setWalletMenu} key="walletMenusmart"/>
             )}
+           
         </AnimatePresence>
     </SmartNav>
   )

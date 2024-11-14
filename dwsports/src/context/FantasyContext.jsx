@@ -19,8 +19,10 @@ const FantasyContext = ({children}) => {
     const [betAmounts, setBetAmounts] = useState({});
     const [pendingBets, setPendingBets] = useState(null)
     const [depositMenu, setDepositMenu] = useState(false)
-    const [walletAddress, setWalletAddress] = useState(null)
-    const [walletBalance,setWalletBalance] = useState(null)
+    const [metaMaskWalletAddress, setMetaMaskWalletAddress] = useState(null)
+    const [tonWalletAddress, setTonWalletAddress] = useState(null)
+    const [metaMaskWalletBalance,setMetaMaskWalletBalance] = useState(null)
+    const [tonWalletBalance,setTonWalletBalance] = useState(null)
     const [data, setData] = useState([])
     const [balance, setBalance] = useState(null)
     const [activeTeam, setActiveTeam] = useState(null)
@@ -32,9 +34,9 @@ const FantasyContext = ({children}) => {
         <Fantasy.Provider value = {{activeLeague,setActiveLeague,activeTeamName,setActiveTeamName,activeTeamId,setActiveTeamId,
             playerToUpdate,setPlayerToUpdate,playersSelected,setPlayersSelected,selectedPlayer,setSelectedPlayer,activeMatches,setActiveMatches,
             activeLeagueId,setActiveLeagueId,activeRound,setActiveRound,selectedBet,setSelectedBet,betAmounts,setBetAmounts,
-            pendingBets,setPendingBets,depositMenu,setDepositMenu,walletAddress,setWalletAddress,walletBalance,setWalletBalance,
-            data,setData,balance,setBalance,activeTeam,setActiveTeam,activePlayer,setActivePlayer,
-            provider,setProvider,account,setAccount
+            pendingBets,setPendingBets,depositMenu,setDepositMenu,metaMaskWalletAddress,setMetaMaskWalletAddress,metaMaskWalletBalance,setMetaMaskWalletBalance,
+            data,setData,balance,setBalance,activeTeam,setActiveTeam,activePlayer,setActivePlayer,tonWalletAddress,setTonWalletAddress,
+            provider,setProvider,account,setAccount,tonWalletBalance,setTonWalletBalance
         }}>
             {children}
         </Fantasy.Provider>
