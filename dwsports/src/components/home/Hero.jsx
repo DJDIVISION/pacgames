@@ -17,9 +17,10 @@ import { FantasyState } from '../../context/FantasyContext';
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom'
-import { RowerSmall,LowRower,RowerRowBets,TeamBetsHolder,AvatarRowBets } from './index';
+import { RowerSmall,LowRower,RowerRowBets,TeamBetsHolder,AvatarRowBets,WalletsRow } from './index';
 import googleDark from '../../assets/logos/googleDark.png'
 import googleLight from '../../assets/logos/googleLight.png'
+import metamask from '../../assets/logos/metamask.svg'
 import Swal from "sweetalert2";
 
 const Hero = () => {
@@ -34,10 +35,13 @@ const Hero = () => {
     const [referrals, setReferrals] = useState([])
     const [isExpanded, setIsExpanded] = useState(false)
     const {balance, setBalance} = FantasyState();
+    const {walletAddress, setWalletAddress} = FantasyState();
     const navigate = useNavigate()
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-    const [expandedProfile, setExpandedProfile] = useState(null);
+    const [expandedProfile, setExpandedProfile] = useState(true);
+    const [expandedWallet, setExpandedWallet] = useState(null);
+    const [expandedReferrals, setExpandedReferrals] = useState(null);
     const controls = useAnimation();
 
     const expandDiv = () => {
@@ -121,7 +125,6 @@ const Hero = () => {
     };
 
     useEffect(() => {
-        // Start the animation sequence on component mount
         startAnimationSequence();
     }, []);
 
@@ -223,6 +226,12 @@ const Hero = () => {
     const toggleProfile = () => {
         setExpandedProfile(!expandedProfile);
     };
+    const toggleWallet = () => {
+        setExpandedWallet(!expandedWallet);
+    };
+    const toggleReferrals = () => {
+        setExpandedReferrals(!expandedReferrals);
+    };
 
     const handleGoogleSignIn = async () => {
         
@@ -318,12 +327,11 @@ const Hero = () => {
 
               <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
                   initial={{ height: '80px' }}
-                  animate={{ height: expandedProfile === true ? '350px' : '80px' }}
+                  animate={{ height: expandedProfile === true ? '300px' : '80px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
-                  {/* {expandedProfile === true ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDown onClick={() => toggleProfile()} />} */}
-                  <RowerSmall><h2 onClick={() => toggleProfile()}>YOUR PROFILE</h2></RowerSmall>
+                  <RowerSmall><h2>YOUR PROFILE</h2></RowerSmall>
                   {expandedProfile === true && (
                       <LowRower >
                         {user ? (
@@ -337,9 +345,7 @@ const Hero = () => {
                                 <RowerRowBets>
                                 <h3>{user && user.email}</h3>
                                 </RowerRowBets>
-                                <RowerRowBets>
-                                <h2>BALANCE: <span>{parseFloat(balance?.toFixed(2))} PGZ</span></h2>
-                                </RowerRowBets>
+                               
                                 <RowerRowBets style={{ height: '70px' }}>
                                     <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
                                 </RowerRowBets>
@@ -360,6 +366,62 @@ const Hero = () => {
                         )}
                             
                       </LowRower>
+                  )}
+              </TeamBetsHolder>
+
+              <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
+                  initial={{ height: '80px' }}
+                  animate={{ height: expandedWallet === true ? '350px' : '80px' }}
+                  transition={{ duration: 0.5 }}
+                  >
+                    <MiniIconButton>{expandedWallet === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleWallet()} /> : <SmallArrowDownFlex onClick={() => toggleWallet()} />}</MiniIconButton>
+                  <RowerSmall><h2>YOUR WALLET</h2></RowerSmall>
+                  {expandedWallet === true && (
+                      <LowRower >
+                        {!walletAddress ? (
+                            <>
+                                <RowerRowBets>
+                                <h2>BALANCE: <span>{parseFloat(balance?.toFixed(2))} PGZ</span></h2>
+                                </RowerRowBets>
+                                <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
+                                <WalletsRow><img src={connect} alt="connect" /></WalletsRow>
+                                <WalletsRow><TonConnectButton /></WalletsRow>
+                            </>
+                        ) : (
+                            <>
+                            
+                            </>
+                        )}
+                            
+                      </LowRower>
+                  )}
+              </TeamBetsHolder>
+
+              <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
+                  initial={{ height: '80px' }}
+                  animate={{ height: expandedReferrals === true ? '440px' : '80px' }}
+                  transition={{ duration: 0.5 }}
+                  >
+                    <MiniIconButton>{expandedReferrals === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleReferrals()} /> : <SmallArrowDownFlex onClick={() => toggleReferrals()} />}</MiniIconButton>
+                  <RowerSmall><h2>YOUR REFERRALS</h2></RowerSmall>
+                  {expandedReferrals === true && (
+                  <LowRower >
+                      <RowerRowBets>
+                          <h2>{t("hero.title3")}</h2>
+                      </RowerRowBets>
+                      <RowerRowBets>
+                          <LinkInputField disabled={disabledInput} value={referrerValue} onChange={(e) => setReferrerValue(e.target.value)} id="referrerLink" />
+                      </RowerRowBets>
+                      <WalletsRow><IconButton onClick={sendLink}><Send /></IconButton></WalletsRow>
+                      <RowerRowBets>
+                          <h2>{t("hero.title3")}</h2>
+                      </RowerRowBets>
+                      <RowerRowBets>
+                          <LinkInputField disabled={true} id="referralLink" value={`PACTONGZ/${user.id}`} />
+                      </RowerRowBets>
+                      <WalletsRow><IconButton onClick={clipboard}><CopyClipboard /></IconButton></WalletsRow>
+                  </LowRower >
+                      
                   )}
               </TeamBetsHolder>
         {/* <Header>
@@ -551,7 +613,7 @@ const LinkInputField = styled.input`
   color: ${props => props.theme.pacColor};
   background-color: transparent;
   box-shadow: -2px 4px 8px rgb(255, 255, 255);
-  width: 300px;
+  width: 90%;
   z-index: 1;
   height: 40px;
   text-align: center;

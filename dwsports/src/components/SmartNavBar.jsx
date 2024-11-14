@@ -325,8 +325,8 @@ const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
                           <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setWalletMenu(true);}}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 0.9 }} >
-                              <StaggerImageHolder><img src={wallet} alt="wallet" /></StaggerImageHolder>
-                              <StaggerAvatarName>{t("navbar.wallet")}</StaggerAvatarName>
+                              <StaggerImageHolder><img src={deposit} alt="wallet" /></StaggerImageHolder>
+                              <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
                           </StaggerRow>
                           <StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}

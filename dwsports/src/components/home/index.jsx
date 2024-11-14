@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 
 export const HeroSection = styled.div`
     width: 100%;
-    height: 130vh;
+    min-height: 100vh;
     background: ${props => props.theme.body};
     ${props => props.theme.displayFlexColumn};
     padding: 10px;
@@ -77,6 +77,21 @@ export const RowerRowBets = styled.div`
         width: 75%;
         display: block;
         object-fit: cover;
+    }
+`;
+export const WalletsRow = styled.div`
+    width: 80%;
+    height: 70px;
+    border-radius: 8px;
+    ${props => props.theme.displayFlexCenter};
+    background: ${props => props.theme.body};
+    margin: 15px 0;
+    box-shadow: inset 0 0 25px ${props => props.theme.text};
+    img{
+        width: 80%;
+        display: block;
+        object-fit: cover;
+        
     }
 `;
 
