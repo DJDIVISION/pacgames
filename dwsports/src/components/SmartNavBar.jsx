@@ -29,9 +29,9 @@ import wallet from '../assets/logos/wallet.png';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import SpeedDial from '@mui/material/SpeedDial';
 import { useTranslation } from 'react-i18next'
-import { EthereumProvider } from "@walletconnect/ethereum-provider";
+
 import { ethers } from "ethers";
-import Web3 from "web3";
+
 import WalletMenu from './menus/WalletMenu';
 
 
@@ -60,112 +60,11 @@ const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
     const [description, setDescription] = useState(null)
     const [icon, setIcon] = useState(null)
     const [button, setButton] = useState(null)
-    const {provider, setProvider} = FantasyState();
-    const {account, setAccount} = FantasyState();
-    const {balance, setBalance} = FantasyState();
-    const {walletBalance,setWalletBalance} = FantasyState();
+    
     const { user } = useAuth(); 
-    const connectWallet = async () => {
-        try {
-          // Initialize the provider with the WalletConnect projectId and chainId
-          const newProvider = await EthereumProvider.init({
-            projectId: '87ce01feb918e3377f943f901349cd66', // Replace with your WalletConnect projectId
-            chains: [9008],
-            rpcMap: {
-                9008: 'https://rpc-nodes.shidoscan.com', // Add the RPC URL here
-              }, // Ethereum Mainnet chainId is 1
-            showQrModal: true, // This will show the QR modal for mobile connection
-            metadata: {
-              name: "PACTON'S GAMING ZONE",
-              description: 'A New Era of Gaming and Sports Betting',
-              url: "https://pacgames-frontend.onrender.com",
-              icons: ['https://i.postimg.cc/XJPDxF3H/Group-2.png'],
-            },
-          });
     
-          // Handle QR code URI display event
-          newProvider.on('display_uri', (uri) => {
-            console.log('Display URI:', uri);
-          });
-    
-          // Connect to WalletConnect (this will display the QR code on mobile)
-          await newProvider.connect();
-          setProvider(newProvider); // Store the provider in state
-    
-          // Request user accounts after successful connection
-          await newProvider.enable();
-          const accounts = await newProvider.request({ method: "eth_requestAccounts" });
-          if (accounts && accounts.length > 0) {
-            setAccount(accounts[0]); 
-            getTokenBalance(accounts[0], newProvider);
-            const updatedData = {
-              name: user.user_metadata.name,
-              avatar: user.user_metadata.avatar_url,
-              email: user.email,
-              walletAddress: accounts[0],
-              user_id: user.id
-            }
-            const { data, error } = await supabase
-            .from('user_wallets')
-            .insert([updatedData])
-            if (error) {
-              console.error('Error inserting/updating user session data:', error.message)
-            } else {
-              console.log('User session data saved:', data)
-              Swal.fire({
-                title: "Wallet Connected!",
-                text: "Your Wallet is now connected",
-                icon: "success"
-              });
-            }
-            
-          }
-    
-          console.log("Connected account:", accounts[0]);
-        } catch (error) {
-          console.error("Error connecting wallet:", error);
-        }
-      };
 
-      const getTokenBalance = async (account, provider) => {
-        if (!provider) {
-          console.error("Provider is undefined.");
-          return;
-        }
       
-        // Wrap the WalletConnect provider with Web3
-        const web3 = new Web3(provider);
-      
-        const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; // Replace with your token's contract address
-      
-        // ERC-20 ABI for balanceOf and decimals
-        const ERC20_ABI = [
-            { "constant": true, "inputs": [{ "name": "_owner", "type": "address" }], "name": "balanceOf", "outputs": [{ "name": "balance", "type": "uint256" }], "type": "function" },
-            { "constant": true, "inputs": [], "name": "decimals", "outputs": [{ "name": "", "type": "uint8" }], "type": "function" }
-          ];
-        
-          // Create the contract instance
-          const tokenContract = new web3.eth.Contract(ERC20_ABI, tokenAddress);
-        
-          try {
-            // Get balance and decimals
-            const balance = await tokenContract.methods.balanceOf(account).call();
-            const decimals = await tokenContract.methods.decimals().call();
-        
-            // Convert balance and decimals to BigInt for precise calculation
-            const balanceBigInt = BigInt(balance);
-            const decimalsBigInt = BigInt(decimals);
-            const factor = BigInt(10) ** decimalsBigInt; // Equivalent to 10^decimals
-        
-            // Format balance to a human-readable format (divide by the decimals factor)
-            const formattedBalance = balanceBigInt / factor;
-            console.log(`Token balance for ${tokenAddress}: ${formattedBalance.toString()}`);
-            setWalletBalance(formattedBalance.toString())
-            return formattedBalance.toString(); // Return as string to avoid BigInt issues elsewhere
-          } catch (error) {
-            console.error("Error fetching token balance:", error);
-          }
-    };
 
     const writeData = async () => {
         const { data, error } = await supabase
@@ -287,7 +186,7 @@ const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
   return (
     <SmartNav scrollNavDown={scrollNavDown}>
         <IconButton onClick={isOpen}><Burguer /></IconButton>
-        {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectMetamask}>{account}</WalletAddressButton>}
+        {/* {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectMetamask}>{account}</WalletAddressButton>} */}
         <AnimatePresence>
             {open && (
                 <StyledMenu scrollNavDown={scrollNavDown} variants={item} 
