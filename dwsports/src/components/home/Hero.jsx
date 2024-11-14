@@ -17,7 +17,7 @@ import { FantasyState } from '../../context/FantasyContext';
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom'
-import { RowerSmall,LowRower,RowerRowBets,TeamBetsHolder,AvatarRowBets,WalletsRow } from './index';
+import { RowerSmall,LowRower,RowerRowBets,TeamBetsHolder,AvatarRowBets,WalletsRow,IconsRow } from './index';
 import googleDark from '../../assets/logos/googleDark.png'
 import googleLight from '../../assets/logos/googleLight.png'
 import metamask from '../../assets/logos/metamask.svg'
@@ -39,9 +39,10 @@ const Hero = () => {
     const navigate = useNavigate()
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-    const [expandedProfile, setExpandedProfile] = useState(true);
-    const [expandedWallet, setExpandedWallet] = useState(null);
-    const [expandedReferrals, setExpandedReferrals] = useState(null);
+    const [expandedProfile, setExpandedProfile] = useState(false);
+    const [expandedWallet, setExpandedWallet] = useState(false);
+    const [expandedReferrals, setExpandedReferrals] = useState(false);
+    const [expandedLinks, setExpandedLinks] = useState(false);
     const controls = useAnimation();
 
     const expandDiv = () => {
@@ -209,6 +210,8 @@ const Hero = () => {
     };
     
     const handleLogout = async () => {
+        setExpandedReferrals(false)
+        setExpandedWallet(false)
         const { error } = await supabase.auth.signOut()
     
         if (error) {
@@ -241,6 +244,17 @@ const Hero = () => {
     const toggleReferrals = () => {
         if(user){
             setExpandedReferrals(!expandedReferrals);
+        } else {
+            Swal.fire({
+                title: "Not logged in",
+                text: "Log in to see your referrals!",
+                icon: "error"
+              }); 
+        }
+    };
+    const toggleLinks = () => {
+        if(user){
+            setExpandedLinks(!expandedLinks);
         } else {
             Swal.fire({
                 title: "Not logged in",
@@ -327,14 +341,14 @@ const Hero = () => {
     };
 
 
-
+    console.log(referrals)
     
 
   return (
     <HeroSection ref={ref}>
       
         <TopHeader>
-        <TopText>{t("hero.title")}</TopText>
+        <TopText>{t("hero.title")}<br/><span>SHO</span></TopText>
       <motion.img src={Sho} 
                 alt="background" 
                 style={{ width: isMobile ? "40%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
@@ -348,7 +362,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
-                  <RowerSmall><h2>YOUR PROFILE</h2></RowerSmall>
+                  <RowerSmall><h2>PROFILE</h2></RowerSmall>
                   {expandedProfile === true && (
                       <LowRower >
                         {user ? (
@@ -392,7 +406,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedWallet === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleWallet()} /> : <SmallArrowDownFlex onClick={() => toggleWallet()} />}</MiniIconButton>
-                  <RowerSmall><h2>YOUR WALLET</h2></RowerSmall>
+                  <RowerSmall><h2>WALLET</h2></RowerSmall>
                   {expandedWallet === true && (
                       <LowRower >
                         {!walletAddress ? (
@@ -416,12 +430,13 @@ const Hero = () => {
 
               <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
                   initial={{ height: '80px' }}
-                  animate={{ height: expandedReferrals === true ? '440px' : '80px' }}
+                  animate={{ height: expandedLinks === true ? '440px' : '80px' }}
                   transition={{ duration: 0.5 }}
                   >
-                    <MiniIconButton>{expandedReferrals === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleReferrals()} /> : <SmallArrowDownFlex onClick={() => toggleReferrals()} />}</MiniIconButton>
-                  <RowerSmall><h2>YOUR REFERRALS</h2></RowerSmall>
-                  {expandedReferrals === true && (
+                    <MiniIconButton>{expandedLinks === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleLinks()} /> : <SmallArrowDownFlex onClick={() => toggleLinks()} />}</MiniIconButton>
+                  <RowerSmall><h2>LINKS</h2></RowerSmall>
+                  {expandedLinks === true && (
+                    <>
                   <LowRower >
                       <RowerRowBets>
                           <h2>{t("hero.title3")}</h2>
@@ -429,16 +444,38 @@ const Hero = () => {
                       <RowerRowBets>
                           <LinkInputField disabled={disabledInput} value={referrerValue} onChange={(e) => setReferrerValue(e.target.value)} id="referrerLink" />
                       </RowerRowBets>
-                      <WalletsRow><IconButton onClick={sendLink}><Send /></IconButton></WalletsRow>
+                      <IconsRow><IconButton onClick={sendLink}><Send /></IconButton></IconsRow>
                       <RowerRowBets>
                           <h2>{t("hero.title3")}</h2>
                       </RowerRowBets>
                       <RowerRowBets>
                           <LinkInputField disabled={true} id="referralLink" value={`PACTONGZ/${user.id}`} />
                       </RowerRowBets>
-                      <WalletsRow><IconButton onClick={clipboard}><CopyClipboard /></IconButton></WalletsRow>
+                      <IconsRow><IconButton onClick={clipboard}><CopyClipboard /></IconButton></IconsRow>
                   </LowRower >
+                  </>
                       
+                  )}
+              </TeamBetsHolder>
+
+              <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
+                  initial={{ height: '80px' }}
+                  animate={{ height: expandedReferrals === true ? '330px' : '80px' }}
+                  transition={{ duration: 0.5 }}
+                  >
+                    <MiniIconButton>{expandedReferrals === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleReferrals()} /> : <SmallArrowDownFlex onClick={() => toggleReferrals()} />}</MiniIconButton>
+                  <RowerSmall><h2>REFERRALS</h2></RowerSmall>
+                  {expandedReferrals === true && (
+                    <LowRower>
+                       {referrals?.map((referral) => {
+                        return(
+                            <ReferralWrapper>
+                            <SecondRowAvatar><Avatar alt="Image" src={referral.avatar} sx={{ width: 50, height: 50 }} /></SecondRowAvatar>
+                            <ReferralName>{referral.name}</ReferralName>
+                            </ReferralWrapper> 
+                        )
+                       })}
+                    </LowRower>
                   )}
               </TeamBetsHolder>
         {/* <Header>
@@ -495,7 +532,7 @@ const ReferralName = styled.div`
     width: 40%;
     height: 100%;
     ${props => props.theme.displayFlex};
-    color: rgba(244,215,21,1);
+    color: ${props => props.theme.text};
     font-size: 24px;
     text-align: center;
     padding: 0 10px;
@@ -525,16 +562,16 @@ const ReferralMail = styled.div`
 `;
 
 const SecondRowAvatar = styled.div`
-    width: 20%;
+    width: 25%;
     height: 100%;
-    border-right: 1px solid rgba(244,215,21,1);
+    border-right: 1px solid ${props => props.theme.MainAccent};
     ${props => props.theme.displayFlexColumnCenter};
 `;
 
 const ReferralWrapper = styled.div`
-    width: 90%;
-    height: 80px;
-    border: 1px solid rgba(244,215,21,1);
+    width: 100%;
+    height: 60px;
+    border: 1px solid ${props => props.theme.MainAccent};
     border-radius: 10px;
     ${props => props.theme.displayFlex};
     margin: 10px 0;
@@ -543,7 +580,7 @@ const ReferralWrapper = styled.div`
 const TopHeader = styled.div`
     width: 90%;
     max-height: 220px;
-    border: 1px solid rgba(244,215,21,1);
+    border: 1px solid ${props => props.theme.MainAccent};
     border-radius: 10px;
     position: relative;
     ${props => props.theme.displayFlexCenter};
@@ -561,13 +598,17 @@ const TopText = styled.div`
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 100%;
+    width: 70%;
     text-align: center;
-    color: ${props => props.theme.pacColor};
+    color: ${props => props.theme.MainAccent};
     font-size: 32px;
     font-weight: bold;
     z-index: 10;
     transform: translate(-50%, -50%);
+    span{
+        font-size: 48px; 
+        color: ${props => props.theme.text};
+    }
     @media(max-width: 968px){
         font-size: 18px;
     }

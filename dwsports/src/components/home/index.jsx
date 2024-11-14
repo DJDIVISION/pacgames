@@ -24,7 +24,7 @@ export const LowRower = styled.div`
 
 export const TeamBetsHolder = styled(motion.div)`
     width: 98%;
-    border: 2px solid ${props => props.theme.card};
+    border: 3px solid ${props => props.theme.MainAccent};
     background: ${props => props.theme.cardTwo};
     ${props => props.theme.displayFlexColumnCenter}
     box-shadow: inset 0 0 25px ${props => props.theme.text};
@@ -33,6 +33,7 @@ export const TeamBetsHolder = styled(motion.div)`
     position: relative;
     padding: 10px;
     margin: 10px 0;
+    box-shadow: ${props => props.theme.pacBoxShadow};
     h2{
         color: ${props => props.theme.text};
         font-size: 18px;
@@ -50,7 +51,7 @@ export const RowerSmall = styled.div`
     height: 60px;
     ${props => props.theme.displayFlexCenter};
     h2{
-        color: ${props => props.theme.pacColor};
+        color: ${props => props.theme.MainAccent};
         font-size: 20px;
         font-weight: bold;
         text-shadow: ${props => props.theme.textShadowTwo};
@@ -67,7 +68,7 @@ export const RowerRowBets = styled.div`
     }
     span{
         font-size: 18px;
-        color: ${props => props.theme.pacColor};
+        color: ${props => props.theme.MainAccent};
     }
     h3{
         font-size: 14px;
@@ -81,6 +82,21 @@ export const RowerRowBets = styled.div`
 `;
 export const WalletsRow = styled.div`
     width: 80%;
+    height: 70px;
+    border-radius: 8px;
+    ${props => props.theme.displayFlexCenter};
+    background: ${props => props.theme.body};
+    margin: 15px 0;
+    box-shadow: inset 0 0 25px ${props => props.theme.text};
+    img{
+        width: 80%;
+        display: block;
+        object-fit: cover;
+        
+    }
+`;
+export const IconsRow = styled.div`
+    width: 30%;
     height: 70px;
     border-radius: 8px;
     ${props => props.theme.displayFlexCenter};
@@ -121,9 +137,9 @@ export const StyledButton = styled(Button)`
     justify-content: center;
     background: none;
     cursor: pointer;
-    border: 1px solid ${props => props.theme.pacColor};
+    border: 1px solid ${props => props.theme.MainAccent};
     border-radius: 0.58vmin;
-    color: ${props => props.theme.pacColor};
+    color: ${props => props.theme.MainAccent};
     padding: 5px 15px;
     font-size: 16px;
     text-decoration: none;
@@ -131,10 +147,10 @@ export const StyledButton = styled(Button)`
     overflow: hidden;
     transition: 0.5s;
     &:hover {
-        background: ${props => props.theme.pacColor};
+        background: ${props => props.theme.MainAccent};
         color: #fff;
-        box-shadow: 0 0 5px ${props => props.theme.pacColor}, 0 0 25px ${props => props.theme.pacColor},
-        0 0 50px ${props => props.theme.pacColor}, 0 0 100px ${props => props.theme.pacColor};
+        box-shadow: 0 0 5px ${props => props.theme.MainAccent}, 0 0 25px ${props => props.theme.MainAccent},
+        0 0 50px ${props => props.theme.MainAccent}, 0 0 100px ${props => props.theme.MainAccent};
     }
     }
 `;

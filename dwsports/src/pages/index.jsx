@@ -983,7 +983,7 @@ export const SmallArrowDown = styled(KeyboardArrowDownIcon)`
 `;
 export const SmallArrowDownFlex = styled(KeyboardArrowDownIcon)`
     &&&{
-        color: ${props => props.theme.pacColor};
+        color: ${props => props.theme.MainAccent};
         
     }
 `;
