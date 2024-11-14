@@ -227,10 +227,27 @@ const Hero = () => {
         setExpandedProfile(!expandedProfile);
     };
     const toggleWallet = () => {
-        setExpandedWallet(!expandedWallet);
+        if(user){
+            setExpandedWallet(!expandedWallet);
+        } else {
+            Swal.fire({
+                title: "Not logged in",
+                text: "Log in to see your wallet!",
+                icon: "error"
+              }); 
+        }
+        
     };
     const toggleReferrals = () => {
-        setExpandedReferrals(!expandedReferrals);
+        if(user){
+            setExpandedReferrals(!expandedReferrals);
+        } else {
+            Swal.fire({
+                title: "Not logged in",
+                text: "Log in to see your referrals!",
+                icon: "error"
+              }); 
+        }
     };
 
     const handleGoogleSignIn = async () => {
