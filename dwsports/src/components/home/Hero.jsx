@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom'
 import { RowerSmall,LowRower,RowerRowBets,TeamBetsHolder,AvatarRowBets } from './index';
 import googleDark from '../../assets/logos/googleDark.png'
 import googleLight from '../../assets/logos/googleLight.png'
-import { toast } from 'react-toastify';
+import Swal from "sweetalert2";
 
 const Hero = () => {
 
@@ -86,6 +86,17 @@ const Hero = () => {
     }
 
     useEffect(() => {
+        if(user){
+            const signDate = user.last_sign_in_at;
+            const date = new Date(signDate);
+            const milliseconds = date.getTime();
+            const now = Date.now();
+            if (now - milliseconds < 5000) {
+              storeUserData(user); 
+            } else {
+              return
+            }
+          }
         if(user){
             const signDate = user.last_sign_in_at;
             const date = new Date(signDate);
@@ -201,8 +212,11 @@ const Hero = () => {
           console.error('Error logging out:', error.message)
         } else {
           console.log('User logged out successfully')
-          // Redirect to the login page or home page
-          navigate('/')
+          Swal.fire({
+            title: "Log out!",
+            text: "You have been disconnected",
+            icon: "success"
+          });
         }
     }
 
@@ -227,7 +241,11 @@ const Hero = () => {
     const storeUserData = async (user) => {
         const { id, email, user_metadata } = user;
         const { full_name: name, avatar_url } = user_metadata || {};
-    
+        Swal.fire({
+            title: "Log in successful",
+            text: "Welcome to PacTON Gaming Zone!",
+            icon: "success"
+          });
         try {
             // Insert or update user login data
             const { error: loginError } = await supabase
@@ -273,6 +291,7 @@ const Hero = () => {
                 }
     
                 console.log('User data saved successfully:', data);
+                
             } else {
                 console.log('User already exists in the database. No data saved:', existingUser);
             }
@@ -281,22 +300,7 @@ const Hero = () => {
         }
     };
 
-    useEffect(() => {
-        const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN') {
-                console.log('User has been authorized:', session.user);
-                storeUserData(session.user)
-                toast('Welcome to PacTON Gaming Zone! 👋');
-            }
-        });
-    
-        // Clean up the listener on component unmount
-        return () => {
-            authListener.subscription.unsubscribe();
-        };
-    }, []);
 
-    
 
     
 
