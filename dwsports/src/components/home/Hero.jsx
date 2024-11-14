@@ -664,11 +664,11 @@ const ContainerButtons = styled.div`
 const LinkInputField = styled.input`
   padding: 0 15px;
   font-weight: bold;
-  border: ${props => props.theme.pacBorder};
+  border: ${props => props.theme.MainAccent};
   border-radius: 10px;
   outline: none;
   font-size: 14px;
-  color: ${props => props.theme.pacColor};
+  color: ${props => props.theme.MainAccent};
   background-color: transparent;
   box-shadow: -2px 4px 8px rgb(255, 255, 255);
   width: 90%;
