@@ -39,7 +39,7 @@ const Hero = () => {
     const navigate = useNavigate()
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-    const [expandedProfile, setExpandedProfile] = useState(false);
+    const [expandedProfile, setExpandedProfile] = useState(true);
     const [expandedWallet, setExpandedWallet] = useState(false);
     const [expandedReferrals, setExpandedReferrals] = useState(false);
     const [expandedLinks, setExpandedLinks] = useState(false);
