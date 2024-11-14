@@ -558,7 +558,8 @@ const Hero = () => {
                                     </RowerRowBets>
                                     </>
                                 )}
-                                {!tonWalletAddress ? (
+                                <WalletsRow><TonConnectButton /></WalletsRow>
+                                {/* {tonWalletAddress ? (
                                     <WalletsRow><TonConnectButton /></WalletsRow>
                                 ) : (
                                     <>
@@ -569,7 +570,7 @@ const Hero = () => {
                                         <LinkInputField disabled={true} value={tonWalletAddress} />
                                     </RowerRowBets>
                                     </>
-                                )}
+                                )} */}
                        {/*  {!metaMaskWalletAddress ? (
                             <>
                                 <RowerRowBets>
