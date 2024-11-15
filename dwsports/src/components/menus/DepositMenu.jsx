@@ -466,7 +466,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             <DepositTokenRowSmall>
             <h2>Current TON Price: <br/><span>{tonPrice} USDT</span></h2>
             </DepositTokenRowSmall>
-            <DepositTokenRowSmall>{/* <StyledButton>DEPOSIT</StyledButton> */}</DepositTokenRowSmall>
+            <DepositTokenRowSmall><StyledButton>DEPOSIT</StyledButton></DepositTokenRowSmall>
           </DepositWrapper>
         )}
         {(tonPrice && activeToken === "SHO") && (
