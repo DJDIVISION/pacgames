@@ -54,7 +54,7 @@ const Hero = () => {
     const controls = useAnimation();
     const userFriendlyAddress = useTonAddress();
 
-    console.log(balance)
+    
 
     const disconnectWallet = async () => {
         try {
@@ -75,7 +75,7 @@ const Hero = () => {
           });
       };
 
-    console.log(userFriendlyAddress)
+    
     useEffect(() => {
         if(userFriendlyAddress){
             setTonWalletAddress(userFriendlyAddress)
