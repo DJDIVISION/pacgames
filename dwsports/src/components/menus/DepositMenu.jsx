@@ -111,9 +111,9 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
       }
     };
     
-    useEffect(() => {
+    /* useEffect(() => {
       initializeProvider();
-    }, []);
+    }, []); */
  
     const closeDepositMenu = () => {
         setDepositMenu(false)
@@ -122,8 +122,23 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const sendTokens = async () => {
         const recipientAddress = "0x75a8AC284299e362830c49615459EeD8f66C0265";
         const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
-
-        const web3 = new Web3(provider)
+        const newProvider = await EthereumProvider.init({
+          projectId: '87ce01feb918e3377f943f901349cd66',
+          chains: [9008],
+          rpcMap: {
+            9008: 'https://rpc-nodes.shidoscan.com',
+          },
+          showQrModal: true,
+          metadata: {
+            name: "PACTON'S GAMING ZONE",
+            description: 'A New Era of Gaming and Sports Betting',
+            url: "https://pacgames-frontend.onrender.com",
+            icons: ['https://i.postimg.cc/J0LFkY8Z/logo.jpg'],
+          },
+        });
+    
+        newProvider.on("display_uri", (uri) => console.log("WalletConnect QR Code URI:", uri));
+        const web3 = new Web3(newProvider)
         try {
           setDepositMenu(false);
           
@@ -160,7 +175,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
                 title: "Transaction Sent",
                 text: `Transaction sent with hash: ${hash}`,
                 icon: "info",
-              });
+              })
             })
             .on("receipt", (receipt) => {
               console.log("Transaction confirmed:", receipt);
@@ -171,7 +186,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
                 title: "Transaction Confirmed",
                 text: "Your balance has been updated.",
                 icon: "success",
-              });
+              })
             })
             .on("error", (error) => {
               if (error.message.includes("User denied transaction")) {
@@ -181,7 +196,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
                   icon: "error",
                   confirmButtonColor: "#d33",
                   confirmButtonText: "OK",
-                });
+                })
               } else if (error.message.includes("insufficient funds")) {
                 return Swal.fire({
                   title: "Insufficient Funds",
@@ -331,12 +346,13 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             console.log(userJsonData)
             const dateNow = new Date();
             const lastBalance = userJsonBalance + newBalance
+            setBalance(lastBalance)
             console.log(lastBalance)
             const updatedData = {
                 name: user.user_metadata.name,
                 avatar: user.user_metadata.avatar_url,
                 email: user.email,
-                walletAddress: account,
+                walletAddress: metaMaskWalletAddress,
                 user_id: user.id,
                 amount: amount,
                 token: "SHO",

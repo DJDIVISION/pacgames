@@ -53,7 +53,27 @@ const Hero = () => {
     const [expandedLinks, setExpandedLinks] = useState(false);
     const controls = useAnimation();
     const userFriendlyAddress = useTonAddress();
-    
+
+    console.log(balance)
+
+    const disconnectWallet = async () => {
+        try {
+          if (provider) {
+            await provider.disconnect(); // Disconnect the WalletConnect session
+            setProvider(null); // Clear the provider from state
+            setAccount(null); // Clear the account address from state
+            console.log("Disconnected from wallet");
+            setMetaMaskWalletAddress(null)
+          }
+        } catch (error) {
+          console.error("Error disconnecting wallet:", error);
+        }
+        Swal.fire({
+            title: "Wallet Disconnected!",
+            text: "Your Wallet is now disconnected",
+            icon: "success"
+          });
+      };
 
     console.log(userFriendlyAddress)
     useEffect(() => {
@@ -64,7 +84,7 @@ const Hero = () => {
 
     const expandDiv = () => {
         setIsExpanded((prev) => !prev);
-      }
+    }
 
     const getReferrer = async () => {
         const { data, error } = await supabase
@@ -127,6 +147,7 @@ const Hero = () => {
             getReferrer();
             getUserBalance(user.id)
         }
+        
     }, [user])
 
     const startAnimationSequence = () => {
@@ -543,7 +564,8 @@ const Hero = () => {
                   {expandedWallet === true && (
                       <LowRower >
                                 <RowerRowBets>
-                                <h2>BALANCE: <span>{parseFloat(balance?.toFixed(2))} PGZ</span></h2>
+                                <h2>BALANCE: <span>{typeof balance === 'number' && !isNaN(balance) ? parseFloat(balance.toFixed(2)) : '0.00'} PGZ</span>
+                                </h2>
                                 </RowerRowBets>
                                 <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
                                 {!metaMaskWalletAddress ? (
@@ -554,7 +576,7 @@ const Hero = () => {
                                         <h2>CONNECTED SHIDO ADDRESS</h2>
                                     </RowerRowBets>
                                     <RowerRowBets>
-                                        <LinkInputField disabled={true} value={metaMaskWalletAddress} />
+                                        <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
                                     </RowerRowBets>
                                     </>
                                 )}
