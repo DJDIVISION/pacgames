@@ -608,7 +608,7 @@ const Hero = () => {
                       </RowerRowBets>
                       <IconsRow><IconButton onClick={sendLink}><Send /></IconButton></IconsRow>
                       <RowerRowBets>
-                          <h2>{t("hero.title3")}</h2>
+                          <h2>{t("hero.title4")}</h2>
                       </RowerRowBets>
                       <RowerRowBets>
                           <LinkInputField disabled={true} id="referralLink" value={`PACTONGZ/${user.id}`} />
