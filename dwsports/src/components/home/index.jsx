@@ -27,13 +27,13 @@ export const TeamBetsHolder = styled(motion.div)`
     border: 3px solid ${props => props.theme.MainAccent};
     background: ${props => props.theme.cardTwo};
     ${props => props.theme.displayFlexColumnCenter}
-    box-shadow: inset 0 0 25px ${props => props.theme.text};
+    
     border-radius: 10px;
     cursor: pointer;
     position: relative;
     padding: 10px;
     margin: 10px 0;
-    box-shadow: ${props => props.theme.pacBoxShadow};
+    box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.text};
     h2{
         color: ${props => props.theme.text};
         font-size: 18px;

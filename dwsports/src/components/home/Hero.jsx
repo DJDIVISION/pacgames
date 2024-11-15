@@ -495,7 +495,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
-                  <RowerSmall><h2>PROFILE</h2></RowerSmall>
+                  <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>
                   {expandedProfile === true && (
                       <LowRower >
                         {user ? (
@@ -539,7 +539,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedWallet === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleWallet()} /> : <SmallArrowDownFlex onClick={() => toggleWallet()} />}</MiniIconButton>
-                  <RowerSmall><h2>WALLETS</h2></RowerSmall>
+                  <RowerSmall><h2 style={{color: expandedWallet === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>WALLETS</h2></RowerSmall>
                   {expandedWallet === true && (
                       <LowRower >
                                 <RowerRowBets>
@@ -596,7 +596,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedLinks === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleLinks()} /> : <SmallArrowDownFlex onClick={() => toggleLinks()} />}</MiniIconButton>
-                  <RowerSmall><h2>LINKS</h2></RowerSmall>
+                  <RowerSmall><h2 style={{color: expandedLinks === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>LINKS</h2></RowerSmall>
                   {expandedLinks === true && (
                     <>
                   <LowRower >
@@ -626,7 +626,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedReferrals === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleReferrals()} /> : <SmallArrowDownFlex onClick={() => toggleReferrals()} />}</MiniIconButton>
-                  <RowerSmall><h2>REFERRALS</h2></RowerSmall>
+                  <RowerSmall><h2 style={{color: expandedReferrals === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>REFERRALS</h2></RowerSmall>
                   {expandedReferrals === true && (
                     <LowRower>
                        {referrals?.map((referral) => {
@@ -750,7 +750,7 @@ const TopHeader = styled.div`
     margin: 10px;
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
-    box-shadow: inset 0 0 25px ${props => props.theme.text};
+    box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.text};
     @media(max-width: 490px){
         min-height: 150px;
     }
