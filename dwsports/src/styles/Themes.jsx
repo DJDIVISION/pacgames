@@ -14,6 +14,7 @@ export const lightTheme = {
     darkBg: '#ffffff',
     grey: '#bebebe',
     MainAccent: '#96e6eb',
+    MainAccentTwo: '#ff009e',
     MainShadow: '0 0 5px #acecf0, 0 0 25px #acecf0, 0 0 50px #acecf0, 0 0 100px #acecf0',
     fontxs: '0.75em',
     fontsm: '0.875em',
@@ -61,7 +62,8 @@ export const lightTheme = {
     textShadowTwo:  '0px 1px 1px #000000',
     MainShadow: '0 0 5px #03e9f4, 0 0 25px ${props => props.theme.text}, 0 0 50px #03e9f4, 0 0 100px #03e9f4',
     MainInnerShadow: `inset 0 0 25px ${props => props.theme.text}`,
-    pacBoxShadow: ' -4px 5px 8px -1px rgba(255, 255, 255, 0.75)',
+    pacBoxShadow: ' -4px 5px 8px -1px #f403b8',
+    centeredShadow: ' 0px 0px 0px -2px rgba(255, 255, 255, 0.911)',
     dosisAqua: {
       fontFamily: 'Dosis',
       color: '#03e9f4',
@@ -114,6 +116,7 @@ export const lightTheme = {
     },
     grey: '#bebebe',
     MainAccent: '#03e9f4',
+    MainAccentTwo: '#f403b8',
     fontxs: '0.75em',
     fontsm: '0.875em',
     fontmd: '1em', // 1em = 16px

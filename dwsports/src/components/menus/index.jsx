@@ -3,6 +3,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { motion } from "framer-motion";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
+import { Button } from "@mui/material";
 
 export const FilterContainer = styled(motion.div)`
     width: 90%;
@@ -153,7 +154,7 @@ export const DepositWrapper = styled.div`
     width: 60%;
     height: 20vh;
     border: 2px solid ${props => props.theme.text};
-    ${props => props.theme.displayFlexCenter};
+    ${props => props.theme.displayFlexColumn};
     text-align: center;
     border-radius: 10px;
     padding: 10px;
@@ -165,14 +166,137 @@ export const DepositWrapper = styled.div`
     }
     @media(max-width: 490px){
         width: 90%; 
-        height: 20vh;
+        height: 25vh;
+    }
+`;
+
+export const DepositTokenRow = styled.div`
+    width: 100%;
+    height: 50%;
+    ${props => props.theme.displayFlexColumn};
+`;
+export const DepositTokenRowSmall = styled.div`
+    width: 80%;
+    height: 50%;
+    ${props => props.theme.displayFlexCenter};
+    text-align: center;
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 18px;
+        font-weight: bold;
+    }
+    span{
+        color: ${props => props.theme.MainAccentTwo};
+        font-size: 18px;
+        font-weight: bold; 
+        margin: 0 5px;
+    }
+`;
+export const DepositTokenFrom = styled.div`
+    width: 100%;
+    height: 30%;
+    ${props => props.theme.displayFlex};
+    padding: 0 10px;
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 12px;
+        font-weight: bold;
+    }
+`;
+export const DepositTokenToken = styled.div`
+    width: 100%;
+    height: 70%;
+    ${props => props.theme.displayFlex};
+    padding: 0 10px;
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 12px;
+        font-weight: bold;
+    }
+`;
+
+export const TokenHolder = styled(Button)`
+    &&&{
+        width: 80%;
+        height: 70%;
+        border: 1px solid ${props => props.theme.card};
+        border-radius: 20px;
+        background: #504949;
+        ${props => props.theme.displayFlexCenter};
+    }
+`;
+
+export const LogoHolder = styled.div`
+    width: 30%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    img{
+        width: 100%;
+        display: block;
+        object-fit: cover;
+    }
+`;
+export const SmallLogoHolder = styled.div`
+    width: 20%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    img{
+        width: 75%;
+        display: block;
+        object-fit: cover;
+    }
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 16px;
+        font-weight: bold;
+    }
+`;
+
+export const InputInput = styled.input`
+    width: 80%;
+    height: 80%;
+    border: 1px solid ${props => props.theme.text};
+    ${props => props.theme.displayFlex};
+    background: transparent;
+    border-radius: 10px;
+    color:  ${props => props.theme.text};
+    font-size: 18px;
+    text-align: right;
+    padding: 0 10px;
+    font-weight: bold;
+`;
+export const InputHolder = styled.div`
+    width: 60%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+`;
+export const TokenNameHolder = styled.div`
+    width: 70%;
+    height: 100%;
+    ${props => props.theme.displayFlex};
+    padding: 0 10px;
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 16px;
+        font-weight: bold;
     }
 `;
 
 export const DepositBigTitle = styled.div`
-    width: 100%;
+    width: 80%;
     height: 10%;
-    font-size: 24px;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexCenter};
+    margin-bottom: 20px;
+`;
+export const TokenColumn = styled.div`
+    width: 50%;
+    height: 100%;
+    font-size: 20px;
+    text-align: center;
     font-weight: bold;
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};

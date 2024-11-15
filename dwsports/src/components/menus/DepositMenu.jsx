@@ -1,6 +1,6 @@
 import React,{useEffect, useState} from 'react'
 import {motion, AnimatePresence} from 'framer-motion'
-import { CloseStats,BetSection,DepositWrapper,LinkInputField,SmallDepositTitle,DepositTitle,DepositBigTitle,BalanceWrapper } from './index' 
+import { CloseStats,BetSection,DepositWrapper,LinkInputField,SmallDepositTitle,DepositTitle,DepositBigTitle,BalanceWrapper, DepositTokenRow, TokenColumn, TokenHolder, LogoHolder, TokenNameHolder, DepositTokenFrom, DepositTokenToken, SmallLogoHolder, InputHolder, InputInput, DepositTokenRowSmall } from './index' 
 import {BetInput, StyledMenu} from '../../components/index'
 import { StyledButton } from '../../pages';
 import { TonClient, Address, internal } from '@ton/ton';
@@ -20,10 +20,50 @@ import { ethers } from "ethers";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import Web3 from "web3";
 import { useMediaQuery } from 'react-responsive';
+import Ton from '../../assets/logos/ton.png'
+import Sho from '../../assets/logos/sho.png'
+import PGZ from '../../assets/logos/pgz.png'
 
 const DepositMenu = ({depositMenu,setDepositMenu}) => {
 
+  const getTONPrice = () => {
+    const tonPrice = localStorage.getItem("tonPrice")
+    console.log(tonPrice)
+    if(tonPrice === null){
+      const options = {
+        method: 'GET',
+        headers: {accept: 'application/json', 'x-cg-demo-api-key': 'CG-3qkmGTgTWXenAouD9JshQYt6'}
+      };
+      
+      fetch('https://api.coingecko.com/api/v3/coins/the-open-network', options)
+        .then(res => res.json())
+        .then(res => {
+          setTonPrice(res.market_data.current_price.usd)
+          localStorage.setItem("tonPrice", JSON.stringify(res.market_data.current_price.usd))
+          console.log("coming from api")
+        })
+        .catch(err => console.error(err));
+    } else {
+      setTonPrice(JSON.parse(tonPrice))
+      console.log("coming from local")
+    }
+    
+  }
+
+  
+
+  useEffect(() => {
+    getTONPrice();
+  }, [])
+
+    const tokens = [
+      { name: 'SHO', logo: Sho, ratio: '7040' },
+      { name: 'TON', logo: Ton, ratio: '0.189893' }
+    ];
+    const [activeToken, setActiveToken] = useState("SHO");
+    const [selectedToken, setSelectedToken] = useState(tokens[0])
     const [amount, setAmount] = useState(0);
+    const [tonAmount, setTonAmount] = useState(0)
     const [tonConnectUI, setOptions] = useTonConnectUI();
     const [transactionStatus, setTransactionStatus] = useState('');
     const [client, setClient] = useState(null);
@@ -38,6 +78,9 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const navigate = useNavigate()
     const [provider, setProvider] = useState(null);
     const isDesktop = useMediaQuery({ query: '(min-width: 798px)' });
+    const [tonPrice, setTonPrice] = useState(null)
+    const [shoPrice, setShoPrice] = useState(0.0001408)
+    
     /* const teamWalletAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; */
     console.log(walletBalance)
     const initializeProvider = async () => {
@@ -62,7 +105,6 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     
         newProvider.on("display_uri", (uri) => console.log("WalletConnect QR Code URI:", uri));
         setProvider(newProvider);
-        console.log(newProvider)
       } catch (error) {
         console.error("Error initializing provider:", error);
       }
@@ -273,7 +315,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     }; */
 
       const writeData = async () => {
-        const newBalance = (amount / 11620 * 1000)
+        const newBalance = (amount / 7040 * 1000)
         const { data, error } = await supabase
           .from('users')
           .select('*')
@@ -336,35 +378,104 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         };
     }, [depositMenu]);
 
+    const handleButtonClick = (token) => {
+      setActiveToken(token.name)
+      setSelectedToken(token)
+    }
+
   return (
     
     <StyledMenu variants={item}
     initial="initial"
     animate="animate"
     exit="exit"
-    style={{alignItems: 'center', overflow: 'hidden'}}>
-        <DepositBigTitle style={{border: '1px solid red'}}>RATIO: 11620 SHO - 1000 PGZ</DepositBigTitle>
+    style={{alignItems: 'center', overflow: 'hidden', paddingTop: '80px'}}>
+        <DepositBigTitle>Select the token <br/> you want to deposit</DepositBigTitle>
      <CloseStats onClick={closeDepositMenu} /> 
-     
-        {notConnected ? (
-          <DepositTitle>YOU HAVE TO CONNECT OR FUND YOUR WALLET FIRST</DepositTitle>
-        ) : (
-          <DepositWrapper>
-            <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
-            <DepositTitle><LinkInputField disabled={true} value="0x75a8AC284299e362830c49615459EeD8f66C0265"/></DepositTitle>
-            <SmallDepositTitle>SHO BALANCE IN WALLET: {parseFloat(walletBalance)}<span>SHO</span></SmallDepositTitle>
-            <DepositTitle>AMOUNT TO DEPOSIT:</DepositTitle>
-            <DepositTitle><BetInput style={{borderRadius: '10px'}} value={amount}
-                onChange={(e) => setAmount(parseFloat(e.target.value))}/></DepositTitle>
-            {/* <DepositRow>
-                AMOUNT TO DEPOSIT: <BetInput style={{borderRadius: '10px'}} value={amount}
-                onChange={(e) => setAmount(parseFloat(e.target.value))}/>
-            </DepositRow> */}
-            <DepositTitle>
-                <StyledButton onClick={sendTokens} style={{fontSize: '18px'}}>DEPOSIT</StyledButton>
-            </DepositTitle>
-            <span>{transactionStatus}</span>
+      <DepositBigTitle>
+        {tokens.map((token) => {
+          return(
+        <TokenColumn>
+        <TokenHolder disabled={activeToken === token.name} 
+        onClick={() => handleButtonClick(token)}
+        style={{
+          boxShadow: activeToken === token.name ? `${theme.pacBoxShadow}` : ``,
+          border: activeToken === token.name ? `1px solid ${theme.MainAccent}` : ``,
+        }}>
+          <LogoHolder><img src={token.logo} alt="" /></LogoHolder>
+          <TokenNameHolder><h2 style={{
+          color: activeToken === token.name ? `${theme.MainAccent}` : `${theme.text}`,
+        }}>{token.name}</h2></TokenNameHolder>
+        </TokenHolder>
+        </TokenColumn>
+          )
+        })}
+      </DepositBigTitle>
+        {(tonPrice && activeToken === "TON") &&  (
+        <DepositWrapper>
+          <DepositTokenRow>
+            <DepositTokenFrom><h2>From:</h2></DepositTokenFrom>
+            <DepositTokenToken>
+              <SmallLogoHolder><img src={selectedToken.logo} alt="" /></SmallLogoHolder>
+              <SmallLogoHolder><h2>{selectedToken.name}</h2></SmallLogoHolder>
+              <InputHolder><InputInput type="number" placeholder='0.0' onChange={(e) => setTonAmount(e.target.value)}></InputInput></InputHolder>
+            </DepositTokenToken>
+          </DepositTokenRow>
+          <DepositTokenRow>
+            <DepositTokenFrom><h2>To:</h2></DepositTokenFrom>
+            <DepositTokenToken>
+              <LogoHolder style={{ width: '20%' }}><img src={PGZ} alt="" /></LogoHolder>
+              <SmallLogoHolder><h2>PGZ</h2></SmallLogoHolder>
+              <InputHolder><InputInput type="number" disabled={true} defaultValue="0.0" value={parseFloat((1000 * tonAmount / (1/tonPrice)).toFixed(2))}></InputInput></InputHolder>
+            </DepositTokenToken>
+          </DepositTokenRow>
         </DepositWrapper>
+        )}
+        {(shoPrice && activeToken === "SHO") &&  (
+        <DepositWrapper>
+          <DepositTokenRow>
+            <DepositTokenFrom><h2>From:</h2></DepositTokenFrom>
+            <DepositTokenToken>
+              <SmallLogoHolder><img src={selectedToken.logo} alt="" /></SmallLogoHolder>
+              <SmallLogoHolder><h2>{selectedToken.name}</h2></SmallLogoHolder>
+              <InputHolder><InputInput type="number" placeholder='0.0' onChange={(e) => setAmount(e.target.value)}></InputInput></InputHolder>
+            </DepositTokenToken>
+          </DepositTokenRow>
+          <DepositTokenRow>
+            <DepositTokenFrom><h2>To:</h2></DepositTokenFrom>
+            <DepositTokenToken>
+              <LogoHolder style={{ width: '20%' }}><img src={PGZ} alt="" /></LogoHolder>
+              <SmallLogoHolder><h2>PGZ</h2></SmallLogoHolder>
+              <InputHolder><InputInput type="number" disabled={true} value={1000 * amount / (1/shoPrice)}></InputInput></InputHolder>
+            </DepositTokenToken>
+          </DepositTokenRow>
+          {/* <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
+          <DepositTitle><LinkInputField disabled={true} value="0x75a8AC284299e362830c49615459EeD8f66C0265"/></DepositTitle>
+          <SmallDepositTitle>SHO BALANCE IN WALLET: {parseFloat(walletBalance)}<span>SHO</span></SmallDepositTitle>
+          <DepositTitle>AMOUNT TO DEPOSIT:</DepositTitle>
+          <DepositTitle><BetInput style={{borderRadius: '10px'}} value={amount}
+              onChange={(e) => setAmount(parseFloat(e.target.value))}/></DepositTitle>
+          <DepositTitle>
+              <StyledButton onClick={sendTokens} style={{fontSize: '18px'}}>DEPOSIT</StyledButton>
+          </DepositTitle>
+          <span>{transactionStatus}</span> */}
+        </DepositWrapper>
+        )}
+        {(tonPrice && activeToken === "TON") && (
+          <DepositWrapper>
+            <DepositTokenRowSmall>
+            <h2>Current TON Price: <br/><span>{tonPrice} USDT</span></h2>
+            </DepositTokenRowSmall>
+            <DepositTokenRowSmall>{/* <StyledButton>DEPOSIT</StyledButton> */}</DepositTokenRowSmall>
+          </DepositWrapper>
+        )}
+        {(tonPrice && activeToken === "SHO") && (
+          <DepositWrapper>
+            <DepositTokenRowSmall>
+            <h2>Current SHO Price: <br/><span>{shoPrice} USDT</span></h2>
+            </DepositTokenRowSmall>
+            <DepositTokenRowSmall><StyledButton onClick={sendTokens} style={{fontSize: '18px'}}>DEPOSIT</StyledButton></DepositTokenRowSmall>
+          </DepositWrapper>
         )}
     </StyledMenu>
     
