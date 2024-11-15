@@ -23,6 +23,7 @@ import { useMediaQuery } from 'react-responsive';
 import Ton from '../../assets/logos/ton.png'
 import Sho from '../../assets/logos/sho.png'
 import PGZ from '../../assets/logos/pgz.png'
+import { toast } from 'react-toastify';
 
 const DepositMenu = ({depositMenu,setDepositMenu}) => {
 
@@ -70,7 +71,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const wallet = useTonWallet();
     const {balance, setBalance} = FantasyState();
     const {walletBalance,setWalletBalance} = FantasyState();
-    const {account, setAccount} = FantasyState();
+    const {metaMaskWalletAddress, setMetaMaskWalletAddress} = FantasyState();
     const [transactionHash, setTransactionHash] = useState(null);
     const [notConnected, setNotConnected] = useState(false)
     const {user} = useAuth();
@@ -119,7 +120,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     }
 
     const sendTokens = async () => {
-        const recipientAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
+        const recipientAddress = "0x75a8AC284299e362830c49615459EeD8f66C0265";
         const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
 
         const web3 = new Web3(provider)
@@ -128,7 +129,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           
       
           // Show confirmation prompt to user
-          message.info("Please confirm the transaction on your wallet");
+          toast("Please confirm the transaction on your wallet");
       
           const ERC20_ABI = [
             {
@@ -152,7 +153,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           // Send the transaction
           const transaction = await tokenContract.methods
             .transfer(recipientAddress, amountToSend.toString())
-            .send({ from: account })
+            .send({ from: metaMaskWalletAddress })
             .on("transactionHash", (hash) => {
               console.log("Transaction sent with hash:", hash);
               return Swal.fire({
