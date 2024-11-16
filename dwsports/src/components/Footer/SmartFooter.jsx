@@ -54,7 +54,7 @@ const SmartFooter = () => {
       setTimeout(() => {
         setCurrentPartner((prev) => (prev + 1) % Partners.length);
         setShowingPartner(true); // Show next partner
-      }, 200); // 1-second delay
+      }, 500); // 1-second delay
     }, 10000); // Total cycle: 4 seconds display + 1 second blank
     return () => clearInterval(interval);
   }, []);
@@ -244,12 +244,12 @@ const SmartFooter = () => {
                 exit="exit" style={{borderRadius: '50%'}}/>
               </TopSmartRowThree>
               <TopSmartRowTwo>
-              {activePartner?.twitter !== null && (
-                <SmartButtonWrapper href={`${activePartner?.twitter}`} target="_blank"><motion.div variants={variantsTwo}
-                initial="initial"
-                animate="animate"
-                exit="exit"><img src={x} alt="x" /></motion.div></SmartButtonWrapper>
-              )}
+                {activePartner?.twitter !== null && (
+                        <SmartButtonWrapper href={`${activePartner?.twitter}`} target="_blank"><motion.div variants={variantsTwo}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"><img src={x} alt="x" /></motion.div></SmartButtonWrapper>
+                )}
                 {activePartner?.telegram !== null && (
                         <SmartButtonWrapper href={`${activePartner?.telegram}`} target="_blank"><motion.div variants={variantsTwo}
                         initial="initial"
