@@ -1,279 +1,118 @@
 import React,{useEffect, useState} from 'react'
-import {motion, AnimatePresence} from 'framer-motion'
-import { CloseStats,BetSection,DepositWrapper,LinkInputField,SmallDepositTitle,DepositTitle,DepositBigTitle,BalanceWrapper } from './index' 
-import {BetInput, StyledMenu} from '../../components/index'
-import { StyledButton } from '../../pages';
-import { TonClient, Address, internal } from '@ton/ton';
-import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
-import { mnemonicNew, mnemonicToPrivateKey } from "@ton/crypto";
-import Swal from "sweetalert2";
+import {motion,useAnimation, AnimatePresence} from 'framer-motion'
+import { CloseStats,BetSection,DepositWrapper,LinkInputField,SmallDepositTitle,DepositTitle,DepositBigTitle,BalanceWrapper, Tiers, Tier, TopTierRow, SecondTierRow, BigTierRow } from './index' 
+import {BetInput, StyledButton, StyledMenu} from '../../components/index'
 import  { useTheme } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-/* import TonWeb from 'tonweb'; */
-import axios from 'axios';
+import styled from 'styled-components';
 import { FantasyState } from '../../context/FantasyContext';
-import { BalanceDisplay, useAuth } from '../../pages/functions';
+import { useAuth } from '../../pages/functions';
 import { supabase } from '../../supabase/client';
-import { message } from 'antd';
-import { Navigate } from 'react-router-dom';
-import { ethers } from "ethers";
-import { EthereumProvider } from "@walletconnect/ethereum-provider";
-import Web3 from "web3";
-import { useMediaQuery } from 'react-responsive';
+import {useInView} from "react-intersection-observer";
 
-const DepositMenu = ({depositMenu,setDepositMenu}) => {
+const WalletMenu = ({walletMenu,setWalletMenu}) => {
 
-    const [amount, setAmount] = useState(0);
-    const [tonConnectUI, setOptions] = useTonConnectUI();
-    const [transactionStatus, setTransactionStatus] = useState('');
-    const [client, setClient] = useState(null);
-    const wallet = useTonWallet();
-    const {balance, setBalance} = FantasyState();
-    const {walletBalance,setWalletBalance} = FantasyState();
-    const {account, setAccount} = FantasyState();
-    const [transactionHash, setTransactionHash] = useState(null);
-    const [notConnected, setNotConnected] = useState(false)
+    const tiers = [
+        {
+            id: 1,
+            wager: 3
+        },
+        {
+            id: 2,
+            wager: 1
+        },
+        {
+            id: 3,
+            wager: 0
+        }
+    ]
     const {user} = useAuth();
     const theme = useTheme();
     const navigate = useNavigate()
-    const [provider, setProvider] = useState(null);
-    const isDesktop = useMediaQuery({ query: '(min-width: 798px)' });
-    /* const teamWalletAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746"; */
-    console.log(walletBalance)
-    const initializeProvider = async () => {
-      try {
-        if (provider) {
-          await provider.disconnect(); // Ensure any previous sessions are disconnected
-        }
-        const newProvider = await EthereumProvider.init({
-          projectId: '87ce01feb918e3377f943f901349cd66',
-          chains: [9008],
-          rpcMap: {
-            9008: 'https://rpc-nodes.shidoscan.com',
-          },
-          showQrModal: true,
-          metadata: {
-            name: "PACTON'S GAMING ZONE",
-            description: 'A New Era of Gaming and Sports Betting',
-            url: "https://pacgames-frontend.onrender.com",
-            icons: ['https://i.postimg.cc/J0LFkY8Z/logo.jpg'],
-          },
-        });
-    
-        newProvider.on("display_uri", (uri) => console.log("WalletConnect QR Code URI:", uri));
-        setProvider(newProvider);
-        console.log(newProvider)
-      } catch (error) {
-        console.error("Error initializing provider:", error);
-      }
-    };
-    
+    const [tier, setTier] = useState(null)
+    const [deposits, setDeposits] = useState(null)
+    const [wagerBalance, setWagerBalance] = useState(null)
+    const {toHide, setToHide} = FantasyState();
+    const [rest, setRest] = useState(null)
+    const [needed, setNeeded] = useState(null)
+    const [percentage, setPercentage] = useState(null)
+    const [percentageTwo, setPercentageTwo] = useState(null)
+    const [percentageLeft, setPercentageLeft] = useState(null)
+    const {ref, inView} = useInView({
+        threshold: 0.2
+    });
+
+    const animation = useAnimation();
+
     useEffect(() => {
-      initializeProvider();
-    }, []);
- 
-    const closeDepositMenu = () => {
-        setDepositMenu(false)
-    }
-
-    const sendTokens = async () => {
-        const recipientAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
-        const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
-
-        const web3 = new Web3(provider)
-        try {
-          setDepositMenu(false);
-          
-      
-          // Show confirmation prompt to user
-          message.info("Please confirm the transaction on your wallet");
-      
-          const ERC20_ABI = [
-            {
-              constant: false,
-              inputs: [{ name: "_to", type: "address" }, { name: "_value", type: "uint256" }],
-              name: "transfer",
-              outputs: [{ name: "success", type: "bool" }],
-              type: "function",
-            },
-            { constant: true, inputs: [], name: "decimals", outputs: [{ name: "", type: "uint8" }], type: "function" },
-          ];
-      
-          const tokenContract = new web3.eth.Contract(ERC20_ABI, tokenAddress);
-      
-          // Get token decimals and convert amount
-          const decimals = await tokenContract.methods.decimals().call();
-          const decimalsBigInt = BigInt(decimals);
-          const str = amount.toString();
-          const amountToSend = BigInt(str) * BigInt(10) ** decimalsBigInt;
-          
-          // Send the transaction
-          const transaction = await tokenContract.methods
-            .transfer(recipientAddress, amountToSend.toString())
-            .send({ from: account })
-            .on("transactionHash", (hash) => {
-              console.log("Transaction sent with hash:", hash);
-              return Swal.fire({
-                title: "Transaction Sent",
-                text: `Transaction sent with hash: ${hash}`,
-                icon: "info",
-              });
-            })
-            .on("receipt", (receipt) => {
-              console.log("Transaction confirmed:", receipt);
-              setBalance((prevBal) => prevBal + amount);
-              setDepositMenu(false);
-              writeData();
-              return Swal.fire({
-                title: "Transaction Confirmed",
-                text: "Your balance has been updated.",
-                icon: "success",
-              });
-            })
-            .on("error", (error) => {
-              if (error.message.includes("User denied transaction")) {
-                return Swal.fire({
-                  title: "Transaction Rejected",
-                  text: "You canceled the transaction.",
-                  icon: "error",
-                  confirmButtonColor: "#d33",
-                  confirmButtonText: "OK",
-                });
-              } else if (error.message.includes("insufficient funds")) {
-                return Swal.fire({
-                  title: "Insufficient Funds",
-                  text: "You do not have enough tokens or gas for this transaction.",
-                  icon: "warning",
-                  confirmButtonColor: "#d33",
-                  confirmButtonText: "OK",
-                });
-              } else {
-                console.error("Error sending tokens:", error);
-                return Swal.fire({
-                  title: "Transaction Failed",
-                  text: error.message,
-                  icon: "error",
-                  confirmButtonColor: "#d33",
-                  confirmButtonText: "OK",
-                });
-              }
+        if(inView && percentage){
+            animation.start({
+                width: percentage,
+                transition: {
+                    duration: 1,
+                    delay: 0.5
+                }
             });
-      
-          return transaction; // Return transaction details if needed
-      
-        } catch (error) {
-          console.error("General Error:", error);
-          Swal.fire({
-            title: "Transaction Failed",
-            text: error.message || "An unknown error occurred.",
-            icon: "error",
-            confirmButtonColor: "#d33",
-            confirmButtonText: "OK",
-          });
+        }
+        if(!inView){
+            animation.start({
+                width: 0, 
+            })
         }
         
+    }, [inView,percentage])
+
+    function ChangeNumber () {
+        const counters = document.querySelectorAll('.graphcounter');
+        counters.forEach(counter => {
+            counter.innerText = "0";
+
+            const updateCounter = () => {
+                const target = +counter.getAttribute('data-target');
+                const c = +counter.innerText;
+
+                const increment = target / 100;
+                
+                if (c < target){
+                    counter.innerText = `${Math.ceil(c + increment)}`;
+                    setTimeout(updateCounter, 2);
+                } else {
+                    counter.innerText = target;
+                }
+            }
+            updateCounter();
+        });
+    }
+
+    useEffect(() => {
+        if(inView && percentage){
+            ChangeNumber();
+        }
+    }, [inView,percentage])
+    
+    const getbarValue = () => {
+        if(tier === 1){
+            const rest = deposits[0].gpz * 3 - wagerBalance
+            setNeeded(deposits[0].gpz * 3)
+            setRest(rest)
+            const percentage = parseFloat(((wagerBalance / (deposits[0].gpz * 3)) * 100).toFixed(2))
+            const percentageLeft = (rest / (deposits[0].gpz * 3)) * 100
+            setPercentage(percentage + "%")
+            setPercentageTwo(percentage)
+            setPercentageLeft(percentageLeft)
+         }
+    }
+
+    useEffect(() => {
+        getbarValue();
+    }, [tier])
+
+    const closeWalletMenu = () => {
+        setWalletMenu(false)
+        setToHide(false)
     }
     
-    /* const sendTokens = async () => {
-      try {
-        setDepositMenu(false);
-        
-    
-        // Show confirmation prompt to user
-        message.info("Please confirm the transaction on your wallet");
-    
-        const recipientAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
-        const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
-    
-        let web3 = provider ? new Web3(provider) : new Web3(provider);
-    
-        const ERC20_ABI = [
-          {
-            constant: false,
-            inputs: [{ name: "_to", type: "address" }, { name: "_value", type: "uint256" }],
-            name: "transfer",
-            outputs: [{ name: "success", type: "bool" }],
-            type: "function",
-          },
-          { constant: true, inputs: [], name: "decimals", outputs: [{ name: "", type: "uint8" }], type: "function" },
-        ];
-    
-        const tokenContract = new web3.eth.Contract(ERC20_ABI, tokenAddress);
-    
-        // Get token decimals and convert amount
-        const decimals = await tokenContract.methods.decimals().call();
-        const decimalsBigInt = BigInt(decimals);
-        const str = amount.toString();
-        const amountToSend = BigInt(str) * BigInt(10) ** decimalsBigInt;
-    
-        // Send the transaction
-        const transaction = await tokenContract.methods
-          .transfer(recipientAddress, amountToSend.toString())
-          .send({ from: account })
-          .on("transactionHash", (hash) => {
-            console.log("Transaction sent with hash:", hash);
-            return Swal.fire({
-              title: "Transaction Sent",
-              text: `Transaction sent with hash: ${hash}`,
-              icon: "info",
-            });
-          })
-          .on("receipt", (receipt) => {
-            console.log("Transaction confirmed:", receipt);
-            setBalance((prevBal) => prevBal + amount);
-            setDepositMenu(false);
-            writeData();
-            return Swal.fire({
-              title: "Transaction Confirmed",
-              text: "Your balance has been updated.",
-              icon: "success",
-            });
-          })
-          .on("error", (error) => {
-            if (error.message.includes("User denied transaction")) {
-              return Swal.fire({
-                title: "Transaction Rejected",
-                text: "You canceled the transaction.",
-                icon: "error",
-                confirmButtonColor: "#d33",
-                confirmButtonText: "OK",
-              });
-            } else if (error.message.includes("insufficient funds")) {
-              return Swal.fire({
-                title: "Insufficient Funds",
-                text: "You do not have enough tokens or gas for this transaction.",
-                icon: "warning",
-                confirmButtonColor: "#d33",
-                confirmButtonText: "OK",
-              });
-            } else {
-              console.error("Error sending tokens:", error);
-              return Swal.fire({
-                title: "Transaction Failed",
-                text: error.message,
-                icon: "error",
-                confirmButtonColor: "#d33",
-                confirmButtonText: "OK",
-              });
-            }
-          });
-    
-        return transaction; // Return transaction details if needed
-    
-      } catch (error) {
-        console.error("General Error:", error);
-        Swal.fire({
-          title: "Transaction Failed",
-          text: error.message || "An unknown error occurred.",
-          icon: "error",
-          confirmButtonColor: "#d33",
-          confirmButtonText: "OK",
-        });
-      }
-    }; */
-
-      const writeData = async () => {
-        const newBalance = (amount / 11620 * 1000)
+    const getDeposits = async() => {
         const { data, error } = await supabase
           .from('users')
           .select('*')
@@ -281,94 +120,97 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           if (error) {
             console.error('Error inserting/updating user session data:', error.message)
           } else {
-            console.log('data:', data)
-            const userJsonData = data[0].deposits || {}; 
-            const userJsonBalance = data[0].appBalance
-            userJsonData.deposits = userJsonData.deposits || []; 
-            console.log(userJsonData)
-            const dateNow = new Date();
-            const lastBalance = userJsonBalance + newBalance
-            console.log(lastBalance)
-            const updatedData = {
-                name: user.user_metadata.name,
-                avatar: user.user_metadata.avatar_url,
-                email: user.email,
-                walletAddress: account,
-                user_id: user.id,
-                amount: amount,
-                token: "SHO",
-                date: dateNow
-            }
-            userJsonData.deposits.push(updatedData);
-            const { error: updateError } = await supabase
-                    .from('users')
-                    .update({ deposits: userJsonData, appBalance: lastBalance }) // Update the jsonb column
-                    .eq('id', user.id); // Identify which user to update
-    
-                if (updateError) {
-                    console.error('Error updating user data:', updateError.message);
-                } else {
-                    console.log('User data updated successfully:', userJsonData);
-                }
+            setTier(data[0].deposits.deposits.length)
+            setDeposits(data[0].deposits.deposits)
+            setWagerBalance(data[0].wagerBalance)
           }
     }
 
-    
+    console.log(tier)
+    console.log(deposits)
+    console.log(wagerBalance)
+
+    useEffect(() => {
+        if(user){
+            getDeposits();
+        }
+    }, [user])
 
 
     const item={
         initial: { height: 0, opacity: 0 },
-        animate: { minHeight: '100vh', opacity: 1, transition: { duration: 0.5 } },
+        animate: { height: '100vh', opacity: 1, transition: { duration: 0.5 } },
         exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
     } 
+    console.log(walletMenu)
 
-    useEffect(() => {
-        // Toggle body overflow based on isMenuOpen state
-        if (depositMenu) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = ''; // Revert to original overflow
-        }
+    const ProgressBar = styled.div`
+    width: 95%;
+    height: 10px;
+    border-radius: 10px;
+    border: 1px solid ${props => props.theme.MainAccent};
+    background: red;
+    position: relative;
+    margin-bottom: 20px;
+`;
 
-        // Cleanup on unmount
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [depositMenu]);
+const ProgressBarTop = styled(motion.div)`
+    max-width: 100%;
+    height: 9px;
+    border-radius: 10px;
+    border: 1px solid ${props => props.theme.MainAccentTwo};
+    background: green;
+    position: absolute;
+    top: 0;
+    left: 0;
+`;
+    
 
   return (
     
-    <StyledMenu variants={item}
+    <StyledMenu variants={item} ref={ref}
     initial="initial"
     animate="animate"
     exit="exit"
-    style={{alignItems: 'center', overflow: 'hidden'}}>
-        <DepositBigTitle style={{border: '1px solid red'}}>RATIO: 11620 SHO - 1000 PGZ</DepositBigTitle>
-     <CloseStats onClick={closeDepositMenu} /> 
+    style={{alignItems: 'center', overflow: 'hidden', opacity: 1}}>
+        <DepositBigTitle>YOUR TIER</DepositBigTitle>
+     <CloseStats onClick={closeWalletMenu} /> 
+     <Tiers>
+        {tiers?.map((el) => {
+            const index = el.id - 1
+            console.log(tier)
+            return(
+                <Tier style={{
+                    border: el.id === tier ? `1px solid green` : `1px solid red`,
+                    background: el.id === tier ? `rgba(91, 214, 19, 0.8)` : `rgb(223, 23, 23)`
+                }}>
+                    <TopTierRow><h2>{el.id === 1 ? el.id + "st" : el.id === 2 ? el.id + "nd" : el.id + "rd"}</h2></TopTierRow>
+                    <SecondTierRow style={{transform: 'translateY(-5px)'}}><h3>WITHDRAW</h3></SecondTierRow>
+                    <SecondTierRow><h2>{el.wager === 3 ? `WAGER x3 TIMES` : el.wager === 1 ? `WAGER x1 TIME` : 'NO WAGER'}</h2></SecondTierRow>
+                    <SecondTierRow style={{transform: 'translateY(5px)'}}>{el.id === tier ? <h2>YOU DEPOSITED</h2> : ""}</SecondTierRow>
+                    <BigTierRow>{el.id === tier ? <h2>{deposits[index]?.amount} {deposits[index]?.token}</h2> : ""}</BigTierRow>
+                    <SecondTierRow style={{transform: 'translateY(5px)'}}>{el.id === tier ? <h2>YOU RECEIVED</h2> : ""}</SecondTierRow>
+                    <BigTierRow>{el.id === tier ? <h2>{deposits[index]?.gpz} PGZ</h2> : ""}</BigTierRow>
+                </Tier>
+            )
+        })}
+     </Tiers>
+     <DepositBigTitle >YOU HAVE BET: <br/>{wagerBalance} from {needed} PGZ</DepositBigTitle>
      
-        {notConnected ? (
-          <DepositTitle>YOU HAVE TO CONNECT OR FUND YOUR WALLET FIRST</DepositTitle>
-        ) : (
-          <DepositWrapper>
-            <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
-            <DepositTitle><LinkInputField disabled={true} value="0x75a8AC284299e362830c49615459EeD8f66C0265"/></DepositTitle>
-            <SmallDepositTitle>SHO BALANCE IN WALLET: {parseFloat(walletBalance)}<span>SHO</span></SmallDepositTitle>
-            <DepositTitle>AMOUNT TO DEPOSIT:</DepositTitle>
-            <DepositTitle><BetInput style={{borderRadius: '10px'}} value={amount}
-                onChange={(e) => setAmount(parseFloat(e.target.value))}/></DepositTitle>
-            {/* <DepositRow>
-                AMOUNT TO DEPOSIT: <BetInput style={{borderRadius: '10px'}} value={amount}
-                onChange={(e) => setAmount(parseFloat(e.target.value))}/>
-            </DepositRow> */}
-            <DepositTitle>
-                <StyledButton onClick={sendTokens} style={{fontSize: '18px'}}>DEPOSIT</StyledButton>
-            </DepositTitle>
-            <span>{transactionStatus}</span>
-        </DepositWrapper>
-        )}
+        <ProgressBar>
+            <ProgressBarTop animate={animation}/>
+        </ProgressBar>
+     
+     <DepositBigTitle style={{height: '5%'}}>ACCOMPLISHED: <h2 className="graphcounter" data-target={percentageTwo}></h2><h2>%</h2> </DepositBigTitle>
+     <DepositBigTitle style={{height: '5%'}}><h2>REMAINING:</h2> <h2 className="graphcounter" data-target={rest}></h2> PGZ</DepositBigTitle>
+     <DepositBigTitle ><StyledButton style={{fontSize: '18px'}}>WITHDRAW</StyledButton></DepositBigTitle>
     </StyledMenu>
     
   )
 }
 
-export default DepositMenu
+export default WalletMenu
+
+
+
+

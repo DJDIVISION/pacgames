@@ -347,7 +347,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
           ))}
         </div>
               
-                    <TeamBetsHolder style={{margin: '0',width: '90%',margin: '10px 0'}}
+                    <TeamBetsHolder style={{width: '90%',margin: '10px 0'}}
                       initial={{ minHeight: '80px' }}
                       animate={{ minHeight: expandedIndex === true ? '330px' : '80px' }}
                       transition={{ duration: 0.5 }}>
@@ -369,7 +369,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                         </LowRower>
                       )}
                       </TeamBetsHolder>
-                    <TeamBetsHolder style={{margin: '0',width: '90%',margin: '10px 0'}}
+                    <TeamBetsHolder style={{width: '90%',margin: '10px 0'}}
                       initial={{ minHeight: '80px' }}
                       animate={{ minHeight: expandedIndexAway === true ? '330px' : '80px' }}
                       transition={{ duration: 0.5 }}>
@@ -391,7 +391,7 @@ const TeamStats = ({selectedTeamMenu,setSelectedTeamMenu}) => {
                         </LowRower>
                       )}
                       </TeamBetsHolder>
-                      <TeamBetsHolder style={{margin: '0',width: '90%',margin: '10px 0'}}
+                      <TeamBetsHolder style={{width: '90%',margin: '10px 0'}}
                       initial={{ minHeight: '80px' }}
                       animate={{ minHeight: expandedIndexPlayers === true ? '330px' : '80px' }}
                       transition={{ duration: 0.5 }}>

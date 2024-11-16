@@ -82,11 +82,12 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const isDesktop = useMediaQuery({ query: '(min-width: 798px)' });
     const [tonPrice, setTonPrice] = useState(null)
     const [shoPrice, setShoPrice] = useState(0.0001408)
-    
+    const {toHide, setToHide} = FantasyState();
     
  
     const closeDepositMenu = () => {
         setDepositMenu(false)
+        setToHide(false)
     }
 
     const sendTokens = async () => {
@@ -151,7 +152,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
               console.log("Transaction confirmed:", receipt);
               setBalance((prevBal) => prevBal + amount);
               setDepositMenu(false);
-              writeData((1000 * amount / (1/shoPrice)),amount,"SHO",metaMaskWalletAddress);
+              writeData((1000 * amount / (1/shoPrice)),amount,"SHO",metaMaskWalletAddress,shoPrice);
               return Swal.fire({
                 title: "Transaction Confirmed",
                 text: "Your balance has been updated.",
@@ -202,8 +203,9 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         
     }
 
-    const writeData = async (balance,amount,token,address) => {
+    const writeData = async (balance,amount,token,address,price) => {
         const newBalance = balance
+        const gpz = (1000 * amount / (1/price))
         const { data, error } = await supabase
           .from('users')
           .select('*')
@@ -228,7 +230,8 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
                 user_id: user.id,
                 amount: amount,
                 token: token,
-                date: dateNow
+                date: dateNow,
+                gpz: gpz
             }
             userJsonData.deposits.push(updatedData);
             const { error: updateError } = await supabase
@@ -264,7 +267,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           tonConnectUI.sendTransaction(myTransaction)
               .then(() => {
                   setTransactionStatus('Transaction sent successfully.');
-                  writeData((1000 * tonAmount / (1/tonPrice)),tonAmount,"TON",tonWalletAddress);
+                  writeData((1000 * tonAmount / (1/tonPrice)),tonAmount,"TON",tonWalletAddress,tonPrice);
                   return Swal.fire({
                     title: "Transaction Confirmed",
                     text: "Your balance has been updated.",

@@ -47,7 +47,8 @@
         "fantasy": "FANTASY FOOTBALL",
         "deposit": "DEPOSIT",
         "switch": "CHANGE THEME",
-        "wallet": "WALLET"
+        "wallet": "WALLET",
+        "withdraw": "WITHDRAW"
     },
     "hero": {
         "message1": "You can not link another referrer!",

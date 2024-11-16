@@ -283,7 +283,7 @@ export const TokenNameHolder = styled.div`
 `;
 
 export const DepositBigTitle = styled.div`
-    width: 80%;
+    width: 95%;
     height: 10%;
     font-size: 20px;
     text-align: center;
@@ -291,6 +291,62 @@ export const DepositBigTitle = styled.div`
     color: ${props => props.theme.text};
     ${props => props.theme.displayFlexCenter};
     margin-bottom: 20px;
+    line-height:1.4;
+    h2{
+        font-size: 20px;
+        font-weight: bold;
+        color: ${props => props.theme.text};
+    }
+`;
+export const Tiers = styled.div`
+    width: 98%;
+    height: 30%;
+    ${props => props.theme.displayFlex};
+    justify-content: space-around;
+    margin-bottom: 20px;
+`;
+
+export const TopTierRow = styled.div`
+    width: 100%;
+    height: 25%;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 32px;
+        font-weight: bold;
+    }
+`;
+export const SecondTierRow = styled.div`
+    width: 100%;
+    height: 10%;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 10px;
+    }
+    h3{
+        color: ${props => props.theme.text};
+        font-size: 14px;
+    }
+`;
+export const BigTierRow = styled.div`
+    width: 100%;
+    height: 20%;
+    ${props => props.theme.displayFlexCenter}
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 18px;
+    }
+`;
+export const Tier = styled.div`
+    width: 31%;
+    height: 95%;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: ${props => props.theme.text};
+    ${props => props.theme.displayFlexColumn};
+    border-radius: 10px;
 `;
 export const TokenColumn = styled.div`
     width: 50%;

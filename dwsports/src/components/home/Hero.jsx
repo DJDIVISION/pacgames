@@ -26,7 +26,7 @@ import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import Web3 from "web3";
 import axios from 'axios';
 
-const Hero = () => {
+const Hero = ({walletMenu,setWalletMenu,depositMenu,setDepositMenu}) => {
 
     const ref = useRef(null);
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
@@ -44,6 +44,7 @@ const Hero = () => {
     const {tonWalletBalance,setTonWalletBalance} = FantasyState();
     const {metaMaskWalletAddress, setMetaMaskWalletAddress} = FantasyState();
     const {tonWalletAddress, setTonWalletAddress} = FantasyState();
+    const {toHide, setToHide} = FantasyState();
     const navigate = useNavigate()
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -501,118 +502,102 @@ const Hero = () => {
   return (
     <HeroSection ref={ref}>
       
-        <TopHeader>
-        <TopText>{t("hero.title")}<br/><span>SHO</span></TopText>
-      <motion.img src={Sho} 
-                alt="background" 
-                style={{ width: isMobile ? "40%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
-                animate={controls} />
-     
-        </TopHeader>
+            <TopHeader>
+           {toHide === false && (
+            <>
+                 <TopText>{t("hero.title")}<br/><span>SHO</span></TopText>
+                    <motion.img src={Sho} 
+                    alt="background" 
+                    style={{ width: isMobile ? "40%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
+                    animate={controls} />
+            </>
+           )}
+            </TopHeader>
 
-              <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
+              <TeamBetsHolder style={{width: '90%', margin: '10px 0'}}
                   initial={{ height: '80px' }}
                   animate={{ height: expandedProfile === true ? '300px' : '80px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
-                  <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>
+                  {toHide === false && <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>}
                   {expandedProfile === true && (
-                      <LowRower >
-                        {user ? (
-                            <>
-                                <AvatarRowBets>
-                                <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
-                                </AvatarRowBets>
-                                <RowerRowBets>
-                                <h2>{user && user.user_metadata.full_name}</h2>
-                                </RowerRowBets>
-                                <RowerRowBets>
-                                <h3>{user && user.email}</h3>
-                                </RowerRowBets>
-                               
-                                <RowerRowBets style={{ height: '70px' }}>
-                                    <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
-                                </RowerRowBets>
-                            </>
-                        ) : (
-                            <>
-                                <AvatarRowBets>
-                                <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
-                                </AvatarRowBets>
-                                <RowerRowBets></RowerRowBets>
-                                <RowerRowBets style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}>
-                                {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
-                                </RowerRowBets>
-                                <RowerRowBets></RowerRowBets>
-                                <RowerRowBets></RowerRowBets>
-                            </>
-                            
+                      <>
+                        {toHide === false && (
+                            <LowRower >
+                            {user ? (
+                                <>
+                                    <AvatarRowBets>
+                                    <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
+                                    </AvatarRowBets>
+                                    <RowerRowBets>
+                                    <h2>{user && user.user_metadata.full_name}</h2>
+                                    </RowerRowBets>
+                                    <RowerRowBets>
+                                    <h3>{user && user.email}</h3>
+                                    </RowerRowBets>
+                                   
+                                    <RowerRowBets style={{ height: '70px' }}>
+                                        <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
+                                    </RowerRowBets>
+                                </>
+                            ) : (
+                                <>
+                                    <AvatarRowBets>
+                                    <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
+                                    </AvatarRowBets>
+                                    <RowerRowBets></RowerRowBets>
+                                    <RowerRowBets style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}>
+                                    {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
+                                    </RowerRowBets>
+                                    <RowerRowBets></RowerRowBets>
+                                    <RowerRowBets></RowerRowBets>
+                                </>
+                                
+                            )}
+                                
+                          </LowRower>
                         )}
-                            
-                      </LowRower>
+                      </>
                   )}
               </TeamBetsHolder>
 
-              <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
+              <TeamBetsHolder style={{ width: '90%', margin: '10px 0'}}
                   initial={{ height: '80px' }}
                   animate={{ height: expandedWallet === true ? '380px' : '80px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedWallet === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleWallet()} /> : <SmallArrowDownFlex onClick={() => toggleWallet()} />}</MiniIconButton>
-                  <RowerSmall><h2 style={{color: expandedWallet === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>WALLETS</h2></RowerSmall>
+                  {toHide === false && <RowerSmall><h2 style={{color: expandedWallet === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>WALLETS</h2></RowerSmall>}
                   {expandedWallet === true && (
-                      <LowRower >
-                                <RowerRowBets>
-                                <h2>BALANCE: <span>{typeof balance === 'number' && !isNaN(balance) ? parseFloat(balance.toFixed(2)) : '0.00'} PGZ</span>
-                                </h2>
-                                </RowerRowBets>
-                                <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
-                                {!metaMaskWalletAddress ? (
-                                    <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
-                                ) : (
-                                    <>
-                                    <RowerRowBets>
-                                        <h2>CONNECTED SHIDO ADDRESS</h2>
-                                    </RowerRowBets>
-                                    <RowerRowBets>
-                                        <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
-                                    </RowerRowBets>
-                                    </>
-                                )}
-                                <WalletsRow><TonConnectButton /></WalletsRow>
-                                {/* {tonWalletAddress ? (
-                                    <WalletsRow><TonConnectButton /></WalletsRow>
-                                ) : (
-                                    <>
-                                    <RowerRowBets>
-                                        <h2>CONNECTED TON ADDRESS</h2>
-                                    </RowerRowBets>
-                                    <RowerRowBets>
-                                        <LinkInputField disabled={true} value={tonWalletAddress} />
-                                    </RowerRowBets>
-                                    </>
-                                )} */}
-                       {/*  {!metaMaskWalletAddress ? (
-                            <>
-                                <RowerRowBets>
-                                <h2>BALANCE: <span>{parseFloat(balance?.toFixed(2))} PGZ</span></h2>
-                                </RowerRowBets>
-                                <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
+                      <>
+                        {toHide === false && (
+                            <LowRower >
+                            <RowerRowBets>
+                            <h2>BALANCE: <span>{typeof balance === 'number' && !isNaN(balance) ? parseFloat(balance.toFixed(2)) : '0.00'} PGZ</span>
+                            </h2>
+                            </RowerRowBets>
+                            <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
+                            {!metaMaskWalletAddress ? (
                                 <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
-                                <WalletsRow><TonConnectButton /></WalletsRow>
-                            </>
-                        ) : (
-                            <>
-                            
-                            </>
-                        )} */}
-                            
-                      </LowRower>
+                            ) : (
+                                <>
+                                <RowerRowBets>
+                                    <h2>CONNECTED SHIDO ADDRESS</h2>
+                                </RowerRowBets>
+                                <RowerRowBets>
+                                    <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
+                                </RowerRowBets>
+                                </>
+                            )}
+                            <WalletsRow><TonConnectButton /></WalletsRow>
+                  </LowRower>
+                        )}
+                      </>
                   )}
               </TeamBetsHolder>
 
-              <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
+              <TeamBetsHolder style={{  width: '90%', margin: '10px 0'}}
                   initial={{ height: '80px' }}
                   animate={{ height: expandedLinks === true ? '440px' : '80px' }}
                   transition={{ duration: 0.5 }}
@@ -642,7 +627,7 @@ const Hero = () => {
                   )}
               </TeamBetsHolder>
 
-              <TeamBetsHolder style={{ margin: '0', width: '90%', margin: '10px 0'}}
+              <TeamBetsHolder style={{ width: '90%', margin: '10px 0'}}
                   initial={{ height: '80px' }}
                   animate={{ height: expandedReferrals === true ? '330px' : '80px' }}
                   transition={{ duration: 0.5 }}

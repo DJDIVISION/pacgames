@@ -120,8 +120,6 @@ export const StyledMenu = styled(motion.div)`
     display: flex;
     flex-direction: column;
     align-items: center;
-    //justify-content: center;
-    z-index: 1000;
     }
 `;
 
@@ -982,7 +980,7 @@ export const LowRower = styled.div`
 
 export const RowerRowBet = styled.div`
     width: 100%;
-    min-height: 40px;
+    min-height: 50px;
     border: 1px solid ${props => props.theme.text};
     border-radius: 8px;
     ${props => props.theme.displayFlexCenter};

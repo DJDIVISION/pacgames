@@ -19,6 +19,8 @@ const FantasyContext = ({children}) => {
     const [betAmounts, setBetAmounts] = useState({});
     const [pendingBets, setPendingBets] = useState(null)
     const [depositMenu, setDepositMenu] = useState(false)
+    const [walletMenu, setWalletMenu] = useState(false)
+    const [toHide, setToHide] = useState(false)
     const [metaMaskWalletAddress, setMetaMaskWalletAddress] = useState(null)
     const [tonWalletAddress, setTonWalletAddress] = useState(null)
     const [metaMaskWalletBalance,setMetaMaskWalletBalance] = useState(null)
@@ -29,6 +31,20 @@ const FantasyContext = ({children}) => {
     const [activePlayer, setActivePlayer] = useState(null)
     const [provider, setProvider] = useState(null);
     const [account, setAccount] = useState(null);
+
+    useEffect(() => {
+        // Toggle body overflow based on isMenuOpen state
+        if (walletMenu) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = ''; // Revert to original overflow
+        }
+
+        // Cleanup on unmount
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [walletMenu]);
     
     return(
         <Fantasy.Provider value = {{activeLeague,setActiveLeague,activeTeamName,setActiveTeamName,activeTeamId,setActiveTeamId,
@@ -36,7 +52,8 @@ const FantasyContext = ({children}) => {
             activeLeagueId,setActiveLeagueId,activeRound,setActiveRound,selectedBet,setSelectedBet,betAmounts,setBetAmounts,
             pendingBets,setPendingBets,depositMenu,setDepositMenu,metaMaskWalletAddress,setMetaMaskWalletAddress,metaMaskWalletBalance,setMetaMaskWalletBalance,
             data,setData,balance,setBalance,activeTeam,setActiveTeam,activePlayer,setActivePlayer,tonWalletAddress,setTonWalletAddress,
-            provider,setProvider,account,setAccount,tonWalletBalance,setTonWalletBalance
+            provider,setProvider,account,setAccount,tonWalletBalance,setTonWalletBalance,walletMenu,setWalletMenu,
+            toHide,setToHide
         }}>
             {children}
         </Fantasy.Provider>

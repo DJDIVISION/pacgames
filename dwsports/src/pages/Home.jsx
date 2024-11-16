@@ -14,14 +14,14 @@ import DepositMenu from '../components/menus/DepositMenu'
 import { HeroSection } from '../components/home'
 import Hero from '../components/home/Hero'
 import SmartNavBar from '../components/SmartNavBar'
-import WalletMenu from '../components/menus/WalletMenu'
+
 
 
 
 const Home = ({toggleTheme}) => {
 
   const {depositMenu, setDepositMenu} = FantasyState();
-  const [walletMenu, setWalletMenu] = useState(false)
+  const {walletMenu, setWalletMenu} = FantasyState();
   const {walletBalance,setWalletBalance} = FantasyState();
   const { user } = useAuth();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -54,10 +54,8 @@ const Home = ({toggleTheme}) => {
       {depositMenu && (
         <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="depositmenu"/>
       )}
-      {walletMenu && (
-        <WalletMenu walletMenu={walletMenu} setWalletMenu={setWalletMenu} key="walletMenu" />
-      )}
-    <Hero />
+      
+    <Hero walletMenu={walletMenu} setWalletMenu={setWalletMenu} depositMenu={depositMenu} setDepositMenu={setDepositMenu}/>
     </motion.div>
   )
 }

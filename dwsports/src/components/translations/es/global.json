@@ -45,9 +45,10 @@
     "navbar": {
         "sports": "APUESTAS DEPORTIVAS",
         "fantasy": "FÚTBOL FANTASÍA",
-        "deposit": "DEPÓSITO",
+        "deposit": "DEPOSITAR",
         "switch": "CAMBIAR MODO",
-        "wallet": "CARTERA"
+        "wallet": "CARTERA",
+        "withdraw": "RETIRAR"
     },
     "hero": {
         "message1": "¡No puedes vincular a otro referente!",

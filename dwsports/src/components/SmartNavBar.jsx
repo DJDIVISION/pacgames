@@ -15,6 +15,7 @@ import chip from '../assets/chip.png'
 
 import fantasy from '../assets/fantasy.png'
 import deposit from '../assets/logos/shoDeposit.png'
+import withdraw from '../assets/logos/withdraw.png'
 import Swal from "sweetalert2";
 import { Avatar, Fab, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
@@ -56,10 +57,11 @@ const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
     const [open, setOpen] = useState(false);
     const theme = useTheme();
     const {depositMenu, setDepositMenu} = FantasyState();
-    
+    const {toHide, setToHide} = FantasyState();
 
     const isOpen = ()=>{
         setOpen(!open);
+        setToHide(!toHide)
       }
 
     useEffect(() => {
@@ -118,13 +120,13 @@ const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
                         }}>
                           <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }} 
                               animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 0.7 }} >
+                              transition={{ delay: 0.7 }} onClick={() => setToHide(false)}>
                               <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
                               <StaggerAvatarName>{t("navbar.sports")}</StaggerAvatarName>
                           </StaggerRow></LinkR>
                           <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 0.8 }} >
+                              transition={{ delay: 0.8 }} onClick={() => setToHide(false)}>
                               <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
                               <StaggerAvatarName>{t("navbar.fantasy")}</StaggerAvatarName>
                           </StaggerRow></LinkR>
@@ -134,15 +136,21 @@ const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
                               <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
                               <StaggerAvatarName>CASINO</StaggerAvatarName>
                           </StaggerRow></LinkR> */}
-                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setDepositMenu(true);}}
+                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setDepositMenu(true);setToHide(true)}}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 0.9 }} >
                               <StaggerImageHolder><img src={deposit} alt="wallet" /></StaggerImageHolder>
                               <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
                           </StaggerRow>
+                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setWalletMenu(true);setToHide(true)}}
+                              animate={{ opacity: 1, y: -60 }}
+                              transition={{ delay: 1 }} >
+                              <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>
+                              <StaggerAvatarName>{t("navbar.withdraw")}</StaggerAvatarName>
+                          </StaggerRow>
                           <StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 1 }}> 
+                              transition={{ delay: 1.1 }}> 
                           <StaggerImageHolder>
                           {theme.body === '#202020' ? <LightIcon onClick={toggleTheme}/> : <DarkIcon onClick={toggleTheme}/>}
                           </StaggerImageHolder>
