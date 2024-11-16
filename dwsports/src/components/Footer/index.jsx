@@ -134,32 +134,32 @@ export const SmartButtonWrapper = styled.a`
 
 export const Partners = [
     {
-        name: "SHINOBI",
-        website:"https://sh1nobi.io/",
-        telegram: "https://t.me/SHINOBIPORTAL",
-        twitter: "https://x.com/sibonihs?s=21&t=QRHKIh6sLsC1HoUdftHPYQ",
-        whitepaper: "https://shinobi-3.gitbook.io/shinobi-revolutionizing-defi-ecosystems-with-shid",
-        buy: "https://pool.shido.io/pool/0x4aed39bda730a74874a576b7c0d68e2c641cf912",
+        name: 'SHINOBI',
+        website: 'https://sh1nobi.io',
+        telegram: 'https://t.me/SHINOBIPORTAL',
+        twitter: 'https://x.com/sibonihs?s=21&t=QRHKIh6sLsC1HoUdftHPYQ',
+        whitepaper: 'https://shinobi-3.gitbook.io/shinobi-revolutionizing-defi-ecosystems-with-shid',
+        buy: 'https://pool.shido.io/pool/0x4aed39bda730a74874a576b7c0d68e2c641cf912',
         logo: shinobi,
         bot: null,
         app: null
     },
     {
-        name: "FREN",
-        website: "https://fren.tg",
-        telegram: "https://t.me/frentgnews",
-        twitter: "https://x.com/fren_airdrop",
+        name: 'FREN',
+        website: 'https://fren.tg',
+        telegram: 'https://t.me/frentgnews',
+        twitter: 'https://x.com/fren_airdrop',
         whitepaper: null,
         buy: null,
         logo: fren,
-        bot: "https://t.me/FrenTekBot",
-        app: "https://t.me/FrenTekBot/fren"
+        bot: 'https://t.me/FrenTekBot',
+        app: 'https://t.me/FrenTekBot/fren'
     },
     {
-        name: "MOVE",
+        name: 'MOVE',
         website:null,
-        telegram: "https://t.me/MoveOnTonBot",
-        twitter: "https://x.com/moveonton",
+        telegram: 'https://t.me/MoveOnTonBot',
+        twitter: 'https://x.com/moveonton',
         whitepaper: null,
         buy: null,
         logo: move,
@@ -167,12 +167,12 @@ export const Partners = [
         app: null
     },
     {
-        name: "TON",
-        website:"https://ton.org/",
-        telegram: "https://t.me/toncoin",
-        twitter: "https://x.com/ton_blockchain",
+        name: 'TON',
+        website:'https://ton.org',
+        telegram: 'https://t.me/toncoin',
+        twitter: 'https://x.com/ton_blockchain',
         whitepaper: null,
-        buy: "https://ton.org/en/buy-toncoin?filters[exchange_groups][slug][$eq]=buy-with-card&pagination[page]=1&pagination[pageSize]=100",
+        buy: 'https://ton.org/en/buy-toncoin?filters[exchange_groups][slug][$eq]=buy-with-card&pagination[page]=1&pagination[pageSize]=100',
         logo: ton,
         bot: null,
         app: null

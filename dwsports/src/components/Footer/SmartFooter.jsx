@@ -23,10 +23,11 @@ const SmartFooter = () => {
   useEffect(() => {
     if(currentPartner){
       setActivePartner(Partners[currentPartner])
+      console.log(activePartner)
     }
   }, [currentPartner])
 
-  console.log(activePartner)
+  
 
   const {ref, inView} = useInView();
 
@@ -55,7 +56,7 @@ const SmartFooter = () => {
         setCurrentPartner((prev) => (prev + 1) % Partners.length);
         setShowingPartner(true); // Show next partner
       }, 500); // 1-second delay
-    }, 10000); // Total cycle: 4 seconds display + 1 second blank
+    }, 5000); // Total cycle: 4 seconds display + 1 second blank
     return () => clearInterval(interval);
   }, []);
 
@@ -244,47 +245,61 @@ const SmartFooter = () => {
                 exit="exit" style={{borderRadius: '50%'}}/>
               </TopSmartRowThree>
               <TopSmartRowTwo>
-                {activePartner?.twitter !== null && (
-                        <SmartButtonWrapper href={`${activePartner?.twitter}`} target="_blank"><motion.div variants={variantsTwo}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"><img src={x} alt="x" /></motion.div></SmartButtonWrapper>
+                {(activePartner?.twitter !== null) ? (
+                     <SmartButtonWrapper href={`${activePartner?.twitter}`} target="_blank"><motion.div variants={variantsTwo}
+                     initial="initial"
+                     animate="animate"
+                     exit="exit"><img src={x} alt="x" /></motion.div></SmartButtonWrapper>   
+                ) : (
+                        ""
                 )}
-                {activePartner?.telegram !== null && (
-                        <SmartButtonWrapper href={`${activePartner?.telegram}`} target="_blank"><motion.div variants={variantsTwo}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"><img src={telegram} alt="x" /></motion.div></SmartButtonWrapper>
+                {(activePartner?.telegram !== null) ? (
+                     <SmartButtonWrapper href={`${activePartner?.telegram}`} target="_blank"><motion.div variants={variantsTwo}
+                     initial="initial"
+                     animate="animate"
+                     exit="exit"><img src={telegram} alt="x" /></motion.div></SmartButtonWrapper>   
+                ) : (
+                     ""   
                 )}
-                {activePartner?.website !== null && (
-                        <SmartButtonWrapper href={`${activePartner?.website}`} target="_blank"><motion.div variants={variantsTwo}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"><img src={website} alt="x" /></motion.div></SmartButtonWrapper>
+                {(activePartner?.website !== null) ? (
+                      <SmartButtonWrapper href={`${activePartner?.website}`} target="_blank"><motion.div variants={variantsTwo}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"><img src={website} alt="x" /></motion.div></SmartButtonWrapper>  
+                ) : (
+                        ""
                 )}
-                {activePartner?.whitepaper !== null && (
-                        <SmartButtonWrapper href={`${activePartner?.whitepaper}`} target="_blank"><motion.div variants={variantsTwo}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"><img src={white} alt="x" style={{width: '70%', borderRadius: '50%'}}/></motion.div></SmartButtonWrapper>
+                {(activePartner?.whitepaper !== null) ? (
+                      <SmartButtonWrapper href={`${activePartner?.whitepaper}`} target="_blank"><motion.div variants={variantsTwo}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"><img src={white} alt="x" style={{width: '70%', borderRadius: '50%'}}/></motion.div></SmartButtonWrapper>  
+                ) : (
+                        ""
                 )}
-                {activePartner?.buy !== null && (
-                        <SmartButtonWrapper href={`${activePartner?.buy}`} target="_blank"><motion.div variants={variantsTwo}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"><img src={buy} alt="x"/></motion.div></SmartButtonWrapper>
+                {(activePartner?.buy !== null) ? (
+                    <SmartButtonWrapper href={`${activePartner?.buy}`} target="_blank"><motion.div variants={variantsTwo}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"><img src={buy} alt="x"/></motion.div></SmartButtonWrapper>    
+                ) : (
+                     ""   
                 )}
-                {activePartner?.bot !== null && (
-                        <SmartButtonWrapper href={`${activePartner?.bot}`} target="_blank"><motion.div variants={variantsTwo}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"><img src={bot} alt="x"/></motion.div></SmartButtonWrapper>
+                {(activePartner?.bot !== null) ? (
+                       <SmartButtonWrapper href={`${activePartner?.bot}`} target="_blank"><motion.div variants={variantsTwo}
+                       initial="initial"
+                       animate="animate"
+                       exit="exit"><img src={bot} alt="x"/></motion.div></SmartButtonWrapper> 
+                ) : (
+                        ""
                 )}
-                {activePartner?.app !== null && (
-                        <SmartButtonWrapper href={`${activePartner?.app}`} target="_blank"><motion.div variants={variantsTwo}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"><img src={apps} alt="x"/></motion.div></SmartButtonWrapper>
+                {(activePartner?.app !== null) ? (
+                    <SmartButtonWrapper href={`${activePartner?.app}`} target="_blank"><motion.div variants={variantsTwo}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"><img src={apps} alt="x"/></motion.div></SmartButtonWrapper>    
+                ) : (
+                        ""
                 )}
               </TopSmartRowTwo>
                 </motion.div>
