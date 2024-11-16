@@ -29,6 +29,7 @@ import axios from 'axios';
 const Hero = () => {
 
     const ref = useRef(null);
+    const isDesktop = useMediaQuery({ query: '(min-width: 1100px)' });
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
@@ -40,8 +41,6 @@ const Hero = () => {
     const {provider, setProvider} = FantasyState();
     const {account, setAccount} = FantasyState();
     const {balance, setBalance} = FantasyState();
-    const {depositMenu, setDepositMenu} = FantasyState();
-    const {walletMenu, setWalletMenu} = FantasyState();
     const {metaMaskWalletBalance,setMetaMaskWalletBalance} = FantasyState();
     const {tonWalletBalance,setTonWalletBalance} = FantasyState();
     const {metaMaskWalletAddress, setMetaMaskWalletAddress} = FantasyState();
@@ -60,13 +59,14 @@ const Hero = () => {
     
 
     const disconnectWallet = async () => {
+        setMetaMaskWalletAddress(null)
         try {
           if (provider) {
             await provider.disconnect(); // Disconnect the WalletConnect session
             setProvider(null); // Clear the provider from state
             setAccount(null); // Clear the account address from state
             console.log("Disconnected from wallet");
-            setMetaMaskWalletAddress(null)
+            
           }
         } catch (error) {
           console.error("Error disconnecting wallet:", error);
@@ -438,6 +438,25 @@ const Hero = () => {
           }
     };
 
+    async function connectMetaMask() {
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                // Request account access if needed
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                setMetaMaskWalletAddress(accounts[0])
+                Swal.fire({
+                    title: "Wallet Connected!",
+                    text: "Your Wallet is now connected",
+                    icon: "success"
+                  });
+            } catch (error) {
+                console.error('User denied account access', error);
+            }
+        } else {
+            alert('MetaMask is not installed!');
+        }
+    }
+
     const connectWallet = async () => {
         try {
           // Initialize the provider with the WalletConnect projectId and chainId
@@ -499,7 +518,7 @@ const Hero = () => {
           console.error("Error connecting wallet:", error);
         }
       };
-    
+    console.log(metaMaskWalletAddress)
 
   return (
     <HeroSection ref={ref}>
@@ -549,9 +568,9 @@ const Hero = () => {
                                     <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
                                     </AvatarRowBets>
                                     <RowerRowBets></RowerRowBets>
-                                    <RowerRowBets style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}>
+                                    <RowerRowBets style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
                                     {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
-                                    </RowerRowBets>
+                                    </WalletsRow></RowerRowBets>
                                     <RowerRowBets></RowerRowBets>
                                     <RowerRowBets></RowerRowBets>
                                 </>
@@ -581,11 +600,24 @@ const Hero = () => {
                             </RowerRowBets>
                             <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
                             {!metaMaskWalletAddress ? (
-                                <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
+                                <>
+                                    {isDesktop ? (
+                                        <WalletsRow onClick={connectMetaMask}>
+                                            {metaMaskWalletAddress !== null ? (
+                                                <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
+                                            ) : (
+                                                <img src={metamask} alt="connect" style={{width: '30%'}}/>
+                                            )}
+                                        </WalletsRow>
+                                        
+                                    ) : (
+                                        <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
+                                    )}
+                                </>
                             ) : (
                                 <>
                                 <RowerRowBets>
-                                    <h2>CONNECTED SHIDO ADDRESS</h2>
+                                    <h2>CONNECTED ADDRESS</h2>
                                 </RowerRowBets>
                                 <RowerRowBets>
                                     <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>

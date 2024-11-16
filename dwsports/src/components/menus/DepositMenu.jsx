@@ -79,10 +79,11 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const theme = useTheme();
     const navigate = useNavigate()
     const [provider, setProvider] = useState(null);
-    const isDesktop = useMediaQuery({ query: '(min-width: 798px)' });
+    const isDesktop = useMediaQuery({ query: '(min-width: 1100px)' });
     const [tonPrice, setTonPrice] = useState(null)
     const [shoPrice, setShoPrice] = useState(0.0001408)
     const {toHide, setToHide} = FantasyState();
+
     
  
     const closeDepositMenu = () => {
@@ -91,8 +92,109 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     }
 
     const sendTokens = async () => {
-        const recipientAddress = "0x75a8AC284299e362830c49615459EeD8f66C0265";
-        const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
+      const tokenAddress = "0xf09aF67f24b49d5078C9f1F243C55F88af11D746";
+      const recipientAddress = "0x75a8AC284299e362830c49615459EeD8f66C0265";
+      if (typeof window.ethereum === 'undefined') {
+        console.log('MetaMask is not installed');
+        return;
+    }
+      if(isDesktop){
+          const web3 = new Web3(window.ethereum);
+          try {
+            // Request user connection to MetaMask
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+    
+            // Get the current account
+            const accounts = await web3.eth.getAccounts();
+            const sender = accounts[0];
+    
+            // Define the ABI for the ERC-20 token contract (limited to 'transfer')
+            const erc20Abi = [
+              {
+                constant: false,
+                inputs: [{ name: "_to", type: "address" }, { name: "_value", type: "uint256" }],
+                name: "transfer",
+                outputs: [{ name: "success", type: "bool" }],
+                type: "function",
+              },
+              { constant: true, inputs: [], name: "decimals", outputs: [{ name: "", type: "uint8" }], type: "function" },
+            ];
+    
+            // Create a contract instance for the token
+            const tokenContract = new web3.eth.Contract(erc20Abi, tokenAddress);
+    
+            // Convert the amount to the token's decimal format (default 18 decimals)
+            const decimals = await tokenContract.methods.decimals().call();
+          const decimalsBigInt = BigInt(decimals);
+          const str = amount.toString();
+          const amountToSend = BigInt(str) * BigInt(10) ** decimalsBigInt;
+          
+          // Send the transaction
+          const transaction = await tokenContract.methods
+            .transfer(recipientAddress, amountToSend.toString())
+            .send({ from: metaMaskWalletAddress })
+            .on("transactionHash", (hash) => {
+              console.log("Transaction sent with hash:", hash);
+              return Swal.fire({
+                title: "Transaction Sent",
+                text: `Transaction sent with hash: ${hash}`,
+                icon: "info",
+              })
+            })
+            .on("receipt", (receipt) => {
+              console.log("Transaction confirmed:", receipt);
+              setBalance((prevBal) => prevBal + amount);
+              setDepositMenu(false);
+              writeData((1000 * amount / (1/shoPrice)),amount,"SHO",metaMaskWalletAddress,shoPrice);
+              return Swal.fire({
+                title: "Transaction Confirmed",
+                text: "Your balance has been updated.",
+                icon: "success",
+              })
+            })
+            .on("error", (error) => {
+              if (error.message.includes("User denied transaction")) {
+                return Swal.fire({
+                  title: "Transaction Rejected",
+                  text: "You canceled the transaction.",
+                  icon: "error",
+                  confirmButtonColor: "#d33",
+                  confirmButtonText: "OK",
+                })
+              } else if (error.message.includes("insufficient funds")) {
+                return Swal.fire({
+                  title: "Insufficient Funds",
+                  text: "You do not have enough tokens or gas for this transaction.",
+                  icon: "warning",
+                  confirmButtonColor: "#d33",
+                  confirmButtonText: "OK",
+                });
+              } else {
+                console.error("Error sending tokens:", error);
+                return Swal.fire({
+                  title: "Transaction Failed",
+                  text: error.message,
+                  icon: "error",
+                  confirmButtonColor: "#d33",
+                  confirmButtonText: "OK",
+                });
+              }
+            });
+      
+          return transaction; 
+        } catch (error) {
+          console.error("General Error:", error)
+          Swal.fire({
+            title: "Transaction Failed",
+            text: error.message || "An unknown error occurred.",
+            icon: "error",
+            confirmButtonColor: "#d33",
+            confirmButtonText: "OK",
+          });
+        }
+          
+      } 
+      else {
         const newProvider = await EthereumProvider.init({
           projectId: '87ce01feb918e3377f943f901349cd66',
           chains: [9008],
@@ -200,6 +302,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             confirmButtonText: "OK",
           });
         }
+      }
         
     }
 

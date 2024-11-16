@@ -81,7 +81,7 @@ export const RowerRowBets = styled.div`
     }
 `;
 export const WalletsRow = styled.div`
-    width: 80%;
+    width: 200px;
     height: 70px;
     border-radius: 8px;
     ${props => props.theme.displayFlexCenter};
