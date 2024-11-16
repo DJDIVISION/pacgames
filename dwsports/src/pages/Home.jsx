@@ -15,6 +15,8 @@ import { HeroSection } from '../components/home'
 import Hero from '../components/home/Hero'
 import SmartNavBar from '../components/SmartNavBar'
 import WalletMenu from '../components/menus/WalletMenu'
+import Footer from '../components/Footer/Footer'
+import SmartFooter from '../components/Footer/SmartFooter'
 
 
 
@@ -56,10 +58,15 @@ const Home = ({toggleTheme}) => {
         <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="depositmenu"/>
       )}
       {walletMenu && (
-        <WalletMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="depositmenu"/>
+        <WalletMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="walletMenu"/>
       )}
       
     <Hero />
+    {isMobile ? (
+          <SmartFooter key="smartfooter"/>
+        ) : (
+          <Footer key="footer"/>
+        )}
     </motion.div>
   )
 }

@@ -602,7 +602,7 @@ const Hero = () => {
                             {!metaMaskWalletAddress ? (
                                 <>
                                     {isDesktop ? (
-                                        <WalletsRow onClick={connectMetaMask}>
+                                        <WalletsRow onClick={connectWallet}>
                                             {metaMaskWalletAddress !== null ? (
                                                 <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
                                             ) : (
@@ -661,7 +661,7 @@ const Hero = () => {
                   )}
               </TeamBetsHolder>
 
-              <TeamBetsHolder style={{ width: '90%', margin: '10px 0'}}
+              <TeamBetsHolder style={{ width: '90%', margin: '10px 0 50px 0'}}
                   initial={{ height: '80px' }}
                   animate={{ height: expandedReferrals === true ? '330px' : '80px' }}
                   transition={{ duration: 0.5 }}
