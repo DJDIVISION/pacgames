@@ -10,7 +10,7 @@ import { useAuth } from '../../pages/functions';
 import { supabase } from '../../supabase/client';
 import {useInView} from "react-intersection-observer";
 
-const WalletMenu = ({walletMenu,setWalletMenu}) => {
+const WalletMenu = () => {
 
     const tiers = [
         {
@@ -38,6 +38,7 @@ const WalletMenu = ({walletMenu,setWalletMenu}) => {
     const [percentage, setPercentage] = useState(null)
     const [percentageTwo, setPercentageTwo] = useState(null)
     const [percentageLeft, setPercentageLeft] = useState(null)
+    const {walletMenu, setWalletMenu} = FantasyState();
     const {ref, inView} = useInView({
         threshold: 0.2
     });
@@ -172,7 +173,7 @@ const ProgressBarTop = styled(motion.div)`
     initial="initial"
     animate="animate"
     exit="exit"
-    style={{alignItems: 'center', overflow: 'hidden', opacity: 1}}>
+    style={{alignItems: 'center', overflow: 'hidden', zIndex: 1000}}>
         <DepositBigTitle>YOUR TIER</DepositBigTitle>
      <CloseStats onClick={closeWalletMenu} /> 
      <Tiers>

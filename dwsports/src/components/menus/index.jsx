@@ -217,12 +217,13 @@ export const DepositTokenToken = styled.div`
 
 export const TokenHolder = styled(Button)`
     &&&{
-        width: 80%;
+        width: 120px;
         height: 70%;
         border: 1px solid ${props => props.theme.card};
         border-radius: 20px;
         background: #504949;
         ${props => props.theme.displayFlexCenter};
+        
     }
 `;
 
@@ -249,6 +250,11 @@ export const SmallLogoHolder = styled.div`
         color: ${props => props.theme.text};
         font-size: 16px;
         font-weight: bold;
+    }
+    @media(min-width: 1100px){
+        img{
+        width: 25%;
+    }
     }
 `;
 

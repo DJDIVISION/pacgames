@@ -14,6 +14,7 @@ import DepositMenu from '../components/menus/DepositMenu'
 import { HeroSection } from '../components/home'
 import Hero from '../components/home/Hero'
 import SmartNavBar from '../components/SmartNavBar'
+import WalletMenu from '../components/menus/WalletMenu'
 
 
 
@@ -44,18 +45,21 @@ const Home = ({toggleTheme}) => {
     <motion.div initial="out" animate="in" variants={animationOne} transition={transition}>
     {isMobile ? (
           <SmartNavBar key="smartnavbar"
-            toggleTheme={toggleTheme} walletMenu={walletMenu} setWalletMenu={setWalletMenu}
+            toggleTheme={toggleTheme} 
           />
         ) : (
           <NavBar key="navbar"
-            toggleTheme={toggleTheme} walletMenu={walletMenu} setWalletMenu={setWalletMenu}
+            toggleTheme={toggleTheme}
           />
         )}
       {depositMenu && (
         <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="depositmenu"/>
       )}
+      {walletMenu && (
+        <WalletMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="depositmenu"/>
+      )}
       
-    <Hero walletMenu={walletMenu} setWalletMenu={setWalletMenu} depositMenu={depositMenu} setDepositMenu={setDepositMenu}/>
+    <Hero />
     </motion.div>
   )
 }

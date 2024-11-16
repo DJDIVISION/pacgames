@@ -26,7 +26,7 @@ import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import Web3 from "web3";
 import axios from 'axios';
 
-const Hero = ({walletMenu,setWalletMenu,depositMenu,setDepositMenu}) => {
+const Hero = () => {
 
     const ref = useRef(null);
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
@@ -40,6 +40,8 @@ const Hero = ({walletMenu,setWalletMenu,depositMenu,setDepositMenu}) => {
     const {provider, setProvider} = FantasyState();
     const {account, setAccount} = FantasyState();
     const {balance, setBalance} = FantasyState();
+    const {depositMenu, setDepositMenu} = FantasyState();
+    const {walletMenu, setWalletMenu} = FantasyState();
     const {metaMaskWalletBalance,setMetaMaskWalletBalance} = FantasyState();
     const {tonWalletBalance,setTonWalletBalance} = FantasyState();
     const {metaMaskWalletAddress, setMetaMaskWalletAddress} = FantasyState();

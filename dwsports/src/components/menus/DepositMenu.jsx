@@ -325,7 +325,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     initial="initial"
     animate="animate"
     exit="exit"
-    style={{alignItems: 'center', overflow: 'hidden', paddingTop: '80px'}}>
+    style={{alignItems: 'center', overflow: 'hidden', paddingTop: '80px', zIndex: 1000}}>
         <DepositBigTitle>Select the token <br/> you want to deposit</DepositBigTitle>
      <CloseStats onClick={closeDepositMenu} /> 
       <DepositBigTitle>
@@ -360,7 +360,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           <DepositTokenRow>
             <DepositTokenFrom><h2>To:</h2></DepositTokenFrom>
             <DepositTokenToken>
-              <LogoHolder style={{ width: '20%' }}><img src={PGZ} alt="" /></LogoHolder>
+              <SmallLogoHolder><img src={PGZ} alt="" style={{width: '25%'}}/></SmallLogoHolder>
               <SmallLogoHolder><h2>PGZ</h2></SmallLogoHolder>
               <InputHolder><InputInput type="number" disabled={true} defaultValue="0.0" value={parseFloat((1000 * tonAmount / (1/tonPrice)).toFixed(2))}></InputInput></InputHolder>
             </DepositTokenToken>
@@ -380,7 +380,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           <DepositTokenRow>
             <DepositTokenFrom><h2>To:</h2></DepositTokenFrom>
             <DepositTokenToken>
-              <LogoHolder style={{ width: '20%' }}><img src={PGZ} alt="" /></LogoHolder>
+              <SmallLogoHolder style={{ width: '20%' }}><img src={PGZ} alt="" /></SmallLogoHolder>
               <SmallLogoHolder><h2>PGZ</h2></SmallLogoHolder>
               <InputHolder><InputInput type="number" disabled={true} value={1000 * amount / (1/shoPrice)}></InputInput></InputHolder>
             </DepositTokenToken>

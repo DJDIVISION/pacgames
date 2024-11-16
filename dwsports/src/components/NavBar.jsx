@@ -30,6 +30,7 @@ import { useTranslation } from 'react-i18next'
 import Onboarding from '@metamask/onboarding';
 import Web3 from "web3";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
+import withdraw from '../assets/logos/withdraw.png'
 
 const NavBar = ({toggleTheme}) => {
 
@@ -38,6 +39,7 @@ const NavBar = ({toggleTheme}) => {
     const { user } = useAuth();
     const navigate = useNavigate()
     const {depositMenu, setDepositMenu} = FantasyState();
+    
     const [open, setOpen] = useState(false);
     /* const userFriendlyAddress = useTonAddress();
     const rawAddress = useTonAddress(false);
@@ -47,6 +49,7 @@ const NavBar = ({toggleTheme}) => {
     const [error, setError] = useState(null);
     const onboarding = new Onboarding();
     const {walletAddress, setWalletAddress} = FantasyState();
+    const {walletMenu, setWalletMenu} = FantasyState();
     const [t, i18n] = useTranslation("global");
     const {provider, setProvider} = FantasyState();
     const {account, setAccount} = FantasyState();
@@ -292,37 +295,18 @@ const disconnectMetamask = async () => {
             </NavIcon>
             <NavText>{t("navbar.fantasy")}</NavText>
         </NavColumn></LinkR>
-        {/* <LinkR to="/airdrop"><NavColumn>
-            <NavIcon>
-                <img src={pacton} alt="sports" />
-            </NavIcon>
-            <NavText>AIRDROP</NavText>
-        </NavColumn></LinkR> */}
-        {/* <LinkR to="/roulette"><NavColumn>
-            <NavIcon>
-                <img src={roulette} alt="roulette" />
-            </NavIcon>
-            <NavText>ROULETTE</NavText>
-        </NavColumn></LinkR> */}
-        {/* <LinkR to="/casino"><NavColumn>
-            <NavIcon>
-                <img src={chip} alt="casino" />
-            </NavIcon>
-            <NavText>CASINO</NavText>
-        </NavColumn></LinkR> */}
         <NavColumn onClick={() => setDepositMenu(true)}>
             <NavIcon>
                 <img src={deposit} alt="casino" />
             </NavIcon>
             <NavText>{t("navbar.deposit")}</NavText>
         </NavColumn>
-        <NavColumn >
+        <NavColumn onClick={() => setWalletMenu(true)}>
             <NavIcon>
-            {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectMetamask}>{account}</WalletAddressButton>}
+                <img src={withdraw} alt="casino" />
             </NavIcon>
-            
+            <NavText>{t("navbar.withdraw")}</NavText>
         </NavColumn>
-        
     </Nav>
     
     </>

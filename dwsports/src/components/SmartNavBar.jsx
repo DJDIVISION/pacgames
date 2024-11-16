@@ -36,7 +36,7 @@ import { ethers } from "ethers";
 import WalletMenu from './menus/WalletMenu';
 
 
-const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
+const SmartNavBar = ({toggleTheme}) => {
 
     const languages = [
         {
@@ -57,6 +57,7 @@ const SmartNavBar = ({toggleTheme,walletMenu,setWalletMenu}) => {
     const [open, setOpen] = useState(false);
     const theme = useTheme();
     const {depositMenu, setDepositMenu} = FantasyState();
+    const {walletMenu, setWalletMenu} = FantasyState();
     const {toHide, setToHide} = FantasyState();
 
     const isOpen = ()=>{
