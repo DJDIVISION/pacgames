@@ -255,6 +255,18 @@ position: relative;
 padding: 10px;
 `;
 
+export const LiveBetIcon = styled.div`
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 40px;
+    height: 40px;
+    background: orange;
+    border-radius: 50%;
+    transform: translate(25%,-25%);
+
+`;
+
 export const TeamBetsHolder = styled(motion.div)`
 width: 98%;
 border: 2px solid ${props => props.theme.card};

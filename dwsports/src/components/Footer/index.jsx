@@ -8,6 +8,7 @@ import shinobi from '../../assets/logos/shinobi.png'
 import sho from '../../assets/logos/sho.png'
 import ton from '../../assets/logos/ton.png'
 import move from '../../assets/logos/move.jpg'
+import fren from '../../assets/logos/fren.png'
 
 export const FooterSection = styled.div`
     width: 100%;
@@ -27,6 +28,7 @@ export const SmartFooterSection = styled.div`
     border-top: 1px solid ${props => props.theme.text};
     position: relative;
     overflow: hidden;
+    padding: 10px;
     box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.MainAccentTwo};
 `;
 
@@ -82,6 +84,7 @@ export const TopSmartRowTwo = styled.div`
     height: 20%;
     ${props => props.theme.displayFlexCenter};
     text-shadow: ${props => props.theme.textShadowTwo};
+    transform: translateY(-10px);
     h2{
         color: ${props => props.theme.MainAccentTwo};
         font-size: 28px;
@@ -89,7 +92,7 @@ export const TopSmartRowTwo = styled.div`
         margin: auto;
     }
     svg{
-        transform: translateY(-10px);
+        transform: translateY(10px);
     }
     @media(max-width: 498px){
         svg{
@@ -103,6 +106,7 @@ export const TopSmartRowThree = styled.div`
     height: 45%;
     ${props => props.theme.displayFlexCenter};
     text-shadow: ${props => props.theme.textShadowTwo};
+    transform: translateY(-10px);
     img{
         width: 30%;
         display: block;
@@ -136,24 +140,41 @@ export const Partners = [
         twitter: "https://x.com/sibonihs?s=21&t=QRHKIh6sLsC1HoUdftHPYQ",
         whitepaper: "https://shinobi-3.gitbook.io/shinobi-revolutionizing-defi-ecosystems-with-shid",
         buy: "https://pool.shido.io/pool/0x4aed39bda730a74874a576b7c0d68e2c641cf912",
-        logo: shinobi
+        logo: shinobi,
+        bot: null,
+        app: null
+    },
+    {
+        name: "FREN",
+        website: "https://fren.tg",
+        telegram: "https://t.me/frentgnews",
+        twitter: "https://x.com/fren_airdrop",
+        whitepaper: null,
+        buy: null,
+        logo: fren,
+        bot: "https://t.me/FrenTekBot",
+        app: "https://t.me/FrenTekBot/fren"
     },
     {
         name: "MOVE",
-        website:"https://sh1nobi.io/",
+        website:null,
         telegram: "https://t.me/MoveOnTonBot",
         twitter: "https://x.com/moveonton",
-        whitepaper: "",
-        buy: "",
-        logo: move
+        whitepaper: null,
+        buy: null,
+        logo: move,
+        bot: null,
+        app: null
     },
     {
         name: "TON",
-        website:"https://sh1nobi.io/",
-        telegram: "https://t.me/SHINOBIPORTAL",
-        twitter: "https://x.com/sibonihs?s=21&t=QRHKIh6sLsC1HoUdftHPYQ",
-        whitepaper: "https://shinobi-3.gitbook.io/shinobi-revolutionizing-defi-ecosystems-with-shid",
-        buy: "https://pool.shido.io/pool/0x4aed39bda730a74874a576b7c0d68e2c641cf912",
-        logo: ton
+        website:"https://ton.org/",
+        telegram: "https://t.me/toncoin",
+        twitter: "https://x.com/ton_blockchain",
+        whitepaper: null,
+        buy: "https://ton.org/en/buy-toncoin?filters[exchange_groups][slug][$eq]=buy-with-card&pagination[page]=1&pagination[pageSize]=100",
+        logo: ton,
+        bot: null,
+        app: null
     }
 ]

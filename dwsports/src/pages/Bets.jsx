@@ -22,13 +22,15 @@ import {Section,BottomRow,IconHolder,LeagueRowBets,Container,item,LeagueHolder,A
   CurrentBetHolder,
   CurrentBetLogoHolder,
   CurrentBetNameHolder,
-  AddIcon
+  AddIcon,
+  LiveBetIcon
 } from './indexThree' 
 import { FantasyState } from '../context/FantasyContext';
 import axios from 'axios';
 import ownGoal from '../assets/logos/ownGoal.png'
 import goal from '../assets/logos/goal.png'
 import redCard from '../assets/logos/redCard.png'
+import betting from '../assets/logos/liveBetting.jpg'
 import penalty from '../assets/logos/penalty.png'
 import yellowCard from '../assets/logos/yellowCard.png'
 import { LowRower,Rower,RowerColumn,RowerRowBets,MiniRower,MiniRowerType,MiniRowerAmount,RowerFirstEvent, RowerRow, RowerRowEvent, RowerRowName, RowerTeamEvent, AbsoluteScore,
@@ -101,6 +103,7 @@ const Bets = () => {
   const [openWonBetsMenu, setOpenWonBetsMenu] = useState(false)
   const [openLostBetsMenu, setOpenLostBetsMenu] = useState(false)
   const [openLiveMatchesMenu, setOpenLiveMatchesMenu] = useState(false)
+  const [openLiveBetMenu, setOpenLiveBetMenu] = useState(false)
   const [selectedOddsMenu, setSelectedOddsMenu] = useState(false)
   const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
   const {activeTeamId, setActiveTeamId} = FantasyState();
@@ -110,6 +113,7 @@ const Bets = () => {
   const [openMyBetsMenu, setOpenMyBetsMenu] = useState(false)
   const [openCurrentBetMenu, setOpenCurrentMenu] = useState(false)
   const [loadingMatches, setLoadingMatches] = useState(false)
+  const [loadingLiveBets, setLoadingLiveBets] = useState(false)
   const [loadingLiveMatches, setLoadingLiveMatches] = useState(false)
   const [selectedPlayerMenu, setSelectedPlayerMenu] = useState(false)
   const [loadingWonBets, setLoadingWonBets] = useState(false)
@@ -597,6 +601,7 @@ const Bets = () => {
     setOpenLiveMatchesMenu(false)
     setOpenCurrentMenu(false)
     setOpenMyBetsMenu(false)
+    setOpenLiveBetMenu(false)
     setOpenLostBetsMenu(false)
     setOpenWonBetsMenu(false)
    setCurrentRoundMatches([])
@@ -614,6 +619,7 @@ const Bets = () => {
     setOpenLiveMatchesMenu(false)
     setOpenWonBetsMenu(false)
     setOpenLostBetsMenu(false)
+    setOpenLiveBetMenu(false)
     setTimeout(() => {
       setCheckedMultiple(false)
       setOpenCurrentMenu(true)
@@ -626,8 +632,21 @@ const Bets = () => {
     setOpenCurrentMenu(false)
     setOpenWonBetsMenu(false)
     setOpenLostBetsMenu(false)
+    setOpenLiveBetMenu(false)
     setTimeout(() => {
       setOpenLiveMatchesMenu(true)
+    }, 500)
+  }
+  const openLiveBet = () => {
+    setOpenLeagueMenu(false); 
+    setOpenMyBetsMenu(false)
+    setOpenMatchesMenu(false)
+    setOpenCurrentMenu(false)
+    setOpenWonBetsMenu(false)
+    setOpenLostBetsMenu(false)
+    setOpenLiveMatchesMenu(false)
+    setTimeout(() => {
+      setOpenLiveBetMenu(true)
     }, 500)
   }
 
@@ -644,6 +663,7 @@ const Bets = () => {
     setWinOrLostBets([])
     setOpenMatchesMenu(false)
     setOpenWonBetsMenu(false)
+    setOpenLiveBetMenu(false)
     setOpenCurrentMenu(false)
     setOpenLiveMatchesMenu(false)
     setOpenLostBetsMenu(false)
@@ -656,6 +676,7 @@ const Bets = () => {
     setWinOrLostBets([])
     setOpenMatchesMenu(false)
     setOpenCurrentMenu(false)
+    setOpenLiveBetMenu(false)
     setOpenMyBetsMenu(false)
     setOpenLostBetsMenu(false)
     setTimeout(() => {
@@ -667,6 +688,7 @@ const Bets = () => {
     setOpenMatchesMenu(false)
     setWinOrLostBets([])
     setOpenWonBetsMenu(false)
+    setOpenLiveBetMenu(false)
     setOpenCurrentMenu(false)
     setOpenMyBetsMenu(false)
     setTimeout(() => {
@@ -679,6 +701,7 @@ const Bets = () => {
     setOpenWonBetsMenu(false)
     setOpenLostBetsMenu(false)
     setOpenCurrentMenu(false)
+    setOpenLiveBetMenu(false)
     setOpenMyBetsMenu(false)
     setTimeout(() => {
       setOpenLeagueMenu(true)
@@ -1282,10 +1305,11 @@ const getWinnings = (el) => {
                       animate={{ height: expandedIndex === index ? '330px' : '130px' }}
                       transition={{ duration: 0.5 }}>
                       {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                        <LiveBetIcon onClick={() => openLiveBet()} style={{backgroundImage: `url(${betting})`, backgroundSize: 'cover', backgroundPosition: 'center'}}></LiveBetIcon>
                       <Rower>
                         <TeamsLogo>
                           <TeamLogoWrapper>
-                            <Avatar /* onClick={() => openTeamMenu(match.teams.home.id)} */ alt="Home Team Logo" src={match.teams.home.logo} sx={{
+                            <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{
                               width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
                               height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
                             }} />
@@ -1341,6 +1365,24 @@ const getWinnings = (el) => {
 
           </Container>
         )} 
+        {openLiveBetMenu && (
+          <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} >
+            {loadingLiveBets ? (
+              <TeamCircularRow>
+                <CircularProgress sx={{ width: 80, height: 80 }} />
+              </TeamCircularRow>
+            ) : (
+              <TeamRow variants={item}
+                initial="initial"
+                animate="animate"
+                exit="exit"  style={{paddingTop: '60px'}}
+                transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                  LIVE BETS MENU
+                </TeamRow>
+            )}
+          </Container>
+        )}
         {openMyBetsMenu && (
           <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
             variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} >
