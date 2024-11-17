@@ -44,20 +44,19 @@ const SmartFooter = () => {
 
   useEffect(() => {
         const interval = setInterval(() => {
-          setShowingPartner(false); // Hide the partner for 1 second
+          setShowingPartner(false); 
       
           setTimeout(() => {
             setCurrentPartner((prev) => {
-              const nextPartnerIndex = (prev + 1) % Partners.length; // Get the next partner index
-              setActivePartner(Partners[nextPartnerIndex]); // Update active partner
-              console.log(Partners[nextPartnerIndex]); // Log the active partner
-              return nextPartnerIndex; // Update state with the next index
+              const nextPartnerIndex = (prev + 1) % Partners.length;
+              setActivePartner(Partners[nextPartnerIndex]); 
+              return nextPartnerIndex; 
             });
-            setShowingPartner(true); // Show the next partner
-          }, 500); // 1-second blank delay
-        }, 5000); // Total cycle time
+            setShowingPartner(true); 
+          }, 500);
+        }, 5000); 
       
-        return () => clearInterval(interval); // Cleanup on unmount
+        return () => clearInterval(interval); 
       }, []);
 
   const variants = {
@@ -94,7 +93,7 @@ const SmartFooter = () => {
           exit="exit"><h2>OUR PARTNERS</h2></motion.div></TopSmartRow>
           <TopSmartRowTwo>
                 {currentPartner === 0 && (
-                  <svg width="auto" height="90%" viewBox="0 0 253 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg  viewBox="0 0 253 55" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <motion.path variants={pathVariants}
           initial="initial"
           animate="animate"
@@ -126,7 +125,7 @@ const SmartFooter = () => {
                   </svg>
                 )}
                 {currentPartner === 1 && (
-                        <svg width="228" height="66" viewBox="0 0 228 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 228 66" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <motion.path variants={pathVariants}
           initial="initial"
           animate="animate"
@@ -158,7 +157,7 @@ const SmartFooter = () => {
                         </svg>
                 )}
                 {currentPartner === 2 && (
-                  <svg width="303" height="81" viewBox="0 0 303 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg  viewBox="0 0 303 81" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <motion.path variants={pathVariants}
           initial="initial"
           animate="animate"
@@ -178,7 +177,7 @@ const SmartFooter = () => {
                   </svg>
                 )}
                 {currentPartner === 3 && (
-                  <svg width="auto" height="95%" viewBox="0 0 254 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg  viewBox="0 0 254 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <motion.path  variants={pathVariants}
           initial="initial"
           animate="animate"

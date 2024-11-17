@@ -5,33 +5,28 @@ const publicVapidKey = 'BL0whCjUesl6_AELHTwthVOaccDkAUYyH-f8nFTQ75BiHMlJpadQ2gsa
 
 async function requestNotificationPermission() {
   const permission = await Notification.requestPermission();
-  if (permission !== 'granted') {
-    throw new Error('Permission not granted for Notification');
+  if (permission === 'granted') {
+    console.log('Notification permission granted.');
+  } else {
+    console.error('Notification permission denied.');
   }
 }
 
-async function subscribeUserToPush(userId) {
+async function subscribeUserToPush(email) {
   const registration = await navigator.serviceWorker.ready;
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
   });
-  const subscriptionData = {userId}
+  console.log(registration)
+  console.log(subscription)
   await fetch('https://tpv-2-0-server.vercel.app/api/subscribe', {
     method: 'POST',
-    body: JSON.stringify({ subscription, userId }),
+    body: JSON.stringify({ subscription, email }),
     headers: {
       'Content-Type': 'application/json'
     }
   });
-  /* const parentDocRef = doc(db, 'registrations', "TIBÈRIC");
-  const subcollectionRef = collection(parentDocRef, 'pushSubscriptions');
-  try {
-    
-    await setDoc(doc(subcollectionRef), subscriptionData);
-  } catch (e) {
-    console.error('Error getting subcollection documents: ', e);
-  } */
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -49,10 +44,10 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
-export async function initializePushNotifications(userId) {
+export async function initializePushNotifications(email) {
   try {
     await requestNotificationPermission();
-    await subscribeUserToPush(userId);
+    await subscribeUserToPush(email);
   } catch (error) {
     console.error('Failed to initialize push notifications:', error);
   }

@@ -18,6 +18,7 @@ import global_en from "./components/translations/en/global.json"
 
 
 
+
 i18next.init ({
   interpolation: {escapeValue: false},
   fallbackLng: 'en',
@@ -34,6 +35,8 @@ i18next.init ({
     }
   },
 })
+
+
 
 console.log('Manifest URL:', `${window.location.origin}/tonconnect-manifest.json`);
 

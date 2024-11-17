@@ -19,7 +19,7 @@ export default defineConfig({
       manifest: {
         name: 'Pacton Gaming Zone',
         short_name: 'Pacton GZ',
-        description: 'Best Gaming Zone on the TON Network',
+        description: 'A new Era of Gaming and Sports Betting',
         theme_color: 'black',
         "icons": [
       

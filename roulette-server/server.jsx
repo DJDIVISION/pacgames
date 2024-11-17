@@ -3,10 +3,22 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { createClient } = require('@supabase/supabase-js');
 const cors = require('cors')
+const webPush = require('web-push');
 const supabaseUrl = 'https://qfywnsvevkeuiuxtiqko.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmeXduc3ZldmtldWl1eHRpcWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjUyNzE2MDQsImV4cCI6MjA0MDg0NzYwNH0.sVYe0wlcg_H2Psn_17g32DYDRYLkfH8KIcHk3EP2Hdg'; // Or service role key for server-side operations
 
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+const vapidKeys = {
+  publicKey: 'BL0whCjUesl6_AELHTwthVOaccDkAUYyH-f8nFTQ75BiHMlJpadQ2gsaGu0E0yfo5qEcIWpw5InkzmRwrpm7oyw',
+  privateKey: 'mp0qUJL3qw5l3B27wttQ3nKRTihqnRUz6gkaFdkuZFc'
+};
+
+webPush.setVapidDetails(
+  'mailto:bodegaflamenca666@gmail.com',
+  vapidKeys.publicKey,
+  vapidKeys.privateKey
+);
 
 const americanRouletteNumbers = [
     { number: 0, color: "lime" },
@@ -58,6 +70,41 @@ app.use(cors({
 app.get('/', (req, res) => {
   res.send('Welcome to the Roulette Game!');
 });
+
+const subscriptions = {};
+
+// Endpoint to subscribe to notifications
+app.post('/subscribe', (req, res) => {
+  const { subscription, email } = req.body;
+  console.log("subs", subscription)
+  console.log("email", email)
+  if (!subscriptions[email]) {
+    subscriptions[email] = [];
+  }
+  subscriptions[email].push(subscription);
+  res.status(201).json({});
+});
+
+// Endpoint to send notifications to a specific user
+app.post('/send-notification', (req, res) => {
+  const { email, notificationPayload } = req.body;
+  console.log(email)
+  console.log(notificationPayload)
+  const payload = JSON.stringify(notificationPayload);
+
+  if (subscriptions[email]) {
+    Promise.all(subscriptions[email].map(sub => webPush.sendNotification(sub, payload)))
+      .then(() => res.status(200).json({ message: 'Notification sent successfully.' }))
+      .catch(err => {
+        console.error('Error sending notification, reason: ', err);
+        res.sendStatus(500);
+      });
+  } else {
+    res.status(404).json({ message: 'No subscriptions found for this user.' });
+  }
+});
+
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
