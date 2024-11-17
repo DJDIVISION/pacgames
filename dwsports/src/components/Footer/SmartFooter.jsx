@@ -14,6 +14,7 @@ import Shinobi from '../svg/Shinobi';
 import Fren from '../svg/Fren';
 import Ton from '../svg/Ton';
 import Move from '../svg/Move';
+import Hunny from '../svg/Hunny';
 
 
 
@@ -97,16 +98,19 @@ const SmartFooter = () => {
           exit="exit"><h2>OUR PARTNERS</h2></motion.div></TopSmartRow>
           <TopSmartRowTwo>
                 {currentPartner === 0 && (
-                  <Shinobi />
+                  <Ton />
                 )}
                 {currentPartner === 1 && (
-                        <Fren />
+                        <Shinobi />
                 )}
                 {currentPartner === 2 && (
-                  <Move />
+                  <Fren />
                 )}
                 {currentPartner === 3 && (
-                  <Ton />
+                  <Move />
+                )}
+                {currentPartner === 4 && (
+                  <Hunny />
                 )}
               </TopSmartRowTwo>
               <TopSmartRowThree>

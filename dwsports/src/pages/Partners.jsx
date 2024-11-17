@@ -20,8 +20,10 @@ import website from "../assets/logos/website.png"
 import white from "../assets/logos/white.png"
 import buy from "../assets/logos/buy.png"
 import bot from "../assets/logos/bot.png"
+import hunny from '../assets/logos/hunny.jpg'
 import app from "../assets/logos/tapps.png"
 import { useMediaQuery } from 'react-responsive'
+import Hunny from '../components/svg/Hunny'
 
 const Partners = () => {
 
@@ -71,10 +73,10 @@ const Partners = () => {
                     animate={controlsTwo}/></SVG>
                     <Description><h2>The Open Network (TON) is a decentralized and open internet platform made up of several components. These include: TON Blockchain, TON DNS, TON Storage, and TON Sites. TON Blockchain is the core protocol that connects TON’s underlying infrastructure together to form the greater TON Ecosystem.</h2></Description>
             <Icons>
-                <Icon href='https://x.com/ton_blockchain' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
-                <Icon href='https://t.me/toncoin' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
-                <Icon href='https://ton.org' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
-                <Icon href='https://ton.org/en/buy-toncoin?filters[exchange_groups][slug][$eq]=buy-with-card&pagination[page]=1&pagination[pageSize]=100' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={buy} alt="white" /></Icon>
+                <Icon href='https://x.com/ton_blockchain' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+                <Icon href='https://t.me/toncoin' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
+                <Icon href='https://ton.org' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
+                <Icon href='https://ton.org/en/buy-toncoin?filters[exchange_groups][slug][$eq]=buy-with-card&pagination[page]=1&pagination[pageSize]=100' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={buy} alt="white" /></Icon>
             </Icons>
         </Partner>
         <Partner>
@@ -83,11 +85,11 @@ const Partners = () => {
                     animate={controls}/></SVG>
             <Description><h2>Dive into the world of decentralized finance with SHINOBI's innovative pool and farm mechanics. Earn lucrative rewards by providing liquidity to our dynamic liquidity pools and participating in yield farming opportunities. With APYs reaching up to 200%, our pools and farms offer unparalleled earning potential while promoting liquidity and stability within the SHINOBI ecosystem.</h2></Description>
             <Icons>
-                <Icon href='https://x.com/sibonihs?s=21&t=QRHKIh6sLsC1HoUdftHPYQ' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
-                <Icon href='https://t.me/SHINOBIPORTAL' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
-                <Icon href='https://sh1nobi.io' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
-                <Icon href='https://shinobi-3.gitbook.io/shinobi-revolutionizing-defi-ecosystems-with-shid' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={white} alt="white" /></Icon>
-                <Icon href='https://pool.shido.io/pool/0x4aed39bda730a74874a576b7c0d68e2c641cf912' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={buy} alt="buy" /></Icon>
+                <Icon href='https://x.com/sibonihs?s=21&t=QRHKIh6sLsC1HoUdftHPYQ' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+                <Icon href='https://t.me/SHINOBIPORTAL' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
+                <Icon href='https://sh1nobi.io' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
+                <Icon href='https://shinobi-3.gitbook.io/shinobi-revolutionizing-defi-ecosystems-with-shid' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={white} alt="white" /></Icon>
+                <Icon href='https://pool.shido.io/pool/0x4aed39bda730a74874a576b7c0d68e2c641cf912' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={buy} alt="buy" /></Icon>
             </Icons>
         </Partner>
         <Partner>
@@ -97,11 +99,22 @@ const Partners = () => {
                 <Description><h2>FREN is a community-oriented token to nurture friendlier Web3 social media. The token is distributed to the first 1,000,000 users signing up in the Fren Telegram app.
                     <br/>FREN is a fair launch, every friend being equal. Tokens can be only received by the airdrop. For more details see Frequently Asked Questions. <br/></h2> </Description>
             <Icons>
-                <Icon href='https://x.com/fren_airdrop' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
-                <Icon href='https://t.me/frentgnews' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
-                <Icon href='https://fren.tg' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
-                <Icon href='https://t.me/FrenTekBot' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={bot} alt="white" /></Icon>
-                <Icon href='https://t.me/FrenTekBot/fren' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={app} alt="buy" /></Icon>
+                <Icon href='https://x.com/fren_airdrop' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+                <Icon href='https://t.me/frentgnews' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
+                <Icon href='https://fren.tg' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
+                <Icon href='https://t.me/FrenTekBot' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={bot} alt="white" /></Icon>
+                <Icon href='https://t.me/FrenTekBot/fren' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={app} alt="buy" /></Icon>
+            </Icons>
+        </Partner>
+        <Partner>
+            <SVGTop><Hunny /></SVGTop>
+            <SVG><motion.img src={hunny} alt="fren" style={{ width: isMobile ? "25%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
+                    animate={controlsTwo}/></SVG>
+                <Description><h2>🍯 HunnyPlay aims to be the most engaging and fun DeFi destination built on chain. <br/>Top Crypto Casino and iGaming Destination Built Across 7 Blockchains</h2> </Description>
+            <Icons>
+                <Icon href='https://twitter.com/HunnyPlay_' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+                <Icon href='https://t.me/HunnyFinanceNews' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
+                <Icon href='https://hunnyplay.io' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
             </Icons>
         </Partner>
         <Partner>
@@ -111,8 +124,8 @@ const Partners = () => {
                     <Description><h2>Move is the first Telegram mini app that lets you earn tokens by tracking the distance you move. Walk or run, complete tasks, climb the leaderboard to compete with your friends.
                         <br/>Connect with friends, crush fitness goals, and earn $MOVE together!<br/>Explore your city, conquer challenges, and unlock exclusive rewards.</h2></Description>
             <Icons>
-            <Icon href='https://x.com/moveonton' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
-            <Icon href='https://t.me/MoveOnTonBot' target="_blank"><img style={{ width: isMobile ? "50%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon> 
+            <Icon href='https://x.com/moveonton' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+            <Icon href='https://t.me/MoveOnTonBot' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon> 
             </Icons>
         </Partner>
         
@@ -126,7 +139,7 @@ export default Partners
 
 const Section = styled.div`
     width: 100%;
-    height: 340vh;
+    height: auto;
     background: ${props => props.theme.body};
     ${props => props.theme.displayFlexColumnCenter};
     justify-content: space-around;
@@ -135,8 +148,8 @@ const Section = styled.div`
 
 const Partner = styled.div`
     width: 90%;
-    height: 600px;
-    margin: 10px 0;
+    height: 550px;
+    margin: 20px 0;
     border: 2px solid ${props => props.theme.card};
     padding: 10px;
     border-radius: 10px;

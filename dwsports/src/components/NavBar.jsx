@@ -13,7 +13,7 @@ import  { useTheme } from 'styled-components'
 import sportsIcon from '../assets/sportsIcon.png'
 import Swal from "sweetalert2";
 import chip from '../assets/chip.png'
-
+import partners from '../assets/logos/partners.png'
 import fantasy from '../assets/fantasy.png'
 import deposit from '../assets/logos/shoDeposit.png'
 import metamask from '../assets/logos/metamask.svg'
@@ -93,6 +93,12 @@ const NavBar = () => {
                 <img src={fantasy} alt="fantasy" />
             </NavIcon>
             <NavText>{t("navbar.fantasy")}</NavText>
+        </NavColumn></LinkR>
+        <LinkR to="/partners"><NavColumn>
+            <NavIcon>
+                <img src={partners} alt="partners" />
+            </NavIcon>
+            <NavText>OUR PARTNERS</NavText>
         </NavColumn></LinkR>
         <NavColumn onClick={() => setDepositMenu(true)}>
             <NavIcon>

@@ -5,7 +5,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import { Button } from "@mui/material";
 import shinobi from '../../assets/logos/shinobi.png'
-import sho from '../../assets/logos/sho.png'
+import hunny from '../../assets/logos/hunny.jpg'
 import ton from '../../assets/logos/ton.png'
 import move from '../../assets/logos/move.jpg'
 import fren from '../../assets/logos/fren.png'
@@ -131,6 +131,17 @@ export const SmartButtonWrapper = styled.a`
 
 export const Partners = [
     {
+        name: 'TON',
+        website:'https://ton.org',
+        telegram: 'https://t.me/toncoin',
+        twitter: 'https://x.com/ton_blockchain',
+        whitepaper: null,
+        buy: 'https://ton.org/en/buy-toncoin?filters[exchange_groups][slug][$eq]=buy-with-card&pagination[page]=1&pagination[pageSize]=100',
+        logo: ton,
+        bot: null,
+        app: null
+    },
+    {
         name: 'SHINOBI',
         website: 'https://sh1nobi.io',
         telegram: 'https://t.me/SHINOBIPORTAL',
@@ -164,13 +175,13 @@ export const Partners = [
         app: null
     },
     {
-        name: 'TON',
-        website:'https://ton.org',
-        telegram: 'https://t.me/toncoin',
-        twitter: 'https://x.com/ton_blockchain',
+        name: 'HUNNYPLAY',
+        website:'https://hunnyplay.io',
+        telegram: 'https://t.me/HunnyFinanceNews',
+        twitter: 'https://twitter.com/HunnyPlay_',
         whitepaper: null,
-        buy: 'https://ton.org/en/buy-toncoin?filters[exchange_groups][slug][$eq]=buy-with-card&pagination[page]=1&pagination[pageSize]=100',
-        logo: ton,
+        buy: null,
+        logo: hunny,
         bot: null,
         app: null
     }
