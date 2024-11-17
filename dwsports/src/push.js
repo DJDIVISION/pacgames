@@ -1,6 +1,6 @@
 
 
-const publicVapidKey = 'BL0whCjUesl6_AELHTwthVOaccDkAUYyH-f8nFTQ75BiHMlJpadQ2gsaGu0E0yfo5qEcIWpw5InkzmRwrpm7oyw';
+const publicVapidKey = 'BOZwMhEq3agdeylLqybhzZvqGyILZzQabLuRvuE0uhUilpNxMh23xs09WTYEwHqr7ztSMwzluynjXVNP5GTj87w';
 
 
 async function requestNotificationPermission() {
@@ -21,15 +21,13 @@ async function subscribeUserToPush(email) {
   console.log(registration)
   console.log(subscription)
   console.log(email)
-  if(subscription && email){
-    await fetch('https://pacgames-roulette-server.onrender.com/subscribe', {
-      method: 'POST',
-      body: JSON.stringify({ subscription, email }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-  }
+  await fetch('http://localhost:8080/subscribe', {
+    method: 'POST',
+    body: JSON.stringify({ subscription, email }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -49,6 +47,7 @@ function urlBase64ToUint8Array(base64String) {
 
 export async function initializePushNotifications(email) {
   try {
+    console.log(email)
     await requestNotificationPermission();
     await subscribeUserToPush(email);
   } catch (error) {

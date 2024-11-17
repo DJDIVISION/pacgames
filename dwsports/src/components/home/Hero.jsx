@@ -10,7 +10,7 @@ import { getUserBalance, useAuth } from '../../pages/functions';
 import { message } from 'antd';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import SendIcon from '@mui/icons-material/Send';
-import { Avatar, Button, IconButton, Switch } from '@mui/material';
+import { Avatar, Button, IconButton } from '@mui/material';
 import { supabase } from '../../supabase/client';
 import { MiniArrowDown, MiniArrowup, SmallArrowDownFlex, MiniIconButton } from '../../pages';
 import { FantasyState } from '../../context/FantasyContext';
@@ -25,9 +25,6 @@ import Swal from "sweetalert2";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import Web3 from "web3";
 import axios from 'axios';
-import { messaging } from '../../firebase.jsx';
-import { getToken, onMessage } from "firebase/messaging";
-import {initializePushNotifications} from '../../push.js'
 
 const Hero = () => {
 
@@ -38,7 +35,6 @@ const Hero = () => {
     const { user } = useAuth(); 
     const theme = useTheme();
     const [disabledInput, setDisabledInput] = useState(false)
-    const [checked, setChecked] = useState(false);
     const [referrerValue, setReferrerValue] = useState("")
     const [referrals, setReferrals] = useState([])
     const [isExpanded, setIsExpanded] = useState(false)
@@ -61,41 +57,6 @@ const Hero = () => {
     const userFriendlyAddress = useTonAddress();
 
     
-
-    async function sendNotification(notificationPayload) {
-        const email = "bodegaflamenca666@gmail.com"
-        try {
-          const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-notification', {
-            email: email,
-            notificationPayload
-          }, {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-      
-          console.log('Notification sent successfully:', response.data);
-        } catch (error) {
-          console.error('Error sending notification:', error);
-        }
-      }
-    
-      const handleSendNotification = () => {
-        const notificationPayload = {
-          title: 'Hello Bitches!',
-          body: 'You may suck my dick now.',
-          //icon: 'path/to/icon.png' // Optional
-        };
-    
-        sendNotification(notificationPayload);
-      };
-
-    const subscribeToNotifications = () => {
-        const email = user.email
-        initializePushNotifications(email);
-    };
-
-    console.log(user)
 
     const disconnectWallet = async () => {
         setMetaMaskWalletAddress(null)
@@ -596,12 +557,9 @@ const Hero = () => {
                                     <RowerRowBets>
                                     <h3>{user && user.email}</h3>
                                     </RowerRowBets>
-                                    <RowerRowBets>
-                                   {/*  <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={subscribeToNotifications}/> */}
-                                    </RowerRowBets>
+                                   
                                     <RowerRowBets style={{ height: '70px' }}>
-                                        <StyledButton onClick={subscribeToNotifications}>CONNECT</StyledButton>
-                                        <StyledButton onClick={handleSendNotification}>SEND</StyledButton>
+                                        <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
                                     </RowerRowBets>
                                 </>
                             ) : (

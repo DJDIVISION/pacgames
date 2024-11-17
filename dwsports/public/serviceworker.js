@@ -42,9 +42,16 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('push', event => {
-    const data = event.data.json();
-    self.registration.showNotification(data.title, {
+    console.log('Push event received:', event);
+    const data = event.data ? event.data.json() : {};
+    console.log('Notification payload:', data);
+  
+    const options = {
       body: data.body,
-      icon: '/icon-96x96.png'
-    });
+      icon: '/icon-96x96.png', // Optional
+    };
+  
+    event.waitUntil(
+      self.registration.showNotification(data.title || 'Default Title', options)
+    );
   });
