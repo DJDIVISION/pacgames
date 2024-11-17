@@ -65,7 +65,7 @@ const Hero = () => {
     async function sendNotification(notificationPayload) {
         const email = "bodegaflamenca666@gmail.com"
         try {
-          const response = await axios.post('https://tpv-2-0-server.vercel.app/api/send-notification', {
+          const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-notification', {
             email: email,
             notificationPayload
           }, {

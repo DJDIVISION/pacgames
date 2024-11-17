@@ -63,7 +63,7 @@ const americanRouletteNumbers = [
 
 const app = express();
 app.use(cors({
-  origin: "https://pacgames-frontend.onrender.com",
+  origin: "http://localhost:5173",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -108,7 +108,7 @@ app.post('/send-notification', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "https://pacgames-frontend.onrender.com",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]  // Client URL
   },
  });

@@ -20,7 +20,7 @@ async function subscribeUserToPush(email) {
   });
   console.log(registration)
   console.log(subscription)
-  await fetch('https://tpv-2-0-server.vercel.app/api/subscribe', {
+  await fetch('https://pacgames-roulette-server.onrender.com/subscribe', {
     method: 'POST',
     body: JSON.stringify({ subscription, email }),
     headers: {
