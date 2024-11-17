@@ -9,6 +9,7 @@ import hunny from '../../assets/logos/hunny.jpg'
 import ton from '../../assets/logos/ton.png'
 import move from '../../assets/logos/move.jpg'
 import fren from '../../assets/logos/fren.png'
+import badger from '../../assets/logos/badger.png'
 
 export const FooterSection = styled.div`
     width: 100%;
@@ -182,6 +183,17 @@ export const Partners = [
         whitepaper: null,
         buy: null,
         logo: hunny,
+        bot: null,
+        app: null
+    },
+    {
+        name: 'BADGER WASTELAND',
+        website:'https://getgems.io/badgerwasteland',
+        telegram: 'https://t.me/Badger_Wasteland_Chat',
+        twitter: 'https://x.com/BadgerWasteland?t=h2076b9JS02jxW854JZTOQ&s=09',
+        whitepaper: null,
+        buy: null,
+        logo: badger,
         bot: null,
         app: null
     }

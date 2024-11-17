@@ -14,6 +14,7 @@ import shinobi from '../assets/logos/shinobi.png'
 import ton from '../assets/logos/ton.png'
 import move from '../assets/logos/move.jpg'
 import fren from '../assets/logos/fren.png'
+import badger from '../assets/logos/badger.png'
 import x from "../assets/logos/x.png"
 import telegram from "../assets/logos/telegram.png"
 import website from "../assets/logos/website.png"
@@ -24,6 +25,7 @@ import hunny from '../assets/logos/hunny.jpg'
 import app from "../assets/logos/tapps.png"
 import { useMediaQuery } from 'react-responsive'
 import Hunny from '../components/svg/Hunny'
+import Badger from '../components/svg/Badger'
 
 const Partners = () => {
 
@@ -110,11 +112,22 @@ const Partners = () => {
             <SVGTop><Hunny /></SVGTop>
             <SVG><motion.img src={hunny} alt="fren" style={{ width: isMobile ? "25%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
                     animate={controlsTwo}/></SVG>
-                <Description><h2>🍯 HunnyPlay aims to be the most engaging and fun DeFi destination built on chain. <br/>Top Crypto Casino and iGaming Destination Built Across 7 Blockchains</h2> </Description>
+                <Description><h2>🍯 HunnyPlay aims to be the most engaging and fun DeFi destination built on chain. <br/>Top Crypto Casino and iGaming Destination Built Across 7 Blockchains.</h2> </Description>
             <Icons>
                 <Icon href='https://twitter.com/HunnyPlay_' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
                 <Icon href='https://t.me/HunnyFinanceNews' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
                 <Icon href='https://hunnyplay.io' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
+            </Icons>
+        </Partner>
+        <Partner>
+            <SVGTop><Badger /></SVGTop>
+            <SVG><motion.img src={badger} alt="fren" style={{ width: isMobile ? "25%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
+                    animate={controlsTwo}/></SVG>
+                <Description><h2>Badger Wasteland is a collection of post-apocalyptic life shared through the eyes of our hairy friends. Scavenging for supplies while exploring decimated cityscapes and scorched earth remains are the badgers' primary focus. They also enjoy crafting new tools, repairing weapons and armor, and most of all, lunch! Follow their journey in a brave new world and own a piece of their story.</h2> </Description>
+            <Icons>
+                <Icon href='https://x.com/BadgerWasteland?t=h2076b9JS02jxW854JZTOQ&s=09' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+                <Icon href='https://t.me/Badger_Wasteland_Chat' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
+                <Icon href='https://getgems.io/badgerwasteland' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
             </Icons>
         </Partner>
         <Partner>
