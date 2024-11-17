@@ -22,7 +22,7 @@ async function subscribeUserToPush(email) {
   console.log(subscription)
   console.log(email)
   if(subscription && email){
-    await fetch('http://localhost:8080/subscribe', {
+    await fetch('https://pacgames-roulette-server.onrender.com/subscribe', {
       method: 'POST',
       body: JSON.stringify({ subscription, email }),
       headers: {

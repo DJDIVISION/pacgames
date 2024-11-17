@@ -92,7 +92,7 @@ app.post('/send-notification', (req, res) => {
   console.log(email)
   console.log(notificationPayload)
   const payload = JSON.stringify(notificationPayload);
-
+  console.log("subscriptions",subscriptions)
   if (subscriptions[email]) {
     Promise.all(subscriptions[email].map(sub => webPush.sendNotification(sub, payload)))
       .then(() => res.status(200).json({ message: 'Notification sent successfully.' }))
