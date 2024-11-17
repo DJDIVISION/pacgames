@@ -10,8 +10,8 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const vapidKeys = {
-  publicKey: 'BL0whCjUesl6_AELHTwthVOaccDkAUYyH-f8nFTQ75BiHMlJpadQ2gsaGu0E0yfo5qEcIWpw5InkzmRwrpm7oyw',
-  privateKey: 'mp0qUJL3qw5l3B27wttQ3nKRTihqnRUz6gkaFdkuZFc'
+  publicKey: 'BOZwMhEq3agdeylLqybhzZvqGyILZzQabLuRvuE0uhUilpNxMh23xs09WTYEwHqr7ztSMwzluynjXVNP5GTj87w',
+  privateKey: 'KasRTn00fvPsWN0FIhb9cGh5jFFvfjB2ae_ElFlMI4o'
 };
 
 webPush.setVapidDetails(
@@ -64,13 +64,15 @@ const americanRouletteNumbers = [
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://pacgames-frontend.onrender.com",
   methods: ['GET', 'POST'],
   credentials: true
 }));
 app.get('/', (req, res) => {
   res.send('Welcome to the Roulette Game!');
 });
+
+
 
 const subscriptions = {};
 
@@ -109,7 +111,7 @@ app.post('/send-notification', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://pacgames-frontend.onrender.com",
     methods: ["GET", "POST"]  // Client URL
   },
  });
