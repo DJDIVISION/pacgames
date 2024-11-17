@@ -994,6 +994,39 @@ export const RowerRowBet = styled.div`
         width: 80%;
     }
 `;
+export const BigRowBet = styled.div`
+    width: 100%;
+    height: auto;
+    border: 1px solid ${props => props.theme.text};
+    ${props => props.theme.displayFlexColumn};
+    margin: 10px 0;
+`;
+export const TopRowBet = styled.div`
+    width: 100%;
+    height: 25px;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        font-size: 16px;
+        color: ${props => props.theme.MainAccent}; 
+    }
+`;
+export const BottomRowBet = styled.div`
+    width: 100%;
+    min-height: 35px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(33%, 1fr));
+    justify-content: center;
+`;
+export const BetHolder = styled.div`
+    min-width: 33.3%;
+    min-height: 35px;
+    border: 1px solid white;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        font-size: 16px;
+        color: ${props => props.theme.text}; 
+    }
+`;
 
 export const RowerRow = styled.div`
     width: 100%;

@@ -39,7 +39,11 @@ import { LowRower,Rower,RowerColumn,RowerRowBets,MiniRower,MiniRowerType,MiniRow
   BetAmount,
   PossibleWinningsAmount,
   Switcher,
-  AntSwitch
+  AntSwitch,
+  BigRowBet,
+  TopRowBet,
+  BottomRowBet,
+  BetHolder
  } from '../components';
 import { supabase } from '../supabase/client';
 import Skeleton from '@mui/material/Skeleton';
@@ -107,6 +111,7 @@ const Bets = () => {
   const [selectedOddsMenu, setSelectedOddsMenu] = useState(false)
   const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
   const {activeTeamId, setActiveTeamId} = FantasyState();
+  const {fixtureId, setFixtureId} = FantasyState();
   const {selectedBet, setSelectedBet} = FantasyState();
   const [selectedBetMenu, setSelectedBetMenu] = useState(false);
   const {playerToUpdate, setPlayerToUpdate} = FantasyState();
@@ -128,6 +133,7 @@ const Bets = () => {
   const [currentRoundMaches, setCurrentRoundMatches] = useState([])
   const [winningBets, setWinningBets] = useState([])
   const [lostBets, setLostBets] = useState([])
+  const [liveOdds, setLiveOdds] = useState([])
   const [myBets, setMyBets] = useState([])
   const [winOrLostBets, setWinOrLostBets] = useState([])
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -143,7 +149,7 @@ const Bets = () => {
   const [dragIntensities, setDragIntensities] = useState(
     Array(selectedBet.length).fill(0)
   );
-
+  
   const handleRemoveBet = (index) => {
     setSelectedBet((prevBets) => prevBets.filter((_, i) => i !== index));
     setDragIntensities((prevIntensities) =>
@@ -176,7 +182,6 @@ const Bets = () => {
     }
   };
 
-  console.log(selectedBet.length)
 
   const getFixtures = async () => {
     setLoadingMatches(true)
@@ -557,9 +562,11 @@ const Bets = () => {
   }, [openMyBetsMenu])
 
   const toggleExpand = (index) => {
+    
     setExpandedIndex(expandedIndex === index ? null : index);
+    
   };
-
+  
   
 
   const variants = {
@@ -638,6 +645,7 @@ const Bets = () => {
     }, 500)
   }
   const openLiveBet = () => {
+    
     setOpenLeagueMenu(false); 
     setOpenMyBetsMenu(false)
     setOpenMatchesMenu(false)
@@ -721,7 +729,7 @@ const Bets = () => {
     };
     try {
       const response = await axios.request(options);
-      console.log(response.data);
+      //console.log(response.data);
       const data = (response.data.response) 
       const matches = []
       data.forEach((match) => {
@@ -1081,6 +1089,34 @@ const getWinnings = (el) => {
     });
   }; */
 
+  const getOddsFromBooker = async () => {
+    if(fixtureId !== null){
+      console.log(fixtureId)
+      const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/odds',
+        params: {fixture: fixtureId},
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+      
+      try {
+        const response = await axios.request(options);
+        setLiveOdds(response.data.response[0].bookmakers[2].bets);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  console.log(liveOdds)
+
+  useEffect(() => {
+    getOddsFromBooker();
+  }, [fixtureId])
+
 
   return (
     <Section>
@@ -1147,17 +1183,14 @@ const getWinnings = (el) => {
                     <ArrowIconHolder><ArrowRightRelative onClick={raiseRound} style={{transform: 'translateX(-15px) rotate(270deg)'}}></ArrowRightRelative></ArrowIconHolder>
                   </ArrowsHolder>
                 {currentRoundMaches?.map((match, index) => {
-                  console.log(match)
                   const date = new Date(match.fixture.date).toLocaleString();
-                  console.log(selectedBet)
                   const filter = selectedBet.find((el) => el.match.fixture.id === match.fixture.id)
-                  console.log(filter)
                   return (
                     <TeamBetsHolder key={index} style={{margin: '0', boxShadow: filter ? `inset 0 0 25px green` : `inset 0 0 25px ${theme.text}`}}
                       initial={{ height: '130px' }}
-                      animate={{ height: expandedIndex === index ? '330px' : '130px' }}
+                      animate={{ height: expandedIndex === index ? '400px' : '130px' }}
                       transition={{ duration: 0.5 }}>
-                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => {toggleExpand(index);setFixtureId(null)}} /> : <SmallArrowDown onClick={() => {toggleExpand(index);setFixtureId(match.fixture.id);}} />}
                       <Rower>
                         <TeamsLogo>
                           {loadingMatches ? (
@@ -1174,39 +1207,7 @@ const getWinnings = (el) => {
                         </TeamsLogo>
                         <TeamsResult>
                           <DateRow>{date}</DateRow>
-                          {match.odds === undefined ? (
-                            <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
-                          ) : (
-                            <ResultRow>
-                              <OddsColumn
-                                id={`${match.fixture.id}-home`}
-                                isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'home'
-                                )}
-                                onClick={() => handleBetClick(match, 'home', filter)}
-                            >
-                                {match.odds.home}
-                            </OddsColumn>
-                            <OddsColumn
-                                id={`${match.fixture.id}-draw`}
-                                isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'draw'
-                                )}
-                                onClick={() => handleBetClick(match, 'draw', filter)}
-                            >
-                                {match.odds.draw}
-                            </OddsColumn>
-                            <OddsColumn
-                                id={`${match.fixture.id}-away`}
-                                isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'away'
-                                )}
-                                onClick={() => handleBetClick(match, 'away', filter)}
-                            >
-                                {match.odds.away}
-                            </OddsColumn>
-                            </ResultRow>
-                          )}
+                          <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
                           <BigDateRow>{match.fixture.status.long}</BigDateRow>
                           <VenueRow>{match.fixture.venue.name}, {match.fixture.venue.city}</VenueRow>
                         </TeamsResult>
@@ -1222,55 +1223,20 @@ const getWinnings = (el) => {
                       </Rower>
                       {expandedIndex === index && (
                         <LowRower >
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeOver2'
-                                )} onClick={() => handleBetClick(match, 'homeOver2', filter)}><h2>{match.teams.home.name} Over 2.5 - {match?.odds?.homeOver2}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayOver2'
-                                )}
-                                onClick={() => handleBetClick(match, 'awayOver2', filter)}><h2>{match.teams.away.name} Over 2.5 - {match?.odds?.awayOver2}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeUnder2'
-                                )}
-                                onClick={() => handleBetClick(match, 'homeUnder2', filter)}><h2>{match.teams.home.name} Under 2.5 - {match?.odds?.homeUnder2}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayUnder2'
-                                )}
-                                onClick={() => handleBetClick(match, 'awayUnder2', filter)}><h2>{match.teams.away.name} Under 2.5 - {match?.odds?.awayUnder2}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btts'
-                                )}
-                                onClick={() => handleBetClick(match, 'btts', filter)}><h2>Both teams score - {match?.odds?.btts}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'btnts'
-                                )}
-                                onClick={() => handleBetClick(match, 'btnts', filter)}><h2>Both teams not score - {match?.odds?.btnts}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTTS'
-                                )}
-                                onClick={() => handleBetClick(match, 'homeBTTS', filter)}><h2>{match.teams.home.name} wins & both teams score - {match?.odds?.homeBTTS}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeBTNTS'
-                                )}
-                                onClick={() => handleBetClick(match, 'homeBTNTS', filter)}><h2>{match.teams.home.name} wins & both teams not score - {match?.odds?.homeBTNTS}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTTS'
-                                )}
-                                onClick={() => handleBetClick(match, 'awayBTTS', filter)}><h2>{match.teams.away.name} wins & both teams score - {match?.odds?.awayBTTS}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayBTNTS'
-                                )}
-                                onClick={() => handleBetClick(match, 'awayBTNTS', filter)}><h2>{match.teams.away.name} wins & both teams not score - {match?.odds?.awayBTNTS}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'homeMinus1'
-                                )}
-                                onClick={() => handleBetClick(match, 'homeMinus1', filter)}><h2>{match.teams.home.name} - 1 - {match?.odds?.homeMinus1}</h2></RowerRowBet>
-                          <RowerRowBet isSelected={selectedBet.some(
-                                    (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === 'awayMinus1'
-                                )}
-                                onClick={() => handleBetClick(match, 'awayMinus1', filter)}><h2>{match.teams.away.name} - 1 - {match?.odds?.awayMinus1}</h2></RowerRowBet>
-                          
-
+                          {liveOdds?.map((odd) => {
+                            return(
+                              <BigRowBet>
+                                <TopRowBet><h2>{odd.name}</h2></TopRowBet>
+                                <BottomRowBet hasValues={odd.values.length > 2}>
+                                  {odd.values.map((bet) => {
+                                    return(
+                                      <BetHolder hasValues={odd.values.length > 2}><h2>{bet.value} - {bet.odd}</h2></BetHolder>
+                                    )
+                                  })}
+                                </BottomRowBet>
+                              </BigRowBet>
+                            )
+                          })}
                         </LowRower>
                       )}
                     </TeamBetsHolder>
@@ -1305,7 +1271,7 @@ const getWinnings = (el) => {
                       animate={{ height: expandedIndex === index ? '330px' : '130px' }}
                       transition={{ duration: 0.5 }}>
                       {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
-                        <LiveBetIcon onClick={() => openLiveBet()} style={{backgroundImage: `url(${betting})`, backgroundSize: 'cover', backgroundPosition: 'center'}}></LiveBetIcon>
+                        <LiveBetIcon onClick={() => {setFixtureId(match.fixture.id);openLiveBet();}} style={{backgroundImage: `url(${betting})`, backgroundSize: 'cover', backgroundPosition: 'center'}}></LiveBetIcon>
                       <Rower>
                         <TeamsLogo>
                           <TeamLogoWrapper>
@@ -1612,24 +1578,24 @@ const getWinnings = (el) => {
                     </motion.div>
                   )
                 })}
-                      <BetAmount>
-        SELECT AMOUNT: 
-        <BetInput onChange={(e) => setAmount(e.target.value)}  />
-      </BetAmount>
-      <PossibleWinningsAmount>POSSIBLE WINNINGS: <span>{calculateTotalWinnings()} PGZ</span> </PossibleWinningsAmount>
-      <Switcher>
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-        <Typography style={{color: 'white', fontFamily:'Quicksand'}}>SIGN BET</Typography>
-        <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleSwitchSendBet}/>
-        <Typography></Typography>
-      </Stack>
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-        <Typography style={{color: 'white', fontFamily:'Quicksand'}}>MULTIPLE BET</Typography>
-        <IconButton><AddIcon onClick={handleSwitchMultiple} /></IconButton>
-        <Typography></Typography>
-      </Stack>
-      </Switcher>
-              </TeamRow>
+              <BetAmount>
+                SELECT AMOUNT:
+                <BetInput onChange={(e) => setAmount(e.target.value)} />
+              </BetAmount>
+              <PossibleWinningsAmount>POSSIBLE WINNINGS: <span>{calculateTotalWinnings()} PGZ</span> </PossibleWinningsAmount>
+              <Switcher>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                  <Typography style={{ color: 'white', fontFamily: 'Quicksand' }}>SIGN BET</Typography>
+                  <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleSwitchSendBet} />
+                  <Typography></Typography>
+                </Stack>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                  <Typography style={{ color: 'white', fontFamily: 'Quicksand' }}>MULTIPLE BET</Typography>
+                  <IconButton><AddIcon onClick={handleSwitchMultiple} /></IconButton>
+                  <Typography></Typography>
+                </Stack>
+              </Switcher>
+            </TeamRow>
           </Container>
         )}
         {leagueStatsMenu && (

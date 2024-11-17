@@ -9,6 +9,7 @@ const FantasyContext = ({children}) => {
     const [activeLeague, setActiveLeague] = useState("Premier League")
     const [activeTeamName, setActiveTeamName] = useState(null)
     const [activeTeamId, setActiveTeamId] = useState(null)
+    const [fixtureId, setFixtureId] = useState(null)
     const [playerToUpdate, setPlayerToUpdate] = useState({})
     const [playersSelected, setPlayersSelected] = useState([])
     const [selectedPlayer, setSelectedPlayer] = useState([])
@@ -53,7 +54,7 @@ const FantasyContext = ({children}) => {
             pendingBets,setPendingBets,depositMenu,setDepositMenu,metaMaskWalletAddress,setMetaMaskWalletAddress,metaMaskWalletBalance,setMetaMaskWalletBalance,
             data,setData,balance,setBalance,activeTeam,setActiveTeam,activePlayer,setActivePlayer,tonWalletAddress,setTonWalletAddress,
             provider,setProvider,account,setAccount,tonWalletBalance,setTonWalletBalance,walletMenu,setWalletMenu,
-            toHide,setToHide
+            toHide,setToHide,setFixtureId,fixtureId
         }}>
             {children}
         </Fantasy.Provider>
