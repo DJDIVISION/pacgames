@@ -20,7 +20,7 @@ import website from "../assets/logos/website.png"
 import white from "../assets/logos/white.png"
 import buy from "../assets/logos/buy.png"
 import bot from "../assets/logos/bot.png"
-import apps from "../assets/logos/tapps.png"
+import app from "../assets/logos/tapps.png"
 import { useMediaQuery } from 'react-responsive'
 
 const Partners = () => {
@@ -82,16 +82,38 @@ const Partners = () => {
             <SVGTop><Fren /></SVGTop>
             <SVG><motion.img src={fren} alt="fren" style={{ width: isMobile ? "25%" : '40%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
                     animate={controlsTwo}/></SVG>
+                <Description><h2>FREN is a community-oriented token to nurture friendlier Web3 social media. The token is distributed to the first 1,000,000 users signing up in the Fren Telegram app.
+                    <br/>FREN is a fair launch, every friend being equal. Tokens can be only received by the airdrop. For more details see Frequently Asked Questions. <br/></h2> </Description>
+            <Icons>
+                <Icon href='https://x.com/fren_airdrop' target="_blank"><img style={{ width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+                <Icon href='https://t.me/frentgnews' target="_blank"><img style={{ width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
+                <Icon href='https://fren.tg' target="_blank"><img style={{ width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
+                <Icon href='https://t.me/FrenTekBot' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={bot} alt="white" /></Icon>
+                <Icon href='https://t.me/FrenTekBot/fren' target="_blank"><img style={{ width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={app} alt="buy" /></Icon>
+            </Icons>
         </Partner>
         <Partner>
             <SVGTop><Move /></SVGTop>
             <SVG><motion.img src={move} alt="shinobi" style={{borderRadius: '50%', width: isMobile ? "25%" : '40%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
                     animate={controls}/></SVG>
+                    <Description><h2>Move is the first Telegram mini app that lets you earn tokens by tracking the distance you move. Walk or run, complete tasks, climb the leaderboard to compete with your friends.
+                        <br/>Connect with friends, crush fitness goals, and earn $MOVE together!<br/>Explore your city, conquer challenges, and unlock exclusive rewards.</h2></Description>
+            <Icons>
+            <Icon href='https://x.com/moveonton' target="_blank"><img style={{ width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+            <Icon href='https://t.me/MoveOnTonBot' target="_blank"><img style={{ width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon> 
+            </Icons>
         </Partner>
         <Partner>
             <SVGTop><Ton /></SVGTop>
-            <SVG><motion.img src={ton} alt="fren" style={{ width: isMobile ? "25%" : '40%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
+            <SVG><motion.img src={ton} alt="fren" style={{ width: isMobile ? "35%" : '40%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
                     animate={controlsTwo}/></SVG>
+                    <Description><h2>The Open Network (TON) is a decentralized and open internet platform made up of several components. These include: TON Blockchain, TON DNS, TON Storage, and TON Sites. TON Blockchain is the core protocol that connects TON’s underlying infrastructure together to form the greater TON Ecosystem.</h2></Description>
+            <Icons>
+                <Icon href='https://x.com/ton_blockchain' target="_blank"><img style={{ width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+                <Icon href='https://t.me/toncoin' target="_blank"><img style={{ width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
+                <Icon href='https://ton.org' target="_blank"><img style={{ width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
+                <Icon href='https://ton.org/en/buy-toncoin?filters[exchange_groups][slug][$eq]=buy-with-card&pagination[page]=1&pagination[pageSize]=100' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "50%" : '75%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={buy} alt="white" /></Icon>
+            </Icons>
         </Partner>
         </Section>
       
