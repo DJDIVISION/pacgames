@@ -76,7 +76,7 @@ const SmartFooter = () => {
     exit: { pathLength: 0, transition: { duration: 0.50, ease: "easeInOut", } },
   };
 
-  console.log(activePartner)
+  
 
   return (
     <SmartFooterSection>

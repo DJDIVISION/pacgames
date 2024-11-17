@@ -18,11 +18,6 @@ const Footer = () => {
   const [activePartner, setActivePartner] = useState(null)
   const theme = useTheme();
 
-  useEffect(() => {
-    if(currentPartner){
-      setActivePartner(Partners[currentPartner])
-    }
-  }, [currentPartner])
 
   console.log(activePartner)
 
@@ -48,13 +43,20 @@ const Footer = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setShowingPartner(false); // Hide partner for 1 second
+      setShowingPartner(false); // Hide the partner for 1 second
+  
       setTimeout(() => {
-        setCurrentPartner((prev) => (prev + 1) % Partners.length);
-        setShowingPartner(true); // Show next partner
-      }, 200); // 1-second delay
-    }, 10000); // Total cycle: 4 seconds display + 1 second blank
-    return () => clearInterval(interval);
+        setCurrentPartner((prev) => {
+          const nextPartnerIndex = (prev + 1) % Partners.length; // Get the next partner index
+          setActivePartner(Partners[nextPartnerIndex]); // Update active partner
+          console.log(Partners[nextPartnerIndex]); // Log the active partner
+          return nextPartnerIndex; // Update state with the next index
+        });
+        setShowingPartner(true); // Show the next partner
+      }, 500); // 1-second blank delay
+    }, 5000); // Total cycle time
+  
+    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
   const variants = {
@@ -73,7 +75,6 @@ const Footer = () => {
     exit: { pathLength: 0, transition: { duration: 0.50, ease: "easeInOut", } },
   };
 
-  console.log(currentPartner)
 
   return (
     
