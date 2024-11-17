@@ -138,7 +138,7 @@ export const Partners = [
         website: 'https://sh1nobi.io',
         telegram: 'https://t.me/SHINOBIPORTAL',
         twitter: 'https://x.com/sibonihs?s=21&t=QRHKIh6sLsC1HoUdftHPYQ',
-        whitepaper: 'https://shinobi-3.gitbook.io/shinobi-revolutionizing-defi-ecosystems-with-shid',
+        whitepaper: "https://shinobi-3.gitbook.io/shinobi-revolutionizing-defi-ecosystems-with-shid",
         buy: 'https://pool.shido.io/pool/0x4aed39bda730a74874a576b7c0d68e2c641cf912',
         logo: shinobi,
         bot: null,
