@@ -84,16 +84,14 @@ export const TopSmartRowTwo = styled.div`
     height: 20%;
     ${props => props.theme.displayFlexCenter};
     text-shadow: ${props => props.theme.textShadowTwo};
-    transform: translateY(-10px);
+    transform: translateY(10px);
     h2{
         color: ${props => props.theme.MainAccentTwo};
         font-size: 28px;
         font-weight: bold;
         margin: auto;
     }
-    svg{
-        transform: translateY(10px);
-    }
+    
     @media(max-width: 498px){
         svg{
             transform: scale(0.8);
@@ -106,7 +104,6 @@ export const TopSmartRowThree = styled.div`
     height: 45%;
     ${props => props.theme.displayFlexCenter};
     text-shadow: ${props => props.theme.textShadowTwo};
-    transform: translateY(-10px);
     img{
         width: 30%;
         display: block;

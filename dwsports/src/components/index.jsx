@@ -171,7 +171,7 @@ export const StaggerAvatarHolder = styled(motion.div)`
 
 export const StaggerImageHolder = styled(motion.div)`
     width: 100%;
-    height: 85%;
+    height: 75%;
     ${props => props.theme.displayFlexCenter};
     img{
         width: 15%;
@@ -182,20 +182,21 @@ export const StaggerImageHolder = styled(motion.div)`
 
 export const StaggerAvatarName = styled(motion.div)`
     width: 100%;
-    height: 15%;
+    height: 25%;
     ${props => props.theme.displayFlexCenter};
     color: ${props => props.theme.text};
     font-size: 20px;
     text-align: center;
     font-weight: bold;
+    transform: translateY(5px);
 `;
 
 export const StaggerRow = styled(motion.div)`
     width: 100%;
-    height: 100px;
+    height: 70px;
     display: flex;
     flex-direction: column;
-    margin: 20px 0;
+    margin: 15px 0;
 `;
 
 export const SmartNav = styled.nav`

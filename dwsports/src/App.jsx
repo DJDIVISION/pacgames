@@ -27,6 +27,7 @@ import SmartNavBar from './components/SmartNavBar';
 import NavBar from './components/NavBar';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import Partners from './pages/Partners';
 
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
         <Route path="/fantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />
         <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />
         <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+        <Route path="/partners" element={<ProtectedRoute><Partners /></ProtectedRoute>} />
         <Route path="/texas" element={<ProtectedRoute><Texas /></ProtectedRoute>} />
         <Route path="/tonopoly" element={<ProtectedRoute><Tonopoly /></ProtectedRoute>} />
         <Route path="/slots" element={<ProtectedRoute><Slots /></ProtectedRoute>} />
