@@ -65,7 +65,7 @@ const Hero = () => {
     async function sendNotification(notificationPayload) {
         const email = "bodegaflamenca666@gmail.com"
         try {
-          const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-notification', {
+          const response = await axios.post('http://localhost:8080/send-notification', {
             email: email,
             notificationPayload
           }, {

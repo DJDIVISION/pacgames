@@ -20,13 +20,16 @@ async function subscribeUserToPush(email) {
   });
   console.log(registration)
   console.log(subscription)
-  await fetch('https://pacgames-roulette-server.onrender.com/subscribe', {
-    method: 'POST',
-    body: JSON.stringify({ subscription, email }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
+  console.log(email)
+  if(subscription && email){
+    await fetch('http://localhost:8080/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ subscription, email }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
 }
 
 function urlBase64ToUint8Array(base64String) {
