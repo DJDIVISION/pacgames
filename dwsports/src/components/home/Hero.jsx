@@ -546,7 +546,7 @@ const Hero = () => {
                       <>
                         {toHide === false && (
                             <LowRower >
-                            {!user ? (
+                            {user ? (
                                 <>
                                     <AvatarRowBets>
                                     <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
