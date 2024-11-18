@@ -25,6 +25,9 @@ import Swal from "sweetalert2";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import Web3 from "web3";
 import axios from 'axios';
+import { messaging } from '../../firebase'
+import { getToken, onMessage } from "firebase/messaging";
+import { initializePushNotifications  } from "../../push.js";
 
 const Hero = () => {
 
@@ -56,8 +59,55 @@ const Hero = () => {
     const controls = useAnimation();
     const userFriendlyAddress = useTonAddress();
     const {session, setSession} = FantasyState();
+    const userId = user?.id
 
-    console.log("session", session)
+    const subscribeToNotifications = async () => {
+        
+        const permission = await Notification.requestPermission();
+
+        if (permission === "granted") {
+          const token = await getToken(messaging, {
+            vapidKey: "BOZwMhEq3agdeylLqybhzZvqGyILZzQabLuRvuE0uhUilpNxMh23xs09WTYEwHqr7ztSMwzluynjXVNP5GTj87w",
+          });
+    
+          //We can send token to server
+          console.log("Token generated : ", token);
+        } else if (permission === "denied") {
+          //notifications are blocked
+          alert("You denied for the notification");
+        }
+      };
+    
+      async function sendNotification(userId, notificationPayload) {
+        console.log(userId)
+        console.log(notificationPayload)
+        try {
+          const response = await axios.post('https://tpv-2-0-server.vercel.app/api/send-notification', {
+            userId: userId,
+            notificationPayload
+          }, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+      
+          console.log('Notification sent successfully:', response.data);
+        } catch (error) {
+          console.error('Error sending notification:', error);
+        }
+      }
+    
+      const handleSendNotification = () => {
+        const notificationPayload = {
+          title: 'Hello Bitches!',
+          body: 'You may suck my dick now.',
+          //icon: 'path/to/icon.png' // Optional
+        };
+    
+        sendNotification(userId, notificationPayload);
+      };
+
+    
 
     const disconnectWallet = async () => {
         setMetaMaskWalletAddress(null)
@@ -252,23 +302,6 @@ const Hero = () => {
     };
     
     const handleLogout = async () => {
-        /* const options = {
-            method: 'GET',
-            url: 'https://api-football-v1.p.rapidapi.com/v3/odds',
-            params: {fixture: '1208137'},
-            headers: {
-              'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-              'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-            }
-          };
-          
-          
-          try {
-              const response = await axios.request(options);
-              console.log(response.data.response);
-          } catch (error) {
-              console.error(error);
-          } */
         setExpandedReferrals(false)
         setExpandedWallet(false)
         setSession(null)
@@ -440,24 +473,7 @@ const Hero = () => {
           }
     };
 
-    async function connectMetaMask() {
-        if (typeof window.ethereum !== 'undefined') {
-            try {
-                // Request account access if needed
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                setMetaMaskWalletAddress(accounts[0])
-                Swal.fire({
-                    title: "Wallet Connected!",
-                    text: "Your Wallet is now connected",
-                    icon: "success"
-                  });
-            } catch (error) {
-                console.error('User denied account access', error);
-            }
-        } else {
-            alert('MetaMask is not installed!');
-        }
-    }
+    
 
     const connectWallet = async () => {
         try {
@@ -560,8 +576,12 @@ const Hero = () => {
                                     <h3>{user && user.email}</h3>
                                     </RowerRowBets>
                                    
-                                    <RowerRowBets style={{ height: '70px' }}>
+                                    {/* <RowerRowBets style={{ height: '70px' }}>
                                         <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
+                                    </RowerRowBets> */}
+                                    <RowerRowBets style={{ height: '70px' }}>
+                                        <StyledButton onClick={subscribeToNotifications}>REQUEST</StyledButton>
+                                        <StyledButton onClick={() => handleSendNotification(user.id)}>SEND</StyledButton>
                                     </RowerRowBets>
                                 </>
                             ) : (

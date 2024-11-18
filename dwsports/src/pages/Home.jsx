@@ -38,8 +38,6 @@ const Home = ({toggleTheme}) => {
     // Cleanup the event listener on component unmount
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
-
 
   
 

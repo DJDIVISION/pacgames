@@ -1,6 +1,4 @@
-
-
-const publicVapidKey = 'BOZwMhEq3agdeylLqybhzZvqGyILZzQabLuRvuE0uhUilpNxMh23xs09WTYEwHqr7ztSMwzluynjXVNP5GTj87w';
+const publicVapidKey = 'BL0whCjUesl6_AELHTwthVOaccDkAUYyH-f8nFTQ75BiHMlJpadQ2gsaGu0E0yfo5qEcIWpw5InkzmRwrpm7oyw';
 
 
 async function requestNotificationPermission() {
@@ -12,22 +10,28 @@ async function requestNotificationPermission() {
   }
 }
 
-async function subscribeUserToPush(email) {
+async function subscribeUserToPush(userId) {
   const registration = await navigator.serviceWorker.ready;
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
   });
-  console.log(registration)
-  console.log(subscription)
-  console.log(email)
-  await fetch('http://localhost:8080/subscribe', {
+  const subscriptionData = {userId}
+  await fetch('https://tpv-2-0-server.vercel.app/api/subscribe', {
     method: 'POST',
-    body: JSON.stringify({ subscription, email }),
+    body: JSON.stringify({ subscription, userId }),
     headers: {
       'Content-Type': 'application/json'
     }
   });
+  /* const parentDocRef = doc(db, 'registrations', "TIBÈRIC");
+  const subcollectionRef = collection(parentDocRef, 'pushSubscriptions');
+  try {
+    
+    await setDoc(doc(subcollectionRef), subscriptionData);
+  } catch (e) {
+    console.error('Error getting subcollection documents: ', e);
+  } */
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -45,11 +49,10 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
-export async function initializePushNotifications(email) {
+export async function initializePushNotifications(userId) {
   try {
-    console.log(email)
     await requestNotificationPermission();
-    await subscribeUserToPush(email);
+    await subscribeUserToPush(userId);
   } catch (error) {
     console.error('Failed to initialize push notifications:', error);
   }

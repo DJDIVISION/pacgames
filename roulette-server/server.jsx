@@ -9,9 +9,14 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const vapidKeys = {
+/* const vapidKeys = {
   publicKey: 'BOZwMhEq3agdeylLqybhzZvqGyILZzQabLuRvuE0uhUilpNxMh23xs09WTYEwHqr7ztSMwzluynjXVNP5GTj87w',
   privateKey: 'KasRTn00fvPsWN0FIhb9cGh5jFFvfjB2ae_ElFlMI4o'
+}; */
+
+const vapidKeys = {
+  publicKey: 'BL0whCjUesl6_AELHTwthVOaccDkAUYyH-f8nFTQ75BiHMlJpadQ2gsaGu0E0yfo5qEcIWpw5InkzmRwrpm7oyw',
+  privateKey: 'mp0qUJL3qw5l3B27wttQ3nKRTihqnRUz6gkaFdkuZFc'
 };
 
 webPush.setVapidDetails(
@@ -64,7 +69,7 @@ const americanRouletteNumbers = [
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: "https://pacgames-frontend.onrender.com",
+  origin: "http://localhost:5173",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -78,25 +83,26 @@ const subscriptions = {};
 
 // Endpoint to subscribe to notifications
 app.post('/subscribe', (req, res) => {
-  const { subscription, email } = req.body;
+  const { subscription, id } = req.body;
   console.log("subs", subscription)
-  console.log("email", email)
-  if (!subscriptions[email]) {
-    subscriptions[email] = [];
+  console.log("id", id)
+  if (!subscriptions[id]) {
+    subscriptions[id] = [];
   }
-  subscriptions[email].push(subscription);
+  subscriptions[id].push(subscription);
   res.status(201).json({});
 });
 
 // Endpoint to send notifications to a specific user
 app.post('/send-notification', (req, res) => {
-  const { email, notificationPayload } = req.body;
-  console.log(email)
+  const { id, notificationPayload } = req.body;
+  console.log("id on send", id)
   console.log(notificationPayload)
   const payload = JSON.stringify(notificationPayload);
   console.log("subscriptions",subscriptions)
-  if (subscriptions[email]) {
-    Promise.all(subscriptions[email].map(sub => webPush.sendNotification(sub, payload)))
+  if (subscriptions[id]) {
+    console.log("sending push")
+    Promise.all(subscriptions[id].map(sub => webPush.sendNotification(sub, payload)))
       .then(() => res.status(200).json({ message: 'Notification sent successfully.' }))
       .catch(err => {
         console.error('Error sending notification, reason: ', err);
@@ -111,7 +117,7 @@ app.post('/send-notification', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "https://pacgames-frontend.onrender.com",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]  // Client URL
   },
  });

@@ -466,10 +466,10 @@ export const useAuth = () => {
       if (session?.user) {
         setSession(session)
         setUser(session.user); // Set the user state if session exists
-        console.log("there is session")
+        
       } else {
         setUser(null); // Clear the user state if no session
-        console.log("there is no session")
+        
       }
       setLoading(false); // Loading finished
     };
