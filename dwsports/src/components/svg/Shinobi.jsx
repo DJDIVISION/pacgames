@@ -9,7 +9,7 @@ const Shinobi = () => {
  
 
   return (
-    <svg width="auto" height="90%" viewBox="0 0 253 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="90%" height="90%" viewBox="0 0 253 55" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <motion.path variants={pathVariants}
           initial="initial"
           animate="animate"

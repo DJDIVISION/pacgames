@@ -1,37 +1,5 @@
-importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js");
-importScripts(
-  "https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"
-);
-
-// Initialize the Firebase app in the service worker
-// "Default" Firebase configuration (prevents errors)
-const defaultConfig = {
-    apiKey: "AIzaSyCyNHnR2UfeplO8JYiXtmpAFiPGhSObxtY",
-    authDomain: "pacton-4b97c.firebaseapp.com",
-    projectId: "pacton-4b97c",
-    storageBucket: "pacton-4b97c.firebasestorage.app",
-    messagingSenderId: "801656402140",
-    appId: "1:801656402140:web:420ee4c0e0431bf0d74419",
-    measurementId: "G-BN49G6Z1WG"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-// Retrieve firebase messaging
-const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: payload.notification.image,
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-const CACHE_NAME = "version-1";
-const urlsToCache = [ 'index.html'/* , 'offline.html', '/login.js', 'app/js' */ ];
+/* const CACHE_NAME = "version-1";
+const urlsToCache = [ 'index.html', 'offline.html', '/login.js', 'app/js' ];
 
 const self = this;
 
@@ -71,12 +39,25 @@ self.addEventListener('activate', (event) => {
         ))
             
     )
-});
+}); */
+
+console.log('Service Worker Works');
+
+/* self.addEventListener('push', e => {
+    const data = e.data.json();
+    console.log(data)
+    console.log('Notification Received');
+    self.registration.showNotification(data.title, {
+        body: data.message,
+        icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Archlinux-icon-crystal-64.svg/1024px-Archlinux-icon-crystal-64.svg.png'
+    });
+}); */
 
 self.addEventListener('push', event => {
     const data = event.data.json();
+    console.log('Notification Received');
     self.registration.showNotification(data.title, {
       body: data.body,
-      //icon: '/icon-96x96.png'
+      icon: '/icon-128x128.png'
     });
   });

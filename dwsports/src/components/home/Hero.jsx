@@ -59,53 +59,62 @@ const Hero = () => {
     const controls = useAnimation();
     const userFriendlyAddress = useTonAddress();
     const {session, setSession} = FantasyState();
-    const userId = user?.id
+    const PUBLIC_VAPID_KEY = "BLei-NwbbRtrn0qUWICUbxD2wdExl4ra67PPQX7ImPq107Rs76tDOwUjHoqbrYwI26FrsQgxQkv_DiN8zD9Lheo";
 
     const subscribeToNotifications = async () => {
-        
-        const permission = await Notification.requestPermission();
-
-        if (permission === "granted") {
-          const token = await getToken(messaging, {
-            vapidKey: "BOZwMhEq3agdeylLqybhzZvqGyILZzQabLuRvuE0uhUilpNxMh23xs09WTYEwHqr7ztSMwzluynjXVNP5GTj87w",
+        const register = await navigator.serviceWorker.register("/serviceworker.js", {
+            scope: "/"
           });
-    
-          //We can send token to server
-          console.log("Token generated : ", token);
-        } else if (permission === "denied") {
-          //notifications are blocked
-          alert("You denied for the notification");
-        }
-      };
-    
-      async function sendNotification(userId, notificationPayload) {
-        console.log(userId)
-        console.log(notificationPayload)
-        try {
-          const response = await axios.post('https://tpv-2-0-server.vercel.app/api/send-notification', {
-            userId: userId,
-            notificationPayload
-          }, {
+          console.log("New Service Worker");
+        
+          // Listen Push Notifications
+          console.log("Listening Push Notifications");
+          const subscription = await register.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
+          });
+        
+          console.log(subscription);
+        
+          // Send Notification
+          await fetch("http://localhost:5000/subscription", {
+            method: "POST",
+            body: JSON.stringify(subscription),
             headers: {
-              'Content-Type': 'application/json'
+              "Content-Type": "application/json"
             }
           });
+          console.log("Subscribed!");
+    };
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
       
-          console.log('Notification sent successfully:', response.data);
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+      
+        for (let i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+      }
+    
+    async function sendNotification() {
+        const message = "You may suck my dick now!!!"
+        try {
+            fetch('http://localhost:5000/new-message', {
+                method: 'POST',
+                body: JSON.stringify({message: message}),
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              });
         } catch (error) {
           console.error('Error sending notification:', error);
         }
       }
     
-      const handleSendNotification = () => {
-        const notificationPayload = {
-          title: 'Hello Bitches!',
-          body: 'You may suck my dick now.',
-          //icon: 'path/to/icon.png' // Optional
-        };
-    
-        sendNotification(userId, notificationPayload);
-      };
 
     
 
@@ -576,13 +585,13 @@ const Hero = () => {
                                     <h3>{user && user.email}</h3>
                                     </RowerRowBets>
                                    
-                                    {/* <RowerRowBets style={{ height: '70px' }}>
-                                        <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
-                                    </RowerRowBets> */}
                                     <RowerRowBets style={{ height: '70px' }}>
-                                        <StyledButton onClick={subscribeToNotifications}>REQUEST</StyledButton>
-                                        <StyledButton onClick={() => handleSendNotification(user.id)}>SEND</StyledButton>
+                                        <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
                                     </RowerRowBets>
+                                    {/* <RowerRowBets style={{ height: '70px' }}>
+                                        <StyledButton onClick={subscribeToNotifications}>REQUEST</StyledButton>
+                                        <StyledButton onClick={sendNotification}>SEND</StyledButton>
+                                    </RowerRowBets> */}
                                 </>
                             ) : (
                                 <>

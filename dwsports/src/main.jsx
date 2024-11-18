@@ -36,7 +36,7 @@ i18next.init ({
   },
 })
 
-if ('serviceWorker' in navigator) {
+/* if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/serviceworker.js')
     .then(registration => {
       console.log('Service Worker registered with scope:', registration.scope);
@@ -44,7 +44,7 @@ if ('serviceWorker' in navigator) {
     .catch(error => {
       console.error('Service Worker registration failed:', error);
     });
-}
+} */
 
 
 

@@ -1,12 +1,12 @@
-const publicVapidKey = 'BL0whCjUesl6_AELHTwthVOaccDkAUYyH-f8nFTQ75BiHMlJpadQ2gsaGu0E0yfo5qEcIWpw5InkzmRwrpm7oyw';
+const publicVapidKey = 'BLei-NwbbRtrn0qUWICUbxD2wdExl4ra67PPQX7ImPq107Rs76tDOwUjHoqbrYwI26FrsQgxQkv_DiN8zD9Lheo';
 
 
 async function requestNotificationPermission() {
   const permission = await Notification.requestPermission();
   if (permission === 'granted') {
-    console.log('Notification permission granted.');
+    console.log("permission granted")
   } else {
-    console.error('Notification permission denied.');
+    throw new Error('Permission not granted for Notification');
   }
 }
 
@@ -17,7 +17,7 @@ async function subscribeUserToPush(userId) {
     applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
   });
   const subscriptionData = {userId}
-  await fetch('https://tpv-2-0-server.vercel.app/api/subscribe', {
+  await fetch('http://localhost:5000/subscribe', {
     method: 'POST',
     body: JSON.stringify({ subscription, userId }),
     headers: {

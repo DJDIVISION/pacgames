@@ -15,6 +15,7 @@ import Ton from '../svg/Ton';
 import Fren from '../svg/Fren';
 import Hunny from '../svg/Hunny';
 import Badger from '../svg/Badger';
+import Move from '../svg/Move';
 
 const Footer = () => {
 
@@ -22,9 +23,6 @@ const Footer = () => {
   const [showingPartner, setShowingPartner] = useState(true);
   const [activePartner, setActivePartner] = useState(null)
   const theme = useTheme();
-
-
-  console.log(activePartner)
 
   const {ref, inView} = useInView();
 
@@ -54,7 +52,7 @@ const Footer = () => {
         setCurrentPartner((prev) => {
           const nextPartnerIndex = (prev + 1) % Partners.length; // Get the next partner index
           setActivePartner(Partners[nextPartnerIndex]); // Update active partner
-          console.log(Partners[nextPartnerIndex]); // Log the active partner
+          
           return nextPartnerIndex; // Update state with the next index
         });
         setShowingPartner(true); // Show the next partner
