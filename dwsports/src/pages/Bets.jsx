@@ -1411,6 +1411,7 @@ const getWinnings = (el) => {
                       {expandedIndex === index && (
                         <LowRower >
                           {bet.bet.map((match) => {
+                            console.log(match)
                             const url = getURL(match.betType, match.match);
                             const homeLogo = getURL("home", match.match);
                             const awayLogo = getURL("away", match.match);
@@ -1418,7 +1419,7 @@ const getWinnings = (el) => {
                             const winnings = getWinnings(match)
                             return(
                               <RowerRowBets>
-                                <RowerFirstEvent><h2>{name}</h2></RowerFirstEvent>
+                                <RowerFirstEvent><h2>{match.name} - {match.value}</h2></RowerFirstEvent>
                                 <RowerRowEvent style={{backgroundImage: `url(${homeLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.home.winner === true ? '#2cff02' : match.match.teams.home.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.home}</h2></AbsoluteScore></RowerRowEvent>
                                 <RowerTeamEvent><h2>-</h2></RowerTeamEvent>
                                 <RowerRowEvent style={{backgroundImage: `url(${awayLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.away.winner === true ? '#2cff02' : match.match.teams.away.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.away}</h2></AbsoluteScore></RowerRowEvent>
