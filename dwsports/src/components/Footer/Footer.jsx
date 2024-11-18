@@ -16,6 +16,7 @@ import Fren from '../svg/Fren';
 import Hunny from '../svg/Hunny';
 import Badger from '../svg/Badger';
 import Move from '../svg/Move';
+import Toncula from '../svg/Toncula';
 
 const Footer = () => {
 
@@ -121,6 +122,9 @@ const Footer = () => {
                 )}
                 {currentPartner === 5 && (
                   <Badger />
+                )}
+                {currentPartner === 6 && (
+                  <Toncula />
                 )}
               </TopRow>
               <BottomRow>

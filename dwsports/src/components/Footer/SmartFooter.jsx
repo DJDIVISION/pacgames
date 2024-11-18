@@ -16,6 +16,7 @@ import Ton from '../svg/Ton';
 import Move from '../svg/Move';
 import Hunny from '../svg/Hunny';
 import Badger from '../svg/Badger';
+import Toncula from '../svg/Toncula';
 
 
 
@@ -115,6 +116,9 @@ const SmartFooter = () => {
                 )}
                 {currentPartner === 5 && (
                   <Badger />
+                )}
+                {currentPartner === 6 && (
+                  <Toncula />
                 )}
               </TopSmartRowTwo>
               <TopSmartRowThree>

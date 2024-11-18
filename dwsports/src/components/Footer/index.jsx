@@ -10,6 +10,7 @@ import ton from '../../assets/logos/ton.png'
 import move from '../../assets/logos/move.jpg'
 import fren from '../../assets/logos/fren.png'
 import badger from '../../assets/logos/badger.png'
+import toncula from '../../assets/logos/toncula.jpg'
 
 export const FooterSection = styled.div`
     width: 100%;
@@ -194,6 +195,17 @@ export const Partners = [
         whitepaper: null,
         buy: null,
         logo: badger,
+        bot: null,
+        app: null
+    },
+    {
+        name: 'TONCULA',
+        website:'https://toncula.xyz/',
+        telegram: 'https://t.me/toncula',
+        twitter: 'https://x.com/toncula_ton',
+        whitepaper: "https://toncula.xyz/assets/TONCULA%20Whitepaper%20-Nq-he-jR.pdf",
+        buy: null,
+        logo: toncula,
         bot: null,
         app: null
     }
