@@ -257,14 +257,19 @@ padding: 10px;
 
 export const LiveBetIcon = styled.div`
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: 0px;
+    right: 0px;
     width: 40px;
     height: 40px;
-    background: orange;
+    background: ${props => props.theme.body};
     border-radius: 50%;
     transform: translate(25%,-25%);
-
+    color: ${props => props.theme.MainAccent};
+    ${props => props.theme.displayFlexCenter};
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: inset 0 0 25px ${props => props.theme.text};
+    text-shadow: ${props => props.theme.textShadowTwo};
 `;
 
 export const TeamBetsHolder = styled(motion.div)`
@@ -331,7 +336,7 @@ export const RoundNameHolder = styled.div`
 `;
 
 export const CurrentBetLogoHolder = styled.div`
-    width: 20%;
+    width: 15%;
     height: 100%;
     ${props => props.theme.displayFlexCenter}
     img{
@@ -344,8 +349,13 @@ export const CurrentBetLogoHolder = styled.div`
     }
 `;
 export const CurrentBetNameHolder = styled.div`
-    width: 40%;
+    width: 80%;
     height: 100%;
+    ${props => props.theme.displayFlexColumn}
+`;
+export const CurrentBetRow = styled.div`
+    width: 100%;
+    height: 50%;
     ${props => props.theme.displayFlexCenter}
     h2{
         font-size: 14px;

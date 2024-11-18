@@ -23,7 +23,8 @@ import {Section,BottomRow,IconHolder,LeagueRowBets,Container,item,LeagueHolder,A
   CurrentBetLogoHolder,
   CurrentBetNameHolder,
   AddIcon,
-  LiveBetIcon
+  LiveBetIcon,
+  CurrentBetRow
 } from './indexThree' 
 import { FantasyState } from '../context/FantasyContext';
 import axios from 'axios';
@@ -562,9 +563,7 @@ const Bets = () => {
   }, [openMyBetsMenu])
 
   const toggleExpand = (index) => {
-    
     setExpandedIndex(expandedIndex === index ? null : index);
-    
   };
   
   
@@ -760,33 +759,8 @@ const Bets = () => {
       }
     };
     try {
-      const { data, error } = await supabase
-      .from("fixtures").select('odds').eq('id', activeLeagueId)
-      if(error){
-        console.log(error)
-      }
-      if(data){
-        if(data[0].odds === null){
-          const response = await axios.request(options);
-          setCurrentRoundMatches(response.data.response);
-        } else {
-          const odds = data[0].odds.odds
-          const oddsLookup = odds.reduce((acc, obj) => {
-            const fixtureId = Object.keys(obj)[0];
-            acc[fixtureId] = obj[fixtureId];
-            return acc;
-          }, {});
-          const response = await axios.request(options);
-          const mergedMatches = response.data.response.map((match) => {
-            const fixtureId = match.fixture.id;
-            if (oddsLookup[fixtureId]) {
-              return { ...match, odds: oddsLookup[fixtureId] };
-            }
-            return match; 
-          });
-          setCurrentRoundMatches(mergedMatches);
-        }
-      }
+      const response = await axios.request(options);
+      setCurrentRoundMatches(response.data.response);
     } catch (error) {
       console.error(error);
     }
@@ -851,43 +825,106 @@ useEffect(() => {
     return ''
 };
 
-const getName = (betType, match) => {
-    if(betType === "home") return `${match.teams.home.name} wins to ${match.teams.away.name}`
-    if(betType === "away") return `${match.teams.away.name} wins to ${match.teams.home.name}`
-    if(betType === "draw") return `${match.teams.home.name} draws with ${match.teams.away.name}`
-    if(betType === "homeOver2") return `${match.teams.home.name} OVER 2.5`
-    if(betType === "btts") return `${match.teams.home.name} & ${match.teams.away.name} score`
-    if(betType === "homeBTTS") return `${match.teams.home.name} Wins both teams score`
-    if(betType === "btnts") return `${match.teams.home.name} & ${match.teams.away.name} both not score`
-    if(betType === "awayOver2") return `${match.teams.away.name} over 2.5`
-    if(betType === "homeUnder2") return `${match.teams.home.name} under 2.5`
-    if(betType === "awayUnder2") return `${match.teams.away.name} under 2.5`
-    if(betType === "homeMinus1") return `${match.teams.home.name} - 1`
-    if(betType === "awayBTTS") return `${match.teams.away.name} Wins both teams score`
-    if(betType === "homeBTNTS") return `${match.teams.home.name} Wins both teams not score`
-    if(betType === "awayMinus1") return `${match.teams.away.name} - 1`
-    if(betType === "awayBTNTS") return `${match.teams.away.name} Wins both teams not score`
+const getName = (name, value, match) => {
+    if(name === "Match Winner" && value === "Home") return `${match.teams.home.name} wins to ${match.teams.away.name}`
+    if(name === "Match Winner" && value === "Away") return `${match.teams.away.name} wins to ${match.teams.home.name}`
+    if(name === "Match Winner" && value === "Draw") return `${match.teams.home.name} draws with ${match.teams.away.name}`
+    if(name === "Home/Away" && value === "Home") return `${match.teams.home.name} wins to ${match.teams.away.name}`
+    if(name === "Home/Away" && value === "Away") return `${match.teams.away.name} wins to ${match.teams.home.name}`
+    if(name === "Second Half Winner" && value === "Home") return `${match.teams.home.name} wins second half`
+    if(name === "Second Half Winner" && value === "Away") return `${match.teams.away.name} wins second half`
+    if(name === "Second Half Winner" && value === "Draw") return `Second half ends in draw`
+    if(name === "Goals Over/Under First Half" && value.startsWith("Over")) return `First half ${value} goals`
+    if(name === "Goals Over/Under First Half" && value.startsWith("Under")) return `First half ${value} goals`
+    if(name === "Goals Over/Under - Second Half" && value.startsWith("Over")) return `Second half ${value} goals`
+    if(name === "Goals Over/Under - Second Half" && value.startsWith("Under")) return `Second half ${value} goals`
+    if(name === "Both Teams Score" && value === "Yes") return `${match.teams.home.name} & ${match.teams.away.name} both score`
+    if(name === "Both Teams Score - First Half" && value === "Yes") return `${match.teams.home.name} & ${match.teams.away.name} both score on 1st half`
+    if(name === "Both Teams To Score - Second Half" && value === "Yes") return `${match.teams.home.name} & ${match.teams.away.name} both score on 2nd half`
+    if(name === "Both Teams Score" && value === "No") return `${match.teams.home.name} & ${match.teams.away.name} both not score`
+    if(name === "Both Teams Score - First Half" && value === "No") return `${match.teams.home.name} & ${match.teams.away.name} both not score on 1st Half`
+    if(name === "Both Teams To Score - Second Half" && value === "No") return `${match.teams.home.name} & ${match.teams.away.name} both not score on 2nd Half`
+    if(name === "Win to Nil - Home" && value === "Yes") return `${match.teams.home.name} wins to nill`
+    if(name === "Win to Nil" && value === "Home") return `${match.teams.home.name} wins to nill`
+    if(name === "Win to Nil - Home" && value === "No") return `${match.teams.home.name} does not win to nill`
+    if(name === "Win to Nil - Away" && value === "Yes") return `${match.teams.away.name} wins to nill`
+    if(name === "Win to Nil" && value === "Away") return `${match.teams.away.name} wins to nill`
+    if(name === "Win to Nil - Away" && value === "No") return `${match.teams.away.name} does not win to nill`
+    if(name === "Exact Score") return `Exact Score: ${value}`
+    if(name === "Highest Scoring Half" && value === "1st Half") return `More goals on 1st half`
+    if(name === "Highest Scoring Half" && value === "2nd Half") return `More goals on 2nd half`
+    if(name === "Highest Scoring Half" && value === "Draw") return `Same goals on both halves`
+    if(name === "Correct Score - First Half") return `Correct Score on First Half: ${value}`
+    if(name === "Correct Score - Second Half") return `Correct Score on Second Half: ${value}`
+    if(name === "Double Chance" && value === "Home/Draw") return `${match.teams.home.name} wins or draws`
+    if(name === "Double Chance - First Half" && value === "Home/Draw") return `${match.teams.home.name} wins or draws on 1st half`
+    if(name === "Double Chance - Second Half" && value === "Home/Draw") return `${match.teams.home.name} wins or draws on 2nd half`
+    if(name === "Double Chance" && value === "Home/Away") return `${match.teams.home.name} or ${match.teams.away.name} wins`
+    if(name === "Double Chance - First Half" && value === "Home/Away") return `${match.teams.home.name} or ${match.teams.away.name} wins on 1st half`
+    if(name === "Double Chance - Second Half" && value === "Home/Away") return `${match.teams.home.name} or ${match.teams.away.name} wins on 2nd half`
+    if(name === "Double Chance" && value === "Draw/Away") return `${match.teams.away.name} wins or draws`
+    if(name === "Double Chance - First Half" && value === "Draw/Away") return `${match.teams.away.name} wins or draws on 1st half`
+    if(name === "Double Chance - Second Half" && value === "Draw/Away") return `${match.teams.away.name} wins or draws on 2nd half`
+    if(name === "First Half Winner" && value === "Home") return `${match.teams.home.name} wins 1st Half`
+    if(name === "First Half Winner" && value === "Away") return `${match.teams.away.name} wins 1st Half`
+    if(name === "First Half Winner" && value === "Draw") return `1st Half ends in draw`
+    if(name === "Win Both Halves" && value === "Home") return `${match.teams.home.name} wins both halves`
+    if(name === "Win Both Halves" && value === "Away") return `${match.teams.away.name} wins both halves`
+    if(name === "Odd/Even" && value === "Odd") return `Odd number of goals in the match`
+    if(name === "Odd/Even - First Half" && value === "Odd") return `Odd number of goals in the 1st half`
+    if(name === "Odd/Even - First Half" && value === "Even") return `Even number of goals in the 1st half`
+    if(name === "Odd/Even - Second Half" && value === "Odd") return `Odd number of goals in the 2nd half`
+    if(name === "Odd/Even - Second Half" && value === "Even") return `Even number of goals in the 2nd half`
+    if(name === "Odd/Even" && value === "Even") return `Even number of goals in the match`
+    if(name === "Home win both halves" && value === "Yes") return `${match.teams.home.name} wins both halves`
+    if(name === "Home win both halves" && value === "No") return `${match.teams.home.name} does not win both halves`
+    if(name === "Away win both halves" && value === "Yes") return `${match.teams.away.name} wins both halves`
+    if(name === "Away win both halves" && value === "No") return `${match.teams.away.name} does not win both halves`
+    if(name === "Exact Goals Number" && value === 0) return `0 goals in the game`
+    if(name === "Exact Goals Number" && value === 1) return `1 goal in the game`
+    if(name === "Exact Goals Number" && value === 2) return `2 goals in the game`
+    if(name === "Exact Goals Number" && value === 3) return `3 goals in the game`
+    if(name === "Exact Goals Number" && value === 4) return `4 goals in the game`
+    if(name === "Exact Goals Number" && value === 5) return `5 goals in the game`
+    if(name === "Exact Goals Number" && value === 'more 6') return `6 or more goals in the game`
+    if(name === "To Win Either Half" && value === 'Home') return `${match.teams.home.name} wins either half`
+    if(name === "To Win Either Half" && value === 'Away') return `${match.teams.away.name} wins either half`
+    if(name === "Home Team Exact Goals Number" && value === 0) return `${match.teams.home.name} scores 0 goals in the match`
+    if(name === "Home Team Exact Goals Number" && value === 1) return `${match.teams.home.name} scores 1 goal in the match`
+    if(name === "Home Team Exact Goals Number" && value === 2) return `${match.teams.home.name} scores 2 goals in the match`
+    if(name === "Home Team Exact Goals Number" && value === 3) return `${match.teams.home.name} scores 3 goals in the match`
+    if(name === "Home Team Exact Goals Number" && value === "4 more") return `${match.teams.home.name} scores 4 goals or more in the match`
+    if(name === "Second Half Exact Goals Number" && value === 0) return `0 goals in the second half`
+    if(name === "Second Half Exact Goals Number" && value === 1) return `1 goal in the second half`
+    if(name === "Second Half Exact Goals Number" && value === 2) return `2 goals in the second half`
+    if(name === "Second Half Exact Goals Number" && value === 3) return `3 goals in the second half`
+    if(name === "Second Half Exact Goals Number" && value === "4 more") return `4 goals or more in the second half`
+    if(name === "Away Team Exact Goals Number" && value === 0) return `${match.teams.away.name} scores 0 goals in the match`
+    if(name === "Away Team Exact Goals Number" && value === 1) return `${match.teams.away.name} scores 1 goal in the match`
+    if(name === "Away Team Exact Goals Number" && value === 2) return `${match.teams.away.name} scores 2 goals in the match`
+    if(name === "Away Team Exact Goals Number" && value === 3) return `${match.teams.away.name} scores 3 goals in the match`
+    if(name === "Away Team Exact Goals Number" && value === "4 more") return `${match.teams.away.name} scores 4 goals or more in the match`
+    if(name === "Exact Goals Number - First Half" && value === 0) return `0 goals in the first half`
+    if(name === "Exact Goals Number - First Half" && value === 1) return `1 goal in the first half`
+    if(name === "Exact Goals Number - First Half" && value === 2) return `2 goals in the first half`
+    if(name === "Exact Goals Number - First Half" && value === 3) return `3 goals in the first half`
+    if(name === "Exact Goals Number - First Half" && value === "4 more") return `4 goals or more in the first half`
+    if(name === "Results/Both Teams Score" && value === "Home/Yes") return `${match.teams.home.name} wins both teams score`
+    if(name === "Results/Both Teams Score" && value === "Draw/Yes") return `Draw & both teams score`
+    if(name === "Results/Both Teams Score" && value === "Away/Yes") return `${match.teams.away.name} wins both teams score`
+    if(name === "Home Team Score a Goal" && value === "Yes") return `${match.teams.home.name} scores`
+    if(name === "Home Team Score a Goal" && value === "No") return `${match.teams.home.name} does not score`
+    if(name === "Away Team Score a Goal" && value === "Yes") return `${match.teams.away.name} scores`
+    if(name === "Away Team Score a Goal" && value === "No") return `${match.teams.away.name} does not score`
+    if(name === "Home team will score in both halves" && value === "Yes") return `${match.teams.home.name} scores in both halves`
+    if(name === "Home team will score in both halves" && value === "No") return `${match.teams.home.name} does not score in both halves`
+    if(name === "Away team will score in both halves" && value === "Yes") return `${match.teams.away.name} scores in both halves`
+    if(name === "Away team will score in both halves" && value === "No") return `${match.teams.away.name} does not score in both halves`
+    
     return ''
 };
 
-const getOdd = (betType, match) => {
-    if(betType === "home") return match.odds.home
-    if(betType === "away") return match.odds.away
-    if(betType === "draw") return match.odds.draw
-    if(betType === "homeOver2") return match.odds.homeOver2
-    if(betType === "btts") return match.odds.btts
-    if(betType === "awayOver2") return match.odds.awayOver2
-    if(betType === "homeUnder2") return match.odds.homeUnder2
-    if(betType === "btnts") return match.odds.btnts
-    if(betType === "awayUnder2") return match.odds.awayUnder2
-    if(betType === "homeBTTS") return match.odds.homeBTTS
-    if(betType === "homeMinus1") return match.odds.homeMinus1
-    if(betType === "awayBTTS") return match.odds.awayBTTS
-    if(betType === "homeBTNTS") return match.odds.homeBTNTS
-    if(betType === "awayMinus1") return match.odds.awayMinus1
-    if(betType === "awayBTNTS") return match.odds.awayBTNTS
-    return ''
-};
+
 
 const getWinnings = (el) => {
   if(el.isWinningBet === true){
@@ -915,9 +952,11 @@ const getWinnings = (el) => {
       }
   }
 
-  const handleBetClick = (match, betType, filter) => {
-    
-    console.log(filter)
+  const handleBetClick = (match, name, value, odd, filter) => {
+    console.log(match)
+    console.log(name)
+    console.log(value)
+    console.log(odd)
     if(filter !== undefined){
       toast('You can not bet on the same event twice! ❌', {
         position: "top-center",
@@ -932,54 +971,37 @@ const getWinnings = (el) => {
       return
     } else {
       setSelectedBet((prevBets) => {
-      const isAlreadySelected = prevBets.some(
-        (bet) => bet.match.fixture.id === match.fixture.id && bet.betType === betType
-      );
-      
-      if (isAlreadySelected) {
-        return prevBets.filter(
-          (bet) => !(bet.match.fixture.id === match.fixture.id && bet.betType === betType)
+        const isAlreadySelected = prevBets.some(
+          (bet) => bet.match.fixture.id === match.fixture.id && bet.name === name
         );
-      } else {
-        setOpenMatchesMenu(false)
-        setExpandedIndex(null)
-        setTimeout(() => {
-          setOpenCurrentMenu(true)
-        }, 500)
-        return [...prevBets, { match, betType }];
-      }
-    });
+        
+        if (isAlreadySelected) {
+          return prevBets.filter(
+            (bet) => !(bet.match.fixture.id === match.fixture.id && bet.name === name)
+          );
+        } else {
+          setOpenMatchesMenu(false)
+          setExpandedIndex(null)
+          setTimeout(() => {
+            setOpenCurrentMenu(true)
+          }, 500)
+          return [...prevBets, { match, name, value, odd }];
+        }
+      });
     }
-    
   };
 
+  console.log(selectedBet)
+
   const calculateTotalWinnings = () => {
-    return selectedBet.reduce((total, bet) => {
-      // Get the odds for the selected bet type (home, draw, away)
-      let odds = 0;
-      if (bet.betType === 'home') odds = bet.match.odds.home;
-      else if (bet.betType === 'draw') odds = bet.match.odds.draw;
-      else if (bet.betType === 'away') odds = bet.match.odds.away;
-      else if (bet.betType === 'homeOver2') odds = bet.match.odds.homeOver2;
-      else if (bet.betType === 'btts') odds = bet.match.odds.btts;
-      else if (bet.betType === 'awayOver2') odds = bet.match.odds.awayOver2;
-      else if (bet.betType === 'homeUnder2') odds = bet.match.odds.homeUnder2;
-      else if (bet.betType === 'btnts') odds = bet.match.odds.btnts;
-      else if (bet.betType === 'awayUnder2') odds = bet.match.odds.awayUnder2;
-      else if (bet.betType === 'homeBTTS') odds = bet.match.odds.homeBTTS;
-      else if (bet.betType === 'homeMinus1') odds = bet.match.odds.homeMinus1;
-      else if (bet.betType === 'awayBTTS') odds = bet.match.odds.awayBTTS;
-      else if (bet.betType === 'homeBTNTS') odds = bet.match.odds.homeBTNTS;
-      else if (bet.betType === 'awayMinus1') odds = bet.match.odds.awayMinus1;
-      else if (bet.betType === 'awayBTNTS') odds = bet.match.odds.awayBTNTS;
-  
-      // Calculate winnings for this bet
-      const winnings = amount * odds;
-  
-      // Add it to the total
-      return parseInt(total + winnings);
-    }, 0);  // Start with 0 as the initial total
-  };
+      const totalOdds = selectedBet.reduce((accumulator, currentBet) => {
+        return accumulator * parseFloat(currentBet.odd);
+    }, 1); // Initial value is 1 for multiplication
+
+    // Calculate total winnings
+    const totalWinnings = totalOdds * amount;
+    return totalWinnings;
+    };
 
   const handleSwitchSendBet = async (event) => {
     if(amount === null){
@@ -1048,7 +1070,11 @@ const getWinnings = (el) => {
           });
       }
         }
-        setOpenLeagueMenu(true)
+        
+        setOpenCurrentMenu(false)
+        setTimeout(() => {
+          setOpenLeagueMenu(true)
+        }, 500)
       }
     /* const { data: firstData, error: firstError } = await supabase
       .from('users')
@@ -1227,10 +1253,12 @@ const getWinnings = (el) => {
                             return(
                               <BigRowBet>
                                 <TopRowBet><h2>{odd.name}</h2></TopRowBet>
-                                <BottomRowBet hasValues={odd.values.length > 2}>
+                                <BottomRowBet>
                                   {odd.values.map((bet) => {
                                     return(
-                                      <BetHolder hasValues={odd.values.length > 2}><h2>{bet.value} - {bet.odd}</h2></BetHolder>
+                                      <BetHolder isSelected={selectedBet.some(
+                                        (el) => el.match.fixture.id === match.fixture.id && el.value === bet.value && el.odd === bet.odd
+                                    )} onClick={() => handleBetClick(match, odd.name, bet.value, bet.odd, filter)}><h2>{bet.value} - {bet.odd}</h2></BetHolder>
                                     )
                                   })}
                                 </BottomRowBet>
@@ -1271,8 +1299,8 @@ const getWinnings = (el) => {
                       animate={{ height: expandedIndex === index ? '330px' : '130px' }}
                       transition={{ duration: 0.5 }}>
                       {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
-                        <LiveBetIcon onClick={() => {setFixtureId(match.fixture.id);openLiveBet();}} style={{backgroundImage: `url(${betting})`, backgroundSize: 'cover', backgroundPosition: 'center'}}></LiveBetIcon>
-                      <Rower>
+{/*                         <LiveBetIcon onClick={() => {setFixtureId(match.fixture.id);openLiveBet();}} style={{backgroundImage: `url(${betting})`, backgroundSize: 'cover', backgroundPosition: 'center'}}></LiveBetIcon>
+ */}                      <Rower>
                         <TeamsLogo>
                           <TeamLogoWrapper>
                             <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{
@@ -1383,13 +1411,11 @@ const getWinnings = (el) => {
                       {expandedIndex === index && (
                         <LowRower >
                           {bet.bet.map((match) => {
-                           
                             const url = getURL(match.betType, match.match);
                             const homeLogo = getURL("home", match.match);
                             const awayLogo = getURL("away", match.match);
-                            const name = getName(match.betType, match.match)
+                            const name = getName(match.name, match.match)
                             const winnings = getWinnings(match)
-                            
                             return(
                               <RowerRowBets>
                                 <RowerFirstEvent><h2>{name}</h2></RowerFirstEvent>
@@ -1547,8 +1573,7 @@ const getWinnings = (el) => {
                 <StyledButton onClick={closeSendOdds}>OPEN ODDS</StyledButton> */}
                 {selectedBet?.map((selectedBet,index) => {
                   console.log(selectedBet)
-                  const name = getName(selectedBet.betType, selectedBet.match)
-                  const odd = getOdd(selectedBet.betType, selectedBet.match)
+                  const name = getName(selectedBet.name, selectedBet.value, selectedBet.match)
                   return(
                     <motion.div
                       key={selectedBet.id}
@@ -1566,14 +1591,17 @@ const getWinnings = (el) => {
                         ? `inset 0 0 25px rgba(255, 0, 0, ${dragIntensities[index]})`
                         : `inset 0 0 25px ${theme.text}`
                     }>
+                      <LiveBetIcon>{selectedBet.odd}</LiveBetIcon>
                     <CurrentBetLogoHolder>
                     <img src={selectedBet?.match?.teams?.home?.logo} alt="homeTeamLogo" />
                     </CurrentBetLogoHolder>
-                    <CurrentBetNameHolder><h2>{name}</h2></CurrentBetNameHolder>
+                    <CurrentBetNameHolder>
+                      <CurrentBetRow ><h2>{selectedBet.name}</h2></CurrentBetRow>
+                      <CurrentBetRow ><h2>{name}</h2></CurrentBetRow>
+                    </CurrentBetNameHolder>
                     <CurrentBetLogoHolder>
                     <img src={selectedBet?.match?.teams?.away?.logo} alt="awayTeamLogo" />
                     </CurrentBetLogoHolder>
-                    <CurrentBetLogoHolder><h2>{odd}</h2></CurrentBetLogoHolder>
                     </CurrentBetHolder>
                     </motion.div>
                   )

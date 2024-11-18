@@ -1022,8 +1022,9 @@ export const BetHolder = styled.div`
     min-height: 35px;
     border: 1px solid white;
     ${props => props.theme.displayFlexCenter};
+    background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
     h2{
-        font-size: 16px;
+        font-size: 12px;
         color: ${props => props.theme.text}; 
     }
 `;
