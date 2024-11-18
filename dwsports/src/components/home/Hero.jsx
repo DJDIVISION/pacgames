@@ -55,8 +55,9 @@ const Hero = () => {
     const [expandedLinks, setExpandedLinks] = useState(false);
     const controls = useAnimation();
     const userFriendlyAddress = useTonAddress();
+    const {session, setSession} = FantasyState();
 
-    
+    console.log("session", session)
 
     const disconnectWallet = async () => {
         setMetaMaskWalletAddress(null)
@@ -270,6 +271,7 @@ const Hero = () => {
           } */
         setExpandedReferrals(false)
         setExpandedWallet(false)
+        setSession(null)
         const { error } = await supabase.auth.signOut()
     
         if (error) {
@@ -518,7 +520,7 @@ const Hero = () => {
           console.error("Error connecting wallet:", error);
         }
       };
-    console.log(metaMaskWalletAddress)
+    
 
   return (
     <HeroSection ref={ref}>
@@ -546,7 +548,7 @@ const Hero = () => {
                       <>
                         {toHide === false && (
                             <LowRower >
-                            {user ? (
+                            {(user !== null || session !== null) ? (
                                 <>
                                     <AvatarRowBets>
                                     <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        

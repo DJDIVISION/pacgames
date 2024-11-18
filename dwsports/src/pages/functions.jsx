@@ -455,6 +455,7 @@ export const useFetchRouletteMessages = () => {
 export const useAuth = () => {
   const [user, setUser] = useState(null); // Store user state
   const [loading, setLoading] = useState(true); // To handle loading state while session is being checked
+  const {session, setSession} = FantasyState();
 
   useEffect(() => {
     // Function to check if a session exists
@@ -463,9 +464,12 @@ export const useAuth = () => {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (session?.user) {
+        setSession(session)
         setUser(session.user); // Set the user state if session exists
+        console.log("there is session")
       } else {
         setUser(null); // Clear the user state if no session
+        console.log("there is no session")
       }
       setLoading(false); // Loading finished
     };
