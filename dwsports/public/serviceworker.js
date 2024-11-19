@@ -1,4 +1,6 @@
-const CACHE_NAME = "v1.0.3";
+
+
+const CACHE_NAME = "v1.0.5";
 const urlsToCache = [ 'index.html', /* 'offline.html', '/login.js', 'app/js' */ ];
 
 const self = this;
@@ -53,11 +55,27 @@ console.log('Service Worker Works');
     });
 }); */
 
-/* self.addEventListener('push', event => {
-    const data = event.data.json();
-    console.log('Notification Received');
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: '/icon-128x128.png'
-    });
-  }); */
+let firebaseConfig;
+
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.firebaseConfig) {
+        firebaseConfig = event.data.firebaseConfig;
+        console.log('[Service Worker] Received Firebase Config:', firebaseConfig);
+
+        // Initialize Firebase here if needed
+    }
+});
+
+// Example notification logic
+self.addEventListener('push', (event) => {
+    const payload = event.data?.json();
+    const notificationTitle = payload?.notification?.title || 'New Notification';
+    const notificationOptions = {
+        body: payload?.notification?.body || 'You have a new message.',
+        icon: 'https://i.postimg.cc/J0LFkY8Z/logo.jpg'
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(notificationTitle, notificationOptions)
+    );
+});

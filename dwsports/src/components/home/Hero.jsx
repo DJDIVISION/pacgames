@@ -10,7 +10,7 @@ import { getUserBalance, useAuth } from '../../pages/functions';
 import { message } from 'antd';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import SendIcon from '@mui/icons-material/Send';
-import { Avatar, Button, IconButton } from '@mui/material';
+import { Avatar, Button, IconButton, Switch } from '@mui/material';
 import { supabase } from '../../supabase/client';
 import { MiniArrowDown, MiniArrowup, SmallArrowDownFlex, MiniIconButton } from '../../pages';
 import { FantasyState } from '../../context/FantasyContext';
@@ -25,8 +25,9 @@ import Swal from "sweetalert2";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import Web3 from "web3";
 import axios from 'axios';
-import { messaging } from '../../firebase'
-import { getToken, onMessage } from "firebase/messaging";
+import { registerServiceWorker, requestPermission, listenForNotifications, handleForegroundNotifications, unsubscribeFromNotifications } from '../../firebase'
+import { initializeApp } from 'firebase/app';
+import { getMessaging, onMessage } from 'firebase/messaging';
 import { initializePushNotifications  } from "../../push.js";
 
 const Hero = () => {
@@ -36,6 +37,7 @@ const Hero = () => {
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
+    const [checked, setChecked] = useState(false);
     const theme = useTheme();
     const [disabledInput, setDisabledInput] = useState(false)
     const [referrerValue, setReferrerValue] = useState("")
@@ -59,7 +61,26 @@ const Hero = () => {
     const controls = useAnimation();
     const userFriendlyAddress = useTonAddress();
     const {session, setSession} = FantasyState();
+    const [notificationToken, setNotificationToken] = useState(null);
     const PUBLIC_VAPID_KEY = "BLei-NwbbRtrn0qUWICUbxD2wdExl4ra67PPQX7ImPq107Rs76tDOwUjHoqbrYwI26FrsQgxQkv_DiN8zD9Lheo";
+    useEffect(() => {
+        registerServiceWorker();
+      }, []);
+
+      const handleRequestPermission = async (event) => {
+        
+        const token = await requestPermission();
+            if (token) {
+            console.log('FCM token received:', token);
+            } else {
+            console.error('Failed to get token');
+            }
+      };
+    
+      useEffect(() => {
+        listenForNotifications();
+        handleForegroundNotifications();
+      }, [])
 
     const subscribeToNotifications = async () => {
         const register = await navigator.serviceWorker.register("/serviceworker.js", {
@@ -544,7 +565,22 @@ const Hero = () => {
         } catch (error) {
           console.error("Error connecting wallet:", error);
         }
-      };
+    };
+
+    const handleChange = (event) => {
+        const newChecked = event.target.checked;
+
+    if (!newChecked) {
+      // If unchecked, unsubscribe from notifications
+      unsubscribeFromNotifications();
+    } else {
+      // If checked, request permission for notifications
+      handleRequestPermission();
+    }
+
+    // Update the checked state
+    setChecked(newChecked);
+    }
     
 
   return (
@@ -564,7 +600,7 @@ const Hero = () => {
 
               <TeamBetsHolder style={{width: '90%', margin: '10px 0'}}
                   initial={{ height: '80px' }}
-                  animate={{ height: expandedProfile === true ? '300px' : '80px' }}
+                  animate={{ height: expandedProfile === true ? '380px' : '80px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
@@ -588,9 +624,15 @@ const Hero = () => {
                                     <RowerRowBets style={{ height: '70px' }}>
                                         <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
                                     </RowerRowBets>
-                                    {/* <RowerRowBets style={{ height: '70px' }}>
-                                        <StyledButton onClick={subscribeToNotifications}>REQUEST</StyledButton>
-                                        <StyledButton onClick={sendNotification}>SEND</StyledButton>
+                                    <RowerRowBets>
+                                        <h2>NOTIFICATIONS</h2>
+                                    </RowerRowBets>
+                                    <RowerRowBets>
+                                    <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleChange} />
+                                    </RowerRowBets>
+                                   {/*  <RowerRowBets style={{ height: '70px' }}>
+                                        <StyledButton onClick={handleRequestPermission}>REQUEST</StyledButton>
+                                        
                                     </RowerRowBets> */}
                                 </>
                             ) : (

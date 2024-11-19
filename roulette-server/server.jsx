@@ -7,9 +7,9 @@ const bodyParser = require('body-parser');
 const webPush = require('web-push');
 const supabaseUrl = 'https://qfywnsvevkeuiuxtiqko.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmeXduc3ZldmtldWl1eHRpcWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjUyNzE2MDQsImV4cCI6MjA0MDg0NzYwNH0.sVYe0wlcg_H2Psn_17g32DYDRYLkfH8KIcHk3EP2Hdg'; // Or service role key for server-side operations
-
+const admin = require('firebase-admin');
 const supabase = createClient(supabaseUrl, supabaseKey);
-
+require('dotenv').config();
 const vapidKeys = {
   publicKey: 'BLei-NwbbRtrn0qUWICUbxD2wdExl4ra67PPQX7ImPq107Rs76tDOwUjHoqbrYwI26FrsQgxQkv_DiN8zD9Lheo',
   privateKey: 'ybgqwG2c9lxh8AOmbu0hEgM2vcTWTDUf8Llxye81wmk'
@@ -20,6 +20,47 @@ webPush.setVapidDetails(
   vapidKeys.publicKey,
   vapidKeys.privateKey
 );
+
+admin.initializeApp({
+  credential: admin.credential.cert({
+    "type": process.env.type,
+  "project_id": process.env.project_id,
+  "private_key_id": process.env.private_key_id,
+  "private_key": process.env.private_key,
+  "client_email": process.env.client_email,
+  "client_id": process.env.client_id,
+  "auth_uri": process.env.auth_uri,
+  "token_uri": process.env.token_uri,
+  "auth_provider_x509_cert_url": process.env.auth_provider_x509_cert_url,
+  "client_x509_cert_url": process.env.client_x509_cert_url,
+  "universe_domain": process.env.universe_domain
+  })
+});
+
+const sendNotification = async (fcmToken, message) => {
+  try {
+    // Create the message payload
+    const payload = {
+      notification: {
+        title: message.title,
+        body: message.body,
+      },
+      token: fcmToken, // Send notification to this token
+    };
+
+    // Send the notification via FCM
+    const response = await admin.messaging().send(payload);
+
+    console.log('Successfully sent message:', response);
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+};
+
+// Example usage:
+
+
+
 
 const americanRouletteNumbers = [
     { number: 0, color: "lime" },
@@ -74,7 +115,17 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Roulette Game!');
 });
 
+app.post('/send-token', (req, res) => {
+  const { fcmToken } = req.body;
+  
+  // You can now send a notification using this token
+  sendNotification(fcmToken, {
+    title: 'Welcome to PacTON Gaming Zone!',
+    body: 'Have a great time!',
+  });
 
+  res.send({ status: 'Notification sent' });
+});
 
 const subscriptions = {};
 
