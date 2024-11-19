@@ -1,63 +1,133 @@
-/* const CACHE_NAME = "version-1";
-const urlsToCache = [ 'index.html', 'offline.html', '/login.js', 'app/js' ];
+// Import Firebase Messaging
+importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js');
 
-const self = this;
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCyNHnR2UfeplO8JYiXtmpAFiPGhSObxtY",
+  authDomain: "pacton-4b97c.firebaseapp.com",
+  projectId: "pacton-4b97c",
+  storageBucket: "pacton-4b97c.firebasestorage.app",
+  messagingSenderId: "801656402140",
+  appId: "1:801656402140:web:420ee4c0e0431bf0d74419",
+  measurementId: "G-BN49G6Z1WG"
+};
 
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Initialize Firebase Messaging
+const messaging = firebase.messaging();
+
+// Cache version
+const CACHE_NAME = 'mini-app-cache-v1';
+
+// List of files to cache
+const ASSETS_TO_CACHE = [
+    '/',
+    '/index.html',
+    '/styles.css',
+    '/main.js'
+];
+
+// Install event: Cache assets
 self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('Opened cache');
+    console.log('[Service Worker] Installing...');
 
-                return cache.addAll(urlsToCache);
-            })
-    )
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            console.log('[Service Worker] Pre-caching assets...');
+            return cache.addAll(ASSETS_TO_CACHE);
+        })
+    );
+
+    self.skipWaiting();
 });
 
+// Activate event: Clean up old caches
+self.addEventListener('activate', (event) => {
+    console.log('[Service Worker] Activating...');
+
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cache) => {
+                    if (cache !== CACHE_NAME) {
+                        console.log(`[Service Worker] Deleting old cache: ${cache}`);
+                        return caches.delete(cache);
+                    }
+                })
+            );
+        })
+    );
+
+    self.clients.claim();
+});
+
+// Fetch event: Serve cached content or fetch from network
 self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request)
-            .then(() => {
-                return fetch(event.request) 
-                    .catch(() => caches.match('offline.html'))
-            })
-    )
+        caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+                console.log(`[Service Worker] Serving from cache: ${event.request.url}`);
+                return cachedResponse;
+            }
+
+            console.log(`[Service Worker] Fetching from network: ${event.request.url}`);
+            return fetch(event.request).then((networkResponse) => {
+                // Optionally cache new responses
+                return caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, networkResponse.clone());
+                    return networkResponse;
+                });
+            });
+        }).catch((error) => {
+            console.error('[Service Worker] Fetch error:', error);
+            return new Response('Network error occurred.', { status: 408 });
+        })
+    );
 });
 
-// Activate the SW
-self.addEventListener('activate', (event) => {
-    const cacheWhitelist = [];
-    cacheWhitelist.push(CACHE_NAME);
+// Firebase: Listen for background messages
+messaging.onBackgroundMessage((payload) => {
+    console.log('[Service Worker] Received background message', payload);
 
+    const notificationTitle = payload.notification?.title || "New Notification";
+    const notificationOptions = {
+        body: payload.notification?.body || "You have a new message.",
+        icon: payload.notification?.icon || '/default-icon.png'
+    };
+
+    self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Push event: Optional custom handling for push events
+self.addEventListener('push', (event) => {
+    const payload = event.data?.json();
+
+    if (payload) {
+        console.log('[Service Worker] Push event payload:', payload);
+
+        const notificationTitle = payload.notification?.title || "Hello!";
+        const notificationOptions = {
+            body: payload.notification?.body || "You have a new update.",
+            icon: payload.notification?.icon || '/default-icon.png'
+        };
+
+        event.waitUntil(
+            self.registration.showNotification(notificationTitle, notificationOptions)
+        );
+    }
+});
+
+// Notification click event: Handle clicks
+self.addEventListener('notificationclick', (event) => {
+    console.log('[Service Worker] Notification click received:', event.notification);
+
+    event.notification.close();
+
+    // Open a specific URL
     event.waitUntil(
-        caches.keys().then((cacheNames) => Promise.all(
-            cacheNames.map((cacheName) => {
-                if(!cacheWhitelist.includes(cacheName)) {
-                    return caches.delete(cacheName);
-                }
-            })
-        ))
-            
-    )
-}); */
-
-console.log('Service Worker Works');
-
-/* self.addEventListener('push', e => {
-    const data = e.data.json();
-    console.log(data)
-    console.log('Notification Received');
-    self.registration.showNotification(data.title, {
-        body: data.message,
-        icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Archlinux-icon-crystal-64.svg/1024px-Archlinux-icon-crystal-64.svg.png'
-    });
-}); */
-
-self.addEventListener('push', event => {
-    const data = event.data.json();
-    console.log('Notification Received');
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: '/icon-128x128.png'
-    });
-  });
+        clients.openWindow('/') // Replace with a specific URL if needed
+    );
+});

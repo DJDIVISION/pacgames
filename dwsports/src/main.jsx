@@ -49,10 +49,15 @@ i18next.init ({
 
 console.log('Manifest URL:', `${window.location.origin}/tonconnect-manifest.json`);
 
-const appVersion = '1.0.2';
-const script = document.createElement('script');
-script.src = `/src/main.js?v=${appVersion}`;
-document.body.appendChild(script);
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/serviceworker.js')
+      .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+      })
+      .catch((err) => {
+          console.error('Service Worker registration failed:', err);
+      });
+}
 
 createRoot(document.getElementById('root')).render(
   <>
