@@ -13,5 +13,14 @@ export default defineConfig({
   ],
   optimizeDeps: {
     include: ['@tonconnect/ui-react']
-  }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name].[hash].[ext]',
+        chunkFileNames: '[name].[hash].js',
+        entryFileNames: '[name].[hash].js',
+      },
+    },
+  },
 })
