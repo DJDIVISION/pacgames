@@ -20,14 +20,14 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // Cache version
-const CACHE_NAME = 'mini-app-cache-v1';
+const CACHE_NAME = 'mini-app-cache-v2';
 
 // List of files to cache
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
-    '/styles.css',
-    '/main.js'
+    '/main.js',
+    '/dist/assets'
 ];
 
 // Install event: Cache assets
