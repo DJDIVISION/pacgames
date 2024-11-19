@@ -1,35 +1,18 @@
 import React, {useState,useEffect} from 'react'
-import {Nav,NavColumn,NavIcon,NavText,SmartNav,Burguer,CloseBurguer,StaggerContainer,StaggerRow,
-    StaggerAvatarRow,StaggerAvatarHolder,StaggerAvatarName,StaggerImageHolder,TonWrapper,
-    CustomIconButton,
-    LightIcon,StyledMenu,Language,
-    DarkIcon,
-    WalletAddressButton
+import {Nav,NavColumn,NavIcon,NavText
 } from './index'
 
 import {Link as LinkR} from 'react-router-dom'
-import {motion,AnimatePresence} from 'framer-motion'
-import  { useTheme } from 'styled-components'
 import sportsIcon from '../assets/sportsIcon.png'
-import Swal from "sweetalert2";
-import chip from '../assets/chip.png'
 import partners from '../assets/logos/partners.png'
 import fantasy from '../assets/fantasy.png'
 import deposit from '../assets/logos/shoDeposit.png'
-import metamask from '../assets/logos/metamask.svg'
 import { Avatar, Fab, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client';
 import { useAuth } from '../pages/functions'
 import { FantasyState } from '../context/FantasyContext';
-import DepositMenu from './menus/DepositMenu';
-import ES from '../assets/svg/es.png';
-import FR from '../assets/svg/fr.png';
-import EN from '../assets/svg/uk.png';
 import { useTranslation } from 'react-i18next'
-import Onboarding from '@metamask/onboarding';
-import Web3 from "web3";
-import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import withdraw from '../assets/logos/withdraw.png'
 
 const NavBar = () => {
@@ -39,7 +22,6 @@ const NavBar = () => {
     const { user } = useAuth();
     const navigate = useNavigate()
     const {depositMenu, setDepositMenu} = FantasyState();
-    const [open, setOpen] = useState(false);
     const {walletMenu, setWalletMenu} = FantasyState();
     const [t, i18n] = useTranslation("global");
 

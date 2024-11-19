@@ -112,6 +112,7 @@ export const CountryBallTextTop = styled(motion.div)`
     color: ${props => props.theme.text};
     font-weight: bold;
     text-transform: uppercase;
+    text-align: center;
     transform: translateY(-50%);
     text-shadow: ${props => props.theme.textShadowTwo};
     @media(max-width: 498px){

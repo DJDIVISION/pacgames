@@ -1,38 +1,26 @@
 import React, {useState,useEffect} from 'react'
-import {Nav,NavColumn,NavIcon,NavText,SmartNav,Burguer,CloseBurguer,StaggerContainer,StaggerRow,
-    StaggerAvatarRow,StaggerAvatarHolder,StaggerAvatarName,StaggerImageHolder,TonWrapper,WalletAddressButton,
-    CustomIconButton,
-    LightIcon,StyledMenu,Language,
+import {SmartNav,Burguer,CloseBurguer,StaggerContainer,StaggerRow,
+    StaggerAvatarName,StaggerImageHolder,
+    LightIcon,StyledMenu,
     DarkIcon
 } from './index'
-import { TonClient, Address } from '@ton/ton';
 import {Link as LinkR} from 'react-router-dom'
-import {motion,AnimatePresence} from 'framer-motion'
+import {AnimatePresence} from 'framer-motion'
 import  { useTheme } from 'styled-components'
 import sportsIcon from '../assets/sportsIcon.png'
-import metamask from '../assets/logos/metamask.svg'
-import chip from '../assets/chip.png'
 
 import fantasy from '../assets/fantasy.png'
 import deposit from '../assets/logos/shoDeposit.png'
 import withdraw from '../assets/logos/withdraw.png'
 import partners from '../assets/logos/partners.png'
-import Swal from "sweetalert2";
-import { Avatar, Fab, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '../supabase/client';
-import { useAuth } from '../pages/functions'
+import { IconButton } from '@mui/material';
+
 import { FantasyState } from '../context/FantasyContext';
 import DepositMenu from './menus/DepositMenu';
 import ES from '../assets/svg/es.png';
 import FR from '../assets/svg/fr.png';
 import EN from '../assets/svg/uk.png';
-import wallet from '../assets/logos/wallet.png';
-import SpeedDialAction from '@mui/material/SpeedDialAction';
-import SpeedDial from '@mui/material/SpeedDial';
 import { useTranslation } from 'react-i18next'
-
-import { ethers } from "ethers";
 
 import WalletMenu from './menus/WalletMenu';
 
@@ -103,7 +91,6 @@ const SmartNavBar = ({toggleTheme}) => {
   return (
     <SmartNav scrollNavDown={scrollNavDown}>
         <IconButton onClick={isOpen}><Burguer /></IconButton>
-        {/* {account === null ? <img src={metamask} alt="metamask" onClick={connectWallet}/> : <WalletAddressButton onClick={disconnectMetamask}>{account}</WalletAddressButton>} */}
         <AnimatePresence>
             {open && (
                 <StyledMenu scrollNavDown={scrollNavDown} variants={item} 
@@ -173,7 +160,6 @@ const SmartNavBar = ({toggleTheme}) => {
             {walletMenu && (
                 <WalletMenu walletMenu={walletMenu} setWalletMenu={setWalletMenu} key="walletMenusmart"/>
             )}
-           
         </AnimatePresence>
     </SmartNav>
   )

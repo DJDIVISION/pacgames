@@ -19,13 +19,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LanguageIcon from '@mui/icons-material/Language';
 
-export const CustomIconButton = styledTwo(IconButton)(({ theme }) => ({
-    outline: 'none',
-    zIndex: 9999, // Remove outline
-    '&:focus': {
-      outline: 'none', // Remove outline when focused
-    },
-  }));
+
 
 export const Language = styled(LanguageIcon)`
     &&&{
@@ -123,20 +117,6 @@ export const StyledMenu = styled(motion.div)`
     }
 `;
 
-export const WalletAddressButton = styled.div`
-    width: 120px;
-    height: 60%;
-    border: 2px solid black;
-    border-radius: 15px;
-    white-space: nowrap;      
-    overflow: hidden;         
-    text-overflow: ellipsis;
-    font-size: 18px;
-    padding: 5px;
-    ${props => props.theme.displayFlex};
-    font-weight: bold;
-    background: ${props => props.theme.pacColor} !important;
-`;
 
 export const StaggerContainer = styled(motion.div)`
     width: 100%;
@@ -148,26 +128,7 @@ export const StaggerContainer = styled(motion.div)`
     padding: 100px 0 50px 0;
 `;
 
-export const TonWrapper = styled.div`
-    width: 100%;
-    height: 80px;
-    ${props => props.theme.displayFlexCenter};
-`;
 
-export const StaggerAvatarRow = styled(motion.div)`
-    width: 100%;
-    height: 17.5vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 0;
-`;
-
-export const StaggerAvatarHolder = styled(motion.div)`
-    width: 100%;
-    height: 80%;
-    ${props => props.theme.displayFlexCenter};
-`;
 
 export const StaggerImageHolder = styled(motion.div)`
     width: 100%;

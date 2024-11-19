@@ -12,6 +12,7 @@ import italy from '../assets/logos/italy.png'
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
 import chart from '../assets/logos/chart.png' 
+import champions from '../assets/logos/champions.png' 
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ToastContainer, toast } from 'react-toastify';
@@ -60,6 +61,13 @@ import SelectedBet from '../components/menus/SelectedBet';
 const Bets = () => {
 
   const leagues = [
+    {
+      league: "Champions League",
+      logo: champions,
+      name: "UEFA",
+      id: 2,
+      currentRound: 5
+    },
     {
         league: "Premier League",
         logo: england,
@@ -555,12 +563,12 @@ const Bets = () => {
 
   
 
-  useEffect(() => {
+  /* useEffect(() => {
     if(openMyBetsMenu){
       getFixtures();
       getBets();
     }
-  }, [openMyBetsMenu])
+  }, [openMyBetsMenu]) */
 
   const toggleExpand = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
@@ -745,13 +753,22 @@ const Bets = () => {
   }
 
   const fetchCurrentMatches = async () => {
+    console.log("fetching matches")
+    console.log(activeLeagueId)
+    console.log(activeRound)
+    let round
+    if(activeLeagueId === 2){
+      round = `League Stage - ${activeRound}`
+    } else {
+      round = `Regular Season - ${activeRound}`
+    }
     const options = {
       method: 'GET',
       url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
       params: {
         league: activeLeagueId,
         season: '2024',
-        round: `Regular Season - ${activeRound}`
+        round: round
       },
       headers: {
         'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
@@ -761,12 +778,14 @@ const Bets = () => {
     try {
       const response = await axios.request(options);
       setCurrentRoundMatches(response.data.response);
+      console.log(response.data.response)
     } catch (error) {
       console.error(error);
     }
   }
 
   const handleButtonClick = (league) => {
+    console.log(league)
     setActiveLeagueId(league.id)
     setActiveLeague(league.league)
     setActiveRound(league.currentRound)
@@ -991,7 +1010,6 @@ const getWinnings = (el) => {
     }
   };
 
-  console.log(selectedBet)
 
   const calculateTotalWinnings = () => {
       const totalOdds = selectedBet.reduce((accumulator, currentBet) => {
@@ -1076,44 +1094,7 @@ const getWinnings = (el) => {
           setOpenLeagueMenu(true)
         }, 500)
       }
-    /* const { data: firstData, error: firstError } = await supabase
-      .from('users')
-      .update({appBalance: newBalance})
-      .eq('id', user.id)
-      if (firstError) {
-        console.error('Error inserting/updating user session data:', firstError.message)
-      } else {
-        console.log('User balance data saved:', firstData)
-      }
-    const { data, error } = await supabase
-      .from('bets')
-      .insert([updatedData])
-      if (error) {
-        console.error('Error inserting/updating user session data:', error.message)
-      } else {
-        console.log('User session data saved:', data)
-        setOpenCurrentMenu(false)
-        setSelectedBet([])
-        toast('You have placed your bet. Good luck!🤞', {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark"
-          });
-      } */
   };
-
-  /* const handleRemoveBet = (betType, match) => {
-    setSelectedBet((prevBets) => {
-      return prevBets.filter(
-        (bet) => !(bet.match.fixture.id === match.fixture.id && bet.betType === betType)
-      );
-    });
-  }; */
 
   const getOddsFromBooker = async () => {
     if(fixtureId !== null){
@@ -1137,7 +1118,6 @@ const getWinnings = (el) => {
     }
   }
 
-  console.log(liveOdds)
 
   useEffect(() => {
     getOddsFromBooker();
