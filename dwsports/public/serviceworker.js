@@ -20,14 +20,13 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // Cache version
-const CACHE_NAME = 'mini-app-cache-v2';
+const CACHE_NAME = 'mini-app-cache-v1.0.1';
 
 // List of files to cache
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
     '/main.js',
-    '/dist/assets'
 ];
 
 // Install event: Cache assets
@@ -66,26 +65,29 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event: Serve cached content or fetch from network
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                console.log(`[Service Worker] Serving from cache: ${event.request.url}`);
-                return cachedResponse;
-            }
-
-            console.log(`[Service Worker] Fetching from network: ${event.request.url}`);
-            return fetch(event.request).then((networkResponse) => {
-                // Optionally cache new responses
-                return caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, networkResponse.clone());
-                    return networkResponse;
+    // Check if the request is for an asset (like an image)
+    if (event.request.url.includes('/assets')) {
+        event.respondWith(
+            caches.match(event.request).then((cachedResponse) => {
+                if (cachedResponse) {
+                    return cachedResponse; // Serve from cache
+                }
+                return fetch(event.request).then((networkResponse) => {
+                    return caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, networkResponse.clone()); // Cache new response
+                        return networkResponse;
+                    });
                 });
-            });
-        }).catch((error) => {
-            console.error('[Service Worker] Fetch error:', error);
-            return new Response('Network error occurred.', { status: 408 });
-        })
-    );
+            })
+        );
+    } else {
+        // Handle other assets or requests
+        event.respondWith(
+            caches.match(event.request).then((cachedResponse) => {
+                return cachedResponse || fetch(event.request);
+            })
+        );
+    }
 });
 
 // Firebase: Listen for background messages
