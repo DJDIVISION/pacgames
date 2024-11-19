@@ -49,7 +49,7 @@ i18next.init ({
 
 console.log('Manifest URL:', `${window.location.origin}/tonconnect-manifest.json`);
 
-const appVersion = '1.0.1';
+const appVersion = '1.0.2';
 const script = document.createElement('script');
 script.src = `/src/main.js?v=${appVersion}`;
 document.body.appendChild(script);
