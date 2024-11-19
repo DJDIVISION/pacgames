@@ -48,7 +48,6 @@ const sendNotification = async (fcmToken, message) => {
   }
 };
 
-// Example usage:
 
 
 
@@ -98,7 +97,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://pactongamingzone.onrender.com",
   methods: ['GET', 'POST'],
   credentials: true
 }));
