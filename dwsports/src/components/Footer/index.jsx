@@ -17,7 +17,7 @@ export const FooterSection = styled.div`
     height: 50vh;
     ${props => props.theme.displayFlexCenter}
     background: ${props => props.theme.body};
-    border-top: 1px solid ${props => props.theme.text};
+    //border-top: 1px solid ${props => props.theme.text};
     position: relative;
     overflow: hidden;
     box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.MainAccentTwo};
@@ -118,7 +118,7 @@ export const BottomRow = styled.div`
     width: 90%;
     height: 30%;
     ${props => props.theme.displayFlex};
-    justify-content: space-between;
+    justify-content: space-around;
 `;
 
 export const ButtonWrapper = styled.a`

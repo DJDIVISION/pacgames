@@ -17,6 +17,8 @@ import Hunny from '../svg/Hunny';
 import Badger from '../svg/Badger';
 import Move from '../svg/Move';
 import Toncula from '../svg/Toncula';
+import LinearProgress from '@mui/material/LinearProgress';
+import Stack from '@mui/material/Stack';
 
 const Footer = () => {
 
@@ -81,7 +83,10 @@ const Footer = () => {
 
 
   return (
-    
+    <>
+    <Stack sx={{ width: '100%', color: theme.MainAccent }} spacing={2}>
+                    <LinearProgress color="secondary" />
+                  </Stack>
     <FooterSection>
       <AnimatePresence>
         {showingPartner && (
@@ -93,6 +98,7 @@ const Footer = () => {
           exit="exit"
           style={{ position: "absolute", width: "100%", height: '100%', textAlign: "center", display: 'flex', alignItems: 'center' }}
         >
+          
             <Logo>
               <motion.img src={Partners[currentPartner].logo} alt={Partners[currentPartner].logo} variants={variantsTwo}
           initial="initial"
@@ -175,34 +181,8 @@ const Footer = () => {
         </motion.div>
         )}
       </AnimatePresence>
-      {/* {Partners.map((partner) => {
-        return(
-          <AnimatePresence>
-           <motion.div
-          key={currentPartner}
-          variants={variants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          style={{ position: "absolute", width: "100%", textAlign: "center", display: 'flex', alignItems: 'center' }}
-        >
-          {showingPartner && (
-            <>
-            <Logo>
-              <motion.img src={Partners[currentPartner].logo} alt={Partners[currentPartner].logo} />
-            </Logo>
-            <Column>
-              HELLO BITCHES!!!
-            </Column>
-           </>
-          )}
-          </motion.div>
-          </AnimatePresence>
-        )
-        
-      })} */}
     </FooterSection>
-    
+    </>
   )
 }
 
