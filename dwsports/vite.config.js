@@ -10,13 +10,6 @@ export default defineConfig({
     react(),
     nodePolyfills(),
     svgr(),
-    createHtmlPlugin({
-      inject: {
-        data: {
-          version: '1.0.1', // Add your app version here
-        },
-      },
-    }),
   ],
   optimizeDeps: {
     include: ['@tonconnect/ui-react']
