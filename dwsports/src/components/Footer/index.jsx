@@ -24,13 +24,13 @@ export const FooterSection = styled.div`
 `;
 export const SmartFooterSection = styled.div`
     width: 100%;
-    height: 50vh;
+    height: 55vh;
     ${props => props.theme.displayFlexColumn}
     background: ${props => props.theme.body};
-    border-top: 1px solid ${props => props.theme.text};
+    //border-top: 1px solid ${props => props.theme.text};
     position: relative;
     overflow: hidden;
-    padding: 10px;
+    //padding: 10px;
     box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.MainAccentTwo};
 `;
 
@@ -76,6 +76,7 @@ export const TopSmartRow = styled.div`
         font-size: 28px;
         font-weight: bold;
         margin: auto;
+        transform: translateY(10px);
     }
     svg{
         transform: translateY(-10px);

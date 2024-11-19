@@ -45,7 +45,11 @@ i18next.init ({
       console.error('Service Worker registration failed:', error);
     });
 } */
-
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => registration.unregister());
+      });
+    }
 
 
 console.log('Manifest URL:', `${window.location.origin}/tonconnect-manifest.json`);

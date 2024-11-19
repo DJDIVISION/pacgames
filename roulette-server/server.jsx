@@ -3,20 +3,16 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { createClient } = require('@supabase/supabase-js');
 const cors = require('cors')
+const bodyParser = require('body-parser');
 const webPush = require('web-push');
 const supabaseUrl = 'https://qfywnsvevkeuiuxtiqko.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmeXduc3ZldmtldWl1eHRpcWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjUyNzE2MDQsImV4cCI6MjA0MDg0NzYwNH0.sVYe0wlcg_H2Psn_17g32DYDRYLkfH8KIcHk3EP2Hdg'; // Or service role key for server-side operations
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-/* const vapidKeys = {
-  publicKey: 'BOZwMhEq3agdeylLqybhzZvqGyILZzQabLuRvuE0uhUilpNxMh23xs09WTYEwHqr7ztSMwzluynjXVNP5GTj87w',
-  privateKey: 'KasRTn00fvPsWN0FIhb9cGh5jFFvfjB2ae_ElFlMI4o'
-}; */
-
 const vapidKeys = {
-  publicKey: 'BL0whCjUesl6_AELHTwthVOaccDkAUYyH-f8nFTQ75BiHMlJpadQ2gsaGu0E0yfo5qEcIWpw5InkzmRwrpm7oyw',
-  privateKey: 'mp0qUJL3qw5l3B27wttQ3nKRTihqnRUz6gkaFdkuZFc'
+  publicKey: 'BLei-NwbbRtrn0qUWICUbxD2wdExl4ra67PPQX7ImPq107Rs76tDOwUjHoqbrYwI26FrsQgxQkv_DiN8zD9Lheo',
+  privateKey: 'ybgqwG2c9lxh8AOmbu0hEgM2vcTWTDUf8Llxye81wmk'
 };
 
 webPush.setVapidDetails(
@@ -68,6 +64,7 @@ const americanRouletteNumbers = [
 
 const app = express();
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors({
   origin: "http://localhost:5173",
   methods: ['GET', 'POST'],
@@ -83,13 +80,13 @@ const subscriptions = {};
 
 // Endpoint to subscribe to notifications
 app.post('/subscribe', (req, res) => {
-  const { subscription, id } = req.body;
+  const { subscription, userId } = req.body;
   console.log("subs", subscription)
-  console.log("id", id)
-  if (!subscriptions[id]) {
-    subscriptions[id] = [];
+  console.log("id", userId)
+  if (!subscriptions[userId]) {
+    subscriptions[userId] = [];
   }
-  subscriptions[id].push(subscription);
+  subscriptions[userId].push(subscription);
   res.status(201).json({});
 });
 

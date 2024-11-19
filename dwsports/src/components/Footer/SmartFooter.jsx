@@ -17,6 +17,8 @@ import Move from '../svg/Move';
 import Hunny from '../svg/Hunny';
 import Badger from '../svg/Badger';
 import Toncula from '../svg/Toncula';
+import LinearProgress from '@mui/material/LinearProgress';
+import Stack from '@mui/material/Stack';
 
 
 
@@ -94,6 +96,9 @@ const SmartFooter = () => {
                 animate="animate"
                 exit="exit"
                 style={{ position: "absolute", width: "100%", height: '100%', textAlign: "center", display: 'flex', flexDirection: 'column' }}>
+                   <Stack sx={{ width: '100%', color: theme.MainAccent }} spacing={2}>
+                    <LinearProgress color="secondary" />
+                  </Stack>
                     <TopSmartRow><motion.div variants={variantsTwo}
           initial="initial" style={{display: 'flex', alignItems: 'center', width: '100%'}}
           animate="animate"
