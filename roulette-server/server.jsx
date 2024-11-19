@@ -10,16 +10,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const admin = require('firebase-admin');
 const supabase = createClient(supabaseUrl, supabaseKey);
 require('dotenv').config();
-const vapidKeys = {
-  publicKey: 'BLei-NwbbRtrn0qUWICUbxD2wdExl4ra67PPQX7ImPq107Rs76tDOwUjHoqbrYwI26FrsQgxQkv_DiN8zD9Lheo',
-  privateKey: 'ybgqwG2c9lxh8AOmbu0hEgM2vcTWTDUf8Llxye81wmk'
-};
 
-webPush.setVapidDetails(
-  'mailto:bodegaflamenca666@gmail.com',
-  vapidKeys.publicKey,
-  vapidKeys.privateKey
-);
 
 admin.initializeApp({
   credential: admin.credential.cert({
