@@ -49,6 +49,11 @@ i18next.init ({
 
 console.log('Manifest URL:', `${window.location.origin}/tonconnect-manifest.json`);
 
+const appVersion = '1.0.1';
+const script = document.createElement('script');
+script.src = `/src/main.js?v=${appVersion}`;
+document.body.appendChild(script);
+
 createRoot(document.getElementById('root')).render(
   <>
     <TonConnectUIProvider manifestUrl={`https://pacgames-frontend.onrender.com/tonconnect-manifest.json`}>
