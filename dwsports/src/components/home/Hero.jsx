@@ -29,7 +29,7 @@ import { registerServiceWorker, requestPermission, listenForNotifications, handl
 import { initializeApp } from 'firebase/app';
 import { getMessaging, onMessage } from 'firebase/messaging';
 import { initializePushNotifications  } from "../../push.js";
-import { TonClient, Address, Contract } from "@ton/ton";
+import { TonClient, Address, beginCell, Cell } from "@ton/ton";
 
 const Hero = () => {
 
@@ -64,7 +64,46 @@ const Hero = () => {
     const userFriendlyAddress = useTonAddress();
     const {session, setSession} = FantasyState();
     
-    const client = new TonClient({ endpoint: "https://toncenter.com/api/v2/jsonRPC" });
+    const tonClient = new TonClient({ endpoint: " https://toncenter.com/api/v2/jsonRPC" });
+    const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
+    async function fetchJettonBalance(userWalletAddress) {
+        try {
+            // Parse addresses
+            const jettonMaster = Address.parse(jettonMasterAddress);
+            const userWallet = Address.parse(userWalletAddress);
+    
+            // Step 1: Derive the Jetton Wallet Address
+            const methodParams = beginCell().storeAddress(userWallet).endCell();
+            const { stack } = await tonClient.runMethod(
+                jettonMaster,
+                "get_wallet_address",
+                [methodParams]
+            );
+    
+            // Decode the Jetton Wallet address
+            const walletCell = Cell.fromBoc(Buffer.from(stack[0].cell.bytes, "base64"))[0];
+            const jettonWalletAddress = Address.fromSlice(walletCell.beginParse());
+    
+            // Step 2: Fetch the balance from the Jetton Wallet contract state
+            const walletState = await tonClient.getContractState(jettonWalletAddress);
+    
+            if (!walletState || !walletState.data) {
+                throw new Error("Jetton wallet not initialized or no balance.");
+            }
+    
+            const dataCell = Cell.fromBoc(walletState.data)[0];
+            const slice = dataCell.beginParse();
+    
+            // Skip metadata and read the balance
+            slice.readUint(32); // Skip seqno
+            const balance = slice.readUint(64); // Read balance as uint64
+    
+            return balance.toString(); // Return balance as a string
+        } catch (error) {
+            console.error("Error fetching Jetton balance:", error);
+            throw error;
+        }
+    }
     /* useEffect(() => { 
         registerServiceWorker();
       }, []);
@@ -141,51 +180,15 @@ const Hero = () => {
             icon: "success"
           });
     };
-    const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
-    const getJettonBalance = async (userFriendlyAddress) => {
-        try {
-            // Parse addresses
-            const userAddr = Address.parse(userFriendlyAddress);
-            const jettonMasterAddr = Address.parse(jettonMasterAddress);
     
-            // Step 1: Create a reference to the Jetton master contract
-            const jettonMasterContract = new SmartContract({
-                address: jettonMasterAddr,
-                client,
-            });
     
-            // Step 2: Call 'get_wallet_address' to derive the Jetton Wallet address
-            const result = await jettonMasterContract.get("get_wallet_address", [
-                { type: "slice", value: userAddr.toSlice() }, // User address as input
-            ]);
-    
-            const jettonWalletAddress = Address.parse(result.stack.readAddress());
-    
-            // Step 3: Create a reference to the Jetton Wallet contract
-            const jettonWalletContract = new SmartContract({
-                address: jettonWalletAddress,
-                client,
-            });
-    
-            // Step 4: Call 'get_balance' to fetch the balance
-            const balanceResult = await jettonWalletContract.get("get_balance");
-    
-            const balanceNanoJettons = balanceResult.stack.readBigInt();
-            const balance = Number(balanceNanoJettons) / 1e9; // Convert nanoJettons to Jettons
-            setTonculaWalletBalance(balance)
-            return balance;
-        } catch (error) {
-            console.error("Error fetching Jetton balance:", error);
-            return 0; // Return 0 in case of any error
-        }
-    }
 
     console.log(tonculaWalletBalance)
     
     useEffect(() => {
         if(userFriendlyAddress){
             setTonWalletAddress(userFriendlyAddress)
-            getJettonBalance(userFriendlyAddress)
+            fetchJettonBalance(userFriendlyAddress)
         }
     }, [userFriendlyAddress])
 

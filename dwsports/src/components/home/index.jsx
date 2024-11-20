@@ -1,13 +1,15 @@
 import styled from 'styled-components'
 import { motion } from 'framer-motion';
 import { Button } from '@mui/material';
-
+import back from '../../assets/backs/back4.jpg'
 export const HeroSection = styled.div`
     width: 100%;
-    min-height: 100vh;
+    height: auto;
     background: ${props => props.theme.body};
     ${props => props.theme.displayFlexColumn};
     padding: 10px;
+    background-image: url(${back});
+    background-position: center;
     img{
         width: 100%;
         display: block;
