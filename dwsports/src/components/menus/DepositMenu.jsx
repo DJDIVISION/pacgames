@@ -26,7 +26,7 @@ import Sho from '../../assets/logos/sho.png'
 import PGZ from '../../assets/logos/pgz.png'
 import { toast } from 'react-toastify';
 
-const DepositMenu = ({depositMenu,setDepositMenu}) => {
+const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
 
 
 
@@ -86,13 +86,11 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const [tonPrice, setTonPrice] = useState(null)
     const [shoPrice, setShoPrice] = useState(0.0001408)
     const [tonculaPrice, setTonculaPrice] = useState(0.0004571)
-    const {toHide, setToHide} = FantasyState();
 
     
  
     const closeDepositMenu = () => {
-        setDepositMenu(false)
-        setToHide(false)
+      setIsDepositExpanded(false)
     }
 
     const sendTokens = async () => {
@@ -484,7 +482,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
 
     useEffect(() => {
         // Toggle body overflow based on isMenuOpen state
-        if (depositMenu) {
+        if (isDepositExpanded) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = ''; // Revert to original overflow
@@ -494,7 +492,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         return () => {
             document.body.style.overflow = '';
         };
-    }, [depositMenu]);
+    }, [isDepositExpanded]);
 
     const handleButtonClick = (token) => {
       setActiveToken(token.name)

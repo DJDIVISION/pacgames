@@ -47,11 +47,11 @@ const SmartNavBar = ({toggleTheme}) => {
     const theme = useTheme();
     const {depositMenu, setDepositMenu} = FantasyState();
     const {walletMenu, setWalletMenu} = FantasyState();
-    const {toHide, setToHide} = FantasyState();
+    
 
     const isOpen = ()=>{
         setOpen(!open);
-        setToHide(!toHide)
+        
       }
 
     useEffect(() => {
@@ -97,19 +97,19 @@ const SmartNavBar = ({toggleTheme}) => {
                         }}>
                           <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }} 
                               animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 0.7 }} onClick={() => setToHide(false)}>
+                              transition={{ delay: 0.7 }}>
                               <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
                               <StaggerAvatarName>{t("navbar.sports")}</StaggerAvatarName>
                           </StaggerRow></LinkR>
                           <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 0.8 }} onClick={() => setToHide(false)}>
+                              transition={{ delay: 0.8 }}>
                               <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
                               <StaggerAvatarName>{t("navbar.fantasy")}</StaggerAvatarName>
                           </StaggerRow></LinkR>
                           <LinkR to="/partners"><StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 0.9 }} onClick={() => setToHide(false)}>
+                              transition={{ delay: 0.9 }}>
                               <StaggerImageHolder><img src={partners} alt="fantasy" /></StaggerImageHolder>
                               <StaggerAvatarName>OUR PARTNERS</StaggerAvatarName>
                           </StaggerRow></LinkR>
@@ -119,13 +119,13 @@ const SmartNavBar = ({toggleTheme}) => {
                               <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
                               <StaggerAvatarName>CASINO</StaggerAvatarName>
                           </StaggerRow></LinkR> */}
-                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setDepositMenu(true);setToHide(true)}}
+                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setDepositMenu(true);}}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 1 }} >
                               <StaggerImageHolder><img src={deposit} alt="wallet" /></StaggerImageHolder>
                               <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
                           </StaggerRow>
-                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setWalletMenu(true);setToHide(true)}}
+                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setWalletMenu(true);}}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 1.1 }} >
                               <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>

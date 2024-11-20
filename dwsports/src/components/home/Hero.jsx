@@ -52,7 +52,6 @@ const Hero = () => {
     const {tonculaWalletBalance,setTonculaWalletBalance} = FantasyState();
     const {metaMaskWalletAddress, setMetaMaskWalletAddress} = FantasyState();
     const {tonWalletAddress, setTonWalletAddress} = FantasyState();
-    const {toHide, setToHide} = FantasyState();
     const navigate = useNavigate()
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -615,7 +614,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
-                  {toHide === false && <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>}
+                    <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>
                   {expandedProfile === true && (
                      <LowRower >
                      {(user !== null || session !== null) ? (
@@ -669,45 +668,41 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedWallet === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleWallet()} /> : <SmallArrowDownFlex onClick={() => toggleWallet()} />}</MiniIconButton>
-                  {toHide === false && <RowerSmall><h2 style={{color: expandedWallet === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>WALLETS</h2></RowerSmall>}
+                    <RowerSmall><h2 style={{color: expandedWallet === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>WALLETS</h2></RowerSmall>
                   {expandedWallet === true && (
-                      <>
-                        {toHide === false && (
-                            <LowRower >
-                            <RowerRowBets>
-                            <h2>BALANCE: <span>{typeof balance === 'number' && !isNaN(balance) ? parseFloat(balance.toFixed(2)) : '0.00'} PGZ</span>
-                            </h2>
-                            </RowerRowBets>
-                            <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
-                            {!metaMaskWalletAddress ? (
-                                <>
-                                    {isDesktop ? (
-                                        <WalletsRow onClick={connectWallet}>
-                                            {metaMaskWalletAddress !== null ? (
-                                                <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
-                                            ) : (
-                                                <img src={metamask} alt="connect" style={{width: '30%'}}/>
-                                            )}
-                                        </WalletsRow>
-                                        
-                                    ) : (
-                                        <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
-                                    )}
-                                </>
-                            ) : (
-                                <>
-                                <RowerRowBets>
-                                    <h2>CONNECTED ADDRESS</h2>
-                                </RowerRowBets>
-                                <RowerRowBets>
-                                    <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
-                                </RowerRowBets>
-                                </>
-                            )}
-                            <WalletsRow><TonConnectButton /></WalletsRow>
-                  </LowRower>
-                        )}
-                      </>
+                      <LowRower >
+                      <RowerRowBets>
+                      <h2>BALANCE: <span>{typeof balance === 'number' && !isNaN(balance) ? parseFloat(balance.toFixed(2)) : '0.00'} PGZ</span>
+                      </h2>
+                      </RowerRowBets>
+                      <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
+                      {!metaMaskWalletAddress ? (
+                          <>
+                              {isDesktop ? (
+                                  <WalletsRow onClick={connectWallet}>
+                                      {metaMaskWalletAddress !== null ? (
+                                          <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
+                                      ) : (
+                                          <img src={metamask} alt="connect" style={{width: '30%'}}/>
+                                      )}
+                                  </WalletsRow>
+                                  
+                              ) : (
+                                  <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
+                              )}
+                          </>
+                      ) : (
+                          <>
+                          <RowerRowBets>
+                              <h2>CONNECTED ADDRESS</h2>
+                          </RowerRowBets>
+                          <RowerRowBets>
+                              <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
+                          </RowerRowBets>
+                          </>
+                      )}
+                      <WalletsRow><TonConnectButton /></WalletsRow>
+            </LowRower>
                   )}
               </TeamBetsHolder>
 
@@ -828,6 +823,7 @@ export const BottomHeroRow = styled.div`
     min-height: 65vh;
     ${props => props.theme.displayFlexColumn};
     justify-content: space-around;
+    padding: 40px 0;
 `;
 
 const TopHeader = styled.div`

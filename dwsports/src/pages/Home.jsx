@@ -37,6 +37,8 @@ const Home = ({toggleTheme}) => {
   const {depositMenu, setDepositMenu} = FantasyState();
   const {walletMenu, setWalletMenu} = FantasyState();
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isDepositExpanded, setIsDepositExpanded] = useState(false)
+  const [isWithdrawExpanded, setIsWithdrawExpanded] = useState(false)
   const [t, i18n] = useTranslation("global");
   const {walletBalance,setWalletBalance} = FantasyState();
   const {session, setSession} = FantasyState();
@@ -131,68 +133,104 @@ const Home = ({toggleTheme}) => {
         {session ? (
           <>
             {isMobile ? (
-          <AbsoluteHomeLeft onClick={isOpen}>{isExpanded ? <CloseBurguer /> : <Burguer />}</AbsoluteHomeLeft>
+          <>
+            {(isDepositExpanded || isWithdrawExpanded) ? (
+              <></>
+            ) : (
+              <AbsoluteHomeLeft onClick={isOpen}>{isExpanded ? <CloseBurguer /> : <Burguer />}</AbsoluteHomeLeft>
+            )}
+          </>
         ) : (
           <NavBar key="navbar"
             toggleTheme={toggleTheme}
           />
         )}
-        <MenuSection initial={{ height: 0}} // Initial height
-    animate={{ height: isExpanded ? '100vh' : 0}} // Height transitions between 100px and 300px
-    transition={{ duration: 0.5 }}>
-          {isExpanded ? (
-            <StaggerContainer initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { staggerChildren: 0.3 },
-              },
-            }}>
-            <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }} onClick={() => setToHide(false)}>
-              <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
-              <StaggerAvatarName>{t("navbar.sports")}</StaggerAvatarName>
-            </StaggerRow></LinkR>
-            <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }} onClick={() => setToHide(false)}>
-              <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
-              <StaggerAvatarName>{t("navbar.fantasy")}</StaggerAvatarName>
-            </StaggerRow></LinkR>
-            <LinkR to="/partners"><StaggerRow initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }} onClick={() => setToHide(false)}>
-              <StaggerImageHolder><img src={partners} alt="fantasy" /></StaggerImageHolder>
-              <StaggerAvatarName>OUR PARTNERS</StaggerAvatarName>
-            </StaggerRow></LinkR>
-            <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => { isOpen(); setDepositMenu(true); setToHide(true) }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }} >
-              <StaggerImageHolder><img src={deposit} alt="wallet" /></StaggerImageHolder>
-              <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
-            </StaggerRow>
-            <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => { isOpen(); setWalletMenu(true); setToHide(true) }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1 }} >
-              <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>
-              <StaggerAvatarName>{t("navbar.withdraw")}</StaggerAvatarName>
-            </StaggerRow>
-            {/* <StaggerRow initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2 }}>
-              <StaggerImageHolder>
-                {theme.body === '#202020' ? <LightIcon onClick={toggleTheme} /> : <DarkIcon onClick={toggleTheme} />}
-              </StaggerImageHolder>
-              <StaggerAvatarName>{t("navbar.switch")}</StaggerAvatarName>
-            </StaggerRow> */}
-          </StaggerContainer>  
-          ) : (
-            <></>
-          )}
-    </MenuSection> 
+            <MenuSection initial={{ height: 0 }} // Initial height
+              animate={{ height: isExpanded ? '100vh' : 0 }} // Height transitions between 100px and 300px
+              transition={{ duration: 0.5 }}>
+              {isExpanded ? (
+                <StaggerContainer initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.3 },
+                    },
+                  }}>
+                  <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}>
+                    <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
+                    <StaggerAvatarName>{t("navbar.sports")}</StaggerAvatarName>
+                  </StaggerRow></LinkR>
+                  <LinkR to="/fantasy"><StaggerRow initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }} >
+                    <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
+                    <StaggerAvatarName>{t("navbar.fantasy")}</StaggerAvatarName>
+                  </StaggerRow></LinkR>
+                  <LinkR to="/partners"><StaggerRow initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9 }} >
+                    <StaggerImageHolder><img src={partners} alt="fantasy" /></StaggerImageHolder>
+                    <StaggerAvatarName>OUR PARTNERS</StaggerAvatarName>
+                  </StaggerRow></LinkR>
+                  <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {setIsExpanded(false); setIsDepositExpanded(true);}}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1 }} >
+                    <StaggerImageHolder><img src={deposit} alt="wallet" /></StaggerImageHolder>
+                    <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
+                  </StaggerRow>
+                  <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => { setIsExpanded(false); setIsWithdrawExpanded(true); }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.1 }} >
+                    <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>
+                    <StaggerAvatarName>{t("navbar.withdraw")}</StaggerAvatarName>
+                  </StaggerRow>
+                </StaggerContainer>
+              ) : (
+                <></>
+              )}
+            </MenuSection> 
+            <MenuSection initial={{ height: 0 }} // Initial height
+              animate={{ height: isDepositExpanded ? '100vh' : 0 }} // Height transitions between 100px and 300px
+              transition={{ duration: 0.5 }}>
+              {isDepositExpanded ? (
+                <StaggerContainer initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.3 },
+                    },
+                  }}>
+                  <DepositMenu isDepositExpanded={isDepositExpanded} setIsDepositExpanded={setIsDepositExpanded} key="depositmenu"/>
+                </StaggerContainer>
+              ) : (
+                <></>
+              )}
+            </MenuSection> 
+            <MenuSection initial={{ height: 0 }} // Initial height
+              animate={{ height: isWithdrawExpanded ? '100vh' : 0 }} // Height transitions between 100px and 300px
+              transition={{ duration: 0.5 }}>
+              {isWithdrawExpanded ? (
+                <StaggerContainer initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.3 },
+                    },
+                  }}>
+                  <WalletMenu isWithdrawExpanded={isWithdrawExpanded} setIsWithdrawExpanded={setIsWithdrawExpanded} key="depositmenu"/>
+                </StaggerContainer>
+              ) : (
+                <></>
+              )}
+            </MenuSection> 
          <Hero />
          
         {isMobile ? (
@@ -200,12 +238,6 @@ const Home = ({toggleTheme}) => {
             ) : (
               <Footer key="footer"/>
             )}
-      {depositMenu && (
-        <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="depositmenu"/>
-      )}
-      {walletMenu && (
-        <WalletMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="walletMenu"/>
-      )}
           </>
         ) : (
       <StaticSection>

@@ -10,7 +10,21 @@ import { useAuth } from '../../pages/functions';
 import { supabase } from '../../supabase/client';
 import {useInView} from "react-intersection-observer";
 
-const WalletMenu = () => {
+const WalletMenu = ({setIsWithdrawExpanded,isWithdrawExpanded}) => {
+
+    useEffect(() => {
+        // Toggle body overflow based on isMenuOpen state
+        if (isWithdrawExpanded) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = ''; // Revert to original overflow
+        }
+
+        // Cleanup on unmount
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isWithdrawExpanded]);
 
     const tiers = [
         {
@@ -32,7 +46,7 @@ const WalletMenu = () => {
     const [tier, setTier] = useState(null)
     const [deposits, setDeposits] = useState(null)
     const [wagerBalance, setWagerBalance] = useState(null)
-    const {toHide, setToHide} = FantasyState();
+
     const [rest, setRest] = useState(null)
     const [needed, setNeeded] = useState(null)
     const [percentage, setPercentage] = useState(null)
@@ -109,8 +123,7 @@ const WalletMenu = () => {
     }, [tier])
 
     const closeWalletMenu = () => {
-        setWalletMenu(false)
-        setToHide(false)
+        setIsWithdrawExpanded(false)
     }
     
     const getDeposits = async() => {
