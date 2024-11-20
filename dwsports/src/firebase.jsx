@@ -20,12 +20,14 @@ const messaging = getMessaging(app);
 
 // Register the service worker
 export const registerServiceWorker = async () => {
-  try {
-      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-      console.log('Service Worker registered:', registration);
-  } catch (error) {
-      console.error('Service Worker registration failed:', error);
-  }
+    try {
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        console.log('Service Worker registered:', registration);
+        return registration;
+    } catch (error) {
+        console.error('Service Worker registration failed:', error);
+        throw error;
+    }
 };
 
 // Get FCM Token
@@ -117,7 +119,7 @@ export const handleForegroundNotifications = () => {
     const { title, body, icon } = payload.notification;
 
     // Use a fallback icon if the payload doesn't include one
-    const notificationIcon = icon || "https://i.postimg.cc/J0LFkY8Z/logo.jpg";
+    const notificationIcon = icon || "https://i.postimg.cc/T3H2R0LV/icon-48x48.png";
 
     // Create and display a notification
     if (Notification.permission === 'granted') {

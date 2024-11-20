@@ -78,7 +78,7 @@ const Hero = () => {
       };
     
       useEffect(() => {
-        listenForNotifications();
+        /* listenForNotifications(); */
         handleForegroundNotifications();
       }, [])
 
@@ -625,7 +625,7 @@ const Hero = () => {
                                         <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
                                     </RowerRowBets>
                                     <RowerRowBets>
-                                        <h2>NOTIFICATIONS</h2>
+                                        <h2>NOTIFICATION</h2>
                                     </RowerRowBets>
                                     <RowerRowBets>
                                     <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleChange} />

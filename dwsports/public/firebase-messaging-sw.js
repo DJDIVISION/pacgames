@@ -22,11 +22,11 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
     console.log('[Service Worker] Background Message received:', payload);
 
-    const { title, body } = payload.notification;
+    const { title, body, icon } = payload.notification;
 
     // Display the notification
     self.registration.showNotification(title, {
         body,
-        icon: 'https://i.postimg.cc/T3H2R0LV/icon-48x48.png', // Optional: Path to your app's notification icon
+        icon: icon || 'https://i.postimg.cc/T3H2R0LV/icon-48x48.png', // Optional: Path to your app's notification icon
     });
 });
