@@ -993,13 +993,10 @@ export const MiniIconButton = styled(IconButton)`
     &&&{
         scale: 1.2;
         position: absolute;
-        top: 20px;
-        left: 20px;
+        top: 0;
+        left: 10px;
         ${props => props.theme.displayFlexCenter};
-        @media(max-width: 968px){
-            top: 10px;
-            left: 10px; 
-        }
+        
     }
 `;
 

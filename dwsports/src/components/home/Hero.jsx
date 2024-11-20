@@ -57,7 +57,7 @@ const Hero = () => {
     const navigate = useNavigate()
     const [date, setDate] = useState(null)
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-    const [expandedProfile, setExpandedProfile] = useState(true);
+    const [expandedProfile, setExpandedProfile] = useState(false);
     const [expandedWallet, setExpandedWallet] = useState(false);
     const [expandedReferrals, setExpandedReferrals] = useState(false);
     const [expandedLinks, setExpandedLinks] = useState(false);
@@ -625,9 +625,9 @@ const Hero = () => {
            )}
             </TopHeader>
 
-              <TeamBetsHolder style={{width: '90%', margin: '10px 0'}}
-                  initial={{ height: '80px' }}
-                  animate={{ height: expandedProfile === true ? '330px' : '80px' }}
+              <TeamBetsHolder 
+                  initial={{ height: '50px' }}
+                  animate={{ height: expandedProfile === true ? '330px' : '50px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
@@ -683,9 +683,9 @@ const Hero = () => {
                   )}
               </TeamBetsHolder>
 
-              <TeamBetsHolder style={{ width: '90%', margin: '10px 0'}}
-                  initial={{ height: '80px' }}
-                  animate={{ height: expandedWallet === true ? '380px' : '80px' }}
+              <TeamBetsHolder 
+                  initial={{ height: '50px' }}
+                  animate={{ height: expandedWallet === true ? '380px' : '50px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedWallet === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleWallet()} /> : <SmallArrowDownFlex onClick={() => toggleWallet()} />}</MiniIconButton>
@@ -731,9 +731,9 @@ const Hero = () => {
                   )}
               </TeamBetsHolder>
 
-              <TeamBetsHolder style={{  width: '90%', margin: '10px 0'}}
-                  initial={{ height: '80px' }}
-                  animate={{ height: expandedLinks === true ? '440px' : '80px' }}
+              <TeamBetsHolder 
+                  initial={{ height: '50px' }}
+                  animate={{ height: expandedLinks === true ? '440px' : '50px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedLinks === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleLinks()} /> : <SmallArrowDownFlex onClick={() => toggleLinks()} />}</MiniIconButton>
@@ -761,9 +761,9 @@ const Hero = () => {
                   )}
               </TeamBetsHolder>
 
-              <TeamBetsHolder style={{ width: '90%', margin: '10px 0 50px 0'}}
-                  initial={{ height: '80px' }}
-                  animate={{ height: expandedReferrals === true ? '330px' : '80px' }}
+              <TeamBetsHolder 
+                  initial={{ height: '50px' }}
+                  animate={{ height: expandedReferrals === true ? '330px' : '50px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedReferrals === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleReferrals()} /> : <SmallArrowDownFlex onClick={() => toggleReferrals()} />}</MiniIconButton>
@@ -781,50 +781,6 @@ const Hero = () => {
                     </LowRower>
                   )}
               </TeamBetsHolder>
-        {/* <Header>
-        <ContainerTitle><Avatar onClick={handleLogout} alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} /></ContainerTitle>
-        <ContainerSamllTitle></ContainerSamllTitle>
-        <ContainerSamllTitle>{user && user.email}</ContainerSamllTitle>
-        <ContainerSamllTitle></ContainerSamllTitle>
-        <ContainerSamllTitle >BALANCE: <span style={{color: 'aqua', margin: '0 5px'}}>{parseFloat(balance?.toFixed(2))} PGZ</span></ContainerSamllTitle>
-        
-        <ContainerSamllTitle></ContainerSamllTitle>
-        <ContainerSamllTitle>{t("hero.title2")}</ContainerSamllTitle>
-        <ContainerSamllTitle>{date}</ContainerSamllTitle>
-        </Header>
-      <Header initial={{ height: '320px' }} // Initial height
-                animate={{ height: isExpanded ? 'auto' : '320px' }}
-                exit={{ opacity: 0, height: 0 }} // Height transitions between 100px and 300px
-                transition={{ duration: 0.5 }} style={{overflow: 'hidden'}} isExpanded={isExpanded}>
-            <ContainerButtons>
-            <ContainerTitle>{t("hero.title3")}</ContainerTitle>
-            
-                    {user && <LinkInputField disabled={disabledInput} value={referrerValue} onChange={(e) => setReferrerValue(e.target.value)} id="referrerLink"/>} <IconButton onClick={sendLink}><Send /></IconButton>
-            </ContainerButtons>
-            <ContainerButtons>
-            <ContainerTitle>{t("hero.title4")}</ContainerTitle>
-           
-                    {user && <LinkInputField disabled={true} id="referralLink" value={`PACTONGZ/${user.id}`}/>} <IconButton onClick={clipboard}><CopyClipboard /></IconButton>
-            </ContainerButtons>
-            {isExpanded && (
-                    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <ContainerTitle>{t("hero.title5")}</ContainerTitle>
-                        {referrals?.map((referral) => {
-                            console.log(referral)
-                            return(
-                                <ReferralWrapper>
-                                    <SecondRowAvatar><Avatar alt="Image" src={referral.avatar} sx={{ width: 50, height: 50 }} /></SecondRowAvatar>
-                                    <ReferralName>{referral.name}</ReferralName>
-                                    <ReferralMail>{referral.email}</ReferralMail>
-                                </ReferralWrapper>
-                            )
-                        })}
-                    </div>
-                )}   
-                {(referrals.length > 0 && !isExpanded) && <MiniArrowDown onClick={expandDiv}/> } 
-                {(referrals.length > 0 && isExpanded) && <MiniArrowup onClick={expandDiv}/> } 
-      </Header> */}
-      
     </HeroSection>
   )
 }
@@ -881,7 +837,7 @@ const ReferralWrapper = styled.div`
 `;
 
 const TopHeader = styled.div`
-    width: 90%;
+    width: 60%;
     max-height: 220px;
     border: 3px solid ${props => props.theme.MainAccent};
     border-radius: 10px;
@@ -891,12 +847,14 @@ const TopHeader = styled.div`
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    margin: 10px;
+    margin: 10px 0 20px 0;
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
     box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.text};
     @media(max-width: 490px){
         min-height: 150px;
+        width: 90%;
+        margin: 10px 0 30px 0;
     }
 `;
 

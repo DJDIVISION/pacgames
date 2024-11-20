@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 import back from '../../assets/backs/back2.jpg'
 export const HeroSection = styled.div`
     width: 100%;
-    height: auto;
+    min-height: 100vh;
     background: ${props => props.theme.body};
     ${props => props.theme.displayFlexColumn};
     padding: 10px;
@@ -12,11 +12,14 @@ export const HeroSection = styled.div`
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    padding-top: 70px;
+    padding-top: 20px;
     img{
         width: 100%;
         display: block;
         object-fit: cover;
+    }
+    @media(max-width: 498px){
+        padding-top: 70px;
     }
 `;
 
@@ -40,7 +43,7 @@ export const TeamBetsHolderHidden = styled(motion.div)`
 
 
 export const TeamBetsHolder = styled(motion.div)`
-    width: 98%;
+    width: 50%;
     border: 3px solid ${props => props.theme.MainAccent};
     background: ${props => props.theme.cardTwo};
     ${props => props.theme.displayFlexColumnCenter}
@@ -49,17 +52,15 @@ export const TeamBetsHolder = styled(motion.div)`
     cursor: pointer;
     position: relative;
     padding: 10px;
-    margin: 10px 0;
+    margin: 20px 0;
     box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.text};
     h2{
         color: ${props => props.theme.text};
         font-size: 18px;
         font-weight: bold;
     }
-    &:focus, &:focus-visible, *:focus, *:focus-visible {
-        outline: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
+    @media(max-width: 498px){
+        width: 90%;
     }
 `;
 

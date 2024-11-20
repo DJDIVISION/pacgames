@@ -114,12 +114,6 @@ const Home = ({toggleTheme}) => {
               <StaggerImageHolder><img src={partners} alt="fantasy" /></StaggerImageHolder>
               <StaggerAvatarName>OUR PARTNERS</StaggerAvatarName>
             </StaggerRow></LinkR>
-            {/* <LinkR to="/casino"><StaggerRow initial={{ opacity: 0, y: 40 }}
-                              animate={{ opacity: 1, y: -60 }}
-                              transition={{ delay: 1.1 }} >
-                              <StaggerImageHolder><img src={chip} alt="casino" /></StaggerImageHolder>
-                              <StaggerAvatarName>CASINO</StaggerAvatarName>
-                          </StaggerRow></LinkR> */}
             <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => { isOpen(); setDepositMenu(true); setToHide(true) }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }} >
