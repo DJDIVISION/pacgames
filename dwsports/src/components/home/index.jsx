@@ -10,6 +10,8 @@ export const HeroSection = styled.div`
     padding: 10px;
     background-image: url(${back});
     background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     img{
         width: 100%;
         display: block;
