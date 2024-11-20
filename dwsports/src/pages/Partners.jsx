@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react'
 import { motion, useAnimation } from 'framer-motion'
 import { animationFive,transitionLong } from '../animations'
-import styled from 'styled-components'
-
+import styled, {useTheme} from 'styled-components'
+import back from '../assets/backs/back3.jpg'
+import back2 from '../assets/backs/back6.jpg'
 import { AbsoluteIconButtonLeft } from './indexThree'
 import { ArrowLeftRelative } from './index'
 import { useNavigate } from 'react-router-dom'
@@ -36,7 +37,7 @@ const Partners = () => {
     const controls = useAnimation();
     const controlsTwo = useAnimation();
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
-
+    const theme = useTheme();
     const startAnimationSequence = () => {
         controls.start({
             rotateY: [0, 720, 0],
@@ -97,6 +98,8 @@ const Partners = () => {
                 <Icon href='https://pool.shido.io/pool/0x4aed39bda730a74874a576b7c0d68e2c641cf912' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={buy} alt="buy" /></Icon>
             </Icons>
         </Partner>
+        </Section>
+        <SectionTwo>
         <Partner>
             <SVGTop><Fren /></SVGTop>
             <SVG><motion.img src={fren} alt="fren" style={{ width: isMobile ? "25%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
@@ -124,6 +127,8 @@ const Partners = () => {
                 <Icon href='https://app.ston.fi/swap?chartVisible=false&ft=TON&tt=EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={buy} alt="white" /></Icon>
             </Icons>
         </Partner>
+        </SectionTwo>
+        <Section>
         <Partner>
             <SVGTop><Hunny /></SVGTop>
             <SVG><motion.img src={hunny} alt="fren" style={{ width: isMobile ? "45%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
@@ -149,7 +154,8 @@ const Partners = () => {
                 <Icon href='https://getgems.io/badgerwasteland' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
             </Icons>
         </Partner>
-        
+        </Section>
+        <SectionTwo>
         <Partner>
             <SVGTop><Move /></SVGTop>
             <SVG><motion.img src={move} alt="shinobi" style={{borderRadius: '50%', width: isMobile ? "25%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
@@ -161,8 +167,8 @@ const Partners = () => {
             <Icon href='https://t.me/MoveOnTonBot' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon> 
             </Icons>
         </Partner>
+        </SectionTwo>
         
-        </Section>
       
     </motion.div>
   )
@@ -172,18 +178,36 @@ export default Partners
 
 const Section = styled.div`
     width: 100%;
-    height: auto;
+    height: 1300px;
+    background: ${props => props.theme.body};
+    ${props => props.theme.displayFlexColumn};
+    
+    padding-top: 60px;
+    background-image: url(${back});
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+`;
+const SectionTwo = styled.div`
+    width: 100%;
+    height: 1300px;
     background: ${props => props.theme.body};
     ${props => props.theme.displayFlexColumnCenter};
-    justify-content: space-around;
+    
     padding-top: 60px;
+    background-image: url(${back2});
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 `;
 
 const Partner = styled.div`
     width: 90%;
     height: 550px;
     margin: 20px 0;
-    border: 2px solid ${props => props.theme.card};
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    border: 2px solid ${props => props.theme.text};
     padding: 10px;
     border-radius: 10px;
     box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.text};

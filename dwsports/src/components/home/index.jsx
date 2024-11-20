@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { motion } from 'framer-motion';
 import { Button } from '@mui/material';
-import back from '../../assets/backs/back4.jpg'
+import back from '../../assets/backs/back2.jpg'
 export const HeroSection = styled.div`
     width: 100%;
     height: auto;
