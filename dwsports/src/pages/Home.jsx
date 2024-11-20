@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import {HomeSection,WalletAmount} from './index'
 import {motion} from 'framer-motion'
 import NavBar from '../components/NavBar'
+import styled from 'styled-components'
 import { animationOne, animationTwo, transition } from '../animations'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
@@ -17,6 +18,7 @@ import SmartNavBar from '../components/SmartNavBar'
 import WalletMenu from '../components/menus/WalletMenu'
 import Footer from '../components/Footer/Footer'
 import SmartFooter from '../components/Footer/SmartFooter'
+
 
 
 
@@ -70,3 +72,7 @@ const Home = ({toggleTheme}) => {
 }
 
 export default Home
+
+const LastSection = styled.div`
+
+`;

@@ -11,6 +11,8 @@ import move from '../../assets/logos/move.jpg'
 import fren from '../../assets/logos/fren.png'
 import badger from '../../assets/logos/badger.png'
 import toncula from '../../assets/logos/toncula.jpg'
+import back1 from '../../assets/backs/back1.png'
+import back2 from '../../assets/backs/back2.png'
 
 export const FooterSection = styled.div`
     width: 100%;
@@ -21,6 +23,10 @@ export const FooterSection = styled.div`
     position: relative;
     overflow: hidden;
     box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.MainAccentTwo};
+    background-image: url(${back2});
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 `;
 export const SmartFooterSection = styled.div`
     width: 100%;
@@ -32,6 +38,10 @@ export const SmartFooterSection = styled.div`
     overflow: hidden;
     //padding: 10px;
     box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.MainAccentTwo};
+    background-image: url(${back1});
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 `;
 
 export const Logo = styled.div`
