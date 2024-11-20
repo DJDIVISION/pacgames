@@ -631,7 +631,7 @@ const Hero = () => {
                   {toHide === false && <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>}
                   {expandedProfile === true && (
                      <LowRower >
-                     {(user !== null || session !== null) ? (
+                     {(session !== null) ? (
                          <>
                              <AvatarRowBets>
                              <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
@@ -841,6 +841,7 @@ export const BottomHeroRow = styled.div`
     min-height: 65vh;
     ${props => props.theme.displayFlexColumn};
     justify-content: space-around;
+    padding: 40px 0;
 `;
 
 const TopHeader = styled.div`
