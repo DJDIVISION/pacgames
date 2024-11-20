@@ -137,8 +137,7 @@ const Home = ({toggleTheme}) => {
             toggleTheme={toggleTheme}
           />
         )}
-         <Hero />
-         <MenuSection initial={{ height: 0}} // Initial height
+        <MenuSection initial={{ height: 0}} // Initial height
     animate={{ height: isExpanded ? '100vh' : 0}} // Height transitions between 100px and 300px
     transition={{ duration: 0.5 }}>
           {isExpanded ? (
@@ -194,6 +193,8 @@ const Home = ({toggleTheme}) => {
             <></>
           )}
     </MenuSection> 
+         <Hero />
+         
         {isMobile ? (
               <SmartFooter key="smartfooter"/>
             ) : (
