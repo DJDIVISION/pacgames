@@ -28,28 +28,6 @@ admin.initializeApp({
   })
 });
 
-const sendNotification = async (fcmToken, message) => {
-  console.log(fcmToken)
-  try {
-    // Create the message payload
-    const payload = {
-      notification: {
-        title: message.title,
-        body: message.body,
-      },
-      token: fcmToken, // Send notification to this token
-    };
-
-    // Send the notification via FCM
-    const response = await admin.messaging().send(payload);
-
-    console.log('Successfully sent message:', response);
-  } catch (error) {
-    console.error('Error sending message:', error);
-  }
-};
-
-
 
 
 
@@ -105,6 +83,27 @@ app.use(cors({
 app.get('/', (req, res) => {
   res.send('Welcome to the Roulette Game!');
 });
+
+const sendNotification = async (fcmToken, message) => {
+  console.log(fcmToken)
+  try {
+    // Create the message payload
+    const payload = {
+      notification: {
+        title: message.title,
+        body: message.body,
+      },
+      token: fcmToken, // Send notification to this token
+    };
+
+    // Send the notification via FCM
+    const response = await admin.messaging().send(payload);
+
+    console.log('Successfully sent message:', response);
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+};
 
 app.post('/send-token', (req, res) => {
   const { fcmToken } = req.body;

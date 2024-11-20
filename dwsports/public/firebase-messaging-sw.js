@@ -27,6 +27,6 @@ messaging.onBackgroundMessage((payload) => {
     // Display the notification
     self.registration.showNotification(title, {
         body,
-        icon: 'https://i.postimg.cc/J0LFkY8Z/logo.jpg', // Optional: Path to your app's notification icon
+        icon: 'https://i.postimg.cc/T3H2R0LV/icon-48x48.png', // Optional: Path to your app's notification icon
     });
 });
