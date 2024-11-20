@@ -93,6 +93,9 @@ const sendNotification = async (fcmToken, message) => {
         title: message.title,
         body: message.body,
       },
+      android: {
+        priority: 'high', // Ensures the notification is delivered immediately
+      },
       token: fcmToken, // Send notification to this token
     };
 
