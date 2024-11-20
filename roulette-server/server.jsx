@@ -85,16 +85,23 @@ app.get('/', (req, res) => {
 });
 
 const sendNotification = async (fcmToken, message) => {
-  console.log(fcmToken)
+  console.log(fcmToken);
   try {
     // Create the message payload
     const payload = {
       notification: {
         title: message.title,
         body: message.body,
+        image: message.image || 'https://i.postimg.cc/T3H2R0LV/icon-48x48.png', // Add optional image/icon
       },
       android: {
         priority: 'high', // Ensures the notification is delivered immediately
+        notification: {
+          channelId: 'high_priority_channel', // Matches the channel ID created in the Android app
+          clickAction: 'FLUTTER_NOTIFICATION_CLICK', // Customize if needed (used in some frameworks like Flutter)
+          sound: 'default', // Play default notification sound
+          icon: 'https://i.postimg.cc/T3H2R0LV/icon-48x48.png', // Ensure this URL points to a valid icon
+        },
       },
       token: fcmToken, // Send notification to this token
     };

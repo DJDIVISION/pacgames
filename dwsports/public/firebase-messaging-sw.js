@@ -18,27 +18,41 @@ firebase.initializeApp(firebaseConfig);
 // Retrieve Firebase Messaging instance
 const messaging = firebase.messaging();
 
-self.addEventListener('notificationclick', (event) => {
-    console.log('Notification click Received.', event);
-    event.notification.close();
-    event.waitUntil(
-        clients.openWindow('https://pactongamingzone.onrender.com/') // Change to your app's landing page
-    );
-});
-
-// Handle background notifications
 messaging.onBackgroundMessage((payload) => {
     console.log('[Service Worker] Background Message received:', payload);
 
-    const { title, body, icon } = payload.notification;
+    const { title, body, icon } = payload.notification || {};
 
     // Display the notification
-    self.registration.showNotification(title, {
-        body,
-        icon: icon || 'https://i.postimg.cc/T3H2R0LV/icon-48x48.png', // Ensure this is Android-compatible
-        vibrate: [200, 100, 200], // Optional vibration pattern
+    self.registration.showNotification(title || 'Notification', {
+        body: body || 'You have a new message!',
+        icon: icon || 'https://i.postimg.cc/T3H2R0LV/icon-48x48.png', // Default icon fallback
+        vibrate: [200, 100, 200], // Vibrate pattern
+        tag: 'notification-tag', // Ensures unique tag for replacing existing notifications
+        data: {
+            url: payload.notification.click_action || 'https://pactongamingzone.onrender.com/', // Fallback URL for action
+        },
         actions: [
-            { action: 'https://pactongamingzone.onrender.com/', title: 'Go to App' }, // Add custom actions if needed
+            {
+                action: 'open_url',
+                title: 'Go to App',
+            },
         ],
     });
+});
+
+// Add listener for notification actions
+self.addEventListener('notificationclick', (event) => {
+    console.log('[Service Worker] Notification click Received:', event);
+
+    // Close the notification
+    event.notification.close();
+
+    // Handle custom actions
+    if (event.action === 'open_url') {
+        clients.openWindow(event.notification.data.url);
+    } else {
+        // Default action if no action is specified
+        clients.openWindow('https://pactongamingzone.onrender.com/');
+    }
 });
