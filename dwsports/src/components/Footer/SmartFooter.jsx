@@ -71,13 +71,13 @@ const SmartFooter = () => {
 
   const variants = {
     initial: { opacity: 0, },
-    animate: { opacity: 1, transition: { duration: 2 } },
+    animate: { opacity: 1, transition: { duration: 0.5 } },
     exit: { opacity: 0, transition: { duration: 2 } },
   };
   const variantsTwo = {
-    initial: { scale: 0, },
-    animate: { scale: 1, transition: { duration: 0.25 } },
-    exit: { scale: 0, transition: { duration: 0.25 } },
+    initial: { scale: 0 },
+    animate: { scale: 1, rotateY: 360, transition: { duration: 0.25 } },
+    exit: { scale: 0, rotateY: -360, transition: { duration: 0.25 } },
   };
   const pathVariants = {
     initial: { pathLength: 0, },
