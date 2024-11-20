@@ -12,20 +12,6 @@ import {useInView} from "react-intersection-observer";
 
 const WalletMenu = ({setIsWithdrawExpanded,isWithdrawExpanded}) => {
 
-    useEffect(() => {
-        // Toggle body overflow based on isMenuOpen state
-        if (isWithdrawExpanded) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = ''; // Revert to original overflow
-        }
-
-        // Cleanup on unmount
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [isWithdrawExpanded]);
-
     const tiers = [
         {
             id: 1,

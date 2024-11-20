@@ -97,7 +97,7 @@ const Home = ({toggleTheme}) => {
   }, []);
   useEffect(() => {
     // Toggle body overflow based on isMenuOpen state
-    if (isExpanded) {
+    if (isExpanded || isDepositExpanded || isWithdrawExpanded) {
         document.body.style.overflow = 'hidden';
     } else {
         document.body.style.overflow = ''; // Revert to original overflow
@@ -107,7 +107,7 @@ const Home = ({toggleTheme}) => {
     return () => {
         document.body.style.overflow = '';
     };
-}, [isExpanded]);
+}, [isExpanded,isDepositExpanded,isWithdrawExpanded]);
 
   const isOpen = ()=>{
     setIsExpanded((prev) => !prev);

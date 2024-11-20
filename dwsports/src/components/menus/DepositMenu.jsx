@@ -480,20 +480,6 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
         exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
     } 
 
-    useEffect(() => {
-        // Toggle body overflow based on isMenuOpen state
-        if (isDepositExpanded) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = ''; // Revert to original overflow
-        }
-
-        // Cleanup on unmount
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [isDepositExpanded]);
-
     const handleButtonClick = (token) => {
       setActiveToken(token.name)
       setSelectedToken(token)
