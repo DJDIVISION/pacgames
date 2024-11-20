@@ -6,6 +6,7 @@ import basket from '../assets/basket.png'
 import tennis from '../assets/tennis.png'
 import cricket from '../assets/cricket.png'
 import formula from '../assets/formula.png'
+import back2 from '../assets/backs/girl2.jpg'
 import american from '../assets/rugby.png'
 import MMA from '../assets/mma.png'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -104,7 +105,10 @@ export const CloseBurguer = styled(MenuOpenIcon)`
 
 export const StyledMenu = styled(motion.div)`
     &&&{
-    background-color: ${({ theme }) => theme.darkBg};
+    background-image: url(${back2});
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     width: 100vw;
     height: 100vh;
     position: absolute;
@@ -145,6 +149,7 @@ export const StaggerAvatarName = styled(motion.div)`
     width: 100%;
     height: 25%;
     ${props => props.theme.displayFlexCenter};
+    text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
     color: ${props => props.theme.text};
     font-size: 20px;
     text-align: center;
