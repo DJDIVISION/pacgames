@@ -1007,6 +1007,12 @@ export const RowerRowBets = styled.div`
         color: ${props => props.theme.text};
     }
 `;
+export const RowerRowBetsCenter = styled.div`
+    width: 100%;
+    min-height: 50px;
+    ${props => props.theme.displayFlexCenter};
+    margin: 5px 0;
+`;
 
 export const AbsoluteScore = styled.h2`
     position: absolute;

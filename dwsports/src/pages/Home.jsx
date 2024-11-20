@@ -9,21 +9,24 @@ import fantasy from '../assets/fantasy.png'
 import deposit from '../assets/logos/shoDeposit.png'
 import withdraw from '../assets/logos/withdraw.png'
 import partners from '../assets/logos/partners.png'
+import googleDark from '../assets/logos/googleDark.png'
+import googleLight from '../assets/logos/googleLight.png'
 import {Link as LinkR} from 'react-router-dom'
 import { useAuth, useFetchMessages } from './functions'
 import { Button, IconButton } from '@mui/material'
 import { message } from 'antd'
 import { FantasyState } from '../context/FantasyContext'
 import DepositMenu from '../components/menus/DepositMenu'
-import { HeroSection } from '../components/home'
+import { HeroSection, WalletsRow } from '../components/home'
 import Hero from '../components/home/Hero'
 import back2 from '../assets/backs/back7.jpg'
 import WalletMenu from '../components/menus/WalletMenu'
 import Footer from '../components/Footer/Footer'
 import SmartFooter from '../components/Footer/SmartFooter'
-import { Burguer,CloseBurguer, DarkIcon, LightIcon, StaggerAvatarName, StaggerContainer, StaggerImageHolder, StaggerRow } from '../components'
+import { Burguer,CloseBurguer, DarkIcon, LightIcon, RowerRowBetsCenter, StaggerAvatarName, StaggerContainer, StaggerImageHolder, StaggerRow } from '../components'
 import { AbsoluteHomeLeft } from './indexThree'
 import { useTranslation } from 'react-i18next'
+import { supabase } from '../supabase/client'
 
 
 
@@ -73,6 +76,20 @@ const Home = ({toggleTheme}) => {
     setIsExpanded((prev) => !prev);
   }
 
+  const handleGoogleSignIn = async () => {
+        
+    const { data: { session } } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        setSession(session)
+        setUser(session.user); // Set the user state if session exists
+        
+      } else {
+        setUser(null); // Clear the user state if no session
+        setSession(null)
+      }
+  }
+
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
       <AnimatePresence>
@@ -99,9 +116,7 @@ const Home = ({toggleTheme}) => {
                 transition: { staggerChildren: 0.3 },
               },
             }}>
-            {session ? (
-              <>
-                <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }}
+            <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }} onClick={() => setToHide(false)}>
               <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
@@ -131,10 +146,6 @@ const Home = ({toggleTheme}) => {
               <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>
               <StaggerAvatarName>{t("navbar.withdraw")}</StaggerAvatarName>
             </StaggerRow>
-              </>
-            ) : (
-              <></>
-            )}
             {/* <StaggerRow initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2 }}>
@@ -161,11 +172,11 @@ const Home = ({toggleTheme}) => {
       )}
           </>
         ) : (
-      <MenuSection initial={{ height: 0}} // Initial height
-      animate={{ height: isExpanded ? '100vh' : 0}} // Height transitions between 100px and 300px
-      transition={{ duration: 0.5 }}>
-
-      </MenuSection>
+      <StaticSection>
+              <RowerRowBetsCenter style={{ height: '70px', margin: 'auto' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
+                {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
+              </WalletsRow></RowerRowBetsCenter>
+      </StaticSection>
         )}
         </AnimatePresence>
     </motion.div>
@@ -176,8 +187,19 @@ export default Home
 
 const MenuSection = styled(motion.div)`
   width: 100%;
+  height: 100%;
   background-image: url(${back2});
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  display: flex;
+`;
+const StaticSection = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-image: url(${back2});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  ${props => props.theme.displayFlexCenter};
 `;

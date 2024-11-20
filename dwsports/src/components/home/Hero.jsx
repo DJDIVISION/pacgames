@@ -19,8 +19,7 @@ import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom'
 import { RowerSmall,LowRower,RowerRowBets,TeamBetsHolder,AvatarRowBets,WalletsRow,IconsRow } from './index';
-import googleDark from '../../assets/logos/googleDark.png'
-import googleLight from '../../assets/logos/googleLight.png'
+
 import metamask from '../../assets/logos/metamask.svg'
 import Swal from "sweetalert2";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
@@ -38,6 +37,7 @@ const Hero = () => {
     const isDesktop = useMediaQuery({ query: '(min-width: 1100px)' });
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const [t, i18n] = useTranslation("global");
+    const { user } = useAuth(); 
     const [checked, setChecked] = useState(false);
     const theme = useTheme();
     const [disabledInput, setDisabledInput] = useState(false)
@@ -63,7 +63,6 @@ const Hero = () => {
     const controls = useAnimation();
     const userFriendlyAddress = useTonAddress();
     const {session, setSession} = FantasyState();
-    const {user, setUser} = FantasyState();
     
     const tonClient = new TonClient({ endpoint: " https://toncenter.com/api/v2/jsonRPC" });
     const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
@@ -160,6 +159,8 @@ const Hero = () => {
         sendNotification(notificationPayload);
       };
 
+    console.log(user)
+
     const disconnectWallet = async () => {
         setMetaMaskWalletAddress(null)
         try {
@@ -180,6 +181,10 @@ const Hero = () => {
           });
     };
     
+    
+
+    console.log(tonculaWalletBalance)
+    
     useEffect(() => {
         if(userFriendlyAddress){
             setTonWalletAddress(userFriendlyAddress)
@@ -187,6 +192,9 @@ const Hero = () => {
         }
     }, [userFriendlyAddress])
 
+    const expandDiv = () => {
+        setIsExpanded((prev) => !prev);
+    }
 
     const getReferrer = async () => {
         const { data, error } = await supabase
@@ -405,19 +413,7 @@ const Hero = () => {
         }
     };
 
-    const handleGoogleSignIn = async () => {
-        
-        const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-        })
     
-        if (error) {
-          console.error('Error with Google sign-in:', error.message)
-        } 
-        if(data){
-            console.error('Google sign-in successful:', data) 
-        }
-    }
 
     const storeUserData = async (user) => {
         const { id, email, user_metadata } = user;
@@ -619,10 +615,12 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
-                    <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>
+                  {toHide === false && <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>}
                   {expandedProfile === true && (
                      <LowRower >
-                     <AvatarRowBets>
+                     {(user !== null || session !== null) ? (
+                         <>
+                             <AvatarRowBets>
                              <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
                              </AvatarRowBets>
                              <RowerRowBets>
@@ -635,6 +633,32 @@ const Hero = () => {
                              <RowerRowBets style={{ height: '70px' }}>
                                  <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
                              </RowerRowBets>
+                             {/* <RowerRowBets>
+                                 <h2>NOTIFICATIONS</h2>
+                             </RowerRowBets>
+                             <RowerRowBets>
+                             <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleChange} />
+                             </RowerRowBets>
+                             <RowerRowBets style={{ height: '70px' }}>
+                                 <StyledButton onClick={handleSendNotification}>SEND</StyledButton>
+                                 
+                             </RowerRowBets> */}
+                         </>
+                     ) : (
+                         <>
+                             <AvatarRowBets>
+                             <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
+                             </AvatarRowBets>
+                             <RowerRowBets></RowerRowBets>
+                             {/* <RowerRowBets style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
+                             {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
+                             </WalletsRow></RowerRowBets> */}
+                             <RowerRowBets></RowerRowBets>
+                             <RowerRowBets></RowerRowBets>
+                         </>
+                         
+                     )}
+                         
                    </LowRower>
                   )}
               </TeamBetsHolder>
@@ -645,41 +669,45 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedWallet === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleWallet()} /> : <SmallArrowDownFlex onClick={() => toggleWallet()} />}</MiniIconButton>
-                    <RowerSmall><h2 style={{color: expandedWallet === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>WALLETS</h2></RowerSmall>
+                  {toHide === false && <RowerSmall><h2 style={{color: expandedWallet === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>WALLETS</h2></RowerSmall>}
                   {expandedWallet === true && (
-                      <LowRower >
-                      <RowerRowBets>
-                      <h2>BALANCE: <span>{typeof balance === 'number' && !isNaN(balance) ? parseFloat(balance.toFixed(2)) : '0.00'} PGZ</span>
-                      </h2>
-                      </RowerRowBets>
-                      <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
-                      {!metaMaskWalletAddress ? (
-                          <>
-                              {isDesktop ? (
-                                  <WalletsRow onClick={connectWallet}>
-                                      {metaMaskWalletAddress !== null ? (
-                                          <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
-                                      ) : (
-                                          <img src={metamask} alt="connect" style={{width: '30%'}}/>
-                                      )}
-                                  </WalletsRow>
-                                  
-                              ) : (
-                                  <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
-                              )}
-                          </>
-                      ) : (
-                          <>
-                          <RowerRowBets>
-                              <h2>CONNECTED ADDRESS</h2>
-                          </RowerRowBets>
-                          <RowerRowBets>
-                              <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
-                          </RowerRowBets>
-                          </>
-                      )}
-                      <WalletsRow><TonConnectButton /></WalletsRow>
-            </LowRower>
+                      <>
+                        {toHide === false && (
+                            <LowRower >
+                            <RowerRowBets>
+                            <h2>BALANCE: <span>{typeof balance === 'number' && !isNaN(balance) ? parseFloat(balance.toFixed(2)) : '0.00'} PGZ</span>
+                            </h2>
+                            </RowerRowBets>
+                            <AvatarRowBets><h2>CONNECT YOUR WALLET HERE</h2></AvatarRowBets>
+                            {!metaMaskWalletAddress ? (
+                                <>
+                                    {isDesktop ? (
+                                        <WalletsRow onClick={connectWallet}>
+                                            {metaMaskWalletAddress !== null ? (
+                                                <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
+                                            ) : (
+                                                <img src={metamask} alt="connect" style={{width: '30%'}}/>
+                                            )}
+                                        </WalletsRow>
+                                        
+                                    ) : (
+                                        <WalletsRow onClick={connectWallet}><img src={connect} alt="connect" /></WalletsRow>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                <RowerRowBets>
+                                    <h2>CONNECTED ADDRESS</h2>
+                                </RowerRowBets>
+                                <RowerRowBets>
+                                    <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
+                                </RowerRowBets>
+                                </>
+                            )}
+                            <WalletsRow><TonConnectButton /></WalletsRow>
+                  </LowRower>
+                        )}
+                      </>
                   )}
               </TeamBetsHolder>
 
@@ -800,7 +828,6 @@ export const BottomHeroRow = styled.div`
     min-height: 65vh;
     ${props => props.theme.displayFlexColumn};
     justify-content: space-around;
-    padding: 40px 0;
 `;
 
 const TopHeader = styled.div`
