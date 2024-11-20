@@ -4,6 +4,7 @@ import { motion, useTransform, useScroll, useAnimation, AnimatePresence } from '
 import {HeroSection, StyledButton} from './index'
 import Ton from '../../assets/logos/ton.png'
 import Sho from '../../assets/logos/sho.png'
+import back2 from '../../assets/backs/zone.jpg'
 import connect from '../../assets/logos/connect.png'
 import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
 import { getUserBalance, useAuth } from '../../pages/functions';
@@ -882,11 +883,14 @@ const ReferralWrapper = styled.div`
 const TopHeader = styled.div`
     width: 90%;
     max-height: 220px;
-    border: 1px solid ${props => props.theme.MainAccent};
+    border: 3px solid ${props => props.theme.MainAccent};
     border-radius: 10px;
     position: relative;
     ${props => props.theme.displayFlexCenter};
-    background: ${props => props.theme.card};
+    background-image: url(${back2});
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     margin: 10px;
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
