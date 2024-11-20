@@ -29,6 +29,7 @@ admin.initializeApp({
 });
 
 const sendNotification = async (fcmToken, message) => {
+  console.log(fcmToken)
   try {
     // Create the message payload
     const payload = {
