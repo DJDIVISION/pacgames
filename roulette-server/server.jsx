@@ -76,7 +76,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://pactongamingzone.onrender.com",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -84,48 +84,6 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Roulette Game!');
 });
 
-const sendNotification = async (fcmToken, message) => {
-  console.log(fcmToken);
-  try {
-    // Create the message payload
-    const payload = { 
-      notification: {
-        title: message.title,
-        body: message.body,
-        image: message.image || 'https://i.postimg.cc/T3H2R0LV/icon-48x48.png', // Add optional image/icon
-      },
-      android: {
-        priority: 'high', // Ensures the notification is delivered immediately
-        notification: {
-          channelId: 'high_priority_channel', // Matches the channel ID created in the Android app
-          clickAction: 'FLUTTER_NOTIFICATION_CLICK', // Customize if needed (used in some frameworks like Flutter)
-          sound: 'default', // Play default notification sound
-          icon: 'https://i.postimg.cc/T3H2R0LV/icon-48x48.png', // Ensure this URL points to a valid icon
-        },
-      },
-      token: fcmToken, // Send notification to this token
-    };
-
-    // Send the notification via FCM
-    const response = await admin.messaging().send(payload);
-
-    console.log('Successfully sent message:', response);
-  } catch (error) {
-    console.error('Error sending message:', error);
-  }
-};
-
-app.post('/send-token', (req, res) => {
-  const { fcmToken } = req.body;
-  
-  // You can now send a notification using this token
-  sendNotification(fcmToken, {
-    title: 'Welcome to PacTON Gaming Zone!',
-    body: 'Have a great time!',
-  });
-
-  res.send({ status: 'Notification sent' });
-});
 
 const subscriptions = {};
 
