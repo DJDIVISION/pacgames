@@ -75,7 +75,7 @@ const SmartFooter = () => {
     exit: { opacity: 0, transition: { duration: 2 } },
   };
   const variantsTwo = {
-    initial: { scale: 0 },
+    initial: { scale: 0,  },
     animate: { scale: 1,  transition: { duration: 0.25 } },
     exit: { scale: 0,  transition: { duration: 0.25 } },
   };

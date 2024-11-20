@@ -26,6 +26,18 @@ export const LowRower = styled.div`
     overflow-y: auto !important;
 `;
 
+export const TeamBetsHolderHidden = styled(motion.div)`
+    width: 98%;
+    background: ${props => props.theme.cardTwo};
+    ${props => props.theme.displayFlexColumnCenter}
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    padding: 10px;
+    margin: 10px 0;
+`;
+
+
 export const TeamBetsHolder = styled(motion.div)`
     width: 98%;
     border: 3px solid ${props => props.theme.MainAccent};

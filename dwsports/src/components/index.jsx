@@ -6,7 +6,7 @@ import basket from '../assets/basket.png'
 import tennis from '../assets/tennis.png'
 import cricket from '../assets/cricket.png'
 import formula from '../assets/formula.png'
-import back2 from '../assets/backs/girl2.jpg'
+import back2 from '../assets/backs/back7.jpg'
 import american from '../assets/rugby.png'
 import MMA from '../assets/mma.png'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';

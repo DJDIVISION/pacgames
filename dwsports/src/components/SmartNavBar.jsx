@@ -51,7 +51,9 @@ const SmartNavBar = ({toggleTheme}) => {
 
     const isOpen = ()=>{
         setOpen(!open);
-        setToHide(!toHide)
+        setTimeout(() => {
+            setToHide(!toHide)
+        }, 200)
       }
 
     useEffect(() => {
