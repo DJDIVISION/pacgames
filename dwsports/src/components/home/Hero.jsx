@@ -581,7 +581,7 @@ const Hero = () => {
 
               <TeamBetsHolder style={{width: '90%', margin: '10px 0'}}
                   initial={{ height: '80px' }}
-                  animate={{ height: expandedProfile === true ? '380px' : '80px' }}
+                  animate={{ height: expandedProfile === true ? '330px' : '80px' }}
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
@@ -605,7 +605,7 @@ const Hero = () => {
                                     <RowerRowBets style={{ height: '70px' }}>
                                         <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
                                     </RowerRowBets>
-                                    <RowerRowBets>
+                                    {/* <RowerRowBets>
                                         <h2>NOTIFICATIONS</h2>
                                     </RowerRowBets>
                                     <RowerRowBets>
@@ -614,7 +614,7 @@ const Hero = () => {
                                     <RowerRowBets style={{ height: '70px' }}>
                                         <StyledButton onClick={handleSendNotification}>SEND</StyledButton>
                                         
-                                    </RowerRowBets>
+                                    </RowerRowBets> */}
                                 </>
                             ) : (
                                 <>

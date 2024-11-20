@@ -6,6 +6,7 @@ import {FooterSection,Partners,Logo,Column,TopRow,BottomRow, ButtonWrapper} from
 import x from "../../assets/logos/x.png"
 import telegram from "../../assets/logos/telegram.png"
 import website from "../../assets/logos/website.png"
+import brands from '../../assets/logos/brand.png'
 import white from "../../assets/logos/white.png"
 import buy from "../../assets/logos/buy.png"
 import bot from "../../assets/logos/bot.png"
@@ -175,6 +176,12 @@ const Footer = () => {
                         initial="initial"
                         animate="animate"
                         exit="exit"><img src={apps} alt="x"/></motion.div></ButtonWrapper>
+                )}
+                {activePartner?.brand !== null && (
+                        <ButtonWrapper href={`${activePartner?.brand}`} target="_blank"><motion.div variants={variantsTwo}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"><img src={brands} alt="x"/></motion.div></ButtonWrapper>
                 )}
               </BottomRow>
             </Column>

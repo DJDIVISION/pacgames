@@ -8,6 +8,7 @@ import telegram from "../../assets/logos/telegram.png"
 import website from "../../assets/logos/website.png"
 import white from "../../assets/logos/white.png"
 import buy from "../../assets/logos/buy.png"
+import brands from '../../assets/logos/brand.png'
 import bot from "../../assets/logos/bot.png"
 import apps from "../../assets/logos/tapps.png"
 import Shinobi from '../svg/Shinobi';
@@ -186,6 +187,14 @@ const SmartFooter = () => {
                     initial="initial"
                     animate="animate"
                     exit="exit"><img src={apps} alt="x"/></motion.div></SmartButtonWrapper>    
+                ) : (
+                        ""
+                )}
+                {(activePartner?.brand !== null) ? (
+                    <SmartButtonWrapper href={`${activePartner?.brand}`} target="_blank"><motion.div variants={variantsTwo}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"><img src={brands} alt="brands"/></motion.div></SmartButtonWrapper>    
                 ) : (
                         ""
                 )}

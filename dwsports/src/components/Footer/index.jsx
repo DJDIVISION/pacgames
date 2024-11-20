@@ -5,7 +5,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import { Button } from "@mui/material";
 import shinobi from '../../assets/logos/shinobi.png'
-import hunny from '../../assets/logos/hunny.jpg'
+import hunny from '../../assets/logos/hunny.png'
 import ton from '../../assets/logos/ton.png'
 import move from '../../assets/logos/move.jpg'
 import fren from '../../assets/logos/fren.png'
@@ -152,7 +152,8 @@ export const Partners = [
         buy: 'https://ton.org/en/buy-toncoin?filters[exchange_groups][slug][$eq]=buy-with-card&pagination[page]=1&pagination[pageSize]=100',
         logo: ton,
         bot: null,
-        app: null
+        app: null,
+        brand: null
     },
     {
         name: 'SHINOBI',
@@ -163,7 +164,8 @@ export const Partners = [
         buy: 'https://pool.shido.io/pool/0x4aed39bda730a74874a576b7c0d68e2c641cf912',
         logo: shinobi,
         bot: null,
-        app: null
+        app: null,
+        brand: null
     },
     {
         name: 'FREN',
@@ -174,7 +176,8 @@ export const Partners = [
         buy: null,
         logo: fren,
         bot: 'https://t.me/FrenTekBot',
-        app: 'https://t.me/FrenTekBot/fren'
+        app: 'https://t.me/FrenTekBot/fren',
+        brand: null
     },
     {
         name: 'MOVE',
@@ -185,7 +188,8 @@ export const Partners = [
         buy: null,
         logo: move,
         bot: null,
-        app: null
+        app: null,
+        brand: null
     },
     {
         name: 'HUNNYPLAY',
@@ -195,8 +199,9 @@ export const Partners = [
         whitepaper: null,
         buy: null,
         logo: hunny,
-        bot: null,
-        app: null
+        bot: "https://t.me/hunnyplay_bot/hunnyplinko?startapp=2ogajZIw2HI9t1yQrFgOeNd9SCB",
+        app: null,
+        brand: "https://drive.google.com/drive/folders/1Jwg6PBVvtnJgA_QKfq201E_ajddp_Deg?usp=drive_link"
     },
     {
         name: 'BADGER WASTELAND',
@@ -207,7 +212,8 @@ export const Partners = [
         buy: null,
         logo: badger,
         bot: null,
-        app: null
+        app: null,
+        brand: null
     },
     {
         name: 'TONCULA',
@@ -215,9 +221,10 @@ export const Partners = [
         telegram: 'https://t.me/toncula',
         twitter: 'https://x.com/toncula_ton',
         whitepaper: "https://toncula.xyz/assets/TONCULA%20Whitepaper%20-Nq-he-jR.pdf",
-        buy: null,
+        buy: "https://app.ston.fi/swap?chartVisible=false&ft=TON&tt=EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh",
         logo: toncula,
         bot: null,
-        app: null
+        app: null,
+        brand: null
     }
 ]

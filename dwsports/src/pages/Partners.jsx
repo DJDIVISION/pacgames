@@ -7,6 +7,7 @@ import { AbsoluteIconButtonLeft } from './indexThree'
 import { ArrowLeftRelative } from './index'
 import { useNavigate } from 'react-router-dom'
 import Shinobi from '../components/svg/Shinobi'
+import Toncula from '../components/svg/Toncula';
 import Fren from '../components/svg/Fren'
 import Move from '../components/svg/Move'
 import Ton from '../components/svg/Ton'
@@ -15,13 +16,15 @@ import ton from '../assets/logos/ton.png'
 import move from '../assets/logos/move.jpg'
 import fren from '../assets/logos/fren.png'
 import badger from '../assets/logos/badger.png'
+import brands from '../assets/logos/brand.png'
 import x from "../assets/logos/x.png"
 import telegram from "../assets/logos/telegram.png"
 import website from "../assets/logos/website.png"
 import white from "../assets/logos/white.png"
 import buy from "../assets/logos/buy.png"
 import bot from "../assets/logos/bot.png"
-import hunny from '../assets/logos/hunny.jpg'
+import hunny from '../assets/logos/hunny.png'
+import toncula from '../assets/logos/toncula.jpg'
 import app from "../assets/logos/tapps.png"
 import { useMediaQuery } from 'react-responsive'
 import Hunny from '../components/svg/Hunny'
@@ -109,14 +112,30 @@ const Partners = () => {
             </Icons>
         </Partner>
         <Partner>
+            <SVGTop><Toncula /></SVGTop>
+            <SVG><motion.img src={toncula} alt="fren" style={{borderRadius: '50%', width: isMobile ? "25%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
+                    animate={controlsTwo}/></SVG>
+                <Description><h2>Welcome to the eerie world of TONCULA, where the legendary vampire from Transylvania transcends time and space to dwell in the TON network. Our vampire’s mission? To feast on the blood of jets and reward his loyal hodlers. TONCULA is more than just a token; it’s a thrilling adventure filled with humor, mystery, and substantial rewards for those daring enough to join our vampire</h2> </Description>
+            <Icons>
+                <Icon href='https://x.com/toncula_ton' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
+                <Icon href='https://t.me/toncula' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
+                <Icon href='https://toncula.xyz/' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
+                <Icon href='https://toncula.xyz/assets/TONCULA%20Whitepaper%20-Nq-he-jR.pdf' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={white} alt="white" /></Icon>
+                <Icon href='https://app.ston.fi/swap?chartVisible=false&ft=TON&tt=EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={buy} alt="white" /></Icon>
+            </Icons>
+        </Partner>
+        <Partner>
             <SVGTop><Hunny /></SVGTop>
-            <SVG><motion.img src={hunny} alt="fren" style={{ width: isMobile ? "25%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
+            <SVG><motion.img src={hunny} alt="fren" style={{ width: isMobile ? "45%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
                     animate={controlsTwo}/></SVG>
                 <Description><h2>🍯 HunnyPlay aims to be the most engaging and fun DeFi destination built on chain. <br/>Top Crypto Casino and iGaming Destination Built Across 7 Blockchains.</h2> </Description>
             <Icons>
                 <Icon href='https://twitter.com/HunnyPlay_' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={x} alt="one" /></Icon>
                 <Icon href='https://t.me/HunnyFinanceNews' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={telegram} alt="telegram" /></Icon>
                 <Icon href='https://hunnyplay.io' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
+                <Icon href='https://t.me/hunnyplay_bot/hunnyplinko?startapp=2ogajZIw2HI9t1yQrFgOeNd9SCB' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={bot} alt="white" /></Icon>
+                <Icon href='https://drive.google.com/drive/folders/1Jwg6PBVvtnJgA_QKfq201E_ajddp_Deg?usp=drive_link' target="_blank"><img style={{borderRadius: '50%', width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={brands} alt="white" /></Icon>
+
             </Icons>
         </Partner>
         <Partner>
@@ -130,6 +149,7 @@ const Partners = () => {
                 <Icon href='https://getgems.io/badgerwasteland' target="_blank"><img style={{ width: isMobile ? "60%" : '25%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} src={website} alt="website" /></Icon>
             </Icons>
         </Partner>
+        
         <Partner>
             <SVGTop><Move /></SVGTop>
             <SVG><motion.img src={move} alt="shinobi" style={{borderRadius: '50%', width: isMobile ? "25%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
