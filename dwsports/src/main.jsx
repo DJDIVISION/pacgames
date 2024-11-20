@@ -48,7 +48,7 @@ i18next.init ({
 
 
 console.log('Manifest URL:', `${window.location.origin}/tonconnect-manifest.json`);
-/* 
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/serviceworker.js')
       .then((registration) => {
@@ -57,7 +57,7 @@ if ('serviceWorker' in navigator) {
       .catch((err) => {
           console.error('Service Worker registration failed:', err);
       });
-} */
+}
 
 createRoot(document.getElementById('root')).render(
   <>

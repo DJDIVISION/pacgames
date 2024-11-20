@@ -14,24 +14,16 @@ async function subscribeUserToPush(userId) {
   const registration = await navigator.serviceWorker.ready;
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+    applicationServerKey: urlBase64ToUint8Array(publicVapidKey) 
   });
-  const subscriptionData = {userId}
-  await fetch('http://localhost:5000/subscribe', {
+  console.log(subscription)
+  await fetch('https://pacgames-roulette-server.onrender.com/subscribe', {
     method: 'POST',
     body: JSON.stringify({ subscription, userId }),
     headers: {
       'Content-Type': 'application/json'
     }
   });
-  /* const parentDocRef = doc(db, 'registrations', "TIBÈRIC");
-  const subcollectionRef = collection(parentDocRef, 'pushSubscriptions');
-  try {
-    
-    await setDoc(doc(subcollectionRef), subscriptionData);
-  } catch (e) {
-    console.error('Error getting subcollection documents: ', e);
-  } */
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -57,3 +49,5 @@ export async function initializePushNotifications(userId) {
     console.error('Failed to initialize push notifications:', error);
   }
 }
+
+

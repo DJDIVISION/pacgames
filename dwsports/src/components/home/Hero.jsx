@@ -63,7 +63,7 @@ const Hero = () => {
     const {session, setSession} = FantasyState();
     const [notificationToken, setNotificationToken] = useState(null);
     const PUBLIC_VAPID_KEY = "BLei-NwbbRtrn0qUWICUbxD2wdExl4ra67PPQX7ImPq107Rs76tDOwUjHoqbrYwI26FrsQgxQkv_DiN8zD9Lheo";
-    useEffect(() => {
+    /* useEffect(() => { 
         registerServiceWorker();
       }, []);
 
@@ -78,66 +78,47 @@ const Hero = () => {
       };
     
       useEffect(() => {
-        /* listenForNotifications(); */
+        listenForNotifications();
         handleForegroundNotifications();
-      }, [])
+      }, []) */
 
-    const subscribeToNotifications = async () => {
-        const register = await navigator.serviceWorker.register("/serviceworker.js", {
-            scope: "/"
-          });
-          console.log("New Service Worker");
-        
-          // Listen Push Notifications
-          console.log("Listening Push Notifications");
-          const subscription = await register.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
-          });
-        
-          console.log(subscription);
-        
-          // Send Notification
-          await fetch("http://localhost:5000/subscription", {
-            method: "POST",
-            body: JSON.stringify(subscription),
+      const subscribeToNotifications = () => {
+        initializePushNotifications(user.id);
+      };
+
+      async function sendNotification(notificationPayload) {
+        const userId = user.id
+        console.log(userId)
+        console.log(notificationPayload)
+        try {
+          const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-notification', {
+            userId: userId,
+            notificationPayload
+          }, {
             headers: {
-              "Content-Type": "application/json"
+              'Content-Type': 'application/json'
             }
           });
-          console.log("Subscribed!");
-    };
-
-    function urlBase64ToUint8Array(base64String) {
-        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
       
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-      
-        for (let i = 0; i < rawData.length; ++i) {
-          outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-      }
-    
-    async function sendNotification() {
-        const message = "You may suck my dick now!!!"
-        try {
-            fetch('http://localhost:5000/new-message', {
-                method: 'POST',
-                body: JSON.stringify({message: message}),
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              });
+          console.log('Notification sent successfully:', response.data);
         } catch (error) {
           console.error('Error sending notification:', error);
         }
       }
     
-
+      const handleSendNotification = () => {
+        const name = user.user_metadata.name
+        const firstName = name.split(' ')[0];
+        const notificationPayload = {
+          title: `Hi ${firstName}!`,
+          body: 'Welcome to PacTON Gaming Zone!',
+          //icon: 'path/to/icon.png' // Optional
+        };
     
+        sendNotification(notificationPayload);
+      };
+
+    console.log(user)
 
     const disconnectWallet = async () => {
         setMetaMaskWalletAddress(null)
@@ -575,7 +556,7 @@ const Hero = () => {
       unsubscribeFromNotifications();
     } else {
       // If checked, request permission for notifications
-      handleRequestPermission();
+      subscribeToNotifications();
     }
 
     // Update the checked state
@@ -630,10 +611,10 @@ const Hero = () => {
                                     <RowerRowBets>
                                     <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleChange} />
                                     </RowerRowBets>
-                                   {/*  <RowerRowBets style={{ height: '70px' }}>
-                                        <StyledButton onClick={handleRequestPermission}>REQUEST</StyledButton>
+                                    <RowerRowBets style={{ height: '70px' }}>
+                                        <StyledButton onClick={handleSendNotification}>SEND</StyledButton>
                                         
-                                    </RowerRowBets> */}
+                                    </RowerRowBets>
                                 </>
                             ) : (
                                 <>

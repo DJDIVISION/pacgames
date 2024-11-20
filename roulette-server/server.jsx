@@ -76,7 +76,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "https://pactongamingzone.onrender.com",
+  origin: "http://localhost:5173",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -88,7 +88,7 @@ const sendNotification = async (fcmToken, message) => {
   console.log(fcmToken);
   try {
     // Create the message payload
-    const payload = {
+    const payload = { 
       notification: {
         title: message.title,
         body: message.body,
@@ -139,18 +139,31 @@ app.post('/subscribe', (req, res) => {
   }
   subscriptions[userId].push(subscription);
   res.status(201).json({});
+  console.log("aaaaall subscriptions", subscriptions)
 });
+
+const vapidKeys = {
+  publicKey: 'BLei-NwbbRtrn0qUWICUbxD2wdExl4ra67PPQX7ImPq107Rs76tDOwUjHoqbrYwI26FrsQgxQkv_DiN8zD9Lheo',
+  privateKey: 'ybgqwG2c9lxh8AOmbu0hEgM2vcTWTDUf8Llxye81wmk'
+};
+
+webPush.setVapidDetails(
+  'mailto:bodegaflamenca666@gmail.com',
+  vapidKeys.publicKey,
+  vapidKeys.privateKey
+);
 
 // Endpoint to send notifications to a specific user
 app.post('/send-notification', (req, res) => {
-  const { id, notificationPayload } = req.body;
-  console.log("id on send", id)
+  const { userId, notificationPayload } = req.body;
+  console.log("id on send", userId)
   console.log(notificationPayload)
   const payload = JSON.stringify(notificationPayload);
   console.log("subscriptions",subscriptions)
-  if (subscriptions[id]) {
+  console.log("payload",payload)
+  if (subscriptions[userId]) {
     console.log("sending push")
-    Promise.all(subscriptions[id].map(sub => webPush.sendNotification(sub, payload)))
+    Promise.all(subscriptions[userId].map(sub => webPush.sendNotification(sub, payload)))
       .then(() => res.status(200).json({ message: 'Notification sent successfully.' }))
       .catch(err => {
         console.error('Error sending notification, reason: ', err);

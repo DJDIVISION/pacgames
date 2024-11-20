@@ -1,7 +1,7 @@
-
+/* 
 
 const CACHE_NAME = "v1.0.5";
-const urlsToCache = [ 'index.html', /* 'offline.html', '/login.js', 'app/js' */ ];
+const urlsToCache = [ 'index.html', 'offline.html', '/login.js', 'app/js' ];
 
 const self = this;
 
@@ -45,15 +45,6 @@ self.addEventListener('activate', (event) => {
 
 console.log('Service Worker Works');
 
-/* self.addEventListener('push', e => {
-    const data = e.data.json();
-    console.log(data)
-    console.log('Notification Received');
-    self.registration.showNotification(data.title, {
-        body: data.message,
-        icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Archlinux-icon-crystal-64.svg/1024px-Archlinux-icon-crystal-64.svg.png'
-    });
-}); */
 
 let firebaseConfig;
 
@@ -87,4 +78,13 @@ self.addEventListener('notificationclick', (event) => {
     if (target) {
         clients.openWindow(target);
     }
-});
+}); */
+
+
+self.addEventListener('push', event => {
+    const data = event.data.json();
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/icon-72x72.png'
+    });
+  });
