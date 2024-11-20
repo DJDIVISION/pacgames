@@ -12,14 +12,14 @@ export const HeroSection = styled.div`
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    padding-top: 20px;
+    
     img{
         width: 100%;
         display: block;
         object-fit: cover;
     }
     @media(max-width: 498px){
-        padding-top: 70px;
+        
     }
 `;
 

@@ -612,19 +612,16 @@ const Hero = () => {
 
   return (
     <HeroSection ref={ref}>
-      
+            <TopHeroRow>
             <TopHeader>
-           {toHide === false && (
-            <>
-                 <TopText>{t("hero.title")}<br/><span>SHO</span></TopText>
+                    <TopText>{t("hero.title")}<br/><span>SHO</span></TopText>
                     <motion.img src={Sho} 
                     alt="background" 
                     style={{ width: isMobile ? "40%" : '15%', height: 'auto', objectFit: 'cover', margin: 'auto', opacity: 1 }} 
                     animate={controls} />
-            </>
-           )}
             </TopHeader>
-
+            </TopHeroRow>
+            <BottomHeroRow>
               <TeamBetsHolder 
                   initial={{ height: '50px' }}
                   animate={{ height: expandedProfile === true ? '330px' : '50px' }}
@@ -633,53 +630,49 @@ const Hero = () => {
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
                   {toHide === false && <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>}
                   {expandedProfile === true && (
-                      <>
-                        {toHide === false && (
-                            <LowRower >
-                            {(user !== null || session !== null) ? (
-                                <>
-                                    <AvatarRowBets>
-                                    <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
-                                    </AvatarRowBets>
-                                    <RowerRowBets>
-                                    <h2>{user && user.user_metadata.full_name}</h2>
-                                    </RowerRowBets>
-                                    <RowerRowBets>
-                                    <h3>{user && user.email}</h3>
-                                    </RowerRowBets>
-                                   
-                                    <RowerRowBets style={{ height: '70px' }}>
-                                        <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
-                                    </RowerRowBets>
-                                    {/* <RowerRowBets>
-                                        <h2>NOTIFICATIONS</h2>
-                                    </RowerRowBets>
-                                    <RowerRowBets>
-                                    <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleChange} />
-                                    </RowerRowBets>
-                                    <RowerRowBets style={{ height: '70px' }}>
-                                        <StyledButton onClick={handleSendNotification}>SEND</StyledButton>
-                                        
-                                    </RowerRowBets> */}
-                                </>
-                            ) : (
-                                <>
-                                    <AvatarRowBets>
-                                    <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
-                                    </AvatarRowBets>
-                                    <RowerRowBets></RowerRowBets>
-                                    <RowerRowBets style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
-                                    {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
-                                    </WalletsRow></RowerRowBets>
-                                    <RowerRowBets></RowerRowBets>
-                                    <RowerRowBets></RowerRowBets>
-                                </>
-                                
-                            )}
-                                
-                          </LowRower>
-                        )}
-                      </>
+                     <LowRower >
+                     {(user !== null || session !== null) ? (
+                         <>
+                             <AvatarRowBets>
+                             <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
+                             </AvatarRowBets>
+                             <RowerRowBets>
+                             <h2>{user && user.user_metadata.full_name}</h2>
+                             </RowerRowBets>
+                             <RowerRowBets>
+                             <h3>{user && user.email}</h3>
+                             </RowerRowBets>
+                            
+                             <RowerRowBets style={{ height: '70px' }}>
+                                 <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
+                             </RowerRowBets>
+                             {/* <RowerRowBets>
+                                 <h2>NOTIFICATIONS</h2>
+                             </RowerRowBets>
+                             <RowerRowBets>
+                             <Switch inputProps={{ 'aria-label': 'ant design' }} checked={checked} onChange={handleChange} />
+                             </RowerRowBets>
+                             <RowerRowBets style={{ height: '70px' }}>
+                                 <StyledButton onClick={handleSendNotification}>SEND</StyledButton>
+                                 
+                             </RowerRowBets> */}
+                         </>
+                     ) : (
+                         <>
+                             <AvatarRowBets>
+                             <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
+                             </AvatarRowBets>
+                             <RowerRowBets></RowerRowBets>
+                             <RowerRowBets style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
+                             {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
+                             </WalletsRow></RowerRowBets>
+                             <RowerRowBets></RowerRowBets>
+                             <RowerRowBets></RowerRowBets>
+                         </>
+                         
+                     )}
+                         
+                   </LowRower>
                   )}
               </TeamBetsHolder>
 
@@ -781,6 +774,7 @@ const Hero = () => {
                     </LowRower>
                   )}
               </TeamBetsHolder>
+              </BottomHeroRow>
     </HeroSection>
   )
 }
@@ -836,6 +830,19 @@ const ReferralWrapper = styled.div`
     margin: 10px 0;
 `;
 
+export const TopHeroRow = styled.div`
+    width: 100vw;
+    height: 35vh;
+    ${props => props.theme.displayFlexCenter};
+    padding-top: 70px;
+`;
+export const BottomHeroRow = styled.div`
+    width: 100vw;
+    min-height: 65vh;
+    ${props => props.theme.displayFlexColumn};
+    justify-content: space-around;
+`;
+
 const TopHeader = styled.div`
     width: 60%;
     max-height: 220px;
@@ -847,7 +854,7 @@ const TopHeader = styled.div`
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    margin: 10px 0 20px 0;
+    
     padding: 10px;
     padding-bottom: ${({ isExpanded }) => (isExpanded ? "30px" : "10px")};
     box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.text};
