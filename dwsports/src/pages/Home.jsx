@@ -35,10 +35,16 @@ const Home = ({toggleTheme}) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [t, i18n] = useTranslation("global");
   const {walletBalance,setWalletBalance} = FantasyState();
-  const { user } = useAuth();
+  const {session, setSession} = FantasyState();
+  const {user, setUser} = FantasyState();
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    if(session === null){
+      setIsExpanded(true)
+    }
+  }, [session])
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -70,7 +76,7 @@ const Home = ({toggleTheme}) => {
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
       <AnimatePresence>
-    {isMobile ? (
+    {(isMobile && session) ? (
           <AbsoluteHomeLeft onClick={isOpen}>{isExpanded ? <CloseBurguer /> : <Burguer />}</AbsoluteHomeLeft>
         ) : (
           <NavBar key="navbar"
@@ -96,7 +102,9 @@ const Home = ({toggleTheme}) => {
                 transition: { staggerChildren: 0.3 },
               },
             }}>
-            <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }}
+            {session ? (
+              <>
+                <LinkR to="/bets"><StaggerRow initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }} onClick={() => setToHide(false)}>
               <StaggerImageHolder><img src={sportsIcon} alt="sports" /></StaggerImageHolder>
@@ -126,14 +134,18 @@ const Home = ({toggleTheme}) => {
               <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>
               <StaggerAvatarName>{t("navbar.withdraw")}</StaggerAvatarName>
             </StaggerRow>
-            <StaggerRow initial={{ opacity: 0, y: 40 }}
+              </>
+            ) : (
+              <></>
+            )}
+            {/* <StaggerRow initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2 }}>
               <StaggerImageHolder>
                 {theme.body === '#202020' ? <LightIcon onClick={toggleTheme} /> : <DarkIcon onClick={toggleTheme} />}
               </StaggerImageHolder>
               <StaggerAvatarName>{t("navbar.switch")}</StaggerAvatarName>
-            </StaggerRow>
+            </StaggerRow> */}
           </StaggerContainer>  
           ) : (
             <></>

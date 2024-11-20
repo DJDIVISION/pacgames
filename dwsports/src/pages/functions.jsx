@@ -469,7 +469,7 @@ export const useAuth = () => {
         
       } else {
         setUser(null); // Clear the user state if no session
-        
+        setSession(null)
       }
       setLoading(false); // Loading finished
     };
