@@ -20,6 +20,7 @@ import DepositMenu from '../components/menus/DepositMenu'
 import { HeroSection, WalletsRow } from '../components/home'
 import Hero from '../components/home/Hero'
 import back2 from '../assets/backs/back7.jpg'
+import back1 from '../assets/backs/back8.jpg'
 import WalletMenu from '../components/menus/WalletMenu'
 import Footer from '../components/Footer/Footer'
 import SmartFooter from '../components/Footer/SmartFooter'
@@ -48,6 +49,40 @@ const Home = ({toggleTheme}) => {
       setIsExpanded(true)
     }
   }, [session])
+  useEffect(() => {
+    // Function to check if a session exists
+    const checkSession = async () => {
+      // Get session from Supabase auth
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        setSession(session)
+        setUser(session.user); // Set the user state if session exists
+        
+      } else {
+        setUser(null); // Clear the user state if no session
+        setSession(null)
+      }
+      setLoading(false); // Loading finished
+    };
+
+    // Call the session checking function
+    checkSession();
+
+    // Set up an auth state listener to detect login/logout events
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        setUser(session.user); // Set user when signed in
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null); // Clear user on sign out
+      }
+    });
+
+    // Cleanup the listener on unmount
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []);
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -78,17 +113,17 @@ const Home = ({toggleTheme}) => {
 
   const handleGoogleSignIn = async () => {
         
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    })
 
-      if (session?.user) {
-        setSession(session)
-        setUser(session.user); // Set the user state if session exists
-        
-      } else {
-        setUser(null); // Clear the user state if no session
-        setSession(null)
-      }
-  }
+    if (error) {
+      console.error('Error with Google sign-in:', error.message)
+    } 
+    if(data){
+        console.error('Google sign-in successful:', data) 
+    }
+}
 
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
@@ -197,9 +232,12 @@ const MenuSection = styled(motion.div)`
 const StaticSection = styled.div`
   width: 100vw;
   height: 100vh;
-  background-image: url(${back2});
+  background-image: url(${back1});
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   ${props => props.theme.displayFlexCenter};
+  @media(max-width: 498px){
+    background-image: url(${back2});
+  }
 `;
