@@ -907,6 +907,7 @@ const TopText = styled.div`
     width: 70%;
     text-align: center;
     color: ${props => props.theme.MainAccent};
+    text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
     font-size: 32px;
     font-weight: bold;
     z-index: 10;
@@ -914,6 +915,8 @@ const TopText = styled.div`
     span{
         font-size: 48px; 
         color: ${props => props.theme.text};
+        text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
+
     }
     @media(max-width: 968px){
         font-size: 18px;
