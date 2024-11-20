@@ -112,13 +112,22 @@ export const listenForNotifications = () => {
 export const handleForegroundNotifications = () => {
   onMessage(messaging, (payload) => {
     console.log('Foreground notification received:', payload);
-    const { title, body } = payload.notification;
-    const icon = "https://i.postimg.cc/J0LFkY8Z/logo.jpg"
-    // Customize and show notification
-    new Notification(title, {
-      body,
-      icon,
-    });
+
+    // Extract notification data
+    const { title, body, icon } = payload.notification;
+
+    // Use a fallback icon if the payload doesn't include one
+    const notificationIcon = icon || "https://i.postimg.cc/J0LFkY8Z/logo.jpg";
+
+    // Create and display a notification
+    if (Notification.permission === 'granted') {
+      new Notification(title, {
+        body,
+        icon: notificationIcon,
+      });
+    } else {
+      console.warn('Notification permission not granted.');
+    }
   });
 };
 

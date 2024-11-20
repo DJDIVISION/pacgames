@@ -72,10 +72,19 @@ self.addEventListener('push', (event) => {
     const notificationTitle = payload?.notification?.title || 'New Notification';
     const notificationOptions = {
         body: payload?.notification?.body || 'You have a new message.',
-        icon: 'https://i.postimg.cc/J0LFkY8Z/logo.jpg'
+        icon: 'https://i.postimg.cc/J0LFkY8Z/logo.jpg',
+        data: payload?.notification?.click_action,
     };
 
     event.waitUntil(
         self.registration.showNotification(notificationTitle, notificationOptions)
     );
+});
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    const target = event.notification.data;
+    if (target) {
+        clients.openWindow(target);
+    }
 });
