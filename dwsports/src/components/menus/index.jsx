@@ -217,7 +217,7 @@ export const DepositTokenToken = styled.div`
 
 export const TokenHolder = styled(Button)`
     &&&{
-        width: 120px;
+        width: 100px;
         height: 70%;
         border: 1px solid ${props => props.theme.card};
         border-radius: 20px;
@@ -280,10 +280,10 @@ export const TokenNameHolder = styled.div`
     width: 70%;
     height: 100%;
     ${props => props.theme.displayFlex};
-    padding: 0 10px;
+    padding: 0 5px;
     h2{
         color: ${props => props.theme.text};
-        font-size: 16px;
+        font-size: 14px !important;
         font-weight: bold;
     }
 `;

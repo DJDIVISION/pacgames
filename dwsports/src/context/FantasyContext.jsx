@@ -26,6 +26,7 @@ const FantasyContext = ({children}) => {
     const [tonWalletAddress, setTonWalletAddress] = useState(null)
     const [metaMaskWalletBalance,setMetaMaskWalletBalance] = useState(null)
     const [tonWalletBalance,setTonWalletBalance] = useState(null)
+    const [tonculaWalletBalance,setTonculaWalletBalance] = useState(null)
     const [data, setData] = useState([])
     const [balance, setBalance] = useState(null)
     const [activeTeam, setActiveTeam] = useState(null)
@@ -55,7 +56,7 @@ const FantasyContext = ({children}) => {
             pendingBets,setPendingBets,depositMenu,setDepositMenu,metaMaskWalletAddress,setMetaMaskWalletAddress,metaMaskWalletBalance,setMetaMaskWalletBalance,
             data,setData,balance,setBalance,activeTeam,setActiveTeam,activePlayer,setActivePlayer,tonWalletAddress,setTonWalletAddress,
             provider,setProvider,account,setAccount,tonWalletBalance,setTonWalletBalance,walletMenu,setWalletMenu,
-            toHide,setToHide,setFixtureId,fixtureId,session,setSession
+            toHide,setToHide,setFixtureId,fixtureId,session,setSession,tonculaWalletBalance,setTonculaWalletBalance
         }}>
             {children}
         </Fantasy.Provider>

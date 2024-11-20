@@ -76,8 +76,8 @@ const SmartFooter = () => {
   };
   const variantsTwo = {
     initial: { scale: 0 },
-    animate: { scale: 1, rotateY: 360, transition: { duration: 0.25 } },
-    exit: { scale: 0, rotateY: -360, transition: { duration: 0.25 } },
+    animate: { scale: 1,  transition: { duration: 0.25 } },
+    exit: { scale: 0,  transition: { duration: 0.25 } },
   };
   const pathVariants = {
     initial: { pathLength: 0, },

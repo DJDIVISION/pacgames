@@ -20,6 +20,7 @@ import { ethers } from "ethers";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import Web3 from "web3";
 import { useMediaQuery } from 'react-responsive';
+import Toncula from '../../assets/logos/toncula.jpg'
 import Ton from '../../assets/logos/ton.png'
 import Sho from '../../assets/logos/sho.png'
 import PGZ from '../../assets/logos/pgz.png'
@@ -59,12 +60,14 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
 
     const tokens = [
       { name: 'SHO', logo: Sho, ratio: '7040' },
-      { name: 'TON', logo: Ton, ratio: '0.189893' }
+      { name: 'TON', logo: Ton, ratio: '0.189893' },
+      { name: 'TNcula', logo: Toncula, ratio: '0.189893' }
     ];
     const [activeToken, setActiveToken] = useState("SHO");
     const [selectedToken, setSelectedToken] = useState(tokens[0])
     const [amount, setAmount] = useState(0);
     const [tonAmount, setTonAmount] = useState(0)
+    const [tonculaAmount, setTonculaAmount] = useState(0)
     const [tonConnectUI, setOptions] = useTonConnectUI();
     const [transactionStatus, setTransactionStatus] = useState('');
     const [client, setClient] = useState(null);
@@ -82,6 +85,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
     const isDesktop = useMediaQuery({ query: '(min-width: 1100px)' });
     const [tonPrice, setTonPrice] = useState(null)
     const [shoPrice, setShoPrice] = useState(0.0001408)
+    const [tonculaPrice, setTonculaPrice] = useState(0.0004571)
     const {toHide, setToHide} = FantasyState();
 
     
@@ -97,7 +101,11 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
       if (typeof window.ethereum === 'undefined') {
         console.log('MetaMask is not installed');
         return;
-    }
+      }
+      if(amount === 0){
+        toast('Please enter any amount of SHO');
+        return
+      }
       if(isDesktop){
           const web3 = new Web3(window.ethereum);
           try {
@@ -144,7 +152,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             .on("receipt", (receipt) => {
               console.log("Transaction confirmed:", receipt);
               setBalance((prevBal) => prevBal + amount);
-              setDepositMenu(false);
+              closeDepositMenu()
               writeData((1000 * amount / (1/shoPrice)),amount,"SHO",metaMaskWalletAddress,shoPrice);
               return Swal.fire({
                 title: "Transaction Confirmed",
@@ -213,7 +221,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
         newProvider.on("display_uri", (uri) => console.log("WalletConnect QR Code URI:", uri));
         const web3 = new Web3(newProvider)
         try {
-          setDepositMenu(false);
+          closeDepositMenu();
           
       
           // Show confirmation prompt to user
@@ -253,7 +261,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             .on("receipt", (receipt) => {
               console.log("Transaction confirmed:", receipt);
               setBalance((prevBal) => prevBal + amount);
-              setDepositMenu(false);
+              closeDepositMenu()
               writeData((1000 * amount / (1/shoPrice)),amount,"SHO",metaMaskWalletAddress,shoPrice);
               return Swal.fire({
                 title: "Transaction Confirmed",
@@ -352,7 +360,8 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
 
     const handleSendTransaction = () => {
       // Transaction details based on tonConnectUI structure
-      setDepositMenu(false);
+      if(tonAmount > 0){
+        closeDepositMenu()
           
       
           // Show confirmation prompt to user
@@ -392,6 +401,76 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           console.error('Transaction initiation failed:', error);
           setTransactionStatus(`Transaction initiation failed: ${error.message}`);
       }
+      } else {
+        toast('Please enter any amount of TON');
+        return
+      }
+  };
+    const handleSendTonculaTransaction = async () => {
+    
+    const jettonMasterAddress = 'EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh';
+    const recipientAddress = 'UQDrPy40C4Aea1jXRJqDRkNwg2apTNyVAx39gu7VEJeAgp7g';
+    closeDepositMenu()
+          
+      
+    // Show confirmation prompt to user
+    toast('Please confirm the transaction \n on your wallet');
+    try {
+        // Get the wallet address for the sender's Jetton using tonConnectUI
+        const jettonWalletAddress = await tonConnectUI.getJettonWalletAddress(jettonMasterAddress);
+
+        // Ensure the Jetton wallet address is fetched
+        if (!jettonWalletAddress) {
+            throw new Error('Failed to fetch Jetton wallet address for the connected account.');
+        }
+
+        // Encode the payload for Jetton transfer
+        const jettonPayload = new TextEncoder().encode(JSON.stringify({
+            op: 'transfer',
+            amount: (tonculaAmount * 1e9).toString(), // Convert to nanoJettons
+            recipient: recipientAddress,
+        }));
+
+        // Construct the transaction
+        const jettonTransaction = {
+            validUntil: Math.floor(Date.now() / 1000) + 60, // Transaction expiration in 60 seconds
+            messages: [
+                {
+                    address: jettonWalletAddress, // Jetton wallet address of the sender
+                    amount: '0', // No TON sent, only Jettons
+                    payload: jettonPayload.toString('base64'), // Base64 encoded payload
+                },
+            ],
+        };
+        
+
+        // Send the transaction using TonConnect
+        await tonConnectUI.sendTransaction(jettonTransaction);
+        
+        // Confirm success
+        Swal.fire({
+            title: "Transfer Confirmed",
+            text: `Successfully sent ${tonculaAmount} TNcula.`,
+            icon: "success",
+        });
+    } catch (error) {
+        console.error('Jetton transaction failed:', error);
+
+        // Handle errors gracefully
+        if (error.message.includes("User rejects the action")) {
+            Swal.fire({
+                title: "Transaction Rejected",
+                text: "You have rejected the transaction.",
+                icon: "error",
+            });
+        } else {
+            Swal.fire({
+                title: "Transaction Failed",
+                text: `Error: ${error.message}`,
+                icon: "error",
+            });
+        }
+    }
   };
 
     
@@ -441,7 +520,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           boxShadow: activeToken === token.name ? `${theme.pacBoxShadow}` : ``,
           border: activeToken === token.name ? `1px solid ${theme.MainAccent}` : ``,
         }}>
-          <LogoHolder><img src={token.logo} alt="" /></LogoHolder>
+          <LogoHolder><img src={token.logo} alt="" style={{borderRadius: '50%'}}/></LogoHolder>
           <TokenNameHolder><h2 style={{
           color: activeToken === token.name ? `${theme.MainAccent}` : `${theme.text}`,
         }}>{token.name}</h2></TokenNameHolder>
@@ -463,7 +542,7 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           <DepositTokenRow>
             <DepositTokenFrom><h2>To:</h2></DepositTokenFrom>
             <DepositTokenToken>
-              <SmallLogoHolder><img src={PGZ} alt="" style={{width: '25%'}}/></SmallLogoHolder>
+              <SmallLogoHolder><img src={PGZ} alt="" /></SmallLogoHolder>
               <SmallLogoHolder><h2>PGZ</h2></SmallLogoHolder>
               <InputHolder><InputInput type="number" disabled={true} defaultValue="0.0" value={parseFloat((1000 * tonAmount / (1/tonPrice)).toFixed(2))}></InputInput></InputHolder>
             </DepositTokenToken>
@@ -483,21 +562,31 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
           <DepositTokenRow>
             <DepositTokenFrom><h2>To:</h2></DepositTokenFrom>
             <DepositTokenToken>
-              <SmallLogoHolder style={{ width: '20%' }}><img src={PGZ} alt="" /></SmallLogoHolder>
+              <SmallLogoHolder ><img src={PGZ} alt="" /></SmallLogoHolder>
               <SmallLogoHolder><h2>PGZ</h2></SmallLogoHolder>
               <InputHolder><InputInput type="number" disabled={true} value={1000 * amount / (1/shoPrice)}></InputInput></InputHolder>
             </DepositTokenToken>
           </DepositTokenRow>
-          {/* <DepositTitle>PACTON'S GAMING ZONE WALLET ADDRESS:</DepositTitle>
-          <DepositTitle><LinkInputField disabled={true} value="0x75a8AC284299e362830c49615459EeD8f66C0265"/></DepositTitle>
-          <SmallDepositTitle>SHO BALANCE IN WALLET: {parseFloat(walletBalance)}<span>SHO</span></SmallDepositTitle>
-          <DepositTitle>AMOUNT TO DEPOSIT:</DepositTitle>
-          <DepositTitle><BetInput style={{borderRadius: '10px'}} value={amount}
-              onChange={(e) => setAmount(parseFloat(e.target.value))}/></DepositTitle>
-          <DepositTitle>
-              <StyledButton onClick={sendTokens} style={{fontSize: '18px'}}>DEPOSIT</StyledButton>
-          </DepositTitle>
-          <span>{transactionStatus}</span> */}
+        </DepositWrapper>
+        )}
+        {(tonculaPrice && activeToken === "TNcula") &&  (
+        <DepositWrapper>
+          <DepositTokenRow>
+            <DepositTokenFrom><h2>From:</h2></DepositTokenFrom>
+            <DepositTokenToken>
+              <SmallLogoHolder><img src={selectedToken.logo} alt="" /></SmallLogoHolder>
+              <SmallLogoHolder><h2>{selectedToken.name}</h2></SmallLogoHolder>
+              <InputHolder><InputInput type="number" placeholder='0.0' onChange={(e) => setTonculaAmount(e.target.value)}></InputInput></InputHolder>
+            </DepositTokenToken>
+          </DepositTokenRow>
+          <DepositTokenRow>
+            <DepositTokenFrom><h2>To:</h2></DepositTokenFrom>
+            <DepositTokenToken>
+              <SmallLogoHolder ><img src={PGZ} alt="" /></SmallLogoHolder>
+              <SmallLogoHolder><h2>PGZ</h2></SmallLogoHolder>
+              <InputHolder><InputInput type="number" disabled={true} value={1000 * tonculaAmount / (1/tonculaPrice)}></InputInput></InputHolder>
+            </DepositTokenToken>
+          </DepositTokenRow>
         </DepositWrapper>
         )}
         {(tonPrice && activeToken === "TON") && (
@@ -514,6 +603,14 @@ const DepositMenu = ({depositMenu,setDepositMenu}) => {
             <h2>Current SHO Price: <br/><span>{shoPrice} USDT</span></h2>
             </DepositTokenRowSmall>
             <DepositTokenRowSmall><StyledButton onClick={sendTokens} style={{fontSize: '18px'}}>DEPOSIT</StyledButton></DepositTokenRowSmall>
+          </DepositWrapper>
+        )}
+        {(tonculaPrice && activeToken === "TNcula") && (
+          <DepositWrapper>
+            <DepositTokenRowSmall>
+            <h2>Current TNcula Price: <br/><span>{tonculaPrice} USDT</span></h2>
+            </DepositTokenRowSmall>
+            <DepositTokenRowSmall><StyledButton onClick={handleSendTonculaTransaction} style={{fontSize: '18px'}}>DEPOSIT</StyledButton></DepositTokenRowSmall>
           </DepositWrapper>
         )}
     </StyledMenu>
