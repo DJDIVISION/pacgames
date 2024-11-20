@@ -76,20 +76,17 @@ const Home = ({toggleTheme}) => {
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
       <AnimatePresence>
-    {(isMobile && session) ? (
+        {session ? (
+          <>
+            {isMobile ? (
           <AbsoluteHomeLeft onClick={isOpen}>{isExpanded ? <CloseBurguer /> : <Burguer />}</AbsoluteHomeLeft>
         ) : (
           <NavBar key="navbar"
             toggleTheme={toggleTheme}
           />
         )}
-      {depositMenu && (
-        <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="depositmenu"/>
-      )}
-      {walletMenu && (
-        <WalletMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="walletMenu"/>
-      )}
-    <MenuSection initial={{ height: 0}} // Initial height
+         <Hero />
+         <MenuSection initial={{ height: 0}} // Initial height
     animate={{ height: isExpanded ? '100vh' : 0}} // Height transitions between 100px and 300px
     transition={{ duration: 0.5 }}>
           {isExpanded ? (
@@ -151,11 +148,24 @@ const Home = ({toggleTheme}) => {
             <></>
           )}
     </MenuSection> 
-    <Hero />
-    {isMobile ? (
-          <SmartFooter key="smartfooter"/>
+        {isMobile ? (
+              <SmartFooter key="smartfooter"/>
+            ) : (
+              <Footer key="footer"/>
+            )}
+      {depositMenu && (
+        <DepositMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="depositmenu"/>
+      )}
+      {walletMenu && (
+        <WalletMenu depositMenu={depositMenu} setDepositMenu={setDepositMenu} key="walletMenu"/>
+      )}
+          </>
         ) : (
-          <Footer key="footer"/>
+      <MenuSection initial={{ height: 0}} // Initial height
+      animate={{ height: isExpanded ? '100vh' : 0}} // Height transitions between 100px and 300px
+      transition={{ duration: 0.5 }}>
+
+      </MenuSection>
         )}
         </AnimatePresence>
     </motion.div>
