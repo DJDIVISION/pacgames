@@ -51,9 +51,7 @@ const SmartNavBar = ({toggleTheme}) => {
 
     const isOpen = ()=>{
         setOpen(!open);
-        setTimeout(() => {
-            setToHide(!toHide)
-        }, 200)
+        setToHide(!toHide)
       }
 
     useEffect(() => {
@@ -76,19 +74,7 @@ const SmartNavBar = ({toggleTheme}) => {
         exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
     }
 
-    useEffect(() => {
-        // Toggle body overflow based on isMenuOpen state
-        if (open) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = ''; // Revert to original overflow
-        }
-
-        // Cleanup on unmount
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [open]);
+    
 
   return (
     <SmartNav scrollNavDown={scrollNavDown}>
@@ -98,7 +84,7 @@ const SmartNavBar = ({toggleTheme}) => {
                 <StyledMenu scrollNavDown={scrollNavDown} variants={item} 
                 initial="initial"
                 animate="animate"
-                exit="exit" style={{justifyContent: 'center'}}>
+                exit="exit" style={{justifyContent: 'center', }}>
                      <IconButton style={{position: 'absolute', top: '20px', left: '20px'}} onClick={isOpen}><CloseBurguer /></IconButton>
                      <StaggerContainer initial="hidden"
                         animate="visible"

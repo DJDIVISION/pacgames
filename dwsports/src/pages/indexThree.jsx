@@ -213,6 +213,18 @@ export const AbsoluteIconButtonLeft = styled(IconButton)`
     }
 }
 `;
+export const AbsoluteHomeLeft = styled(IconButton)`
+&&&{
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    padding: 5px;
+    scale: 1.2;
+    ${props => props.theme.displayFlexCenter}
+    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4, 0 0 100px #03e9f4;
+    z-index: 1000;
+}
+`;
 
 export const TeamCircularRow = styled.div`
 width: 100%;

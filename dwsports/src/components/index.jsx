@@ -6,7 +6,7 @@ import basket from '../assets/basket.png'
 import tennis from '../assets/tennis.png'
 import cricket from '../assets/cricket.png'
 import formula from '../assets/formula.png'
-import back2 from '../assets/backs/back7.jpg'
+
 import american from '../assets/rugby.png'
 import MMA from '../assets/mma.png'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -89,26 +89,20 @@ export const Nav = styled.nav`
 
 export const Burguer = styled(MenuOutlinedIcon)`
     &&&{
-        color: black;
+        color: ${props => props.theme.text};
         font-weight: bold;
-        scale: 1.5;
     }
 `;
 export const CloseBurguer = styled(MenuOpenIcon)`
     &&&{
         color: ${props => props.theme.text};
         font-weight: bold;
-        scale: 1.5;
-        z-index: 9999;
     }
 `;
 
 export const StyledMenu = styled(motion.div)`
     &&&{
-    background-image: url(${back2});
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+    
     width: 100vw;
     height: 100vh;
     position: absolute;
@@ -118,6 +112,7 @@ export const StyledMenu = styled(motion.div)`
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 9999;
     }
 `;
 
@@ -129,7 +124,7 @@ export const StaggerContainer = styled(motion.div)`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 100px 0 50px 0;
+    //padding: 100px 0 50px 0;
 `;
 
 

@@ -36,7 +36,7 @@ function App() {
   const { user, loading } = useAuth(); 
   const themeObject = useMemo(() => themes[theme], [theme]);
   
-  const [isExpanded, setIsExpanded] = useState(false)
+  
 
   
 
