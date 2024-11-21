@@ -12,7 +12,8 @@ export const HeroSection = styled.div`
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    
+    position: relative;
+    overflow: hidden
     img{
         width: 100%;
         display: block;

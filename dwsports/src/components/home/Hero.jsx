@@ -5,6 +5,7 @@ import {HeroSection, StyledButton} from './index'
 import Ton from '../../assets/logos/ton.png'
 import Sho from '../../assets/logos/sho.png'
 import back2 from '../../assets/backs/zone.jpg'
+import back from '../../assets/backs/back9.jpg'
 import connect from '../../assets/logos/connect.png'
 import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
 import { getUserBalance, useAuth } from '../../pages/functions';
