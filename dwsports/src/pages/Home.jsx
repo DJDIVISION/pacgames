@@ -21,6 +21,8 @@ import { HeroSection, WalletsRow } from '../components/home'
 import Hero from '../components/home/Hero'
 import back2 from '../assets/backs/back7.jpg'
 import back1 from '../assets/backs/back8.jpg'
+import back3 from '../assets/backs/back10.png'
+import back4 from '../assets/backs/back9.png'
 import WalletMenu from '../components/menus/WalletMenu'
 import Footer from '../components/Footer/Footer'
 import SmartFooter from '../components/Footer/SmartFooter'
@@ -65,7 +67,6 @@ const Home = ({toggleTheme}) => {
         setUser(null); // Clear the user state if no session
         setSession(null)
       }
-      setLoading(false); // Loading finished
     };
 
     // Call the session checking function
@@ -147,7 +148,7 @@ const Home = ({toggleTheme}) => {
         )}
             <MenuSection initial={{ height: 0 }} // Initial height
               animate={{ height: isExpanded ? '100vh' : 0 }} // Height transitions between 100px and 300px
-              transition={{ duration: 0.5 }}>
+              transition={{ type: "spring", stiffness: 300, damping: 40, duration: 1 }}>
               {isExpanded ? (
                 <StaggerContainer initial="hidden"
                   animate="visible"
@@ -176,13 +177,13 @@ const Home = ({toggleTheme}) => {
                     <StaggerImageHolder><img src={partners} alt="fantasy" /></StaggerImageHolder>
                     <StaggerAvatarName>OUR PARTNERS</StaggerAvatarName>
                   </StaggerRow></LinkR>
-                  <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {setIsExpanded(false); setIsDepositExpanded(true);}}
+                  <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {setIsDepositExpanded(true);setIsExpanded(false); }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1 }} >
                     <StaggerImageHolder><img src={deposit} alt="wallet" /></StaggerImageHolder>
                     <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
                   </StaggerRow>
-                  <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => { setIsExpanded(false); setIsWithdrawExpanded(true); }}
+                  <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => { setIsWithdrawExpanded(true); setIsExpanded(false); }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.1 }} >
                     <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>
@@ -193,9 +194,9 @@ const Home = ({toggleTheme}) => {
                 <></>
               )}
             </MenuSection> 
-            <MenuSection initial={{ height: 0 }} // Initial height
+            <DepositSection initial={{ height: 0 }} // Initial height
               animate={{ height: isDepositExpanded ? '100vh' : 0 }} // Height transitions between 100px and 300px
-              transition={{ duration: 0.5 }}>
+              transition={{ type: "spring", stiffness: 300, damping: 40,duration: 0.5 }}>
               {isDepositExpanded ? (
                 <StaggerContainer initial="hidden"
                   animate="visible"
@@ -211,10 +212,10 @@ const Home = ({toggleTheme}) => {
               ) : (
                 <></>
               )}
-            </MenuSection> 
-            <MenuSection initial={{ height: 0 }} // Initial height
+            </DepositSection> 
+            <WithdrawSection initial={{ height: 0 }} // Initial height
               animate={{ height: isWithdrawExpanded ? '100vh' : 0 }} // Height transitions between 100px and 300px
-              transition={{ duration: 0.5 }}>
+              transition={{ type: "spring", stiffness: 300, damping: 40,duration: 0.5 }}>
               {isWithdrawExpanded ? (
                 <StaggerContainer initial="hidden"
                   animate="visible"
@@ -230,7 +231,7 @@ const Home = ({toggleTheme}) => {
               ) : (
                 <></>
               )}
-            </MenuSection> 
+            </WithdrawSection> 
          <Hero />
          
         {isMobile ? (
@@ -257,6 +258,24 @@ const MenuSection = styled(motion.div)`
   width: 100%;
   height: 100%;
   background-image: url(${back2});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+`;
+const DepositSection = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+  background-image: url(${back3});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+`;
+const WithdrawSection = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+  background-image: url(${back4});
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

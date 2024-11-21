@@ -475,9 +475,9 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
 
 
     const item={
-        initial: { height: 0, opacity: 0 },
-        animate: { minHeight: '100vh', opacity: 1, transition: { duration: 0.5 } },
-        exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
+        initial: { opacity: 0 },
+        animate: {  opacity: 1, transition: {  duration: 1, delay: 0.5 } },
+        exit: { opacity: 0, transition: { duration: 1, delay: 0.5 } }
     } 
 
     const handleButtonClick = (token) => {

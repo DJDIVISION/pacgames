@@ -138,9 +138,9 @@ const WalletMenu = ({setIsWithdrawExpanded,isWithdrawExpanded}) => {
 
 
     const item={
-        initial: { height: 0, opacity: 0 },
-        animate: { height: '100vh', opacity: 1, transition: { duration: 0.5 } },
-        exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
+        initial: { opacity: 0 },
+        animate: { opacity: 1, transition: { duration: 1, delay: 0.5 } },
+        exit: { opacity: 0, transition: { duration: 1, delay: 0.5 } }
     } 
     console.log(walletMenu)
 
@@ -190,7 +190,7 @@ const ProgressBarTop = styled(motion.div)`
                     <SecondTierRow style={{transform: 'translateY(5px)'}}>{el.id === tier ? <h2>YOU DEPOSITED</h2> : ""}</SecondTierRow>
                     <BigTierRow>{el.id === tier ? <h2>{deposits[index]?.amount} {deposits[index]?.token}</h2> : ""}</BigTierRow>
                     <SecondTierRow style={{transform: 'translateY(5px)'}}>{el.id === tier ? <h2>YOU RECEIVED</h2> : ""}</SecondTierRow>
-                    <BigTierRow>{el.id === tier ? <h2>{deposits[index]?.gpz} PGZ</h2> : ""}</BigTierRow>
+                    <BigTierRow>{el.id === tier ? <h2>{parseFloat(deposits[index]?.gpz.toFixed(2))} PGZ</h2> : ""}</BigTierRow>
                 </Tier>
             )
         })}
