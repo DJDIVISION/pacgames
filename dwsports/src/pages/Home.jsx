@@ -276,8 +276,8 @@ const Home = ({toggleTheme}) => {
       <StaticSection>
             <Container>
               <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn() /* handleSendMessage() */}><WalletsRow>
-                {/* {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />} */}
-                <StyledButton style={{padding: '10px 15px'}}>SEND MESSAGE</StyledButton>
+                {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
+                {/* <StyledButton style={{padding: '10px 15px'}}>SEND MESSAGE</StyledButton> */}
               </WalletsRow></RowerRowBetsCenter>
               {/* <RowerRowBetsCenter style={{ height: '70px' }}>
               <WalletsRow id="telegram-login" style={{width: '350px'}}>
