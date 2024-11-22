@@ -12,7 +12,7 @@ const TelegramLogin = () => {
 
     // Configure widget attributes
     script.setAttribute('data-telegram-login', 'PactonGamingZoneBot'); // Your bot's username
-    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-size', 'medium');
     script.setAttribute('data-request-access', 'write');
     script.setAttribute('data-userpic', 'true');
     script.setAttribute(
