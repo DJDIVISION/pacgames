@@ -48,7 +48,7 @@ const Home = ({toggleTheme}) => {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  useEffect(() => {
+  /* useEffect(() => {
     if(session === null){
       setIsExpanded(true)
     }
@@ -109,7 +109,7 @@ const Home = ({toggleTheme}) => {
         document.body.style.overflow = '';
     };
 }, [isExpanded,isDepositExpanded,isWithdrawExpanded]);
-
+ */
   const isOpen = ()=>{
     setIsExpanded((prev) => !prev);
   }

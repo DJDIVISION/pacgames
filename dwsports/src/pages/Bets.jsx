@@ -329,215 +329,334 @@ const Bets = () => {
           .select('*')
           .eq('user_id', user.id)
           .eq('status', "Pending");
-  
         if (error) {
           console.error('Error retrieving data from Supabase:', error.message);
         }
         if(data){
-          const updatedBets = data.map(bet => ({
-            ...bet,
-            bet: bet.bet.map(matchBet => {
-              const fixtureId = matchBet.match.fixture.id;
-              const league = matchBet.match.league.name;
-        
-              // Fetch matches for the league from local storage
-              const matches = JSON.parse(localStorage.getItem(league));
-        
-              // Find and update the matching match with its goals
-              const matchedGame = matches?.find(match => match.fixture.id === fixtureId);
-              if (matchedGame) {
-                
-                return {
-                  ...matchBet,
-                  match: {
-                    ...matchBet.match,
-                    goals: matchedGame.goals,
-                    teams: matchedGame.teams,
-                    fixture: matchedGame.fixture
-                  },
-                };
-              }
-              return matchBet; // Return unchanged if no match found
-            })
-          }));
-          setMyBets(updatedBets)
+          setMyBets(data)
           setLoadingBets(false)
         }
     }
   }
-
-  const writePendingBets = async () => {
-    const updatedBets = myBets.map(bet => ({
-      ...bet,
-      bet: bet.bet.map(matchBet => {
-        const fixtureId = matchBet.match.fixture.id;
-        const league = matchBet.match.league.name;
-  
-        // Fetch matches for the league from local storage
-        const matches = JSON.parse(localStorage.getItem(league));
-  
-        // Find and update the matching match with its goals
-        const matchedGame = matches?.find(match => match.fixture.id === fixtureId);
-        if (matchedGame) {
-          
-          return {
-            ...matchBet,
-            match: {
-              ...matchBet.match,
-              goals: matchedGame.goals,
-              teams: matchedGame.teams,
-              fixture: matchedGame.fixture
-            },
-          };
-        }
-        return matchBet; // Return unchanged if no match found
-      })
-    }));
-  
-    // Update state with the modified bets array
-    setMyBets(updatedBets);
-    updatedBets.forEach(bet => {
-      bet.bet.forEach(matchBet => {
-        const isFulfilled = isBetFulfilled(matchBet);
-        
-        // Optionally update the bet object with the result
-        matchBet.isWinningBet = isFulfilled;
-      });
-      
-    });
-  } 
-
-  
   
   function isBetFulfilled(bet) {
-    const { betType, match } = bet;
+    
+    const { name, value, match } = bet;
     const { home, away } = match.goals;
-  
-    switch (betType) {
-      case "home":
-        return home > away;
-        case "away":
-        return away > home;
-        case "draw":
-        return home === away;
-      case "homeOver2":
-        return home >= 3;
-      case "homeUnder2":
-        return home <= 2;
-      case "homeBTTS":
-        return home > 0 && away > 0;
-      case "awayBTTS":
-        return home > 0 && away > 0;
-      case "homeBTNTS":
-        return home > away && away === 0;
-      case "awayBTNTS":
-        return away > home || home === 0;
-      case "btts":
-        return home > 0 && away > 0;
-      case "btnts":
-        return home === 0 || away === 0;
-      case "homeMinus1":
-        return home - away >= 2;
-      case "awayMinus1":
-        return away - home >= 2;
-      case "awayOver2":
-        return away >= 3;
-      case "awayUnder2":
-        return away <= 2;
-      default:
-        return false;
-    }
+    const halfHome = match.score.halftime.home
+    const halfAway = match.score.halftime.away
+    const secondHome = home - halfHome
+    const secondAway = away - halfAway
+    const total = home + ":" + away
+    const totalHalf = halfHome + ":" + halfAway
+    const totalSecond = secondHome + ":" + secondAway
+    if (name === "Match Winner" && value === "Home") {
+      return home > away;
+  } else if (name === "Match Winner" && value === "Away") {
+      return away > home;
+  } else if (name === "Match Winner" && value === "Draw") {
+      return home === away;
+  } else if (name === "Home/Away" && value === "Home") {
+      return null;
+  } else if (name === "Home/Away" && value === "Away") {
+      return null;
+  } else if (name === "Second Half Winner" && value === "Home") {
+      return secondHome > secondAway;
+  } else if (name === "Second Half Winner" && value === "Away") {
+      return secondAway > secondHome;
+  } else if (name === "Second Half Winner" && value === "Draw") {
+      return secondHome === secondAway;
+  } else if (name === "Goals Over/Under First Half" && value.startsWith("Over")) {
+      return halfHome + halfAway > parseInt(value.replace("Over", "").trim());
+  } else if (name === "Goals Over/Under First Half" && value.startsWith("Under")) {
+      return halfHome + halfAway < parseInt(value.replace("Under", "").trim());
+  } else if (name === "Goals Over/Under - Second Half" && value.startsWith("Over")) {
+      return secondHome + secondAway > parseInt(value.replace("Over", "").trim());
+  } else if (name === "Goals Over/Under - Second Half" && value.startsWith("Under")) {
+      return secondHome + secondAway < parseInt(value.replace("Under", "").trim());
+  } else if (name === "Both Teams Score" && value === "Yes") {
+      return home > 0 && away > 0;
+  } else if (name === "Both Teams Score" && value === "No") {
+      return home === 0 || away === 0;
+  } else if (name === "Both Teams Score - First Half" && value === "Yes") {
+      return halfHome > 0 && halfAway > 0;
+  } else if (name === "Both Teams Score - First Half" && value === "No") {
+      return halfHome === 0 || halfAway === 0;
+  } else if (name === "Both Teams To Score - Second Half" && value === "Yes") {
+      return secondHome > 0 && secondAway > 0;
+  } else if (name === "Both Teams To Score - Second Half" && value === "No") {
+      return secondHome === 0 || secondAway === 0;
+  } else if (name === "Win to Nil - Home" && value === "Yes") {
+      return home > away && away === 0;
+  } else if (name === "Win to Nil - Home" && value === "No") {
+      return away > 0;
+  } else if (name === "Win to Nil - Away" && value === "Yes") {
+      return away > home && home === 0;
+  } else if (name === "Win to Nil - Away" && value === "No") {
+      return home > 0;
+  } else if (name === "Win to Nil" && value === "Home") {
+      return home > away && away === 0;
+  } else if (name === "Win to Nil" && value === "Away") {
+      return away > home && home === 0;
+  } else if (name === "Exact Score") {
+      return total === value;
+  } else if (name === "Correct Score - First Half") {
+      return totalHalf === value;
+  } else if (name === "Correct Score - Second Half") {
+      return totalSecond === value;
+  } else if (name === "Highest Scoring Half" && value === "1st Half") {
+      return halfHome + halfAway > secondHome + secondAway;
+  } else if (name === "Highest Scoring Half" && value === "2nd Half") {
+      return secondHome + secondAway > halfHome + halfAway;
+  } else if (name === "Highest Scoring Half" && value === "Draw") {
+      return secondHome + secondAway === halfHome + halfAway;
+  } else if (name === "Double Chance" && value === "Home/Draw") {
+      return home > away || home === away;
+  } else if (name === "Double Chance" && value === "Home/Away") {
+      return home > away || away > home;
+  } else if (name === "Double Chance" && value === "Draw/Away") {
+      return home === away || away > home;
+  } else if (name === "Double Chance - First Half" && value === "Home/Draw") {
+      return halfHome > halfAway || halfHome === halfAway;
+  } else if (name === "Double Chance - First Half" && value === "Home/Away") {
+      return halfAway > halfHome || halfHome > halfAway;
+  } else if (name === "Double Chance - First Half" && value === "Draw/Away") {
+      return halfHome === halfAway || halfAway > halfHome;
+  } else if (name === "Double Chance - Second Half" && value === "Home/Draw") {
+      return secondHome > secondAway || secondHome === secondAway;
+  } else if (name === "Double Chance - Second Half" && value === "Home/Away") {
+      return secondHome === secondAway || secondAway === secondHome;
+  } else if (name === "Double Chance - Second Half" && value === "Draw/Away") {
+      return secondHome === secondAway || secondAway > secondHome;
+  } else {
+      return false;
   }
+  }
+
+  const getName = (name, value, match) => {
+    if(name === "Match Winner" && value === "Home") return `${match.teams.home.name} wins to ${match.teams.away.name}`
+    if(name === "Match Winner" && value === "Away") return `${match.teams.away.name} wins to ${match.teams.home.name}`
+    if(name === "Match Winner" && value === "Draw") return `${match.teams.home.name} draws with ${match.teams.away.name}`
+    if(name === "Home/Away" && value === "Home") return `${match.teams.home.name} wins to ${match.teams.away.name}`
+    if(name === "Home/Away" && value === "Away") return `${match.teams.away.name} wins to ${match.teams.home.name}`
+    if(name === "Second Half Winner" && value === "Home") return `${match.teams.home.name} wins second half`
+    if(name === "Second Half Winner" && value === "Away") return `${match.teams.away.name} wins second half`
+    if(name === "Second Half Winner" && value === "Draw") return `Second half ends in draw`
+    if(name === "Goals Over/Under First Half" && value.startsWith("Over")) return `First half ${value} goals`
+    if(name === "Goals Over/Under First Half" && value.startsWith("Under")) return `First half ${value} goals`
+    if(name === "Goals Over/Under - Second Half" && value.startsWith("Over")) return `Second half ${value} goals`
+    if(name === "Goals Over/Under - Second Half" && value.startsWith("Under")) return `Second half ${value} goals`
+    if(name === "Both Teams Score" && value === "Yes") return `${match.teams.home.name} & ${match.teams.away.name} both score`
+    if(name === "Both Teams Score - First Half" && value === "Yes") return `${match.teams.home.name} & ${match.teams.away.name} both score on 1st half`
+    if(name === "Both Teams To Score - Second Half" && value === "Yes") return `${match.teams.home.name} & ${match.teams.away.name} both score on 2nd half`
+    if(name === "Both Teams Score" && value === "No") return `${match.teams.home.name} & ${match.teams.away.name} both not score`
+    if(name === "Both Teams Score - First Half" && value === "No") return `${match.teams.home.name} & ${match.teams.away.name} both not score on 1st Half`
+    if(name === "Both Teams To Score - Second Half" && value === "No") return `${match.teams.home.name} & ${match.teams.away.name} both not score on 2nd Half`
+    if(name === "Win to Nil - Home" && value === "Yes") return `${match.teams.home.name} wins to nill`
+    if(name === "Win to Nil" && value === "Home") return `${match.teams.home.name} wins to nill`
+    if(name === "Win to Nil - Home" && value === "No") return `${match.teams.home.name} does not win to nill`
+    if(name === "Win to Nil - Away" && value === "Yes") return `${match.teams.away.name} wins to nill`
+    if(name === "Win to Nil" && value === "Away") return `${match.teams.away.name} wins to nill`
+    if(name === "Win to Nil - Away" && value === "No") return `${match.teams.away.name} does not win to nill`
+    if(name === "Exact Score") return `Exact Score: ${value}`
+    if(name === "Highest Scoring Half" && value === "1st Half") return `More goals on 1st half`
+    if(name === "Highest Scoring Half" && value === "2nd Half") return `More goals on 2nd half`
+    if(name === "Highest Scoring Half" && value === "Draw") return `Same goals on both halves`
+    if(name === "Correct Score - First Half") return `Correct Score on First Half: ${value}`
+    if(name === "Correct Score - Second Half") return `Correct Score on Second Half: ${value}`
+    if(name === "Double Chance" && value === "Home/Draw") return `${match.teams.home.name} wins or draws`
+    if(name === "Double Chance - First Half" && value === "Home/Draw") return `${match.teams.home.name} wins or draws on 1st half`
+    if(name === "Double Chance - Second Half" && value === "Home/Draw") return `${match.teams.home.name} wins or draws on 2nd half`
+    if(name === "Double Chance" && value === "Home/Away") return `${match.teams.home.name} or ${match.teams.away.name} wins`
+    if(name === "Double Chance - First Half" && value === "Home/Away") return `${match.teams.home.name} or ${match.teams.away.name} wins on 1st half`
+    if(name === "Double Chance - Second Half" && value === "Home/Away") return `${match.teams.home.name} or ${match.teams.away.name} wins on 2nd half`
+    if(name === "Double Chance" && value === "Draw/Away") return `${match.teams.away.name} wins or draws`
+    if(name === "Double Chance - First Half" && value === "Draw/Away") return `${match.teams.away.name} wins or draws on 1st half`
+    if(name === "Double Chance - Second Half" && value === "Draw/Away") return `${match.teams.away.name} wins or draws on 2nd half`
+    if(name === "First Half Winner" && value === "Home") return `${match.teams.home.name} wins 1st Half`
+    if(name === "First Half Winner" && value === "Away") return `${match.teams.away.name} wins 1st Half`
+    if(name === "First Half Winner" && value === "Draw") return `1st Half ends in draw`
+    if(name === "Win Both Halves" && value === "Home") return `${match.teams.home.name} wins both halves`
+    if(name === "Win Both Halves" && value === "Away") return `${match.teams.away.name} wins both halves`
+    if(name === "Odd/Even" && value === "Odd") return `Odd number of goals in the match`
+    if(name === "Odd/Even - First Half" && value === "Odd") return `Odd number of goals in the 1st half`
+    if(name === "Odd/Even - First Half" && value === "Even") return `Even number of goals in the 1st half`
+    if(name === "Odd/Even - Second Half" && value === "Odd") return `Odd number of goals in the 2nd half`
+    if(name === "Odd/Even - Second Half" && value === "Even") return `Even number of goals in the 2nd half`
+    if(name === "Odd/Even" && value === "Even") return `Even number of goals in the match`
+    if(name === "Home win both halves" && value === "Yes") return `${match.teams.home.name} wins both halves`
+    if(name === "Home win both halves" && value === "No") return `${match.teams.home.name} does not win both halves`
+    if(name === "Away win both halves" && value === "Yes") return `${match.teams.away.name} wins both halves`
+    if(name === "Away win both halves" && value === "No") return `${match.teams.away.name} does not win both halves`
+    if(name === "Exact Goals Number" && value === 0) return `0 goals in the game`
+    if(name === "Exact Goals Number" && value === 1) return `1 goal in the game`
+    if(name === "Exact Goals Number" && value === 2) return `2 goals in the game`
+    if(name === "Exact Goals Number" && value === 3) return `3 goals in the game`
+    if(name === "Exact Goals Number" && value === 4) return `4 goals in the game`
+    if(name === "Exact Goals Number" && value === 5) return `5 goals in the game`
+    if(name === "Exact Goals Number" && value === 'more 6') return `6 or more goals in the game`
+    if(name === "To Win Either Half" && value === 'Home') return `${match.teams.home.name} wins either half`
+    if(name === "To Win Either Half" && value === 'Away') return `${match.teams.away.name} wins either half`
+    if(name === "Home Team Exact Goals Number" && value === 0) return `${match.teams.home.name} scores 0 goals in the match`
+    if(name === "Home Team Exact Goals Number" && value === 1) return `${match.teams.home.name} scores 1 goal in the match`
+    if(name === "Home Team Exact Goals Number" && value === 2) return `${match.teams.home.name} scores 2 goals in the match`
+    if(name === "Home Team Exact Goals Number" && value === 3) return `${match.teams.home.name} scores 3 goals in the match`
+    if(name === "Home Team Exact Goals Number" && value === "4 more") return `${match.teams.home.name} scores 4 goals or more in the match`
+    if(name === "Second Half Exact Goals Number" && value === 0) return `0 goals in the second half`
+    if(name === "Second Half Exact Goals Number" && value === 1) return `1 goal in the second half`
+    if(name === "Second Half Exact Goals Number" && value === 2) return `2 goals in the second half`
+    if(name === "Second Half Exact Goals Number" && value === 3) return `3 goals in the second half`
+    if(name === "Second Half Exact Goals Number" && value === "4 more") return `4 goals or more in the second half`
+    if(name === "Away Team Exact Goals Number" && value === 0) return `${match.teams.away.name} scores 0 goals in the match`
+    if(name === "Away Team Exact Goals Number" && value === 1) return `${match.teams.away.name} scores 1 goal in the match`
+    if(name === "Away Team Exact Goals Number" && value === 2) return `${match.teams.away.name} scores 2 goals in the match`
+    if(name === "Away Team Exact Goals Number" && value === 3) return `${match.teams.away.name} scores 3 goals in the match`
+    if(name === "Away Team Exact Goals Number" && value === "4 more") return `${match.teams.away.name} scores 4 goals or more in the match`
+    if(name === "Exact Goals Number - First Half" && value === 0) return `0 goals in the first half`
+    if(name === "Exact Goals Number - First Half" && value === 1) return `1 goal in the first half`
+    if(name === "Exact Goals Number - First Half" && value === 2) return `2 goals in the first half`
+    if(name === "Exact Goals Number - First Half" && value === 3) return `3 goals in the first half`
+    if(name === "Exact Goals Number - First Half" && value === "4 more") return `4 goals or more in the first half`
+    if(name === "Results/Both Teams Score" && value === "Home/Yes") return `${match.teams.home.name} wins both teams score`
+    if(name === "Results/Both Teams Score" && value === "Draw/Yes") return `Draw & both teams score`
+    if(name === "Results/Both Teams Score" && value === "Away/Yes") return `${match.teams.away.name} wins both teams score`
+    if(name === "Home Team Score a Goal" && value === "Yes") return `${match.teams.home.name} scores`
+    if(name === "Home Team Score a Goal" && value === "No") return `${match.teams.home.name} does not score`
+    if(name === "Away Team Score a Goal" && value === "Yes") return `${match.teams.away.name} scores`
+    if(name === "Away Team Score a Goal" && value === "No") return `${match.teams.away.name} does not score`
+    if(name === "Home team will score in both halves" && value === "Yes") return `${match.teams.home.name} scores in both halves`
+    if(name === "Home team will score in both halves" && value === "No") return `${match.teams.home.name} does not score in both halves`
+    if(name === "Away team will score in both halves" && value === "Yes") return `${match.teams.away.name} scores in both halves`
+    if(name === "Away team will score in both halves" && value === "No") return `${match.teams.away.name} does not score in both halves`
+    
+    return ''
+};
   
-  // Loop through each bet and check conditions
- 
 
 
-  const checkBets = () => {
-    if(myBets){
-      myBets.forEach(bet => {
-        bet.bet.forEach(matchBet => {
-          const isFulfilled = isBetFulfilled(matchBet);
-          
-          // Optionally update the bet object with the result
-          matchBet.isWinningBet = isFulfilled;
-        });
-        
-      });
+const checkBets = async () => {
+  if (myBets) {
+    // Iterate over each bet
+    for (const bet of myBets) {
+      let allMatchesStarted = true; // Flag to check if all matches in this bet have started
       
-    }
-    const winningBets = myBets.filter(bet => 
-      bet.bet.every(matchBet => matchBet.isWinningBet === true)
-    );
+      // Iterate over each match in the bet
+      for (const matchBet of bet.bet) {
+        const matchId = matchBet.match.fixture.id;
 
-    winningBets.forEach(async (bet) => {
-      if(balance){
-        const { data: searchData, error: updateError } = await supabase
-                    .from('users')
-                    .select('appBalance') // Update the jsonb column
-                    .eq('id', user.id); // Identify which user to update
-    
-                if (updateError) {
-                    console.error('Error updating user data:', updateError.message);
-                } else {
-                    const filter = myBets.filter((el) => el.id !== bet.id)
-                    setMyBets(filter)
-                    const balance = searchData[0].appBalance
-                    const newBalance = balance + bet.possibleWinnings
-                    console.log(newBalance)
-                    const { data: userData, error: userError } = await supabase
-                          .from('users')
-                          .update({appBalance: newBalance}) // Update the jsonb column
-                          .eq('id', user.id); // Identify which user to update
+        // Fetch the match data
+        const options = {
+          method: 'GET',
+          url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+          params: { id: matchId },
+          headers: {
+            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+          },
+        };
+
+        try {
+          // Fetch the match data from the API
+          const response = await axios.request(options);
           
-                          if (userError) {
-                              console.error('Error updating user data:', userError.message);
-                          } else {
-                            const { data: betData, error: betError } = await supabase
-                                .from('bets')
-                                .update({status: "Won"}) // Update the jsonb column
-                                .eq('id', bet.id); // Identify which user to update
-                
-                                if (betError) {
-                                    console.error('Error updating user data:', betError.message);
-                                } else {
-                                  toast('You have won your bet! 🤑🤑🤑  ', {
-                                    position: "top-center",
-                                    autoClose: 5000,
-                                    hideProgressBar: true,
-                                    closeOnClick: true,
-                                    pauseOnHover: true,
-                                    draggable: true,
-                                    progress: undefined,
-                                    theme: "dark"
-                                    });
-                                }
-                                
-                          }
-                          
-                }
+          const matchData = response.data.response[0]; // Assuming the response structure
+
+          // Extract the relevant match data to update
+          const { goals, fixture, score, events } = matchData;
+
+          // Update the matchBet object with the fetched data
+          matchBet.match.goals = goals;
+          matchBet.match.fixture = fixture;
+          matchBet.match.score = score;
+          matchBet.events = events;  // Add the events field
+
+          // Check if the match has started
+          if (fixture.status.short !== 'FT') {
+            allMatchesStarted = false; // If the match hasn't started, set the flag to false
+            break; // Exit the loop and skip this bet
+          }
+        } catch (error) {
+          console.error('Error fetching match data:', error);
+          allMatchesStarted = false; // If there’s an error, assume the match is not ready
+          break;
+        }
       }
-    })
-    
-    const nonWinningBets = myBets.filter(bet => 
-      !bet.bet.every(matchBet => matchBet.isWinningBet === true)
-    );
-    
-    nonWinningBets.forEach(async (bet) => {
-                    const filter = myBets.filter((el) => el.id !== bet.id)
-                    setMyBets(filter)
-                                const { data: betData, error: betError } = await supabase
-                                .from('bets')
-                                .update({status: "Lost"}) // Update the jsonb column
-                                .eq('id', bet.id); // Identify which user to update
-                
-                                if (betError) {
-                                    console.error('Error updating user data:', betError.message);
-                                } else {
-                                  console.log("one added")
-                                }
-    })
+
+      // If all matches have started, proceed with the next function
+      if (allMatchesStarted) {
+        
+        proceedWithBet(bet);
+      } else {
+        console.log('Skipping bet because not all matches have started');
+      }
+    }
   }
+};
+
+// Example of the function to proceed with the bet
+const proceedWithBet = async (bet) => {
+  toast('Some of your bets are being calculated ⏳', {
+    position: "top-center",
+    autoClose: 2000,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "dark"
+  });
+  console.log('All matches have started for this bet:', bet);
+  bet.bet.map((el) => {
+        const isFulfilled = isBetFulfilled(el);
+        el.isWinningBet = isFulfilled;
+  })
+  const allBetsFulfilled = bet.bet.every((el) => el.isWinningBet === true);
+  // Add your logic to process the bet here
+  if (allBetsFulfilled) {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      if (error) {
+        console.error('Error inserting/updating user session data:', error.message)
+      } else {
+        console.log(data[0])
+        console.log(bet)
+        const newBalance = data[0].appBalance + bet.possibleWinnings
+        console.log(newBalance)
+        setBalance((prev) => prev + bet.possibleWinnings)
+        const { error: firstError } = await supabase
+          .from('bets')
+          .update({ status: 'Won', bet: bet.bet })
+          .eq('id', bet.id)
+          if (firstError) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            const { error: secondError } = await supabase
+              .from('users')
+              .update({ appBalance: newBalance })
+              .eq('id', user.id)
+              if (secondError) {
+                console.error('Error inserting/updating user session data:', error.message)
+              } else {
+                message.success("You have won one bet 🤑")
+              }
+          }
+       }
+  } else {
+      const { data, error } = await supabase
+      .from('bets')
+      .update({ status: 'Lost', bet: bet.bet })
+      .eq('id', bet.id)
+      if (error) {
+        console.error('Error inserting/updating user session data:', error.message)
+      } else {
+        console.log(`Status changed for bet ${bet.id}`)
+        message.error("You have lost one bet 😢")
+      }
+  }
+};
+
 
   useEffect(() => {
     getBets();
@@ -555,11 +674,12 @@ const Bets = () => {
     }
   }, [openWonBetsMenu])
 
-  /* useEffect(() => {
+  useEffect(() => {
     if(myBets){
       checkBets();
+      console.log(myBets)
     }
-  }, [myBets]) */
+  }, [myBets])
 
   
 
@@ -844,104 +964,6 @@ useEffect(() => {
     return ''
 };
 
-const getName = (name, value, match) => {
-    if(name === "Match Winner" && value === "Home") return `${match.teams.home.name} wins to ${match.teams.away.name}`
-    if(name === "Match Winner" && value === "Away") return `${match.teams.away.name} wins to ${match.teams.home.name}`
-    if(name === "Match Winner" && value === "Draw") return `${match.teams.home.name} draws with ${match.teams.away.name}`
-    if(name === "Home/Away" && value === "Home") return `${match.teams.home.name} wins to ${match.teams.away.name}`
-    if(name === "Home/Away" && value === "Away") return `${match.teams.away.name} wins to ${match.teams.home.name}`
-    if(name === "Second Half Winner" && value === "Home") return `${match.teams.home.name} wins second half`
-    if(name === "Second Half Winner" && value === "Away") return `${match.teams.away.name} wins second half`
-    if(name === "Second Half Winner" && value === "Draw") return `Second half ends in draw`
-    if(name === "Goals Over/Under First Half" && value.startsWith("Over")) return `First half ${value} goals`
-    if(name === "Goals Over/Under First Half" && value.startsWith("Under")) return `First half ${value} goals`
-    if(name === "Goals Over/Under - Second Half" && value.startsWith("Over")) return `Second half ${value} goals`
-    if(name === "Goals Over/Under - Second Half" && value.startsWith("Under")) return `Second half ${value} goals`
-    if(name === "Both Teams Score" && value === "Yes") return `${match.teams.home.name} & ${match.teams.away.name} both score`
-    if(name === "Both Teams Score - First Half" && value === "Yes") return `${match.teams.home.name} & ${match.teams.away.name} both score on 1st half`
-    if(name === "Both Teams To Score - Second Half" && value === "Yes") return `${match.teams.home.name} & ${match.teams.away.name} both score on 2nd half`
-    if(name === "Both Teams Score" && value === "No") return `${match.teams.home.name} & ${match.teams.away.name} both not score`
-    if(name === "Both Teams Score - First Half" && value === "No") return `${match.teams.home.name} & ${match.teams.away.name} both not score on 1st Half`
-    if(name === "Both Teams To Score - Second Half" && value === "No") return `${match.teams.home.name} & ${match.teams.away.name} both not score on 2nd Half`
-    if(name === "Win to Nil - Home" && value === "Yes") return `${match.teams.home.name} wins to nill`
-    if(name === "Win to Nil" && value === "Home") return `${match.teams.home.name} wins to nill`
-    if(name === "Win to Nil - Home" && value === "No") return `${match.teams.home.name} does not win to nill`
-    if(name === "Win to Nil - Away" && value === "Yes") return `${match.teams.away.name} wins to nill`
-    if(name === "Win to Nil" && value === "Away") return `${match.teams.away.name} wins to nill`
-    if(name === "Win to Nil - Away" && value === "No") return `${match.teams.away.name} does not win to nill`
-    if(name === "Exact Score") return `Exact Score: ${value}`
-    if(name === "Highest Scoring Half" && value === "1st Half") return `More goals on 1st half`
-    if(name === "Highest Scoring Half" && value === "2nd Half") return `More goals on 2nd half`
-    if(name === "Highest Scoring Half" && value === "Draw") return `Same goals on both halves`
-    if(name === "Correct Score - First Half") return `Correct Score on First Half: ${value}`
-    if(name === "Correct Score - Second Half") return `Correct Score on Second Half: ${value}`
-    if(name === "Double Chance" && value === "Home/Draw") return `${match.teams.home.name} wins or draws`
-    if(name === "Double Chance - First Half" && value === "Home/Draw") return `${match.teams.home.name} wins or draws on 1st half`
-    if(name === "Double Chance - Second Half" && value === "Home/Draw") return `${match.teams.home.name} wins or draws on 2nd half`
-    if(name === "Double Chance" && value === "Home/Away") return `${match.teams.home.name} or ${match.teams.away.name} wins`
-    if(name === "Double Chance - First Half" && value === "Home/Away") return `${match.teams.home.name} or ${match.teams.away.name} wins on 1st half`
-    if(name === "Double Chance - Second Half" && value === "Home/Away") return `${match.teams.home.name} or ${match.teams.away.name} wins on 2nd half`
-    if(name === "Double Chance" && value === "Draw/Away") return `${match.teams.away.name} wins or draws`
-    if(name === "Double Chance - First Half" && value === "Draw/Away") return `${match.teams.away.name} wins or draws on 1st half`
-    if(name === "Double Chance - Second Half" && value === "Draw/Away") return `${match.teams.away.name} wins or draws on 2nd half`
-    if(name === "First Half Winner" && value === "Home") return `${match.teams.home.name} wins 1st Half`
-    if(name === "First Half Winner" && value === "Away") return `${match.teams.away.name} wins 1st Half`
-    if(name === "First Half Winner" && value === "Draw") return `1st Half ends in draw`
-    if(name === "Win Both Halves" && value === "Home") return `${match.teams.home.name} wins both halves`
-    if(name === "Win Both Halves" && value === "Away") return `${match.teams.away.name} wins both halves`
-    if(name === "Odd/Even" && value === "Odd") return `Odd number of goals in the match`
-    if(name === "Odd/Even - First Half" && value === "Odd") return `Odd number of goals in the 1st half`
-    if(name === "Odd/Even - First Half" && value === "Even") return `Even number of goals in the 1st half`
-    if(name === "Odd/Even - Second Half" && value === "Odd") return `Odd number of goals in the 2nd half`
-    if(name === "Odd/Even - Second Half" && value === "Even") return `Even number of goals in the 2nd half`
-    if(name === "Odd/Even" && value === "Even") return `Even number of goals in the match`
-    if(name === "Home win both halves" && value === "Yes") return `${match.teams.home.name} wins both halves`
-    if(name === "Home win both halves" && value === "No") return `${match.teams.home.name} does not win both halves`
-    if(name === "Away win both halves" && value === "Yes") return `${match.teams.away.name} wins both halves`
-    if(name === "Away win both halves" && value === "No") return `${match.teams.away.name} does not win both halves`
-    if(name === "Exact Goals Number" && value === 0) return `0 goals in the game`
-    if(name === "Exact Goals Number" && value === 1) return `1 goal in the game`
-    if(name === "Exact Goals Number" && value === 2) return `2 goals in the game`
-    if(name === "Exact Goals Number" && value === 3) return `3 goals in the game`
-    if(name === "Exact Goals Number" && value === 4) return `4 goals in the game`
-    if(name === "Exact Goals Number" && value === 5) return `5 goals in the game`
-    if(name === "Exact Goals Number" && value === 'more 6') return `6 or more goals in the game`
-    if(name === "To Win Either Half" && value === 'Home') return `${match.teams.home.name} wins either half`
-    if(name === "To Win Either Half" && value === 'Away') return `${match.teams.away.name} wins either half`
-    if(name === "Home Team Exact Goals Number" && value === 0) return `${match.teams.home.name} scores 0 goals in the match`
-    if(name === "Home Team Exact Goals Number" && value === 1) return `${match.teams.home.name} scores 1 goal in the match`
-    if(name === "Home Team Exact Goals Number" && value === 2) return `${match.teams.home.name} scores 2 goals in the match`
-    if(name === "Home Team Exact Goals Number" && value === 3) return `${match.teams.home.name} scores 3 goals in the match`
-    if(name === "Home Team Exact Goals Number" && value === "4 more") return `${match.teams.home.name} scores 4 goals or more in the match`
-    if(name === "Second Half Exact Goals Number" && value === 0) return `0 goals in the second half`
-    if(name === "Second Half Exact Goals Number" && value === 1) return `1 goal in the second half`
-    if(name === "Second Half Exact Goals Number" && value === 2) return `2 goals in the second half`
-    if(name === "Second Half Exact Goals Number" && value === 3) return `3 goals in the second half`
-    if(name === "Second Half Exact Goals Number" && value === "4 more") return `4 goals or more in the second half`
-    if(name === "Away Team Exact Goals Number" && value === 0) return `${match.teams.away.name} scores 0 goals in the match`
-    if(name === "Away Team Exact Goals Number" && value === 1) return `${match.teams.away.name} scores 1 goal in the match`
-    if(name === "Away Team Exact Goals Number" && value === 2) return `${match.teams.away.name} scores 2 goals in the match`
-    if(name === "Away Team Exact Goals Number" && value === 3) return `${match.teams.away.name} scores 3 goals in the match`
-    if(name === "Away Team Exact Goals Number" && value === "4 more") return `${match.teams.away.name} scores 4 goals or more in the match`
-    if(name === "Exact Goals Number - First Half" && value === 0) return `0 goals in the first half`
-    if(name === "Exact Goals Number - First Half" && value === 1) return `1 goal in the first half`
-    if(name === "Exact Goals Number - First Half" && value === 2) return `2 goals in the first half`
-    if(name === "Exact Goals Number - First Half" && value === 3) return `3 goals in the first half`
-    if(name === "Exact Goals Number - First Half" && value === "4 more") return `4 goals or more in the first half`
-    if(name === "Results/Both Teams Score" && value === "Home/Yes") return `${match.teams.home.name} wins both teams score`
-    if(name === "Results/Both Teams Score" && value === "Draw/Yes") return `Draw & both teams score`
-    if(name === "Results/Both Teams Score" && value === "Away/Yes") return `${match.teams.away.name} wins both teams score`
-    if(name === "Home Team Score a Goal" && value === "Yes") return `${match.teams.home.name} scores`
-    if(name === "Home Team Score a Goal" && value === "No") return `${match.teams.home.name} does not score`
-    if(name === "Away Team Score a Goal" && value === "Yes") return `${match.teams.away.name} scores`
-    if(name === "Away Team Score a Goal" && value === "No") return `${match.teams.away.name} does not score`
-    if(name === "Home team will score in both halves" && value === "Yes") return `${match.teams.home.name} scores in both halves`
-    if(name === "Home team will score in both halves" && value === "No") return `${match.teams.home.name} does not score in both halves`
-    if(name === "Away team will score in both halves" && value === "Yes") return `${match.teams.away.name} scores in both halves`
-    if(name === "Away team will score in both halves" && value === "No") return `${match.teams.away.name} does not score in both halves`
-    
-    return ''
-};
 
 
 
@@ -1111,6 +1133,7 @@ const getWinnings = (el) => {
       
       try {
         const response = await axios.request(options);
+        console.log(response)
         setLiveOdds(response.data.response[0].bookmakers[2].bets);
       } catch (error) {
         console.error(error);
@@ -1126,18 +1149,6 @@ const getWinnings = (el) => {
 
   return (
     <Section>
-      <ToastContainer
-      position="top-center"
-      autoClose={5000}
-      hideProgressBar={true}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="dark"
-      />
       {isDateExpanded ? <AbsoluteIconButton onClick={closeDate}><ArrowDown /></AbsoluteIconButton> : <AbsoluteIconButton onClick={closeDate}><ArrowUp /></AbsoluteIconButton>}
       <Title initial="expanded" 
         animate={isDateExpanded ? "expanded" : "collapsed"} 
@@ -1391,7 +1402,6 @@ const getWinnings = (el) => {
                       {expandedIndex === index && (
                         <LowRower >
                           {bet.bet.map((match) => {
-                            console.log(match)
                             const url = getURL(match.betType, match.match);
                             const homeLogo = getURL("home", match.match);
                             const awayLogo = getURL("away", match.match);

@@ -28,6 +28,7 @@ import NavBar from './components/NavBar';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import Partners from './pages/Partners';
+import NewRoulette from './pages/NewRoulette';
 
 
 function App() {
@@ -77,6 +78,7 @@ function App() {
         <Route path="/roulette" element={<ProtectedRoute><Roulette /></ProtectedRoute>} />
         <Route path="/player/:id" element={<ProtectedRoute><PlayerStats /></ProtectedRoute>} />
         <Route path="/team/:teamId" element={<ProtectedRoute><TeamStats /></ProtectedRoute>} />
+        <Route path="/newroulette" element={<NewRoulette />} />
       </Routes>
     </Router>
     </ThemeProvider>

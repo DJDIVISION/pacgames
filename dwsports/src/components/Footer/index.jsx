@@ -13,6 +13,9 @@ import badger from '../../assets/logos/badger.png'
 import toncula from '../../assets/logos/toncula.jpg'
 import back1 from '../../assets/backs/back1.png'
 import back2 from '../../assets/backs/back2.png'
+import XIcon from '@mui/icons-material/X';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import LanguageIcon from '@mui/icons-material/Language';
 
 export const FooterSection = styled.div`
     width: 100%;
