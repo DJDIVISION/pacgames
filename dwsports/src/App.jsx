@@ -19,7 +19,7 @@ import Roulette from './pages/Roulette';
 import Casino from './pages/Casino';
 import Texas from './pages/Texas';
 import Slots from './pages/Slots';
-import NewBets from './pages/NewBets';
+
 import Tonopoly from './pages/Tonopoly';
 import Airdrop from './pages/Airdrop';
 import NewFantasy from './pages/NewFantasy'; 

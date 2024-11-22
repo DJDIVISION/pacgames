@@ -30,6 +30,7 @@ import { Burguer,CloseBurguer, DarkIcon, LightIcon, RowerRowBetsCenter, StaggerA
 import { AbsoluteHomeLeft } from './indexThree'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase/client'
+import TelegramLogin from '../components/home/TelegramLogin'
 
 
 
@@ -126,7 +127,12 @@ const Home = ({toggleTheme}) => {
     if(data){
         console.error('Google sign-in successful:', data) 
     }
-}
+  }
+
+  const handleAuth = (user) => {
+    console.log('Authenticated user:', user);
+    // Process the user data here
+  };
 
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
@@ -245,6 +251,9 @@ const Home = ({toggleTheme}) => {
               <RowerRowBetsCenter style={{ height: '70px', margin: 'auto' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
+              <RowerRowBetsCenter style={{ height: '70px', margin: 'auto' }}>
+              <TelegramLogin botName="PactonGamingZoneBot" onAuth={handleAuth}/>
+              </RowerRowBetsCenter>
       </StaticSection>
         )}
         </AnimatePresence>
