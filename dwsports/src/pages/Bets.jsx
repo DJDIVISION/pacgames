@@ -192,82 +192,6 @@ const Bets = () => {
   };
 
 
-  const getFixtures = async () => {
-    setLoadingMatches(true)
-    const leagueIds = [39, 135, 140, 78, 61]; 
-    const season = '2024';
-    const apiKey = '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2';
-    const apiHost = 'api-football-v1.p.rapidapi.com';
-    const premier = localStorage.getItem("Premier League")
-    if(premier === null){
-      try {
-        // Map each leagueId to an axios request
-        const requests = leagueIds.map(leagueId => {
-          const options = {
-            method: 'GET',
-            url: `https://${apiHost}/v3/fixtures`,
-            params: { league: leagueId, season },
-            headers: {
-              'x-rapidapi-key': apiKey,
-              'x-rapidapi-host': apiHost,
-            },
-          };
-    
-          return axios.request(options);
-        });
-    
-        // Execute all requests at once
-        const responses = await Promise.all(requests);
-        responses.forEach((res) => {
-          if(res.data.parameters.league === "39"){
-            setPremier(res.data.response)
-            const str = JSON.stringify(res.data.response)
-            localStorage.setItem("Premier League", str)
-          } else if(res.data.parameters.league === "140"){
-            setLaLiga(res.data.response)
-            const str = JSON.stringify(res.data.response)
-            localStorage.setItem("La Liga", str)
-          } else if(res.data.parameters.league === "135"){
-            setSerieA(res.data.response)
-            const str = JSON.stringify(res.data.response)
-            localStorage.setItem("Serie A", str)
-          } else if(res.data.parameters.league === "61"){
-            setLigue1(res.data.response)
-            const str = JSON.stringify(res.data.response)
-            localStorage.setItem("Ligue 1", str)
-          } else if(res.data.parameters.league === "78"){
-            setBundesliga(res.data.response)
-            const str = JSON.stringify(res.data.response)
-            localStorage.setItem("Bundesliga", str)
-          }
-        })
-      } catch (error) {
-        console.error('Error fetching or updating fixtures:', error);
-      }
-    } else {
-      
-      console.log("this is from local")
-      const prem = localStorage.getItem("Premier League")
-      const json = JSON.parse(prem)
-      console.log(json)
-      setPremier(json)
-      const prem2 = localStorage.getItem("La Liga")
-      const json2 = JSON.parse(prem2)
-      setLaLiga(json2)
-      const prem3 = localStorage.getItem("Serie A")
-      const json3 = JSON.parse(prem3)
-      setSerieA(json3)
-      const prem4 = localStorage.getItem("Ligue 1")
-      const json4 = JSON.parse(prem4)
-      setLigue1(json4)
-      const prem5 = localStorage.getItem("Bundesliga")
-      const json5 = JSON.parse(prem5)
-      setBundesliga(json5)
-    }
-    setLoadingMatches(false)
-  }
-
-
   const getWinOrLost = async (status) => {
     setLoadingBets(true)
     const { data, error } = await supabase
@@ -672,14 +596,6 @@ const proceedWithBet = async (bet) => {
     }
   }, [myBets])
 
-  
-
-  /* useEffect(() => {
-    if(openMyBetsMenu){
-      getFixtures();
-      getBets();
-    }
-  }, [openMyBetsMenu]) */
 
   const toggleExpand = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
@@ -1080,6 +996,7 @@ const getWinnings = (el) => {
         setOpenCurrentMenu(false)
         setSelectedBet([])
         setAmount(null)
+        getBets();
         message.success("You have placed your bet. Good luck!🤞")
       }
         }
