@@ -595,16 +595,7 @@ const checkBets = async () => {
 
 // Example of the function to proceed with the bet
 const proceedWithBet = async (bet) => {
-  toast('Some of your bets are being calculated ⏳', {
-    position: "top-center",
-    autoClose: 2000,
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    theme: "dark"
-  });
+  message.warning("Some of your bets are being calculated ⏳")
   console.log('All matches have started for this bet:', bet);
   bet.bet.map((el) => {
         const isFulfilled = isBetFulfilled(el);
