@@ -990,16 +990,7 @@ const getWinnings = (el) => {
     console.log(value)
     console.log(odd)
     if(filter !== undefined){
-      toast('You can not bet on the same event twice! ❌', {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark"
-      });
+      message.error("You can not bet on the same event twice! ❌")
       return
     } else {
       setSelectedBet((prevBets) => {
@@ -1089,16 +1080,7 @@ const getWinnings = (el) => {
         setOpenCurrentMenu(false)
         setSelectedBet([])
         setAmount(null)
-        toast('You have placed your bet. Good luck!🤞', {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark"
-          });
+        message.success("You have placed your bet. Good luck!🤞")
       }
         }
         
