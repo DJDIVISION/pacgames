@@ -30,6 +30,7 @@ import { Burguer,CloseBurguer, DarkIcon, LightIcon, RowerRowBetsCenter, StaggerA
 import { AbsoluteHomeLeft } from './indexThree'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase/client'
+import TelegramLogin from '../components/home/TelegramLogin'
 
 
 
@@ -127,41 +128,6 @@ const Home = ({toggleTheme}) => {
         console.error('Google sign-in successful:', data) 
     }
   }
-
-  useEffect(() => {
-    // Load Telegram Widget Script
-    const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.async = true;
-
-    // Set widget attributes
-    script.setAttribute('data-telegram-login', 'PactonGamingZoneBot'); // Replace with your bot's username
-    script.setAttribute('data-size', 'large');
-    script.setAttribute('data-request-access', 'write');
-    script.setAttribute(
-      'data-onauth',
-      'onTelegramAuth(user)' // This will call your `onTelegramAuth` function
-    );
-
-    // Append script to the page
-    document.body.appendChild(script);
-
-    // Cleanup the script on component unmount
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  // Define the onTelegramAuth function in global scope
-  useEffect(() => {
-    window.onTelegramAuth = (user) => {
-      console.log(
-        `Logged in as ${user.first_name} ${user.last_name} (${user.id}${
-          user.username ? `, @${user.username}` : ''
-        })`
-      );
-    };
-  }, []);
 
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
@@ -281,8 +247,8 @@ const Home = ({toggleTheme}) => {
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
               <RowerRowBetsCenter style={{ height: '70px' }}>
-              <WalletsRow id="telegram-login">
-
+              <WalletsRow>
+                <TelegramLogin />
               </WalletsRow>
               </RowerRowBetsCenter>
       </StaticSection>
@@ -323,7 +289,7 @@ const WithdrawSection = styled(motion.div)`
 `;
 const StaticSection = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 40vh;
   background-image: url(${back1});
   background-position: center;
   background-repeat: no-repeat;

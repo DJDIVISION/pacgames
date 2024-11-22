@@ -1,32 +1,42 @@
 import React, { useEffect } from 'react';
 
-const TelegramLogin = ({ botName, onAuth }) => {
+const TelegramLogin = () => {
   useEffect(() => {
-    // Load Telegram Widget script
+    // Load Telegram Widget Script
     const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?7';
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
-    script.onload = () => console.log('Telegram Widget Loaded');
+
+    // Set widget attributes
+    script.setAttribute('data-telegram-login', 'PactonGamingZoneBot'); // Replace with your bot's username
+    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-request-access', 'write');
+    script.setAttribute(
+      'data-onauth',
+      'onTelegramAuth(user)' // This will call your `onTelegramAuth` function
+    );
+
+    // Append script to the page
     document.body.appendChild(script);
 
+    // Cleanup the script on component unmount
     return () => {
-      document.body.removeChild(script); // Cleanup script on unmount
+      document.body.removeChild(script);
     };
   }, []);
 
-  return (
-    <div>
-      <div
-        id="telegram-login"
-        data-telegram-login={botName}
-        data-size="large"
-        data-radius="10"
-        data-auth-url="https://pactongamingzone.onrender.com"
-        data-request-access="write"
-        data-userpic="true"
-      ></div>
-    </div>
-  );
+  // Define the onTelegramAuth function in global scope
+  useEffect(() => {
+    window.onTelegramAuth = (user) => {
+      alert(
+        `Logged in as ${user} ${user.last_name} (${user.id}${
+          user.username ? `, @${user.username}` : ''
+        })`
+      );
+    };
+  }, []);
+
+  return <div id="telegram-login"></div>; // This div is where Telegram renders the widget
 };
 
 export default TelegramLogin;
