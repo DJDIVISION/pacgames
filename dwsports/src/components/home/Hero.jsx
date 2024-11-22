@@ -38,7 +38,7 @@ const Hero = () => {
     const isDesktop = useMediaQuery({ query: '(min-width: 1100px)' });
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const [t, i18n] = useTranslation("global");
-    const { user } = useAuth(); 
+    const {user, setUser} = FantasyState();
     const [checked, setChecked] = useState(false);
     const theme = useTheme();
     const [disabledInput, setDisabledInput] = useState(false)

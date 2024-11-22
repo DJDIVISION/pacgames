@@ -261,7 +261,7 @@ const Home = ({toggleTheme}) => {
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
               <RowerRowBetsCenter style={{ height: '70px' }}>
-              <WalletsRow id="telegram-login">
+              <WalletsRow id="telegram-login" style={{width: '350px'}}>
                 <TelegramLogin />
               </WalletsRow>
               </RowerRowBetsCenter>

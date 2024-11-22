@@ -91,9 +91,7 @@ export default App
 const ProtectedRoute = ({ children }) => {
   const {user, setUser} = FantasyState();
 
-  if (loading) {
-    return <HomeSection><CircularProgress sx={{ width: 80, height: 80 }} /></HomeSection>; // Display a loading message while checking the session
-  }
+  
 
   if (!user) {
     // If no user, redirect to the login page
