@@ -88,6 +88,36 @@ app.get('/', (req, res) => {
 const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
+function validateTelegramLogin(data) {
+  const secret = crypto.createHash('sha256').update(TELEGRAM_BOT_TOKEN).digest();
+  const checkString = Object.keys(data)
+    .filter((key) => key !== 'hash')
+    .sort()
+    .map((key) => `${key}=${data[key]}`)
+    .join('\n');
+  
+  const hash = crypto.createHmac('sha256', secret).update(checkString).digest('hex');
+  return hash === data.hash;
+}
+
+// For mini app users, Telegram sends initData with the user's authentication data.
+app.get('/login/telegram', (req, res) => {
+  const data = req.query;  // Telegram sends the data as query parameters
+  if (validateTelegramLogin(data)) {
+    const userId = data.id;
+    // Create a JWT token or session to keep the user logged in
+    const token = jwt.sign({ userId }, 'your_jwt_secret', { expiresIn: '1h' });
+    
+    // Store the token in a cookie or return it to the frontend (depends on your preference)
+    res.cookie('token', token, { httpOnly: true, secure: true });
+    
+    // Redirect to your app's home page after successful login
+    res.redirect('/home');
+  } else {
+    res.status(403).send('Invalid login data');
+  }
+});
+
 app.post('/send-message', async (req, res) => {
   const { message } = req.body;  // The message will be sent from the React app
 
