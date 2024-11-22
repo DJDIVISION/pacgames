@@ -394,6 +394,10 @@ export const Section = styled.div`
     ${props => props.theme.displayFlexColumn};
     background: ${props => props.theme.body};
     padding: 30px;
+    @media(max-width: 498px){
+        padding: 5px;
+        padding-top: 30px;
+    }
 `;
 
 export const Column = styled.div`
@@ -472,6 +476,9 @@ export const HolderRowAround = styled.div`
     text-align: center;
     ${props => props.theme.displayFlex};
     justify-content: space-between;
+    @media(max-width: 498px){
+        width: 100%;
+    }
 `;
 
 export const SmallHolderRowAround = styled.div`
@@ -496,6 +503,9 @@ export const LeaguesHolder = styled.div`
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 10px;
     margin-bottom: 50px;
+    @media(max-width: 498px){
+        grid-template-columns: 1fr 1fr 1fr;
+    }
 `;
 
 export const Row = styled.div`
@@ -503,6 +513,9 @@ export const Row = styled.div`
     height: auto;
     ${props => props.theme.displayFlexCenter};
     justify-content: space-around;
+    @media(max-width: 498px){
+        flex-direction: column;
+    }
 `;
 
 export const Holder = styled.div`
@@ -519,6 +532,9 @@ export const Holder = styled.div`
         font-size: 22px;
         color: aqua;
         text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
+    }
+    @media(max-width: 498px){
+        width: 90vw;
     }
 `;
 
@@ -605,7 +621,10 @@ export const PlayerDataWrapper = styled.div`
     margin-bottom: 30px;
     padding: 10px;
     background: rgba(83, 83, 83, 0.1);
-
+    @media(max-width: 498px){
+        width: 98%;
+        height: 120px;
+    }
 `;
 
 export const PlayerLogo = styled.div`
@@ -614,7 +633,18 @@ export const PlayerLogo = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 `;
+
+export const MobileWrapper = styled.div`
+    width: 37.5%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+`;
+
 
 export const PlayerStatsWrapper = styled.div`
     width: 30%;
@@ -646,9 +676,16 @@ export const PlayerStatsNameSmall = styled.div`
     padding: 0 5px; 
     font-weight: bold;
     display: flex;
+    align-items: center;
     text-shadow: ${props => props.theme.body} -1px 2px,  ${props => props.theme.body} -2px 2px,  ${props => props.theme.body} -3px 3px;
+    span{
+        font-size: 16px;
+    }
     @media(max-width: 968px){
         font-size: 22px;
+    }
+    @media(max-width: 498px){
+        font-size: 12px;
     }
 `;
 
@@ -691,7 +728,7 @@ export const PlayerStatsRating = styled.div`
 `;
 
 export const TeamRatingTitle = styled.div`
-    width: 150px;
+    width: 100px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -699,6 +736,10 @@ export const TeamRatingTitle = styled.div`
     font-size: 24px;
     @media(max-width: 968px){
         font-size: 22px;
+    }
+    @media(max-width: 498px){
+        font-size: 14px;
+        width: 60px;
     }
 `;
 

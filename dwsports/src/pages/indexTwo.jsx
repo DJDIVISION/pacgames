@@ -546,7 +546,7 @@ export const StyledAbsolute = styled(IconButton)`
     background: transparent;
     position: absolute;
     top: 30px;
-    right: 30px;
+    left: 30px;
     z-index: 9000;
     @media(max-width: 968px){
       transform: scale(0.8);

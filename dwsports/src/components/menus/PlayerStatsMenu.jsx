@@ -8,6 +8,7 @@ import { supabase } from '../../supabase/client';
 import {Section, Holder, Title, ListItemWrapper,ListWrapper,ListItemSpan,PlayerDataWrapper,PlayerLogo,PlayerStatsWrapper,
     PlayerStatsName,PlayerStatCountry,StatsCountryLocation,PlayerStatsRating,TeamRatingTitle,TeamRating,PlayerStatsNameSmall,
     RatingsContainer,RatingWrapper,HolderRow,Column,ListItemTitle,LeaguesHolder,HolderRowAround,SmallHolderRowAround,Row,
+    MobileWrapper,
 
 } from './index'
 import { Avatar, Button, TextField } from '@mui/material';
@@ -16,6 +17,7 @@ import { message } from 'antd';
 import EditPlayerMenu from './EditPlayerMenu';
 import { StyledButton } from '../../pages';
 import axios from 'axios'
+import { useMediaQuery } from 'react-responsive';
 
 const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
 
@@ -28,7 +30,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
     const [average, setAverage] = useState(null)
     const [newRating, setNewRating] = useState("")
     const [leagues, setLeagues] = useState([])
-    
+    const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const handleAction = (section, key, action) => {
         setPlayerLeagueData((prevData) => {
           const updatedSection = { ...prevData[section] };
@@ -268,9 +270,33 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
               animate="animate"
               exit="exit">
                 <Section>
-                <PlayerDataWrapper>
+                {isMobile ? (
+                  <PlayerDataWrapper>
+                     <PlayerLogo style={{width: '25%'}}> 
+                    <Avatar alt="Image" src={playerToUpdate.photo} sx={{ width: isMobile ? 70 : 120, height: isMobile ? 70 : 120, border: '4px solid aqua' }}/>
+                    <Avatar alt="Image" src={playerToUpdate.teamLogo} sx={{ width: 40, height:40, border: '4px solid aqua', position: 'absolute',
+                      top: 5, left: -5
+                     }}/>
+                    </PlayerLogo>
+                    <MobileWrapper>
+                    <PlayerStatsNameSmall>{playerToUpdate.name}</PlayerStatsNameSmall>
+                        <PlayerStatsNameSmall>{playerToUpdate.nationality}</PlayerStatsNameSmall>
+                        <PlayerStatsNameSmall>Age: {playerToUpdate.age}</PlayerStatsNameSmall>
+                        <PlayerStatsNameSmall>Height: {playerToUpdate.height}cm.</PlayerStatsNameSmall>
+                    </MobileWrapper>
+                    <MobileWrapper>
+                    <PlayerStatsNameSmall>Position: {playerToUpdate.position}</PlayerStatsNameSmall>
+                    <PlayerStatsNameSmall>Main Foot: {playerToUpdate.preferredFoot}</PlayerStatsNameSmall>
+                    <PlayerStatsNameSmall>Number: {playerToUpdate.number}</PlayerStatsNameSmall>
+                    <PlayerStatsNameSmall>
+                    <TeamRatingTitle>Rating:</TeamRatingTitle> <span style={{color: getBackgroundColor(playerToUpdate.rating)}}><CountUp endValue={playerToUpdate.rating} duration={500}/></span>
+                    </PlayerStatsNameSmall>
+                    </MobileWrapper>
+                  </PlayerDataWrapper>
+                ) : (
+                  <PlayerDataWrapper>
                     <PlayerLogo>
-                    <Avatar alt="Image" src={playerToUpdate.photo} sx={{ width: 120, height: 120, border: '4px solid aqua' }}/>
+                    <Avatar alt="Image" src={playerToUpdate.photo} sx={{ width: isMobile ? 70 : 120, height: isMobile ? 70 : 120, border: '4px solid aqua' }}/>
                     </PlayerLogo>
                     <PlayerStatsWrapper>
                         <PlayerStatsNameSmall>{playerToUpdate.name}</PlayerStatsNameSmall>
@@ -283,13 +309,14 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
                     <PlayerStatsNameSmall>Main Foot: {playerToUpdate.preferredFoot}</PlayerStatsNameSmall>
                     <PlayerStatsNameSmall>Number: {playerToUpdate.number}</PlayerStatsNameSmall>
                     <PlayerStatsNameSmall>
-                    <TeamRatingTitle>Rating:</TeamRatingTitle> <TeamRating><strong style={{background: playerToUpdate.rating >= 7 ? `green` : playerToUpdate.rating >= 6 && playerToUpdate.rating < 7 ? "yellow" : "red"}}><CountUp endValue={playerToUpdate.rating} duration={500}/></strong></TeamRating><span></span>
+                    <TeamRatingTitle>Rating:</TeamRatingTitle> <span style={{color: getBackgroundColor(playerToUpdate.rating)}}><CountUp endValue={playerToUpdate.rating} duration={500}/></span>
                     </PlayerStatsNameSmall>
                     </PlayerStatsWrapper>
                     <PlayerLogo>
-                    <Avatar alt="Image" src={playerToUpdate.teamLogo} sx={{ width: 90, height: 90, border: '4px solid aqua' }}/>
+                    <Avatar alt="Image" src={playerToUpdate.teamLogo} sx={{ width: isMobile ? 70 : 90, height: isMobile ? 70 : 90, border: '4px solid aqua' }}/>
                     </PlayerLogo>
                 </PlayerDataWrapper>
+                )}
                 <StyledAbsolute onClick={() => {setSelectedPlayerMenu(false);setPlayerToUpdate({})}}><CloseChatRoomIcon /></StyledAbsolute>
                 {playerToUpdate.injuryType !== null && (
                   <Holder style={{border: '3px solid red', marginBottom: '50px'}}>
