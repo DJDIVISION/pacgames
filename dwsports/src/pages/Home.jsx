@@ -260,11 +260,11 @@ const Home = ({toggleTheme}) => {
               <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
-              {/* <RowerRowBetsCenter style={{ height: '70px' }}>
+              <RowerRowBetsCenter style={{ height: '70px' }}>
               <WalletsRow id="telegram-login" style={{width: '350px'}}>
                 <TelegramLogin />
               </WalletsRow>
-              </RowerRowBetsCenter> */}
+              </RowerRowBetsCenter>
               </Container>
       </StaticSection>
         )}
