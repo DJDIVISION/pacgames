@@ -94,10 +94,10 @@ const ProtectedRoute = ({ children }) => {
     return <HomeSection><CircularProgress sx={{ width: 80, height: 80 }} /></HomeSection>; // Display a loading message while checking the session
   }
 
-  if (!user) {
+  /* if (!user) {
     // If no user, redirect to the login page
     return <Navigate to="/" />;
-  }
+  } */
 
   // If user exists, render the children components (protected content)
   return children;
