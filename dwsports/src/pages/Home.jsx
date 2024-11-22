@@ -133,6 +133,7 @@ const Home = ({toggleTheme}) => {
       if (user) {
         console.log('Authenticated user:', user); // Contains user details like id, email, etc.
         setUser(user)
+        console.log(user)
       }
   
       if (session) {
@@ -144,7 +145,7 @@ const Home = ({toggleTheme}) => {
   };
 
   const handleSendMessage = async () => {
-    const message = "Hello from the inside of the PacTON Gaming Zone App! 😎"
+    const message = ""
 
     try {
       
@@ -275,11 +276,10 @@ const Home = ({toggleTheme}) => {
         ) : (
       <StaticSection>
             <Container>
-              <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn() /* handleSendMessage() */}><WalletsRow>
+              <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
-                {/* <StyledButton style={{padding: '10px 15px'}}>SEND MESSAGE</StyledButton> */}
               </WalletsRow></RowerRowBetsCenter>
-              {/* <RowerRowBetsCenter style={{ height: '70px' }}>
+             {/*  <RowerRowBetsCenter style={{ height: '70px' }}>
               <WalletsRow id="telegram-login" style={{width: '350px'}}>
                 <TelegramLogin />
               </WalletsRow>

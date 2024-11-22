@@ -1,7 +1,7 @@
 {
     "short_name": "Pacton GZ",
     "name": "Pacton Gaming Zone",
-    "description": "Best Gaming Zone on the TON Network",
+    "description": "A New Era of Gaming and Sports Betting",
     "icons": [
       
       {
@@ -57,7 +57,7 @@
         "purpose": "maskable"
       }
     ],
-    "start_url": "https://pacgames-frontend.onrender.com",
+    "start_url": "https://pactongamingzone.onrender.com",
     "display": "fullscreen",
     "theme_color": "#000000",
     "background_color": "#ffffff"

@@ -29,7 +29,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import Partners from './pages/Partners';
 import NewRoulette from './pages/NewRoulette';
-import { FantasyState } from './context/FantasyContext';
 
 
 function App() {
@@ -89,9 +88,11 @@ function App() {
 export default App
 
 const ProtectedRoute = ({ children }) => {
-  const {user, setUser} = FantasyState();
+  const { user, loading } = useAuth();
 
-  
+  if (loading) {
+    return <HomeSection><CircularProgress sx={{ width: 80, height: 80 }} /></HomeSection>; // Display a loading message while checking the session
+  }
 
   if (!user) {
     // If no user, redirect to the login page
