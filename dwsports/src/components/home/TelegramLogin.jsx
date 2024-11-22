@@ -51,6 +51,7 @@ const TelegramLogin = () => {
         alignItems: 'center',
         height: '100%', // Adjust as needed
         width: '100%',
+        margin: 'auto'
       }}
     ></div>
   );
