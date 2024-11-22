@@ -3,6 +3,7 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { createClient } = require('@supabase/supabase-js');
 const cors = require('cors')
+const axios = require('axios');
 const bodyParser = require('body-parser');
 const webPush = require('web-push');
 const supabaseUrl = 'https://qfywnsvevkeuiuxtiqko.supabase.co';
@@ -76,13 +77,39 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "https://pactongamingzone.onrender.com",
+  origin: "http://localhost:5173",
   methods: ['GET', 'POST'],
   credentials: true
 }));
 app.get('/', (req, res) => {
   res.send('Welcome to the Roulette Game!');
 });
+
+const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
+const CHAT_ID = '-1002433451813';
+
+app.post('/send-message', async (req, res) => {
+  const { message } = req.body;  // The message will be sent from the React app
+
+  if (!message) {
+    return res.status(400).send('Message content is required');
+  }
+
+  try {
+    // Send a message to Telegram group via the bot
+    const response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      chat_id: CHAT_ID,
+      text: message,
+    });
+    console.log("Message sent succesfully!")
+    res.status(200).json({ success: true, response: response.data });
+  } catch (error) {
+    console.error('Error sending message to Telegram:', error);
+    res.status(500).json({ success: false, error: 'Failed to send message' });
+  }
+});
+
+
 
 
 const subscriptions = {};

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {HomeSection,WalletAmount} from './index'
+import {HomeSection,StyledButton,WalletAmount} from './index'
 import {motion,AnimatePresence} from 'framer-motion'
 import NavBar from '../components/NavBar'
 import styled, { useTheme } from 'styled-components'
@@ -30,6 +30,7 @@ import { Burguer,CloseBurguer, DarkIcon, LightIcon, RowerRowBetsCenter, StaggerA
 import { AbsoluteHomeLeft } from './indexThree'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase/client'
+import axios from 'axios'
 import TelegramLogin from '../components/home/TelegramLogin'
 
 
@@ -138,7 +139,24 @@ const Home = ({toggleTheme}) => {
         console.log('Session information:', session); // Contains access token and other session details
       }
   
-      console.log('Google sign-in successful:', data); // Full response
+      console.log('Google sign-in successful:', data); 
+    }
+  };
+
+  const handleSendMessage = async () => {
+    const message = "Hello from the inside of the PacTON Gaming Zone App! 😎"
+
+    try {
+      
+      const response = await axios.post('http://localhost:8080/send-message', { message });
+      
+      if (response.data.success) {
+        console.log('Message sent successfully!');
+      } else {
+        console.log('Failed to send message');
+      }
+    } catch (error) {
+      console.log('Error sending message');
     }
   };
 
@@ -257,8 +275,9 @@ const Home = ({toggleTheme}) => {
         ) : (
       <StaticSection>
             <Container>
-              <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
-                {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
+              <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn() /* handleSendMessage() */}><WalletsRow>
+                {/* {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />} */}
+                <StyledButton style={{padding: '10px 15px'}}>SEND MESSAGE</StyledButton>
               </WalletsRow></RowerRowBetsCenter>
               {/* <RowerRowBetsCenter style={{ height: '70px' }}>
               <WalletsRow id="telegram-login" style={{width: '350px'}}>
