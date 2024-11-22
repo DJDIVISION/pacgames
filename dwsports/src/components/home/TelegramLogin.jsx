@@ -2,41 +2,58 @@ import React, { useEffect } from 'react';
 
 const TelegramLogin = () => {
   useEffect(() => {
-    // Load Telegram Widget Script
+    // Ensure the script is loaded
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
 
-    // Set widget attributes
-    script.setAttribute('data-telegram-login', 'PactonGamingZoneBot'); // Replace with your bot's username
+    // Configure widget attributes
+    script.setAttribute('data-telegram-login', 'PactonGamingZoneBot'); // Your bot's username
     script.setAttribute('data-size', 'large');
     script.setAttribute('data-request-access', 'write');
+    script.setAttribute('data-userpic', 'true');
     script.setAttribute(
       'data-onauth',
-      'onTelegramAuth(user)' // This will call your `onTelegramAuth` function
+      'onTelegramAuth(user)' // Register the callback
     );
 
-    // Append script to the page
-    document.body.appendChild(script);
+    // Append the script specifically to the #telegram-login div
+    const container = document.getElementById('telegram-login');
+    if (container) {
+      container.appendChild(script);
+    }
 
-    // Cleanup the script on component unmount
+    // Cleanup script on component unmount
     return () => {
-      document.body.removeChild(script);
+      if (container) {
+        container.innerHTML = ''; // Remove the widget content
+      }
     };
   }, []);
 
-  // Define the onTelegramAuth function in global scope
+  // Define the onTelegramAuth function globally
   useEffect(() => {
     window.onTelegramAuth = (user) => {
       alert(
-        `Logged in as ${user} ${user.last_name} (${user.id}${
+        `Logged in as ${user.first_name} ${user.last_name} (${user.id}${
           user.username ? `, @${user.username}` : ''
         })`
       );
     };
   }, []);
 
-  return <div id="telegram-login"></div>; // This div is where Telegram renders the widget
+  return (
+    <div
+      id="telegram-login"
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%', // Adjust as needed
+        width: '100%',
+      }}
+    ></div>
+  );
 };
 
 export default TelegramLogin;

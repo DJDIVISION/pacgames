@@ -247,7 +247,7 @@ const Home = ({toggleTheme}) => {
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
               <RowerRowBetsCenter style={{ height: '70px' }}>
-              <WalletsRow>
+              <WalletsRow id="telegram-login">
                 <TelegramLogin />
               </WalletsRow>
               </RowerRowBetsCenter>
@@ -289,7 +289,7 @@ const WithdrawSection = styled(motion.div)`
 `;
 const StaticSection = styled.div`
   width: 100vw;
-  height: 40vh;
+  height: 100vh;
   background-image: url(${back1});
   background-position: center;
   background-repeat: no-repeat;
