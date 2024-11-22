@@ -621,13 +621,13 @@ const Hero = () => {
                      {(user !== null || session !== null) ? (
                          <>
                              <AvatarRowBets>
-                             <Avatar alt="Image" src={user && user.user_metadata.avatar_url || user.photo_url} sx={{ width: 50, height: 50 }} />        
+                             <Avatar alt="Image" src={user && user?.user_metadata?.avatar_url || user?.photo_url} sx={{ width: 50, height: 50 }} />        
                              </AvatarRowBets>
                              <RowerRowBets>
-                             <h2>{user && user.user_metadata.full_name || "@" + user.username}</h2>
+                             <h2>{user && user?.user_metadata?.full_name || "@" + user?.username}</h2>
                              </RowerRowBets>
                              <RowerRowBets>
-                             <h3>{user && user.email || user.first_name}</h3>
+                             <h3>{user && user?.email || user?.first_name}</h3>
                              </RowerRowBets>
                             
                              <RowerRowBets style={{ height: '70px' }}>
