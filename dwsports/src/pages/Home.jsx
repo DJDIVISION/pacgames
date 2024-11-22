@@ -276,14 +276,14 @@ const Home = ({toggleTheme}) => {
         ) : (
       <StaticSection>
             <Container>
-              <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
+              {/* <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
-              </WalletsRow></RowerRowBetsCenter>
-             {/*  <RowerRowBetsCenter style={{ height: '70px' }}>
+              </WalletsRow></RowerRowBetsCenter> */}
+              <RowerRowBetsCenter style={{ height: '70px' }}>
               <WalletsRow id="telegram-login" style={{width: '350px'}}>
                 <TelegramLogin />
               </WalletsRow>
-              </RowerRowBetsCenter> */}
+              </RowerRowBetsCenter>
               </Container>
       </StaticSection>
         )}
