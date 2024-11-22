@@ -3,7 +3,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { motion } from "framer-motion";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import shinobi from '../../assets/logos/shinobi.png'
 import hunny from '../../assets/logos/hunny.png'
 import ton from '../../assets/logos/ton.png'
@@ -16,6 +16,70 @@ import back2 from '../../assets/backs/back2.png'
 import XIcon from '@mui/icons-material/X';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import LanguageIcon from '@mui/icons-material/Language';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import DesignServicesIcon from '@mui/icons-material/DesignServices';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
+
+export const StyledIconButton = styled(IconButton)`
+    &&&{
+        background: #1fb19d;
+        border: 2px solid ${props => props.theme.body}; 
+        padding: 5px;
+        scale: 1.3;
+    }  
+`;
+
+export const App = styled(PhoneIphoneIcon)`
+    &&&{
+       color: ${props => props.theme.text}; 
+       scale: 1.2;
+    }
+`;
+export const Paper = styled(HistoryEduIcon)`
+    &&&{
+       color: ${props => props.theme.text}; 
+       scale: 1.2;
+    }
+`;
+export const Design = styled(DesignServicesIcon)`
+    &&&{
+       color: ${props => props.theme.text}; 
+       scale: 1.2;
+    }
+`;
+export const Bot = styled(SmartToyIcon)`
+    &&&{
+       color: ${props => props.theme.text}; 
+       scale: 1.2;
+    }
+`;
+export const Cart = styled(ShoppingCartIcon)`
+    &&&{
+       color: ${props => props.theme.text}; 
+       scale: 1;
+    }
+`;
+export const Website = styled(LanguageIcon)`
+    &&&{
+       color: ${props => props.theme.text}; 
+       scale: 1.2;
+    }
+`;
+export const X = styled(XIcon)`
+    &&&{
+       color: ${props => props.theme.text}; 
+       scale: 1;
+    }
+`;
+export const Telegram = styled(TelegramIcon)`
+    &&&{
+       color: ${props => props.theme.text}; 
+       scale: 1.2;
+       transform: translate(-1px, 1px);
+    }
+`;
 
 export const FooterSection = styled.div`
     width: 100%;
@@ -40,7 +104,7 @@ export const SmartFooterSection = styled.div`
     position: relative;
     overflow: hidden;
     //padding: 10px;
-    box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 0 25px ${props => props.theme.MainAccentTwo};
+    box-shadow: ${props => props.theme.pacBoxShadow}, inset 0 10px 35px ${props => props.theme.body};
     background-image: url(${back1});
     background-size: cover;
     background-repeat: no-repeat;
@@ -100,7 +164,7 @@ export const TopSmartRowTwo = styled.div`
     height: 20%;
     ${props => props.theme.displayFlexCenter};
     text-shadow: ${props => props.theme.textShadowTwo};
-    transform: translateY(10px);
+    transform: translateY(5px);
     h2{
         color: ${props => props.theme.MainAccentTwo};
         font-size: 28px;

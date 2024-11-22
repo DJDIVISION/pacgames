@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion,AnimatePresence,useAnimation  } from 'framer-motion'
 import {useInView} from "react-intersection-observer";
 import styled, {useTheme} from 'styled-components'
-import {SmartButtonWrapper,Partners,Logo,TopSmartRowThree,TopSmartRow,BottomRow,TopSmartRowTwo, SmartFooterSection} from './index'
+import {SmartButtonWrapper,Partners,X,Telegram,Bot,Website,Cart,TopSmartRowThree,TopSmartRow,BottomRow,TopSmartRowTwo, SmartFooterSection, Design, Paper, App, StyledIconButton} from './index'
 import x from "../../assets/logos/x.png"
 import telegram from "../../assets/logos/telegram.png"
 import website from "../../assets/logos/website.png"
@@ -20,6 +20,7 @@ import Badger from '../svg/Badger';
 import Toncula from '../svg/Toncula';
 import LinearProgress from '@mui/material/LinearProgress';
 import Stack from '@mui/material/Stack';
+import { IconButton } from '@mui/material';
 
 
 
@@ -75,14 +76,14 @@ const SmartFooter = () => {
     exit: { opacity: 0, transition: { duration: 2 } },
   };
   const variantsTwo = {
+    initial: { scale: 0, y:-10 },
+    animate: { scale: 1,y:-10,  transition: { duration: 0.25 } },
+    exit: { scale: 0,y:-10,  transition: { duration: 0.25 } },
+  };
+  const variantsThree = {
     initial: { scale: 0,  },
     animate: { scale: 1,  transition: { duration: 0.25 } },
     exit: { scale: 0,  transition: { duration: 0.25 } },
-  };
-  const pathVariants = {
-    initial: { pathLength: 0, },
-    animate: { pathLength: 1, transition: { duration: 1, ease: "easeInOut" } },
-    exit: { pathLength: 0, transition: { duration: 0.50, ease: "easeInOut", } },
   };
 
   
@@ -100,7 +101,7 @@ const SmartFooter = () => {
                    <Stack sx={{ width: '100%', color: theme.MainAccent }} spacing={2}>
                     <LinearProgress color="secondary" />
                   </Stack>
-                    <TopSmartRow><motion.div variants={variantsTwo}
+                    <TopSmartRow><motion.div variants={variantsThree}
           initial="initial" style={{display: 'flex', alignItems: 'center', width: '100%'}}
           animate="animate"
           exit="exit"><h2>OUR PARTNERS</h2></motion.div></TopSmartRow>
@@ -133,12 +134,12 @@ const SmartFooter = () => {
                 animate="animate"
                 exit="exit" style={{borderRadius: '50%'}}/>
               </TopSmartRowThree>
-              <TopSmartRowTwo style={{transform: 'translateY(-10px)'}}>
+              <TopSmartRowTwo>
                 {(activePartner?.twitter !== null) ? (
                      <SmartButtonWrapper href={`${activePartner?.twitter}`} target="_blank"><motion.div variants={variantsTwo}
                      initial="initial"
                      animate="animate"
-                     exit="exit"><img src={x} alt="x" /></motion.div></SmartButtonWrapper>   
+                     exit="exit"><StyledIconButton><X /></StyledIconButton></motion.div></SmartButtonWrapper>   
                 ) : (
                         ""
                 )}
@@ -146,7 +147,7 @@ const SmartFooter = () => {
                      <SmartButtonWrapper href={`${activePartner?.telegram}`} target="_blank"><motion.div variants={variantsTwo}
                      initial="initial"
                      animate="animate"
-                     exit="exit"><img src={telegram} alt="x" /></motion.div></SmartButtonWrapper>   
+                     exit="exit"><StyledIconButton><Telegram /></StyledIconButton></motion.div></SmartButtonWrapper>   
                 ) : (
                      ""   
                 )}
@@ -154,7 +155,7 @@ const SmartFooter = () => {
                       <SmartButtonWrapper href={`${activePartner?.website}`} target="_blank"><motion.div variants={variantsTwo}
                       initial="initial"
                       animate="animate"
-                      exit="exit"><img src={website} alt="x" /></motion.div></SmartButtonWrapper>  
+                      exit="exit"><StyledIconButton><Website /></StyledIconButton></motion.div></SmartButtonWrapper>  
                 ) : (
                         ""
                 )}
@@ -162,7 +163,7 @@ const SmartFooter = () => {
                       <SmartButtonWrapper href={`${activePartner?.whitepaper}`} target="_blank"><motion.div variants={variantsTwo}
                       initial="initial"
                       animate="animate"
-                      exit="exit"><img src={white} alt="x" style={{width: '70%', borderRadius: '50%'}}/></motion.div></SmartButtonWrapper>  
+                      exit="exit"><StyledIconButton><Paper /></StyledIconButton></motion.div></SmartButtonWrapper>  
                 ) : (
                         ""
                 )}
@@ -170,7 +171,7 @@ const SmartFooter = () => {
                     <SmartButtonWrapper href={`${activePartner?.buy}`} target="_blank"><motion.div variants={variantsTwo}
                     initial="initial"
                     animate="animate"
-                    exit="exit"><img src={buy} alt="x"/></motion.div></SmartButtonWrapper>    
+                    exit="exit"><StyledIconButton><Cart /></StyledIconButton></motion.div></SmartButtonWrapper>    
                 ) : (
                      ""   
                 )}
@@ -178,7 +179,7 @@ const SmartFooter = () => {
                        <SmartButtonWrapper href={`${activePartner?.bot}`} target="_blank"><motion.div variants={variantsTwo}
                        initial="initial"
                        animate="animate"
-                       exit="exit"><img src={bot} alt="x"/></motion.div></SmartButtonWrapper> 
+                       exit="exit"><StyledIconButton><Bot /></StyledIconButton></motion.div></SmartButtonWrapper> 
                 ) : (
                         ""
                 )}
@@ -186,7 +187,7 @@ const SmartFooter = () => {
                     <SmartButtonWrapper href={`${activePartner?.app}`} target="_blank"><motion.div variants={variantsTwo}
                     initial="initial"
                     animate="animate"
-                    exit="exit"><img src={apps} alt="x"/></motion.div></SmartButtonWrapper>    
+                    exit="exit"><StyledIconButton><App /></StyledIconButton></motion.div></SmartButtonWrapper>    
                 ) : (
                         ""
                 )}
@@ -194,7 +195,7 @@ const SmartFooter = () => {
                     <SmartButtonWrapper href={`${activePartner?.brand}`} target="_blank"><motion.div variants={variantsTwo}
                     initial="initial"
                     animate="animate"
-                    exit="exit"><img src={brands} alt="brands"/></motion.div></SmartButtonWrapper>    
+                    exit="exit"><StyledIconButton><Design /></StyledIconButton></motion.div></SmartButtonWrapper>    
                 ) : (
                         ""
                 )}

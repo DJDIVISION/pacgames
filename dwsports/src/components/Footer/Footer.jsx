@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { motion,AnimatePresence,useAnimation  } from 'framer-motion'
 import {useInView} from "react-intersection-observer";
 import styled, {useTheme} from 'styled-components'
-import {FooterSection,Partners,Logo,Column,TopRow,BottomRow, ButtonWrapper} from './index'
-import x from "../../assets/logos/x.png"
-import telegram from "../../assets/logos/telegram.png"
-import website from "../../assets/logos/website.png"
-import brands from '../../assets/logos/brand.png'
-import white from "../../assets/logos/white.png"
-import buy from "../../assets/logos/buy.png"
-import bot from "../../assets/logos/bot.png"
-import apps from "../../assets/logos/tapps.png"
+import {FooterSection,Partners,Logo,Column,TopRow,BottomRow, ButtonWrapper,X,Telegram,Bot,Website,Cart,
+  Design, Paper, App,
+  StyledIconButton
+} from './index'
+
 import Shinobi from '../svg/Shinobi';
 import Ton from '../svg/Ton';
 import Fren from '../svg/Fren';
@@ -20,6 +16,7 @@ import Move from '../svg/Move';
 import Toncula from '../svg/Toncula';
 import LinearProgress from '@mui/material/LinearProgress';
 import Stack from '@mui/material/Stack';
+import { IconButton } from '@mui/material';
 
 const Footer = () => {
 
@@ -139,49 +136,49 @@ const Footer = () => {
                   <ButtonWrapper href={`${activePartner?.twitter}`} target="_blank"><motion.div variants={variantsTwo}
                   initial="initial"
                   animate="animate"
-                  exit="exit"><img src={x} alt="x" /></motion.div></ButtonWrapper>
+                  exit="exit"><StyledIconButton><X /></StyledIconButton></motion.div></ButtonWrapper>
                 )}
                 {activePartner?.telegram !== null && (
                   <ButtonWrapper href={`${activePartner?.telegram}`} target="_blank"><motion.div variants={variantsTwo}
                   initial="initial"
                   animate="animate"
-                  exit="exit"><img src={telegram} alt="x" /></motion.div></ButtonWrapper>
+                  exit="exit"><StyledIconButton><Telegram /></StyledIconButton></motion.div></ButtonWrapper>
                 )}
                 {activePartner?.website !== null && (
                   <ButtonWrapper href={`${activePartner?.website}`} target="_blank"><motion.div variants={variantsTwo}
                   initial="initial"
                   animate="animate"
-                  exit="exit"><img src={website} alt="x" /></motion.div></ButtonWrapper>
+                  exit="exit"><StyledIconButton><Website /></StyledIconButton></motion.div></ButtonWrapper>
                 )}
                 {activePartner?.whitepaper !== null && (
                   <ButtonWrapper href={`${activePartner?.whitepaper}`} target="_blank"><motion.div variants={variantsTwo}
                   initial="initial"
                   animate="animate"
-                  exit="exit"><img src={white} alt="x" style={{width: '70%', borderRadius: '50%'}}/></motion.div></ButtonWrapper>
+                  exit="exit"><StyledIconButton><Paper /></StyledIconButton></motion.div></ButtonWrapper>
                 )}
                 {activePartner?.buy !== null && (
                   <ButtonWrapper href={`${activePartner?.buy}`} target="_blank"><motion.div variants={variantsTwo}
                   initial="initial"
                   animate="animate"
-                  exit="exit"><img src={buy} alt="x"/></motion.div></ButtonWrapper>
+                  exit="exit"><StyledIconButton><Cart /></StyledIconButton></motion.div></ButtonWrapper>
                 )}
                 {activePartner?.bot !== null && (
                         <ButtonWrapper href={`${activePartner?.bot}`} target="_blank"><motion.div variants={variantsTwo}
                         initial="initial"
                         animate="animate"
-                        exit="exit"><img src={bot} alt="x"/></motion.div></ButtonWrapper>
+                        exit="exit"><StyledIconButton><Bot /></StyledIconButton></motion.div></ButtonWrapper>
                 )}
                 {activePartner?.app !== null && (
                         <ButtonWrapper href={`${activePartner?.app}`} target="_blank"><motion.div variants={variantsTwo}
                         initial="initial"
                         animate="animate"
-                        exit="exit"><img src={apps} alt="x"/></motion.div></ButtonWrapper>
+                        exit="exit"><StyledIconButton><App /></StyledIconButton></motion.div></ButtonWrapper>
                 )}
                 {activePartner?.brand !== null && (
                         <ButtonWrapper href={`${activePartner?.brand}`} target="_blank"><motion.div variants={variantsTwo}
                         initial="initial"
                         animate="animate"
-                        exit="exit"><img src={brands} alt="x"/></motion.div></ButtonWrapper>
+                        exit="exit"><StyledIconButton><Design /></StyledIconButton></motion.div></ButtonWrapper>
                 )}
               </BottomRow>
             </Column>

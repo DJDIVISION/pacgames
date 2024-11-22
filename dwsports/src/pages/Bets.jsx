@@ -327,7 +327,7 @@ const Bets = () => {
       const { data, error } = await supabase
           .from('bets')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', "0a8b8033-e921-47cc-9fa7-35311aa6cec1")
           .eq('status', "Pending");
         if (error) {
           console.error('Error retrieving data from Supabase:', error.message);
