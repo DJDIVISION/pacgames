@@ -30,7 +30,6 @@ import { Burguer,CloseBurguer, DarkIcon, LightIcon, RowerRowBetsCenter, StaggerA
 import { AbsoluteHomeLeft } from './indexThree'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase/client'
-import TelegramLogin from '../components/home/TelegramLogin'
 
 
 
@@ -129,10 +128,40 @@ const Home = ({toggleTheme}) => {
     }
   }
 
-  const handleAuth = (user) => {
-    console.log('Authenticated user:', user);
-    // Process the user data here
-  };
+  useEffect(() => {
+    // Load Telegram Widget Script
+    const script = document.createElement('script');
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.async = true;
+
+    // Set widget attributes
+    script.setAttribute('data-telegram-login', 'PactonGamingZoneBot'); // Replace with your bot's username
+    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-request-access', 'write');
+    script.setAttribute(
+      'data-onauth',
+      'onTelegramAuth(user)' // This will call your `onTelegramAuth` function
+    );
+
+    // Append script to the page
+    document.body.appendChild(script);
+
+    // Cleanup the script on component unmount
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  // Define the onTelegramAuth function in global scope
+  useEffect(() => {
+    window.onTelegramAuth = (user) => {
+      console.log(
+        `Logged in as ${user.first_name} ${user.last_name} (${user.id}${
+          user.username ? `, @${user.username}` : ''
+        })`
+      );
+    };
+  }, []);
 
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
@@ -248,11 +277,13 @@ const Home = ({toggleTheme}) => {
           </>
         ) : (
       <StaticSection>
-              <RowerRowBetsCenter style={{ height: '70px', margin: 'auto' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
+              <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
-              <RowerRowBetsCenter style={{ height: '70px', margin: 'auto' }}>
-              <TelegramLogin botName="PactonGamingZoneBot" onAuth={handleAuth}/>
+              <RowerRowBetsCenter style={{ height: '70px' }}>
+              <WalletsRow id="telegram-login">
+
+              </WalletsRow>
               </RowerRowBetsCenter>
       </StaticSection>
         )}
@@ -297,7 +328,8 @@ const StaticSection = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  ${props => props.theme.displayFlexCenter};
+  ${props => props.theme.displayFlexColumn};
+  justify-content: space-around;
   @media(max-width: 498px){
     background-image: url(${back2});
   }
