@@ -239,25 +239,10 @@ const Hero = () => {
 
     useEffect(() => {
         if(user){
-            const signDate = user.last_sign_in_at;
-            const date = new Date(signDate);
-            const milliseconds = date.getTime();
-            const now = Date.now();
-            if (now - milliseconds < 5000) {
-              storeUserData(user); 
-            } else {
-              return
-            }
-          }
-        if(user){
-            const signDate = user.last_sign_in_at;
-            const date = new Date(signDate);
-            const locale = date.toLocaleString();
-            setDate(locale)
+            storeUserData(user); 
             getReferrer();
             getUserBalance(user.id)
-        }
-        
+          }
     }, [user])
 
     const startAnimationSequence = () => {
