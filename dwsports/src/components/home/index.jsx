@@ -99,8 +99,10 @@ export const RowerRowBets = styled.div`
         object-fit: cover;
     }
 `;
+
+
 export const WalletsRow = styled.div`
-    width: 200px;
+    width: 300px;
     height: 70px;
     border-radius: 8px;
     ${props => props.theme.displayFlexCenter};

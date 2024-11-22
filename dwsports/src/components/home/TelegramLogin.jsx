@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
+import { FantasyState } from '../../context/FantasyContext';
 
 const TelegramLogin = () => {
+
+    const {user, setUser} = FantasyState();
   useEffect(() => {
     // Ensure the script is loaded
     const script = document.createElement('script');
@@ -34,11 +37,8 @@ const TelegramLogin = () => {
   // Define the onTelegramAuth function globally
   useEffect(() => {
     window.onTelegramAuth = (user) => {
-      alert(
-        `Logged in as ${user.first_name} ${user.last_name} (${user.id}${
-          user.username ? `, @${user.username}` : ''
-        })`
-      );
+        setUser(user)
+        console.log(user)
     };
   }, []);
 

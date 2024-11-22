@@ -116,23 +116,36 @@ const Home = ({toggleTheme}) => {
   }
 
   const handleGoogleSignIn = async () => {
-        
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-    })
-
+    });
+  
     if (error) {
-      console.error('Error with Google sign-in:', error.message)
-    } 
-    if(data){
-        console.error('Google sign-in successful:', data) 
+      console.error('Error with Google sign-in:', error.message);
+      return;
     }
-  }
+  
+    if (data) {
+      // Access the session and user
+      const { session, user } = data;
+  
+      if (user) {
+        console.log('Authenticated user:', user); // Contains user details like id, email, etc.
+        setUser(user)
+      }
+  
+      if (session) {
+        console.log('Session information:', session); // Contains access token and other session details
+      }
+  
+      console.log('Google sign-in successful:', data); // Full response
+    }
+  };
 
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
       <AnimatePresence>
-        {session ? (
+        {user ? (
           <>
             {isMobile ? (
           <>
@@ -243,6 +256,7 @@ const Home = ({toggleTheme}) => {
           </>
         ) : (
       <StaticSection>
+            <Container>
               <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
@@ -251,6 +265,7 @@ const Home = ({toggleTheme}) => {
                 <TelegramLogin />
               </WalletsRow>
               </RowerRowBetsCenter>
+              </Container>
       </StaticSection>
         )}
         </AnimatePresence>
@@ -259,6 +274,13 @@ const Home = ({toggleTheme}) => {
 }
 
 export default Home
+
+const Container = styled.div`
+    width: 80vw;
+    height: 50vh;
+    ${props => props.theme.displayFlexColumn};
+    justify-content: space-around;
+`;
 
 const MenuSection = styled(motion.div)`
   width: 100%;
