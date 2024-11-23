@@ -6,39 +6,15 @@ import { set } from 'lodash'
 
 const Admin = () => {
 
-    const [matches, setMatches] = useState([])
-
-    const fetchData = async () => {
-        const options = {
-            method: 'GET',
-            url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-            params: { live: 'all' },
-            headers: {
-                'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-            }
-        };
-
-        try {
-            const response = await axios.request(options);
-            console.log(response.data);
-            console.log(response.data.response)
-            const matches = []
-            response.data.response.forEach((match) => {
-                if (match.league.id === 39 || match.league.id === 140 || match.league.id === 135 || match.league.id === 61 || match.league.id === 78) {
-                    matches.push(match)
-                }
-            })
-            processMatchEvents(matches, sendTelegramMessage);
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
     let processedEvents = {}; // Global dictionary to track processed events per match
 
-    function processMatchEvents(matches, sendTelegramMessage) {
-        matches.forEach(match => {
+    function delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function processMatchEvents(matches, sendTelegramMessage) {
+        for (const match of matches) { // Use `for...of` to handle async operations
             const matchId = match.fixture.id;
             const events = match.events;
 
@@ -47,55 +23,40 @@ const Admin = () => {
                 processedEvents[matchId] = new Set();
             }
 
-            events.forEach(event => {
-                console.log(event)
+            for (const event of events) {
                 // Generate a unique identifier for the event
                 const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
 
                 // Check if the event has already been processed for this match
                 if (!processedEvents[matchId].has(eventId)) {
-                    // Process the new event and send it to Telegram
+                    // Prepare the message
                     const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-                    sendTelegramMessage(messageToSend);
+
+                    // Send message to Telegram with a delay between each call
+                    await sendTelegramMessage(messageToSend);
+                    await delay(3000); // 1-second delay to avoid flooding the endpoint
 
                     // Mark this event as processed
                     processedEvents[matchId].add(eventId);
                 }
-            });
-        });
-    }
-
-    async function sendTelegramMessages(messages) {
-        for (const message of messages) {
-            await sendTelegramMessage(message); // Send message
-            await delay(1000); // Add 1 second delay between messages
+            }
         }
     }
-    
-    function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
 
-    // Example function to send a Telegram message
     async function sendTelegramMessage(messageToSend) {
         console.log(`Sending to Telegram: ${messageToSend}`);
         try {
-            const response = await axios.post(
-                'https://pacgames-roulette-server.onrender.com/send-message',
-                { messageToSend }
-            );
-    
+            const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-message', { messageToSend });
             if (response.data.success) {
                 console.log('Message sent successfully!');
             } else {
                 console.log('Failed to send message');
             }
         } catch (error) {
-            console.log('Error sending message');
+            console.log('Error sending message:', error);
         }
     }
 
-    // Example fetch function
     async function fetchLiveMatches() {
         const options = {
             method: 'GET',
@@ -103,41 +64,43 @@ const Admin = () => {
             params: { live: 'all' },
             headers: {
                 'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-            }
+                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+            },
         };
 
         try {
             const response = await axios.request(options);
-            console.log(response.data);
-            console.log(response.data.response)
-            const matches = []
+            console.log(response.data.response);
+
+            const matches = [];
             response.data.response.forEach((match) => {
-                if (match.league.id === 39 || match.league.id === 140 || match.league.id === 135 || match.league.id === 61 || match.league.id === 78) {
-                    matches.push(match)
+                if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
+                    matches.push(match);
                 }
-            })
-            processMatchEvents(matches, sendTelegramMessage);
+            });
+
+            // Process events from the fetched matches
+            await processMatchEvents(matches, sendTelegramMessage);
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching live matches:', error);
         }
     }
 
-    // Simulate live fetches
-    fetchLiveMatches(); // First fetch
-    setTimeout(fetchLiveMatches, 15000); // Second fetch (only new events are sent)
+    // Fetch live matches every 15 seconds
+    React.useEffect(() => {
+        const intervalId = setInterval(fetchLiveMatches, 30000); // Set interval for fetching matches
+        return () => clearInterval(intervalId); // Cleanup interval on component unmount
+    }, []);
 
 
 
   return (
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <StyledButton onClick={fetchData} style={{fontSize: '18px'}}>REQUEST</StyledButton>
+      <StyledButton style={{fontSize: '18px'}}>REQUEST</StyledButton>
     </BetSection>
   )
 }
 
 export default Admin
 
-const Section = styled.div`
 
-`;
