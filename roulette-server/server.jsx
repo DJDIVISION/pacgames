@@ -12,8 +12,8 @@ const admin = require('firebase-admin');
 const supabase = createClient(supabaseUrl, supabaseKey);
 require('dotenv').config();
 const crypto = require('crypto');
-import { AuthDataValidator } from '@telegram-auth/server';
-import { urlStrToAuthDataMap } from '@telegram-auth/server/utils';
+const {AuthDataValidator} = require("@telegram-auth/server")
+const {urlStrToAuthDataMap} = require('@telegram-auth/server/utils')
 
 
 admin.initializeApp({
