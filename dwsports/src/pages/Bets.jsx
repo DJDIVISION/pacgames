@@ -938,7 +938,7 @@ const getWinnings = (el) => {
 
     // Calculate total winnings
     const totalWinnings = totalOdds * amount;
-    return totalWinnings;
+    return parseFloat(totalWinnings).toFixed(2);
     }; 
 
   const handleSwitchSendBet = async (event) => {
@@ -950,7 +950,7 @@ const getWinnings = (el) => {
   const messageToSend = `${user.user_metadata.name} has placed a bet! \n ${result} \n\nAmount: ${amount} PGZ \nPossible Winnings: ${winnings} PGZ`
   
   console.log(messageToSend);
-    /* if(amount === null){
+    if(amount === null){
       message.error("You must enter the amount of the bet!")
       return
     }
@@ -959,7 +959,7 @@ const getWinnings = (el) => {
       return
     }
     //setPendingBets((prevBets) => prevBets + 1)
-    const winnings = calculateTotalWinnings();
+
     console.log(winnings)
     setChecked(event.target.checked);
     const updatedData = {
@@ -1006,6 +1006,18 @@ const getWinnings = (el) => {
         setAmount(null)
         getBets();
         message.success("You have placed your bet. Good luck!🤞")
+        try {
+      
+          const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-message', { messageToSend });
+          
+          if (response.data.success) {
+            console.log('Message sent successfully!');
+          } else {
+            console.log('Failed to send message');
+          }
+        } catch (error) {
+          console.log('Error sending message');
+        }
       }
         }
         
@@ -1013,7 +1025,7 @@ const getWinnings = (el) => {
         setTimeout(() => {
           setOpenLeagueMenu(true)
         }, 500)
-      } */
+      }
   };
 
   const getOddsFromBooker = async () => {
