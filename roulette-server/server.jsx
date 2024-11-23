@@ -89,31 +89,38 @@ app.get('/', (req, res) => {
 const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
-const verifyTelegramAuth = (authData, botToken) => {
-  const { hash, ...data } = authData;
-  const secretKey = crypto.createHash('sha256').update(botToken).digest();
+const verifyTelegramInitData = (initData) => {
+  const parsedData = Object.fromEntries(new URLSearchParams(initData));
+  const { hash, ...data } = parsedData;
+
+  const secretKey = crypto.createHash("sha256").update(TELEGRAM_BOT_TOKEN).digest();
 
   const dataCheckString = Object.keys(data)
     .sort()
     .map((key) => `${key}=${data[key]}`)
-    .join('\n');
+    .join("\n");
 
-  const computedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+  const computedHash = crypto.createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
 
   return computedHash === hash;
 };
 
-app.post('api/auth/telegram', (req, res) => {
-  const authData = req.body;
-  const botToken = TELEGRAM_BOT_TOKEN // Ensure this is securely stored
+// Handle Telegram Authentication
+app.post("/api/auth/telegram", (req, res) => {
+  const { initData } = req.body;
 
-  if (verifyTelegramAuth(authData, botToken)) {
-    // Auth successful, return a response for further frontend handling
-    console.log('Authenticated User:', authData);
-    res.status(200).json({ message: 'Authentication successful', user: authData });
+  if (!initData) {
+    return res.status(400).json({ success: false, message: "Missing initData." });
+  }
+
+  // Verify the Telegram initData
+  if (verifyTelegramInitData(initData)) {
+    const parsedData = Object.fromEntries(new URLSearchParams(initData));
+    console.log("Authenticated user:", parsedData.user);
+    res.json({ success: true, user: parsedData.user });
   } else {
-    // Auth failed
-    res.status(401).json({ message: 'Authentication failed' });
+    console.error("Invalid Telegram authentication attempt:", initData);
+    res.status(401).json({ success: false, message: "Invalid authentication data." });
   }
 });
 

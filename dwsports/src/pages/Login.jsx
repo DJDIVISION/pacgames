@@ -13,41 +13,43 @@ const Login = () => {
 
 
     useEffect(() => {
-      const tg = window.Telegram.WebApp; // Access Telegram Web App API
+      const tg = window.Telegram?.WebApp; // Access Telegram Web Apps API
+      if (!tg) {
+        console.error("Telegram WebApp is not available. Ensure you are testing in Telegram.");
+        return;
+      }
   
       tg.ready(); // Notify Telegram that the app is ready
   
-      // Extract user info from Telegram Web App context
-      const initData = tg.initData || "";
-      const initDataUnsafe = tg.initDataUnsafe || {};
+      // Extract Telegram Init Data
+      const initData = tg.initData; // Raw signed initData
+      console.log("Telegram Init Data:", initData);
   
-      console.log("Telegram Init Data:", initDataUnsafe);
-  
-      if (initDataUnsafe?.user) {
-        // Send user data to the backend for validation
+      if (initData) {
+        // Send Telegram Init Data to the Backend for Validation
         fetch("https://pacgames-roulette-server.onrender.com/api/auth/telegram", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(initDataUnsafe.user),
+          body: JSON.stringify({ initData }), // Send the signed payload
         })
-          .then((res) => res.json())
+          .then((response) => response.json())
           .then((data) => {
-            console.log("Backend response:", data);
-  
             if (data.success) {
-              // Redirect to the home page upon successful authentication
-              navigate("/home");
+              console.log("Authentication successful:", data);
+              navigate("/home"); // Redirect to home page
             } else {
+              console.error("Authentication failed:", data.message);
               alert("Authentication failed. Please try again.");
             }
           })
           .catch((err) => {
-            console.error("Error communicating with backend:", err);
+            console.error("Error during authentication:", err);
           });
       } else {
-        alert("Unable to retrieve Telegram user data. Please ensure you are logged into Telegram.");
+        console.error("initData not found.");
+        alert("Failed to retrieve Telegram user data.");
       }
     }, [navigate]);
 
