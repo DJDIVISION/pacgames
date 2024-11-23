@@ -105,7 +105,6 @@ const verifyTelegramInitData = (initData) => {
   return computedHash === hash;
 };
 
-// Handle Telegram Authentication
 app.post("/api/auth/telegram", (req, res) => {
   const { initData } = req.body;
 
@@ -113,13 +112,10 @@ app.post("/api/auth/telegram", (req, res) => {
     return res.status(400).json({ success: false, message: "Missing initData." });
   }
 
-  // Verify the Telegram initData
   if (verifyTelegramInitData(initData)) {
     const parsedData = Object.fromEntries(new URLSearchParams(initData));
-    console.log("Authenticated user:", parsedData.user);
-    res.json({ success: true, user: parsedData.user });
+    res.json({ success: true, user: parsedData });
   } else {
-    console.error("Invalid Telegram authentication attempt:", initData);
     res.status(401).json({ success: false, message: "Invalid authentication data." });
   }
 });

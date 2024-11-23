@@ -13,45 +13,45 @@ const Login = () => {
 
 
     useEffect(() => {
-      const tg = window.Telegram?.WebApp; // Access Telegram Web Apps API
+      const tg = window.Telegram?.WebApp;
+  
       if (!tg) {
-        console.error("Telegram WebApp is not available. Ensure you are testing in Telegram.");
+        console.error("Telegram WebApp is not available. Open this inside Telegram.");
         return;
       }
   
+      // Telegram WebApp Initialization
       tg.ready(); // Notify Telegram that the app is ready
   
-      // Extract Telegram Init Data
-      const initData = tg.initData; // Raw signed initData
-      console.log("Telegram Init Data:", initData);
+      console.log("Telegram WebApp initialized:", tg.initDataUnsafe);
   
-      if (initData) {
-        // Send Telegram Init Data to the Backend for Validation
+      // Example UI customization
+      tg.MainButton.setText("Connect to Telegram");
+      tg.MainButton.show();
+  
+      // Attach handler to Main Button
+      tg.MainButton.onClick(() => {
+        console.log("MainButton clicked!");
         fetch("https://pacgames-roulette-server.onrender.com/api/auth/telegram", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ initData }), // Send the signed payload
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ initData: tg.initData }),
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
-              console.log("Authentication successful:", data);
-              navigate("/home"); // Redirect to home page
+              console.log("Authentication successful:", data.user);
+              alert(`Welcome, ${data.user.first_name}`);
             } else {
               console.error("Authentication failed:", data.message);
-              alert("Authentication failed. Please try again.");
+              alert("Authentication failed. Try again.");
             }
           })
           .catch((err) => {
             console.error("Error during authentication:", err);
           });
-      } else {
-        console.error("initData not found.");
-        alert("Failed to retrieve Telegram user data.");
-      }
-    }, [navigate]);
+      });
+    }, []);
 
     /* const handleGoogleSignIn = async () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -69,7 +69,8 @@ const Login = () => {
     return (
       <LoginSection>
         <GoogleButton style={{background: 'orange'}}>
-            <GoogleText div id="telegram-login-container"></GoogleText>
+        <h1>Telegram Mini App</h1>
+        <p>Tap the button below to authenticate with Telegram.</p>
         </GoogleButton>
       </LoginSection>
     )
