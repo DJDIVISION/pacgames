@@ -940,7 +940,7 @@ export const AllBetsBadge = styled.div`
 
 export const BetSection = styled.div`
     width: 100vw;
-    max-height: 100vh;
+    height: 100vh;
     background: ${props => props.theme.body};
     display: flex;
     flex-direction: column;
