@@ -1150,7 +1150,7 @@ const getWinnings = (el) => {
                       </Rower>
                       {expandedIndex === index && (
                         <LowRower >
-                          {liveOdds?.map((odd) => {
+                          { match.fixture.status.short==="NS" && liveOdds?.map((odd) => {
                             return(
                               <BigRowBet>
                                 <TopRowBet><h2>{odd.name}</h2></TopRowBet>

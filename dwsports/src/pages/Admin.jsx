@@ -1,4 +1,6 @@
 import React from 'react'
+import axios from 'axios'
+import styled from 'styled-components'
 
 const Admin = () => {
   return (
@@ -9,3 +11,7 @@ const Admin = () => {
 }
 
 export default Admin
+
+const Section = styled.div`
+    
+`;
