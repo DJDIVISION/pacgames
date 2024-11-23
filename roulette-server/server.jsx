@@ -103,7 +103,7 @@ const verifyTelegramAuth = (authData, botToken) => {
   return computedHash === hash;
 };
 
-app.post('/auth/telegram', (req, res) => {
+app.post('api/auth/telegram', (req, res) => {
   const authData = req.body;
   const botToken = TELEGRAM_BOT_TOKEN // Ensure this is securely stored
 

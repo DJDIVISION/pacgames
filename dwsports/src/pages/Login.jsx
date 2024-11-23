@@ -11,43 +11,44 @@ const Login = () => {
     const navigate = useNavigate()
     const {user, setUser} = FantasyState();
 
+
     useEffect(() => {
-      // Inject the Telegram widget script
-      const script = document.createElement('script');
-      script.async = true;
-      script.src = 'https://telegram.org/js/telegram-widget.js?22';
-      script.setAttribute('data-telegram-login', 'PactonGamingZoneBot'); // Replace with your bot username
-      script.setAttribute('data-size', 'large');
-      script.setAttribute('data-onauth', 'onTelegramAuth');
-      script.setAttribute('data-request-access', 'write');
-      document.getElementById('telegram-login-container').appendChild(script);
+      const tg = window.Telegram.WebApp; // Access Telegram Web App API
   
-      // Define the onTelegramAuth function globally
-      window.onTelegramAuth = (user) => {
-        console.log('User Data:', user);
+      tg.ready(); // Notify Telegram that the app is ready
   
-        // Example: Send user data to your backend for further processing
-        fetch('https://pacgames-roulette-server.onrender.com/auth/telegram', {
-          method: 'POST',
+      // Extract user info from Telegram Web App context
+      const initData = tg.initData || "";
+      const initDataUnsafe = tg.initDataUnsafe || {};
+  
+      console.log("Telegram Init Data:", initDataUnsafe);
+  
+      if (initDataUnsafe?.user) {
+        // Send user data to the backend for validation
+        fetch("https://pacgames-roulette-server.onrender.com/api/auth/telegram", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(user),
+          body: JSON.stringify(initDataUnsafe.user),
         })
           .then((res) => res.json())
           .then((data) => {
-            console.log('Server response:', data);
-            // Redirect to the home page after successful login
-            navigate('/home'); // Change '/home' to the route you want
+            console.log("Backend response:", data);
+  
+            if (data.success) {
+              // Redirect to the home page upon successful authentication
+              navigate("/home");
+            } else {
+              alert("Authentication failed. Please try again.");
+            }
           })
           .catch((err) => {
-            console.error('Error sending data to backend:', err);
+            console.error("Error communicating with backend:", err);
           });
-      };
-  
-      return () => {
-        document.getElementById('telegram-login-container').innerHTML = '';
-      };
+      } else {
+        alert("Unable to retrieve Telegram user data. Please ensure you are logged into Telegram.");
+      }
     }, [navigate]);
 
     /* const handleGoogleSignIn = async () => {
@@ -65,7 +66,7 @@ const Login = () => {
   
     return (
       <LoginSection>
-        <GoogleButton>
+        <GoogleButton style={{background: 'orange'}}>
             <GoogleText div id="telegram-login-container"></GoogleText>
         </GoogleButton>
       </LoginSection>
