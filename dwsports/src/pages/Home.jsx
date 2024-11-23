@@ -50,6 +50,8 @@ const Home = ({toggleTheme}) => {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const {admin, isAdmin} = FantasyState();
+  
   useEffect(() => {
     if(session === null){
       setIsExpanded(true)
@@ -63,7 +65,10 @@ const Home = ({toggleTheme}) => {
 
       if (session?.user) {
         setSession(session)
-        setCurrentUser(session.user); // Set the user state if session exists
+        setCurrentUser(session.user);
+        if(session.user.email === "bodegaflamenca666@gmail.com"){
+          isAdmin(true)
+        }
         
       } else {
         setCurrentUser(null); // Clear the user state if no session

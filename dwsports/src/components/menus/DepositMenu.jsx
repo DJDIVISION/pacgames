@@ -60,8 +60,8 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
 
     const tokens = [
       { name: 'SHO', logo: Sho, ratio: '7040' },
-      { name: 'TON', logo: Ton, ratio: '0.189893' },
-      { name: 'TNcula', logo: Toncula, ratio: '0.189893' }
+      { name: 'TON', logo: Ton, ratio: '0.189893' }/* ,
+      { name: 'TNcula', logo: Toncula, ratio: '0.189893' } */
     ];
     const [activeToken, setActiveToken] = useState("SHO");
     const [selectedToken, setSelectedToken] = useState(tokens[0])

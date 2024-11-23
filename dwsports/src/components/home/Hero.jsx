@@ -159,7 +159,6 @@ const Hero = () => {
         sendNotification(notificationPayload);
       };
 
-    console.log(currentUser)
 
     const disconnectWallet = async () => {
         setMetaMaskWalletAddress(null)

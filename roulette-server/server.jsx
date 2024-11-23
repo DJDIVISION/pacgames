@@ -91,7 +91,7 @@ app.get('/', (req, res) => {
 const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
-const validator = new AuthDataValidator({
+/* const validator = new AuthDataValidator({
   botToken: TELEGRAM_BOT_TOKEN, // The bot token you got from BotFather
 });
 
@@ -111,7 +111,7 @@ app.post('/telegram-auth', async (req, res) => {
     console.error('Authentication error:', error);
     res.status(400).json({ error: 'Invalid authentication data' });
   }
-});
+}); */
 
 app.post('/send-message', async (req, res) => {
   const { message } = req.body;  // The message will be sent from the React app

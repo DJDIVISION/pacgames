@@ -34,20 +34,8 @@ const FantasyContext = ({children}) => {
     const [account, setAccount] = useState(null);
     const [session, setSession] = useState(null)
     const [currentUser, setCurrentUser] = useState(null)
+    const [admin, isAdmin] = useState(false)
 
-    useEffect(() => {
-        // Toggle body overflow based on isMenuOpen state
-        if (walletMenu) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = ''; // Revert to original overflow
-        }
-
-        // Cleanup on unmount
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [walletMenu]);
     
     return(
         <Fantasy.Provider value = {{activeLeague,setActiveLeague,activeTeamName,setActiveTeamName,activeTeamId,setActiveTeamId,
@@ -56,7 +44,7 @@ const FantasyContext = ({children}) => {
             pendingBets,setPendingBets,depositMenu,setDepositMenu,metaMaskWalletAddress,setMetaMaskWalletAddress,metaMaskWalletBalance,setMetaMaskWalletBalance,
             data,setData,balance,setBalance,activeTeam,setActiveTeam,activePlayer,setActivePlayer,tonWalletAddress,setTonWalletAddress,
             provider,setProvider,account,setAccount,tonWalletBalance,setTonWalletBalance,walletMenu,setWalletMenu,setCurrentUser,currentUser,
-            setFixtureId,fixtureId,session,setSession,tonculaWalletBalance,setTonculaWalletBalance
+            setFixtureId,fixtureId,session,setSession,tonculaWalletBalance,setTonculaWalletBalance,admin,isAdmin
         }}>
             {children}
         </Fantasy.Provider>

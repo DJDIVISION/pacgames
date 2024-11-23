@@ -29,6 +29,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import Partners from './pages/Partners';
 import NewRoulette from './pages/NewRoulette';
+import { FantasyState } from './context/FantasyContext';
+import Admin from './pages/Admin';
 
 
 function App() {
@@ -49,6 +51,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home toggleTheme={toggleTheme}/>} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/bets" element={<ProtectedRoute><Bets /></ProtectedRoute>} />
         <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />
         <Route path="/fantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />

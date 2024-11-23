@@ -47,7 +47,7 @@ const SmartNavBar = ({toggleTheme}) => {
     const theme = useTheme();
     const {depositMenu, setDepositMenu} = FantasyState();
     const {walletMenu, setWalletMenu} = FantasyState();
-    
+    const {admin, isAdmin} = FantasyState();
 
     const isOpen = ()=>{
         setOpen(!open);
@@ -74,7 +74,7 @@ const SmartNavBar = ({toggleTheme}) => {
         exit: { height: 0, opacity: 0, transition: { duration: 0.5 } }
     }
 
-    
+    console.log(admin)    
 
   return (
     <SmartNav scrollNavDown={scrollNavDown}>
@@ -125,12 +125,12 @@ const SmartNavBar = ({toggleTheme}) => {
                               <StaggerImageHolder><img src={deposit} alt="wallet" /></StaggerImageHolder>
                               <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
                           </StaggerRow>
-                          <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setWalletMenu(true);}}
+                          {admin && <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {isOpen(); setWalletMenu(true);}}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 1.1 }} >
                               <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>
-                              <StaggerAvatarName>{t("navbar.withdraw")}</StaggerAvatarName>
-                          </StaggerRow>
+                              <StaggerAvatarName>ADMIN</StaggerAvatarName>
+                          </StaggerRow>}
                           <StaggerRow initial={{ opacity: 0, y: 40 }}
                               animate={{ opacity: 1, y: -60 }}
                               transition={{ delay: 1.2 }}> 
