@@ -13,22 +13,26 @@ const Login = () => {
     const {user, setUser} = FantasyState();
     
     const handleAuthCallback = (data) => {
-      console.log(data);
-      // Call your backend to validate and sign in the user
-      // You can send 'data' to your backend API for further validation
+      console.log(data);  // Log the authentication data for debugging
+  
+      // Send data to your backend for validation
       fetch('https://pacgames-roulette-server.onrender.com/telegram-auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data),  // Send the Telegram authentication data to the backend
       })
       .then((response) => response.json())
       .then((user) => {
-        console.log('Authenticated user:', user);
-        // Store user data and handle post-login behavior
+        console.log('Authenticated user:', user);  // Log authenticated user data
+        // After successful login, redirect the user to the home page
+        navigate('/home');  // Redirect to home page (change this to your desired route)
       })
-      .catch((error) => console.error('Authentication failed:', error));
+      .catch((error) => {
+        console.error('Authentication failed:', error);
+        // Optionally show an error message if authentication fails
+      });
     };
 
     /* const handleGoogleSignIn = async () => {

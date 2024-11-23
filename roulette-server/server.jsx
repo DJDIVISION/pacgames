@@ -78,7 +78,7 @@ const americanRouletteNumbers = [
 
 const app = express();
 app.use(express.json());
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: "https://pactongamingzone.onrender.com",
   methods: ['GET', 'POST'],
@@ -96,16 +96,17 @@ const validator = new AuthDataValidator({
 });
 
 app.post('/telegram-auth', async (req, res) => {
-  const data = req.body; // This is the data sent from the React frontend
+  const data = req.body; // This should be the data sent from the frontend
 
   try {
+    // Validate the incoming data from the frontend
     const user = await validator.validate(data);
 
-    // The user object is now validated and you can handle it, e.g., login
+    // Log the authenticated user info
     console.log('Authenticated user:', user);
 
-    // Send the user info back to the client or store it in your database
-    res.json(user); // Respond with the authenticated user data
+    // Send back the user info as a response
+    res.json(user);
   } catch (error) {
     console.error('Authentication error:', error);
     res.status(400).json({ error: 'Invalid authentication data' });
