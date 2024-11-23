@@ -1062,7 +1062,7 @@ const toggleMenu = () => {
                                     <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
                                       width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
                                       height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
-                                  }} /><PlayerTeamLogoShort><img src={player.teamLogo} alt="logo" /></PlayerTeamLogoShort><PlayerTeamRatingShort style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRatingShort></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
+                                  }} /><PlayerTeamLogoValue><h2>{player.value}M€</h2></PlayerTeamLogoValue><PlayerTeamLogoShort><img src={player.teamLogo} alt="logo" /></PlayerTeamLogoShort><PlayerTeamRatingShort style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRatingShort></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
                                 ))}
                            </MyPlayerRow>
                            </div>
@@ -1682,6 +1682,22 @@ const PlayerTeamLogoShort = styled.div`
         height: 25px;
         top: 5px;
         left: 5px;
+    }
+`;
+const PlayerTeamLogoValue = styled.div`
+    h2{
+        color: gold;
+        font-size: 14px;
+    }
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    z-index: 10;
+    @media(max-width: 490px){
+        width: 25px;
+        height: 25px;
+        top: -5px;
+        right: 10px;
     }
 `;
 
