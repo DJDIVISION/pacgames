@@ -945,7 +945,7 @@ const getWinnings = (el) => {
     console.log(selectedBet)
     const winnings = calculateTotalWinnings();
     let result = selectedBet.map((match, index) => {
-      return `\nMatch ${index + 1}\n${match.match.teams.home.name} vs ${match.match.teams.away.name}\nOdds: ${match.odd}\nResult: ${match.value}`;
+      return `\n${match.match.teams.home.name} vs ${match.match.teams.away.name}\nOdds: ${match.odd}\nResult: ${match.name} - ${match.value}`;
   }).join("\n");
   const messageToSend = `${user.user_metadata.name} has placed a bet! \n ${result} \n\nAmount: ${amount} PGZ \nPossible Winnings: ${winnings} PGZ`
   
