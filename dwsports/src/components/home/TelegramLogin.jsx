@@ -1,60 +1,46 @@
 import React, { useEffect } from 'react';
-import { FantasyState } from '../../context/FantasyContext';
 
 const TelegramLogin = () => {
-
-    const {user, setUser} = FantasyState();
   useEffect(() => {
-    // Ensure the script is loaded
+    // Inject the Telegram widget script
     const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.async = true;
-
-    // Configure widget attributes
-    script.setAttribute('data-telegram-login', 'PactonGamingZoneBot'); // Your bot's username
-    script.setAttribute('data-size', 'medium');
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.setAttribute('data-telegram-login', 'PactonGamingZoneBot'); // Your bot username
+    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-onauth', 'onTelegramAuth');
     script.setAttribute('data-request-access', 'write');
-    script.setAttribute('data-userpic', 'true');
-    script.setAttribute(
-      'data-onauth',
-      'onTelegramAuth(user)' // Register the callback
-    );
+    document.getElementById('telegram-login-container').appendChild(script);
 
-    // Append the script specifically to the #telegram-login div
-    const container = document.getElementById('telegram-login');
-    if (container) {
-      container.appendChild(script);
-    }
-
-    // Cleanup script on component unmount
-    return () => {
-      if (container) {
-        container.innerHTML = ''; // Remove the widget content
-      }
-    };
-  }, []);
-
-  // Define the onTelegramAuth function globally
-  useEffect(() => {
+    // Define the onTelegramAuth function globally
     window.onTelegramAuth = (user) => {
-        setUser(user)
-        console.log(user)
+      console.log('User Data:', user);
+      // Replace alert with logic to send data to your backend
+      alert(`Logged in as ${user.first_name} ${user.last_name} (${user.id}${user.username ? `, @${user.username}` : ''})`);
+      
+      // Example: Send user data to backend for processing
+      fetch('https://pacgames-roulette-server.onrender.com/auth/telegram', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log('Server response:', data);
+        })
+        .catch((err) => {
+          console.error('Error sending data to backend:', err);
+        });
+    };
+
+    return () => {
+      document.getElementById('telegram-login-container').innerHTML = '';
     };
   }, []);
 
-  return (
-    <div
-      id="telegram-login"
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%', // Adjust as needed
-        width: '100%',
-        margin: 'auto'
-      }}
-    ></div>
-  );
+  return <div id="telegram-login-container"></div>;
 };
 
 export default TelegramLogin;

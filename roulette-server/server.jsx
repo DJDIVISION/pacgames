@@ -11,6 +11,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const admin = require('firebase-admin');
 const supabase = createClient(supabaseUrl, supabaseKey);
 require('dotenv').config();
+const crypto = require('crypto');
 
 
 admin.initializeApp({
@@ -77,7 +78,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://pactongamingzone.onrender.com",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -88,33 +89,31 @@ app.get('/', (req, res) => {
 const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
-function validateTelegramLogin(data) {
-  const secret = crypto.createHash('sha256').update(TELEGRAM_BOT_TOKEN).digest();
-  const checkString = Object.keys(data)
-    .filter((key) => key !== 'hash')
+const verifyTelegramAuth = (authData, botToken) => {
+  const { hash, ...data } = authData;
+  const secretKey = crypto.createHash('sha256').update(botToken).digest();
+
+  const dataCheckString = Object.keys(data)
     .sort()
     .map((key) => `${key}=${data[key]}`)
     .join('\n');
-  
-  const hash = crypto.createHmac('sha256', secret).update(checkString).digest('hex');
-  return hash === data.hash;
-}
 
-// For mini app users, Telegram sends initData with the user's authentication data.
-app.get('/login/telegram', (req, res) => {
-  const data = req.query;  // Telegram sends the data as query parameters
-  if (validateTelegramLogin(data)) {
-    const userId = data.id;
-    // Create a JWT token or session to keep the user logged in
-    const token = jwt.sign({ userId }, 'your_jwt_secret', { expiresIn: '1h' });
-    
-    // Store the token in a cookie or return it to the frontend (depends on your preference)
-    res.cookie('token', token, { httpOnly: true, secure: true });
-    
-    // Redirect to your app's home page after successful login
-    res.redirect('/home');
+  const computedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+
+  return computedHash === hash;
+};
+
+app.post('/auth/telegram', (req, res) => {
+  const authData = req.body;
+  const botToken = TELEGRAM_BOT_TOKEN; // Ensure this is securely stored
+
+  if (verifyTelegramAuth(authData, botToken)) {
+    // Auth successful, proceed with login or registration
+    console.log('Authenticated User:', authData);
+    res.status(200).json({ message: 'Authentication successful', user: authData });
   } else {
-    res.status(403).send('Invalid login data');
+    // Auth failed
+    res.status(401).json({ message: 'Authentication failed' });
   }
 });
 
