@@ -33,7 +33,7 @@ const FantasyContext = ({children}) => {
     const [provider, setProvider] = useState(null);
     const [account, setAccount] = useState(null);
     const [session, setSession] = useState(null)
-    const [user, setUser] = useState(null)
+    const [currentUser, setCurrentUser] = useState(null)
 
     useEffect(() => {
         // Toggle body overflow based on isMenuOpen state
@@ -55,7 +55,7 @@ const FantasyContext = ({children}) => {
             activeLeagueId,setActiveLeagueId,activeRound,setActiveRound,selectedBet,setSelectedBet,betAmounts,setBetAmounts,
             pendingBets,setPendingBets,depositMenu,setDepositMenu,metaMaskWalletAddress,setMetaMaskWalletAddress,metaMaskWalletBalance,setMetaMaskWalletBalance,
             data,setData,balance,setBalance,activeTeam,setActiveTeam,activePlayer,setActivePlayer,tonWalletAddress,setTonWalletAddress,
-            provider,setProvider,account,setAccount,tonWalletBalance,setTonWalletBalance,walletMenu,setWalletMenu,user,setUser,
+            provider,setProvider,account,setAccount,tonWalletBalance,setTonWalletBalance,walletMenu,setWalletMenu,setCurrentUser,currentUser,
             setFixtureId,fixtureId,session,setSession,tonculaWalletBalance,setTonculaWalletBalance
         }}>
             {children}

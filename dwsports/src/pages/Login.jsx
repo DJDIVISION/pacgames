@@ -4,61 +4,56 @@ import { supabase } from '../supabase/client'
 import { LoginSection,GoogleButton,GoogleLogo,GoogleText } from './index'
 import logo from '../assets/google.png'
 import { FantasyState } from '../context/FantasyContext'
-import TelegramLogin from '../components/home/TelegramLogin'
-import { LoginButton } from '@telegram-auth/react';
+import googleDark from '../assets/logos/googleDark.png'
+import googleLight from '../assets/logos/googleLight.png'
 
 const Login = () => {
 
     const navigate = useNavigate()
-    const {user, setUser} = FantasyState();
-    
-    const handleAuthCallback = (data) => {
-      console.log(data);  // Log the authentication data for debugging
-  
-      // Send data to your backend for validation
-      fetch('https://pacgames-roulette-server.onrender.com/telegram-auth', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),  // Send the Telegram authentication data to the backend
-      })
-      .then((response) => response.json())
-      .then((user) => {
-        console.log('Authenticated user:', user);  // Log authenticated user data
-        // After successful login, redirect the user to the home page
-        navigate('/home');  // Redirect to home page (change this to your desired route)
-      })
-      .catch((error) => {
-        console.error('Authentication failed:', error);
-        // Optionally show an error message if authentication fails
-      });
-    };
-
-    /* const handleGoogleSignIn = async () => {
+    const {currentUser, setCurrentUser} = FantasyState();
+    const {session, setSession} = FantasyState();
+    const handleGoogleSignIn = async () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-      })
-  
+      });
+      
       if (error) {
-        console.error('Error with Google sign-in:', error.message)
-      } 
-      if(data){
-        console.log(data)
+        console.error('Error with Google sign-in:', error.message);
+        return;
       }
-    } */
+      
+      // Handle successful sign-in
+      if (data) {
+        const { session, user } = data;
+        if (user) {
+          console.log('Authenticated user:', user);
+          setCurrentUser(user);  // Update user state
+          setSession(session)
+          navigate('/home');  // Navigate to the home page
+        }
+        
+        if (session) {
+          console.log('Session information:', session);
+        }
+      }
+    };
+  
+    // This useEffect ensures that if the user is already logged in (e.g., after page refresh),
+    // they are automatically redirected to the home page
+    useEffect(() => {
+      const session = supabase.auth.getSession();
+      if (session?.user) {
+        setCurrentUser(session.user);  // Set user state if session exists
+        navigate('/home');  // Redirect if already logged in
+      }
+    }, [navigate, setCurrentUser]);
+
+
   
     return (
       <LoginSection>
-        <GoogleButton>
-        <LoginButton
-        botUsername="PactonGamingZoneBot"
-        onAuthCallback={handleAuthCallback}
-        buttonSize="medium" // Adjust the button size
-        cornerRadius={5}    // Button corner radius
-        showAvatar={true}   // Show user's avatar on the button
-        lang="en"           // Language for the button
-      />
+        <GoogleButton onClick={() => handleGoogleSignIn()}>
+        <img src={googleDark} alt="googleDark" />
         </GoogleButton>
       </LoginSection>
     )

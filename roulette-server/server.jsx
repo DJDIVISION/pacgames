@@ -96,17 +96,17 @@ const validator = new AuthDataValidator({
 });
 
 app.post('/telegram-auth', async (req, res) => {
-  const data = req.body; // This should be the data sent from the frontend
+  const data = req.body; // This is the data sent from the frontend (it should be JSON)
+
+  console.log('Received data:', data); // Check what data is coming in
 
   try {
-    // Validate the incoming data from the frontend
-    const user = await validator.validate(data);
+    // Validate the incoming data
+    const user = await validator.validate(data);  // Use the data directly here
 
-    // Log the authenticated user info
-    console.log('Authenticated user:', user);
+    console.log('Authenticated user:', user);  // Log the authenticated user
 
-    // Send back the user info as a response
-    res.json(user);
+    res.json(user); // Return the authenticated user data back to the frontend
   } catch (error) {
     console.error('Authentication error:', error);
     res.status(400).json({ error: 'Invalid authentication data' });

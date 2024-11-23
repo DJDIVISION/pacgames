@@ -164,7 +164,7 @@ const Home = ({toggleTheme}) => {
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
       <AnimatePresence>
-        {user ? (
+        {session ? (
           <>
             {isMobile ? (
           <>
@@ -276,13 +276,14 @@ const Home = ({toggleTheme}) => {
         ) : (
       <StaticSection>
             <Container>
-              {/* <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
-                {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
-              </WalletsRow></RowerRowBetsCenter> */}
+              <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
+                {/* {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />} */}
+                THERE IS NO SESSION
+              </WalletsRow></RowerRowBetsCenter>
               <RowerRowBetsCenter style={{ height: '70px' }}>
-              <WalletsRow id="telegram-login" style={{width: '350px'}}>
+              {/* <WalletsRow id="telegram-login" style={{width: '350px'}}>
                 <TelegramLogin />
-              </WalletsRow>
+              </WalletsRow> */}
               </RowerRowBetsCenter>
               </Container>
       </StaticSection>

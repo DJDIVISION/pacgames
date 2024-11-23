@@ -36,11 +36,6 @@ function App() {
   const [theme, setTheme] = useState('dark');
   const { user, loading } = useAuth(); 
   const themeObject = useMemo(() => themes[theme], [theme]);
-  
-  
-
-  
-
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === 'dark' ? 'light' : 'dark'));
   };
@@ -51,21 +46,9 @@ function App() {
   
   return (
     <ThemeProvider theme={themeObject}>
-      <ToastContainer 
-                position="top-center"
-                autoClose={3000}
-                hideProgressBar={true}
-                newestOnTop={true}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
     <Router>
       <Routes>
-        <Route path="/home" element={<Home toggleTheme={toggleTheme}/>} />
+        <Route path="/home" element={<ProtectedRoute><Home toggleTheme={toggleTheme}/></ProtectedRoute>} />
         <Route path="/bets" element={<ProtectedRoute><Bets /></ProtectedRoute>} />
         <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />
         <Route path="/fantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />
