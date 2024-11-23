@@ -105,10 +105,10 @@ const verifyTelegramAuth = (authData, botToken) => {
 
 app.post('/auth/telegram', (req, res) => {
   const authData = req.body;
-  const botToken = TELEGRAM_BOT_TOKEN; // Ensure this is securely stored
+  const botToken = TELEGRAM_BOT_TOKEN // Ensure this is securely stored
 
   if (verifyTelegramAuth(authData, botToken)) {
-    // Auth successful, proceed with login or registration
+    // Auth successful, return a response for further frontend handling
     console.log('Authenticated User:', authData);
     res.status(200).json({ message: 'Authentication successful', user: authData });
   } else {
