@@ -88,7 +88,7 @@ const Admin = () => {
 
     // Fetch live matches every 15 seconds
     React.useEffect(() => {
-        const intervalId = setInterval(fetchLiveMatches, 30000); // Set interval for fetching matches
+        const intervalId = setInterval(fetchLiveMatches, 60000); // Set interval for fetching matches
         return () => clearInterval(intervalId); // Cleanup interval on component unmount
     }, []);
 
