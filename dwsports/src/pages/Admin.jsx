@@ -17,7 +17,7 @@ const Admin = () => {
         for (const match of matches) { // Use `for...of` to handle async operations
             const matchId = match.fixture.id;
             const events = match.events;
-
+            console.log(match)
             // Initialize processed events for this match if not already done
             if (!processedEvents[matchId]) {
                 processedEvents[matchId] = new Set();
