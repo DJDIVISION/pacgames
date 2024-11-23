@@ -11,9 +11,6 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const admin = require('firebase-admin');
 const supabase = createClient(supabaseUrl, supabaseKey);
 require('dotenv').config();
-const crypto = require('crypto');
-const {AuthDataValidator} = require("@telegram-auth/server")
-const {urlStrToAuthDataMap} = require('@telegram-auth/server/utils')
 
 
 admin.initializeApp({
@@ -78,7 +75,7 @@ const americanRouletteNumbers = [
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cors({
   origin: "https://pactongamingzone.onrender.com",
   methods: ['GET', 'POST'],
@@ -91,40 +88,20 @@ app.get('/', (req, res) => {
 const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
-/* const validator = new AuthDataValidator({
-  botToken: TELEGRAM_BOT_TOKEN, // The bot token you got from BotFather
-});
-
-app.post('/telegram-auth', async (req, res) => {
-  const data = req.body; // This is the data sent from the frontend (it should be JSON)
-
-  console.log('Received data:', data); // Check what data is coming in
-
-  try {
-    // Validate the incoming data
-    const user = await validator.validate(data);  // Use the data directly here
-
-    console.log('Authenticated user:', user);  // Log the authenticated user
-
-    res.json(user); // Return the authenticated user data back to the frontend
-  } catch (error) {
-    console.error('Authentication error:', error);
-    res.status(400).json({ error: 'Invalid authentication data' });
-  }
-}); */
-
 app.post('/send-message', async (req, res) => {
-  const { message } = req.body;  // The message will be sent from the React app
+  const { messageToSend } = req.body;  // The message will be sent from the React app
 
-  if (!message) {
+  if (!messageToSend) {
     return res.status(400).send('Message content is required');
   }
+
+  console.log(messageToSend)
 
   try {
     // Send a message to Telegram group via the bot
     const response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       chat_id: CHAT_ID,
-      text: message,
+      text: messageToSend,
     });
     console.log("Message sent succesfully!")
     res.status(200).json({ success: true, response: response.data });

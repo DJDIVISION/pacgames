@@ -13,7 +13,7 @@ import googleDark from '../assets/logos/googleDark.png'
 import googleLight from '../assets/logos/googleLight.png'
 import {Link as LinkR} from 'react-router-dom'
 import { useAuth, useFetchMessages } from './functions'
-import { Button, IconButton } from '@mui/material'
+import { Avatar, Button, IconButton } from '@mui/material'
 import { message } from 'antd'
 import { FantasyState } from '../context/FantasyContext'
 import DepositMenu from '../components/menus/DepositMenu'
@@ -227,6 +227,12 @@ const Home = ({toggleTheme}) => {
                     <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>
                     <StaggerAvatarName>{t("navbar.withdraw")}</StaggerAvatarName>
                   </StaggerRow>
+                  {admin && <LinkR to="/admin"><StaggerRow initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.1 }} >
+                    <Avatar alt="Image" src={currentUser && currentUser?.user_metadata?.avatar_url} sx={{margin: 'auto', width: 50, height: 50 }} /> 
+                    <StaggerAvatarName>ADMIN</StaggerAvatarName>
+                  </StaggerRow></LinkR>}
                 </StaggerContainer>
               ) : (
                 <></>

@@ -23,6 +23,7 @@ import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 import {useTranslation} from "react-i18next";
 import { getBackgroundColor } from './functions';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
 import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
 import {Section,BottomRow,IconHolder,Container,LeagueRow,item,LeagueHolder,AbsoluteIconButton,ArrowUp,ArrowDown,
@@ -120,6 +121,7 @@ const NewFantasy = () => {
     const carroussel = useRef(null);
     const [playerHasTeam, setPlayerHasTeam] = useState(false)
     const [playerToRemove, setPlayerToRemove] = useState(null)
+    const [buttonDisabled, setButtonDisabled] = useState(false)
     const [droppedTeamPlayers, setDroppedTeamPlayers] = useState({
         area1: [],
         area2: [],
@@ -624,7 +626,7 @@ const toggleMenu = () => {
     }
 
     const confirmRemovePlayer = () => {
-        
+        setButtonDisabled(false)
         for (let areaKey in droppedTeamPlayers) {
             // Check if the area has a player and if their ID matches the playerId
             if (droppedTeamPlayers[areaKey][0]?.id === playerToRemove.id) {
@@ -821,6 +823,22 @@ const toggleMenu = () => {
       
 
       const saveDroppedTeam = async () => {
+        setButtonDisabled(true)
+        console.log(droppedTeamPlayers.area1[0].name.charAt(0))
+        const messageToSend = `${user.user_metadata.name} has placed his Fantasy Football Team for the next Round! \n 
+        ${droppedTeamPlayers.area1[0].position.charAt(0)}: ${droppedTeamPlayers.area1[0].name}, 📊 ${droppedTeamPlayers.area1[0].rating} 
+        ${droppedTeamPlayers.area2[0].position.charAt(0)}: ${droppedTeamPlayers.area2[0].name}, 📊 ${droppedTeamPlayers.area2[0].rating} 
+        ${droppedTeamPlayers.area3[0].position.charAt(0)}: ${droppedTeamPlayers.area3[0].name}, 📊 ${droppedTeamPlayers.area3[0].rating} 
+        ${droppedTeamPlayers.area4[0].position.charAt(0)}: ${droppedTeamPlayers.area4[0].name}, 📊 ${droppedTeamPlayers.area4[0].rating} 
+        ${droppedTeamPlayers.area5[0].position.charAt(0)}: ${droppedTeamPlayers.area5[0].name}, 📊 ${droppedTeamPlayers.area5[0].rating} 
+        ${droppedTeamPlayers.area6[0].position.charAt(0)}: ${droppedTeamPlayers.area6[0].name}, 📊 ${droppedTeamPlayers.area6[0].rating} 
+        ${droppedTeamPlayers.area7[0].position.charAt(0)}: ${droppedTeamPlayers.area7[0].name}, 📊 ${droppedTeamPlayers.area7[0].rating} 
+        ${droppedTeamPlayers.area8[0].position.charAt(0)}: ${droppedTeamPlayers.area8[0].name}, 📊 ${droppedTeamPlayers.area8[0].rating} 
+        ${droppedTeamPlayers.area9[0].position.charAt(0)}: ${droppedTeamPlayers.area9[0].name}, 📊 ${droppedTeamPlayers.area9[0].rating} 
+        ${droppedTeamPlayers.area10[0].position.charAt(0)}: ${droppedTeamPlayers.area10[0].name}, 📊 ${droppedTeamPlayers.area10[0].rating} 
+        ${droppedTeamPlayers.area11[0].position.charAt(0)}: ${droppedTeamPlayers.area11[0].name}, 📊 ${droppedTeamPlayers.area11[0].rating} 
+        \n TEAM AVERAGE RATING: ${teamAverage} 💪`
+        console.log(messageToSend)
         const date = new Date();
         const isAnyAreaEmpty = Object.values(droppedTeamPlayers).some(area => area.length === 0);
         if(isAnyAreaEmpty){
@@ -832,7 +850,7 @@ const toggleMenu = () => {
                 teamRating: teamAverage,
                 date: date
             }
-            const { error: updateError } = await supabase
+           /*  const { error: updateError } = await supabase
                     .from('fantasyFootball')
                     .update({ nextMatch: updatedData}) 
                     .eq('id', user.id); // Identify which user to update
@@ -841,7 +859,19 @@ const toggleMenu = () => {
                     console.error('Error updating user data:', updateError.message);
                 } else {
                     message.success("Your team has been saved!")
-                }
+                } */
+                try {
+      
+                    const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-message', { messageToSend });
+                    
+                    if (response.data.success) {
+                      console.log('Message sent successfully!');
+                    } else {
+                      console.log('Failed to send message');
+                    }
+                  } catch (error) {
+                    console.log('Error sending message');
+                  }
         }
       }
 
@@ -1166,7 +1196,7 @@ const toggleMenu = () => {
                     </MyPlayersInnerRow>
                 </MyPlayersRow>
                 <MyTeamRow>
-                    <AbsoluteDivLeft><StyledButton onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton></AbsoluteDivLeft>
+                    <AbsoluteDivLeft><StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton></AbsoluteDivLeft>
                     <AbsoluteDivRight><h3>TEAM AVERAGE: <span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span></h3></AbsoluteDivRight>
                     <FieldWrapper className='layout1'>
                     <BetArea id="area1" className='droppable-area'>
