@@ -939,10 +939,18 @@ const getWinnings = (el) => {
     // Calculate total winnings
     const totalWinnings = totalOdds * amount;
     return totalWinnings;
-    };
+    }; 
 
   const handleSwitchSendBet = async (event) => {
-    if(amount === null){
+    console.log(selectedBet)
+    const winnings = calculateTotalWinnings();
+    let result = selectedBet.map((match, index) => {
+      return `\nMatch ${index + 1}\n${match.match.teams.home.name} vs ${match.match.teams.away.name}\nOdds: ${match.odd}\nResult: ${match.value}`;
+  }).join("\n");
+  const messageToSend = `${user.user_metadata.name} has placed a bet! \n ${result} \n\nAmount: ${amount} PGZ \nPossible Winnings: ${winnings} PGZ`
+  
+  console.log(messageToSend);
+    /* if(amount === null){
       message.error("You must enter the amount of the bet!")
       return
     }
@@ -1005,7 +1013,7 @@ const getWinnings = (el) => {
         setTimeout(() => {
           setOpenLeagueMenu(true)
         }, 500)
-      }
+      } */
   };
 
   const getOddsFromBooker = async () => {

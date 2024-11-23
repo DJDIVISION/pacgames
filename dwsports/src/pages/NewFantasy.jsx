@@ -850,7 +850,7 @@ const toggleMenu = () => {
                 teamRating: teamAverage,
                 date: date
             }
-           /*  const { error: updateError } = await supabase
+            const { error: updateError } = await supabase
                     .from('fantasyFootball')
                     .update({ nextMatch: updatedData}) 
                     .eq('id', user.id); // Identify which user to update
@@ -859,7 +859,7 @@ const toggleMenu = () => {
                     console.error('Error updating user data:', updateError.message);
                 } else {
                     message.success("Your team has been saved!")
-                } */
+                }
                 try {
       
                     const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-message', { messageToSend });
