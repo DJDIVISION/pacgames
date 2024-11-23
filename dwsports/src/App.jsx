@@ -48,7 +48,7 @@ function App() {
     <ThemeProvider theme={themeObject}>
     <Router>
       <Routes>
-        <Route path="/home" element={<ProtectedRoute><Home toggleTheme={toggleTheme}/></ProtectedRoute>} />
+        <Route path="/" element={<Home toggleTheme={toggleTheme}/>} />
         <Route path="/bets" element={<ProtectedRoute><Bets /></ProtectedRoute>} />
         <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />
         <Route path="/fantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />
@@ -62,7 +62,7 @@ function App() {
         <Route path="/player/:id" element={<ProtectedRoute><PlayerStats /></ProtectedRoute>} />
         <Route path="/team/:teamId" element={<ProtectedRoute><TeamStats /></ProtectedRoute>} />
         <Route path="/newroulette" element={<NewRoulette />} />
-        <Route path="/" element={<Login />} />
+        {/* <Route path="/" element={<Login />} /> */}
       </Routes>
     </Router>
     </ThemeProvider>

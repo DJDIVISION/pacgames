@@ -46,11 +46,11 @@ const Home = ({toggleTheme}) => {
   const [t, i18n] = useTranslation("global");
   const {walletBalance,setWalletBalance} = FantasyState();
   const {session, setSession} = FantasyState();
-  const {user, setUser} = FantasyState();
+  const {currentUser, setCurrentUser} = FantasyState();
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  /* useEffect(() => {
+  useEffect(() => {
     if(session === null){
       setIsExpanded(true)
     }
@@ -63,10 +63,10 @@ const Home = ({toggleTheme}) => {
 
       if (session?.user) {
         setSession(session)
-        setUser(session.user); // Set the user state if session exists
+        setCurrentUser(session.user); // Set the user state if session exists
         
       } else {
-        setUser(null); // Clear the user state if no session
+        setCurrentUser(null); // Clear the user state if no session
         setSession(null)
       }
     };
@@ -77,9 +77,9 @@ const Home = ({toggleTheme}) => {
     // Set up an auth state listener to detect login/logout events
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        setUser(session.user); // Set user when signed in
+        setCurrentUser(session.user); // Set user when signed in
       } else if (event === 'SIGNED_OUT') {
-        setUser(null); // Clear user on sign out
+        setCurrentUser(null); // Clear user on sign out
       }
     });
 
@@ -111,7 +111,7 @@ const Home = ({toggleTheme}) => {
         document.body.style.overflow = '';
     };
 }, [isExpanded,isDepositExpanded,isWithdrawExpanded]);
- */
+
   const isOpen = ()=>{
     setIsExpanded((prev) => !prev);
   }
@@ -132,7 +132,7 @@ const Home = ({toggleTheme}) => {
   
       if (user) {
         console.log('Authenticated user:', user); // Contains user details like id, email, etc.
-        setUser(user)
+        setCurrentUser(user)
         console.log(user)
       }
   
@@ -277,13 +277,9 @@ const Home = ({toggleTheme}) => {
       <StaticSection>
             <Container>
               <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
-                {/* {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />} */}
-                THERE IS NO SESSION
+                {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
               <RowerRowBetsCenter style={{ height: '70px' }}>
-              {/* <WalletsRow id="telegram-login" style={{width: '350px'}}>
-                <TelegramLogin />
-              </WalletsRow> */}
               </RowerRowBetsCenter>
               </Container>
       </StaticSection>

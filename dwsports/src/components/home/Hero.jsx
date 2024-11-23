@@ -38,7 +38,6 @@ const Hero = () => {
     const isDesktop = useMediaQuery({ query: '(min-width: 1100px)' });
     const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
     const [t, i18n] = useTranslation("global");
-    const {user, setUser} = FantasyState();
     const [checked, setChecked] = useState(false);
     const theme = useTheme();
     const [disabledInput, setDisabledInput] = useState(false)
@@ -63,6 +62,7 @@ const Hero = () => {
     const controls = useAnimation();
     const userFriendlyAddress = useTonAddress();
     const {session, setSession} = FantasyState();
+    const {currentUser, setCurrentUser} = FantasyState();
     
     const tonClient = new TonClient({ endpoint: " https://toncenter.com/api/v2/jsonRPC" });
     const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
@@ -124,11 +124,11 @@ const Hero = () => {
       }, []) */
 
       const subscribeToNotifications = () => {
-        initializePushNotifications(user.id);
+        initializePushNotifications(currentUser.id);
       };
 
       async function sendNotification(notificationPayload) {
-        const userId = user.id
+        const userId = currentUser.id
         console.log(userId)
         console.log(notificationPayload)
         try {
@@ -148,7 +148,7 @@ const Hero = () => {
       }
     
       const handleSendNotification = () => {
-        const name = user.user_metadata.name
+        const name = currentUser.user_metadata.name
         const firstName = name.split(' ')[0];
         const notificationPayload = {
           title: `Hi ${firstName}!`,
@@ -159,7 +159,7 @@ const Hero = () => {
         sendNotification(notificationPayload);
       };
 
-    console.log(user)
+    console.log(currentUser)
 
     const disconnectWallet = async () => {
         setMetaMaskWalletAddress(null)
@@ -180,10 +180,7 @@ const Hero = () => {
             icon: "success"
           });
     };
-    
-    
 
-    console.log(tonculaWalletBalance)
     
     useEffect(() => {
         if(userFriendlyAddress){
@@ -200,7 +197,7 @@ const Hero = () => {
         const { data, error } = await supabase
         .from('users')
         .select('*')
-        .eq('id', user.id);
+        .eq('id', currentUser.id);
 
         if (error) {
             console.error('Error fetching user data:', error.message);
@@ -238,27 +235,27 @@ const Hero = () => {
     }
 
     useEffect(() => {
-        if(user){
-            const signDate = user.last_sign_in_at;
+        if(currentUser){
+            const signDate = currentUser.last_sign_in_at;
             const date = new Date(signDate);
             const milliseconds = date.getTime();
             const now = Date.now();
             if (now - milliseconds < 10000) {
-              storeUserData(user); 
+              storeUserData(currentUser); 
             } else {
               return
             }
           }
-        if(user){
-            const signDate = user.last_sign_in_at;
+        if(currentUser){
+            const signDate = currentUser.last_sign_in_at;
             const date = new Date(signDate);
             const locale = date.toLocaleString();
             setDate(locale)
             getReferrer();
-            getUserBalance(user.id)
+            getUserBalance(currentUser.id)
         }
         
-    }, [user])
+    }, [currentUser])
 
     const startAnimationSequence = () => {
         controls.start({
@@ -320,10 +317,10 @@ const Hero = () => {
     
                 // Prepare the updated data structure to add
                 const updatedData = {
-                    name: user.user_metadata.name,
-                    avatar: user.user_metadata.avatar_url,
-                    email: user.email,
-                    user_id: user.id
+                    name: currentUser.user_metadata.name,
+                    avatar: currentUser.user_metadata.avatar_url,
+                    email: currentUser.email,
+                    user_id: currentUser.id
                 };
     
                 // Add the updated data to the referrals array
@@ -345,7 +342,7 @@ const Hero = () => {
                 const { error: updateReferral } = await supabase
                     .from('users')
                     .update([{ hasReferrer: true, referrerLink: referrer }]) // Update the jsonb column
-                    .eq('id', user.id); // Identify which user to update
+                    .eq('id', currentUser.id); // Identify which user to update
     
                 if (updateReferral) {
                     console.error('Error updating user data:', updateReferral.message);
@@ -379,7 +376,7 @@ const Hero = () => {
         setExpandedProfile(!expandedProfile);
     };
     const toggleWallet = () => {
-        if(user){
+        if(currentUser){
             setExpandedWallet(!expandedWallet);
         } else {
             Swal.fire({
@@ -391,7 +388,7 @@ const Hero = () => {
         
     };
     const toggleReferrals = () => {
-        if(user){
+        if(currentUser){
             setExpandedReferrals(!expandedReferrals);
         } else {
             Swal.fire({
@@ -402,7 +399,7 @@ const Hero = () => {
         }
     };
     const toggleLinks = () => {
-        if(user){
+        if(currentUser){
             setExpandedLinks(!expandedLinks);
         } else {
             Swal.fire({
@@ -415,8 +412,8 @@ const Hero = () => {
 
     
 
-    const storeUserData = async (user) => {
-        const { id, email, user_metadata } = user;
+    const storeUserData = async () => {
+        const { id, email, user_metadata } = currentUser;
         const { full_name: name, avatar_url } = user_metadata || {};
         Swal.fire({
             title: "Log in successful",
@@ -553,11 +550,11 @@ const Hero = () => {
             setMetaMaskWalletAddress(accounts[0]); 
             getTokenBalance(accounts[0], newProvider);
             const updatedData = {
-              name: user.user_metadata.name,
-              avatar: user.user_metadata.avatar_url,
-              email: user.email,
+              name: currentUser.user_metadata.name,
+              avatar: currentUser.user_metadata.avatar_url,
+              email: currentUser.email,
               walletAddress: accounts[0],
-              user_id: user.id
+              user_id: currentUser.id
             }
             const { data, error } = await supabase
             .from('user_wallets')
@@ -618,16 +615,16 @@ const Hero = () => {
                     <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>
                   {expandedProfile === true && (
                      <LowRower >
-                     {(user !== null || session !== null) ? (
+                     {(currentUser !== null || session !== null) ? (
                          <>
                              <AvatarRowBets>
-                             <Avatar alt="Image" src={user && user?.user_metadata?.avatar_url || user?.photo_url} sx={{ width: 50, height: 50 }} />        
+                             <Avatar alt="Image" src={currentUser && currentUser?.user_metadata?.avatar_url} sx={{ width: 50, height: 50 }} />        
                              </AvatarRowBets>
                              <RowerRowBets>
-                             <h2>{user && user?.user_metadata?.full_name || "@" + user?.username}</h2>
+                             <h2>{currentUser && currentUser?.user_metadata?.full_name}</h2>
                              </RowerRowBets>
                              <RowerRowBets>
-                             <h3>{user && user?.email || user?.first_name}</h3>
+                             <h3>{currentUser && currentUser?.email}</h3>
                              </RowerRowBets>
                             
                              <RowerRowBets style={{ height: '70px' }}>
@@ -647,7 +644,7 @@ const Hero = () => {
                      ) : (
                          <>
                              <AvatarRowBets>
-                             <Avatar alt="Image" src={user && user.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
+                             <Avatar alt="Image" src={currentUser && currentUser.user_metadata.avatar_url} sx={{ width: 50, height: 50 }} />        
                              </AvatarRowBets>
                              <RowerRowBets></RowerRowBets>
                              {/* <RowerRowBets style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
@@ -728,7 +725,7 @@ const Hero = () => {
                           <h2>{t("hero.title4")}</h2>
                       </RowerRowBets>
                       <RowerRowBets>
-                          <LinkInputField disabled={true} id="referralLink" value={`PACTONGZ/${user.id}`} />
+                          <LinkInputField disabled={true} id="referralLink" value={`PACTONGZ/${currentUser.id}`} />
                       </RowerRowBets>
                       <IconsRow><IconButton onClick={clipboard}><CopyClipboard /></IconButton></IconsRow>
                   </LowRower >
