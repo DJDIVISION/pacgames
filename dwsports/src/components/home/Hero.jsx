@@ -30,7 +30,8 @@ import { registerServiceWorker, requestPermission, listenForNotifications, handl
 import { initializeApp } from 'firebase/app';
 import { getMessaging, onMessage } from 'firebase/messaging';
 import { initializePushNotifications  } from "../../push.js";
-import { TonClient, Address, beginCell, Cell } from "@ton/ton";
+import { TonClient } from "@ton/ton";
+import {Address, beginCell, Cell} from '@ton/core'
 
 const Hero = () => {
 
@@ -64,64 +65,9 @@ const Hero = () => {
     const {session, setSession} = FantasyState();
     const {currentUser, setCurrentUser} = FantasyState();
     
-    const tonClient = new TonClient({ endpoint: " https://toncenter.com/api/v2/jsonRPC" });
-    const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
-    async function fetchJettonBalance(userWalletAddress) {
-        try {
-            // Parse addresses
-            const jettonMaster = Address.parse(jettonMasterAddress);
-            const userWallet = Address.parse(userWalletAddress);
     
-            // Step 1: Derive the Jetton Wallet Address
-            const methodParams = beginCell().storeAddress(userWallet).endCell();
-            const { stack } = await tonClient.runMethod(
-                jettonMaster,
-                "get_wallet_address",
-                [methodParams]
-            );
     
-            // Decode the Jetton Wallet address
-            const walletCell = Cell.fromBoc(Buffer.from(stack[0].cell.bytes, "base64"))[0];
-            const jettonWalletAddress = Address.fromSlice(walletCell.beginParse());
     
-            // Step 2: Fetch the balance from the Jetton Wallet contract state
-            const walletState = await tonClient.getContractState(jettonWalletAddress);
-    
-            if (!walletState || !walletState.data) {
-                throw new Error("Jetton wallet not initialized or no balance.");
-            }
-    
-            const dataCell = Cell.fromBoc(walletState.data)[0];
-            const slice = dataCell.beginParse();
-    
-            // Skip metadata and read the balance
-            slice.readUint(32); // Skip seqno
-            const balance = slice.readUint(64); // Read balance as uint64
-    
-            return balance.toString(); // Return balance as a string
-        } catch (error) {
-            console.error("Error fetching Jetton balance:", error);
-            throw error;
-        }
-    }
-    /* useEffect(() => { 
-        registerServiceWorker();
-      }, []);
-
-      const handleRequestPermission = async (event) => {
-        
-        const token = await requestPermission();
-            if (token) {
-            console.log('FCM token received:', token);
-            } else {
-            console.error('Failed to get token');
-            }
-      };
-    
-      useEffect(() => {
-        listenForNotifications();
-        handleForegroundNotifications();
-      }, []) */
 
       const subscribeToNotifications = () => {
         initializePushNotifications(currentUser.id);
@@ -180,13 +126,58 @@ const Hero = () => {
           });
     };
 
+    const tonClient = new TonClient({ endpoint: " https://toncenter.com/api/v2/jsonRPC" });
+    const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
+
+    async function getUserWalletAddress(userFriendlyAddress) {
+        const jettonMasterAddress = Address.parse('EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh'); // Example address
+        const userAddress = Address.parse(userFriendlyAddress);
+        const client = new TonClient({
+            endpoint: 'https://toncenter.com/api/v2/jsonRPC',
+        });
+    
+        const userAddressCell = beginCell().storeAddress(userAddress).endCell();
+        const response = await client.runMethod(jettonMasterAddress, "get_wallet_address", [
+            {type: "slice", cell: userAddressCell}
+        ]);
+    
+        return response.stack.readAddress();
+    }
+
+    async function getOwnerAddressFromJettonWallet() {
+        const jettonWalletAddress = Address.parse('EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh');
+        const client = new TonClient({
+            endpoint: 'https://toncenter.com/api/v3/jsonRPC', // Using Toncenter v3 endpoint
+        });
+    
+        try {
+            // Query the Jetton wallet contract for data
+            const response = await client.runMethod(jettonWalletAddress, 'get_wallet_data', []);
+    
+            // The method returns a stack with balance, owner address, jetton address, and wallet code.
+            const ownerAddress = response.stack.readAddress(); // Extracting the owner address from the stack
+            console.log('Owner Address:', ownerAddress);
+            return ownerAddress;
+        } catch (error) {
+            console.error('Error fetching wallet data:', error);
+            throw error;
+        }
+    }
+    
+
     
     useEffect(() => {
-        if(userFriendlyAddress){
-            setTonWalletAddress(userFriendlyAddress)
-            fetchJettonBalance(userFriendlyAddress)
+        if (userFriendlyAddress) {
+            setTonWalletAddress(userFriendlyAddress);
+            getOwnerAddressFromJettonWallet(userFriendlyAddress)
+                .then(ownerAddress => {
+                    console.log('Owner Address:', ownerAddress);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
-    }, [userFriendlyAddress])
+    }, [userFriendlyAddress]);
 
     const expandDiv = () => {
         setIsExpanded((prev) => !prev);

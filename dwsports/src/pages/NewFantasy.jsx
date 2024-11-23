@@ -190,7 +190,6 @@ const NewFantasy = () => {
                             console.log("data inserted now!")
                         }
                     } else {
-                        console.log(data[0])
                         setBalance(data[0].balanceRemaining)
                         setDroppedPlayers(data[0].players.players)
                         setTeamRating(data[0].teamRating)
@@ -435,7 +434,7 @@ const toggleMenu = () => {
     }
 }
 
-
+    console.log(activePlayer)
     const placePlayer = (areaId) => {
         setAreaId(areaId)
         setOpenConfirmMenu(true)
@@ -483,7 +482,9 @@ const toggleMenu = () => {
                     value: activePlayer.value,
                     teamLogo: activePlayer.teamLogo,
                     rating: parsedRating,
-                    id: activePlayer.id 
+                    id: activePlayer.id,
+                    teamName: activePlayer.team,
+                    leagueName: activePlayer.leagueName
                 };
     
                 // Add the updated data to the referrals array
@@ -881,7 +882,37 @@ const toggleMenu = () => {
         setTimeout(() => {
             setOpenRemovePlayerMenu(true)
         }, 500)
-      }
+    }
+
+
+    const getLastMatchRating = async () => {
+        if(droppedTeamPlayers){
+            const allIds = Object.values(droppedTeamPlayers).flat().map(item => item.id);  
+            const options = {
+                method: 'GET',
+                url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+                params: {
+                  id: '9',
+                  season: '2024'
+                },
+                headers: {
+                  'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+                  'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+                }
+              };
+              
+              try {
+                  const response = await axios.request(options);
+                  console.log(response.data);
+              } catch (error) {
+                  console.error(error);
+              }
+        }
+    }
+
+    useEffect(() => {
+        getLastMatchRating();
+    }, [droppedTeamPlayers])
 
 
   return (

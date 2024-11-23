@@ -24,8 +24,9 @@ const Admin = () => {
             }
 
             for (const event of events) {
+                console.log(event)
                 // Generate a unique identifier for the event
-                const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
+                /* const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
 
                 // Check if the event has already been processed for this match
                 if (!processedEvents[matchId].has(eventId)) {
@@ -38,7 +39,7 @@ const Admin = () => {
 
                     // Mark this event as processed
                     processedEvents[matchId].add(eventId);
-                }
+                } */
             }
         }
     }
