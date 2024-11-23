@@ -26,16 +26,16 @@ const Admin = () => {
             for (const event of events) {
                 console.log(event)
                 const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
-                i/* f(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId)){
+                if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId)){
                     const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-                    await sendTelegramMessage(messageToSend);
+                    //await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
                 }
                 if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId)){
                     const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-                    await sendTelegramMessage(messageToSend);
+                    //await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
-                } */
+                }
                 // Generate a unique identifier for the event
                 //const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
 
@@ -92,7 +92,7 @@ const Admin = () => {
             });
 
             // Process events from the fetched matches
-            //await processMatchEvents(matches, sendTelegramMessage);
+            await processMatchEvents(matches, sendTelegramMessage);
         } catch (error) {
             console.error('Error fetching live matches:', error);
         }
