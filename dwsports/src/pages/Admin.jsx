@@ -26,7 +26,7 @@ const Admin = () => {
             for (const event of events) {
                 console.log(event)
                 const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
-                if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId)){
+                i/* f(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId)){
                     const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
                     await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
@@ -35,12 +35,12 @@ const Admin = () => {
                     const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
                     await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
-                }
+                } */
                 // Generate a unique identifier for the event
-                /* const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
+                //const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
 
                 // Check if the event has already been processed for this match
-                if (!processedEvents[matchId].has(eventId)) {
+                /* if (!processedEvents[matchId].has(eventId)) {
                     // Prepare the message
                     const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
 
@@ -92,7 +92,7 @@ const Admin = () => {
             });
 
             // Process events from the fetched matches
-            await processMatchEvents(matches, sendTelegramMessage);
+            //await processMatchEvents(matches, sendTelegramMessage);
         } catch (error) {
             console.error('Error fetching live matches:', error);
         }
