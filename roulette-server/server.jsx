@@ -12,6 +12,8 @@ const admin = require('firebase-admin');
 const supabase = createClient(supabaseUrl, supabaseKey);
 require('dotenv').config();
 const crypto = require('crypto');
+import { AuthDataValidator } from '@telegram-auth/server';
+import { urlStrToAuthDataMap } from '@telegram-auth/server/utils';
 
 
 admin.initializeApp({
@@ -89,34 +91,24 @@ app.get('/', (req, res) => {
 const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
-const verifyTelegramInitData = (initData) => {
-  const parsedData = Object.fromEntries(new URLSearchParams(initData));
-  const { hash, ...data } = parsedData;
+const validator = new AuthDataValidator({
+  botToken: TELEGRAM_BOT_TOKEN, // The bot token you got from BotFather
+});
 
-  const secretKey = crypto.createHash("sha256").update(TELEGRAM_BOT_TOKEN).digest();
+app.post('/telegram-auth', async (req, res) => {
+  const data = req.body; // This is the data sent from the React frontend
 
-  const dataCheckString = Object.keys(data)
-    .sort()
-    .map((key) => `${key}=${data[key]}`)
-    .join("\n");
+  try {
+    const user = await validator.validate(data);
 
-  const computedHash = crypto.createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
+    // The user object is now validated and you can handle it, e.g., login
+    console.log('Authenticated user:', user);
 
-  return computedHash === hash;
-};
-
-app.post("/api/auth/telegram", (req, res) => {
-  const { initData } = req.body;
-
-  if (!initData) {
-    return res.status(400).json({ success: false, message: "Missing initData." });
-  }
-
-  if (verifyTelegramInitData(initData)) {
-    const parsedData = Object.fromEntries(new URLSearchParams(initData));
-    res.json({ success: true, user: parsedData });
-  } else {
-    res.status(401).json({ success: false, message: "Invalid authentication data." });
+    // Send the user info back to the client or store it in your database
+    res.json(user); // Respond with the authenticated user data
+  } catch (error) {
+    console.error('Authentication error:', error);
+    res.status(400).json({ error: 'Invalid authentication data' });
   }
 });
 

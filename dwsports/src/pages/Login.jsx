@@ -5,53 +5,31 @@ import { LoginSection,GoogleButton,GoogleLogo,GoogleText } from './index'
 import logo from '../assets/google.png'
 import { FantasyState } from '../context/FantasyContext'
 import TelegramLogin from '../components/home/TelegramLogin'
+import { LoginButton } from '@telegram-auth/react';
 
 const Login = () => {
 
     const navigate = useNavigate()
     const {user, setUser} = FantasyState();
-
-
-    useEffect(() => {
-      const tg = window.Telegram?.WebApp;
-  
-      if (!tg) {
-        console.error("Telegram WebApp is not available. Open this inside Telegram.");
-        return;
-      }
-  
-      // Telegram WebApp Initialization
-      tg.ready(); // Notify Telegram that the app is ready
-  
-      console.log("Telegram WebApp initialized:", tg.initDataUnsafe);
-  
-      // Example UI customization
-      tg.MainButton.setText("Connect to Telegram");
-      tg.MainButton.show();
-  
-      // Attach handler to Main Button
-      tg.MainButton.onClick(() => {
-        console.log("MainButton clicked!");
-        fetch("https://pacgames-roulette-server.onrender.com/api/auth/telegram", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ initData: tg.initData }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              console.log("Authentication successful:", data.user);
-              alert(`Welcome, ${data.user.first_name}`);
-            } else {
-              console.error("Authentication failed:", data.message);
-              alert("Authentication failed. Try again.");
-            }
-          })
-          .catch((err) => {
-            console.error("Error during authentication:", err);
-          });
-      });
-    }, []);
+    
+    const handleAuthCallback = (data) => {
+      console.log(data);
+      // Call your backend to validate and sign in the user
+      // You can send 'data' to your backend API for further validation
+      fetch('https://pacgames-roulette-server.onrender.com/telegram-auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then((response) => response.json())
+      .then((user) => {
+        console.log('Authenticated user:', user);
+        // Store user data and handle post-login behavior
+      })
+      .catch((error) => console.error('Authentication failed:', error));
+    };
 
     /* const handleGoogleSignIn = async () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -68,9 +46,15 @@ const Login = () => {
   
     return (
       <LoginSection>
-        <GoogleButton style={{background: 'orange'}}>
-        <h1>Telegram Mini App</h1>
-        <p>Tap the button below to authenticate with Telegram.</p>
+        <GoogleButton>
+        <LoginButton
+        botUsername="PactonGamingZoneBot"
+        onAuthCallback={handleAuthCallback}
+        buttonSize="medium" // Adjust the button size
+        cornerRadius={5}    // Button corner radius
+        showAvatar={true}   // Show user's avatar on the button
+        lang="en"           // Language for the button
+      />
         </GoogleButton>
       </LoginSection>
     )

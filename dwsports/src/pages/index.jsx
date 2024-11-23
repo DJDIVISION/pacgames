@@ -1858,6 +1858,8 @@ export const GoogleButton = styled(motion.div)`
     border: 1px solid white;
     border-radius: 10px;
     display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
 `;
 
