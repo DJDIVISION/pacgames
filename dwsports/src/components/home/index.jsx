@@ -1,28 +1,8 @@
 import styled from 'styled-components'
 import { motion } from 'framer-motion';
 import { Button } from '@mui/material';
-import back from '../../assets/backs/back9.jpg'
-export const HeroSection = styled.div`
-    width: 100%;
-    min-height: 100vh;
-    background: ${props => props.theme.body};
-    ${props => props.theme.displayFlexColumn};
-    padding: 10px;
-    background-image: url(${back});
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
-    overflow: hidden
-    img{
-        width: 100%;
-        display: block;
-        object-fit: cover;
-    }
-    @media(max-width: 498px){
-        
-    }
-`;
+
+
 
 export const LowRower = styled.div`
     width: 100%;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled, {useTheme} from 'styled-components'
 import { motion, useTransform, useScroll, useAnimation, AnimatePresence } from 'framer-motion';
-import {HeroSection, LanguageHolder, LanguagesRow, StyledButton} from './index'
+import {LanguageHolder, LanguagesRow, StyledButton} from './index'
 import Ton from '../../assets/logos/ton.png'
 import Sho from '../../assets/logos/sho.png'
 import back2 from '../../assets/backs/zone.jpg'
@@ -33,6 +33,9 @@ import { initializeApp } from 'firebase/app';
 import { initializePushNotifications  } from "../../push.js";
 import { TonClient } from "@ton/ton";
 import {Address, beginCell, Cell} from '@ton/core'
+import back1 from '../../assets/backs/back9.jpg'
+import back4 from '../../assets/backs/back2.png'
+import back3 from '../../assets/backs/back1.jpg'
 
 const Hero = () => {
 
@@ -65,6 +68,15 @@ const Hero = () => {
     const userFriendlyAddress = useTonAddress();
     const {session, setSession} = FantasyState();
     const {currentUser, setCurrentUser} = FantasyState();
+    const images = [back1, back4, back3];
+    const [currentImage, setCurrentImage] = useState(0);
+    useEffect(() => {
+        const interval = setInterval(() => {
+          setCurrentImage((prev) => (prev + 1) % images.length);
+        }, 10000); // Change image every 10 seconds
+    
+        return () => clearInterval(interval); // Cleanup interval on unmount
+      }, [images.length]);
     const languages = [
         {
             icon: <img src={ES} alt="ES" onClick={() => i18n.changeLanguage("es")} />,
@@ -79,6 +91,8 @@ const Hero = () => {
             name: 'EN'
         }
     ];
+
+    
     
     
     
@@ -599,7 +613,7 @@ const Hero = () => {
     
 
   return (
-    <HeroSection ref={ref}>
+    <HeroSection>
             <TopHeroRow>
             <TopHeader>
                     <TopText>{t("hero.title")}<br/><span>SHO</span></TopText>
@@ -786,23 +800,42 @@ const ReferralName = styled.div`
     }
 `;
 
-const ReferralMail = styled.div`
-    width: 40%;
-    height: 100%;
-    ${props => props.theme.displayFlex};
-    color: rgba(244,215,21,1);
-    font-size: 24px;
-    text-align: center;
-    padding: 0 10px;
-    font-weight: bold;
-    white-space: nowrap;      /* Prevents text from wrapping to the next line */
-    overflow: hidden;         /* Ensures content that overflows the container is hidden */
-    text-overflow: ellipsis;
-    @media(max-width: 968px){
-        font-size: 16px;
-        width: 35%;
-    }
-`;
+const HeroSection = styled(motion.div)`
+        width: 100%;
+        min-height: 100vh;
+        background: ${props => props.theme.body};
+        ${props => props.theme.displayFlexColumn};
+        padding: 10px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+        animation: backgroundChange 30s infinite;
+        @keyframes backgroundChange {
+            0% {
+            background-image: url(${back1});
+            }
+            33% {
+            background-image: url(${back3});
+            }
+            66% {
+            background-image: url(${back4});
+            }
+            100% {
+            background-image: url(${back1});
+            }
+        }
+        img{
+            width: 100%;
+            display: block;
+            object-fit: cover;
+        }
+        @media(max-width: 498px){
+            
+        }
+    `;
 
 const SecondRowAvatar = styled.div`
     width: 25%;
