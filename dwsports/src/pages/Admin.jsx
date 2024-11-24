@@ -18,6 +18,22 @@ const Admin = () => {
             const matchId = match.fixture.id;
             const events = match.events;
             console.log(match)
+            let league
+            if(match.league.name === "Premier League"){
+                league = "🇬🇧"
+            }
+            if(match.league.name === "La Liga"){
+                league = "🇪🇸"
+            }
+            if(match.league.name === "Serie A"){
+                league = "🇮🇹"
+            }
+            if(match.league.name === "Bundesliga"){
+                league = "🇩🇪"
+            }
+            if(match.league.name === "Ligue 1"){
+                league = "🇫🇷"
+            }
             // Initialize processed events for this match if not already done
             if (!processedEvents[matchId]) {
                 processedEvents[matchId] = new Set();
@@ -27,13 +43,13 @@ const Admin = () => {
                 console.log(event)
                 const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
                 if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId)){
-                    const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-                    //await sendTelegramMessage(messageToSend);
+                    const messageToSend = `${league} ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
                 }
                 if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId)){
-                    const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-                    //await sendTelegramMessage(messageToSend);
+                    const messageToSend = `${league} ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
                 }
                 // Generate a unique identifier for the event

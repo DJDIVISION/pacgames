@@ -599,7 +599,7 @@ const toggleMenu = () => {
                     const parsedPower = parseFloat(power)
                     teamRating =  (parsedRating + parsedPower)/ 2
                 }
-                const newRating = parseFloat(teamRating.toFixed(2))
+                const lastMatchRating = parseFloat(teamRating.toFixed(2))
                 // Initialize referrals array if it doesn't exist
                 userPlayersData.players = userPlayersData.players || []; 
                 
@@ -620,7 +620,7 @@ const toggleMenu = () => {
                 // Update the user's jsonb column
                 const { error: updateError } = await supabase
                     .from('fantasyFootball')
-                    .update({ players: userPlayersData, balanceRemaining: parsedBalance, teamRating: newRating }) 
+                    .update({ players: userPlayersData, balanceRemaining: parsedBalance, teamRating: lastMatchRating }) 
                     .eq('id', user.id); // Identify which user to update
     
                 if (updateError) {
@@ -899,32 +899,100 @@ const toggleMenu = () => {
         }, 500)
     }
 
+    async function fetchPlayerData(leagueName) {
+        let currentRound
+        const filter = leagues.filter((el) => el.league === leagueName)
+        currentRound = filter[0].currentRound
+        const {data, error} = await supabase
+            .from("fixtures")
+            .select(`${currentRound}`)
+            .eq("leagueName", leagueName);
+    
+        if (error) {
+            console.error(`Error fetching data for ${leagueName}:`, response.error);
+            return null;
+        } else {
+            return response.data.response;
+        }
+        
+    }
 
-    const getLastMatchRating = async () => {
-        if(droppedTeamPlayers){
-            const allIds = Object.values(droppedTeamPlayers).flat().map(item => item.id);  
-            const options = {
-                method: 'GET',
-                url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-                params: {id: '1208139'},
-                headers: {
-                  'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-                  'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+    async function fetchFixtureData(fixtureId,playerId,teamName) {
+        const options = {
+            method: 'GET',
+            url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+            params: {id: fixtureId},
+            headers: {
+              'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+              'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+            }
+          };
+    
+        try {
+            const response = await axios.request(options);
+            response.data.response[0].players.forEach((el) => {
+                if(el.team.name === teamName){
+                    el.players.forEach((player) => {
+                        if(player.player.id === playerId){
+                            console.log(player.statistics[0].games.rating)
+                        }
+                    })
                 }
-              };
-              
-              try {
-                  const response = await axios.request(options);
-                  console.log(response.data);
-              } catch (error) {
-                  console.error(error);
-              }
+            })
+            
+        } catch (error) {
+            console.error(`Error fetching fixture ${fixtureId}:`, error);
+            return null;
         }
     }
 
-    useEffect(() => {
-        getLastMatchRating();
-    }, [droppedTeamPlayers])
+    async function fetchDataFromSupabase(leagueName,playerId,teamName) {
+        console.log(`Fetching data for player ${playerId} in league ${leagueName}`);
+        let currentRound
+        const filter = leagues.filter((el) => el.league === leagueName)
+        currentRound = filter[0].currentRound
+        const {data, error} = await supabase
+            .from("fixtures")
+            .select(`${currentRound}`)
+            .eq("leagueName", leagueName);
+    
+        if (error) {
+            console.error(`Error fetching data for ${leagueName}:`, response.error);
+            return null;
+        } else {
+            console.log(data[0][currentRound])
+            data[0][currentRound].forEach((match) => {
+                fetchFixtureData(match.fixture.id,playerId,teamName)
+            })
+        }
+        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+        console.log(`Data fetched for player ${playerId}`);
+    }
+    
+
+
+    const getLastMatchRating = async () => {
+        if (droppedTeamPlayers) {
+            console.log(droppedTeamPlayers)
+            const areas = Object.values(droppedTeamPlayers); // Get all areas
+            for (const area of areas) {
+                for (const player of area) {
+                    if (player.lastMatchRating === null) {
+                        await fetchDataFromSupabase(player.leagueName, player.id, player.teamName);
+                        // Add a delay between requests if needed
+                        await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
+                    }
+                }
+            }
+        }
+    }
+
+    const getData = () => {
+        getLastMatchRating().then(results => {
+            console.log("Results:", results);
+        });
+    }
+
 
 
   return (
@@ -1107,7 +1175,7 @@ const toggleMenu = () => {
                                       width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
                                       height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
                                   }} /><PlayerTeamLogoValue><h2>{player.value}M€</h2></PlayerTeamLogoValue><PlayerTeamLogoShort><img src={player.teamLogo} alt="logo" /></PlayerTeamLogoShort>{gameStarted ? 
-                                    <PlayerTeamRatingShort style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRatingShort> : 
+                                    <PlayerTeamRatingShort style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRatingShort> : 
                                     <PlayerTeamRatingShort style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRatingShort>}</MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
                                 ))}
                            </MyPlayerRow>
@@ -1235,7 +1303,7 @@ const toggleMenu = () => {
                             return(
                                 <MyTeamPlayerHolder>
                                     <MyTeamAvatar><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}<Player key={player.id} player={player} /></MyTeamAvatar>
                                     <MyTeamName><h2>{player.name}</h2></MyTeamName>
                                 </MyTeamPlayerHolder>
@@ -1246,7 +1314,7 @@ const toggleMenu = () => {
                 <MyTeamRow>
                     <AbsoluteDivLeft>
                         {gameStarted ? (
-                            <h3>WAITING FOR RESULTS</h3>
+                            <h3 onClick={getData}>WAITING FOR RESULTS</h3>
                         ) : (
                             <StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton>
                         )}
@@ -1261,7 +1329,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                         <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}
                         </div>
                         )
@@ -1275,7 +1343,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                         <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}
                         </div>
                         )
@@ -1289,7 +1357,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                     <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
@@ -1301,7 +1369,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                             <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
@@ -1313,7 +1381,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                     <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
@@ -1325,7 +1393,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                     <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
@@ -1337,7 +1405,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                     <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
@@ -1349,7 +1417,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                     <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
@@ -1361,7 +1429,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                     <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
@@ -1373,7 +1441,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                     <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
@@ -1385,7 +1453,7 @@ const toggleMenu = () => {
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
                     <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
                         <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
