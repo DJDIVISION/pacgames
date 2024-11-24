@@ -87,7 +87,7 @@ export const LanguageHolder = styled.div`
     height: 100%;
     ${props => props.theme.displayFlexCenter};
     img{
-        width: 50%;
+        width: 50% !important;
         display: block;
         object-fit: cover;
     }
