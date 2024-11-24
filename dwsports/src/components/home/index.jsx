@@ -26,7 +26,8 @@ export const TeamBetsHolderHidden = styled(motion.div)`
 export const TeamBetsHolder = styled(motion.div)`
     width: 50%;
     border: 3px solid ${props => props.theme.MainAccent};
-    background: ${props => props.theme.cardTwo};
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
     ${props => props.theme.displayFlexColumnCenter}
     
     border-radius: 10px;
