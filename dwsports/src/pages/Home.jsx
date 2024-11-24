@@ -298,7 +298,7 @@ const Home = ({toggleTheme}) => {
               </WalletsRow></RowerRowBetsCenter>
               <RowerRowBetsCenter >
               </RowerRowBetsCenter>
-              <RowerRowBetsCenter>{login ? <h2>EMAIL LOG IN</h2> : <h2>REGISTER</h2>}</RowerRowBetsCenter>
+             {/*  <RowerRowBetsCenter>{login ? <h2>EMAIL LOG IN</h2> : <h2>REGISTER</h2>}</RowerRowBetsCenter>
               {login ? (
                 <>
                 <FormWrapper>
@@ -316,7 +316,7 @@ const Home = ({toggleTheme}) => {
                 <>
                 <FormWrapper style={{minHeight: '60vh'}}>
                 <RowerSmallCenter><h3>Avatar</h3></RowerSmallCenter>
-              <RowerSmallCenter style={{height: '70px'}}>
+              <RowerSmallCenter style={{height: '50px'}}>
                 <ImageClicker>
                     {profileImage ? (
                       <h3>IMAGE</h3>
@@ -338,7 +338,7 @@ const Home = ({toggleTheme}) => {
               <RowerSmallCenter onClick={() => setLogin(true)} style={{transform: 'translateY(10px)'}}><h3>LOG IN HERE</h3></RowerSmallCenter>
               
               </>
-              )}
+              )} */}
               </Container>
       </StaticSection>
         )}
