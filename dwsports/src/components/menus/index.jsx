@@ -160,6 +160,8 @@ export const DepositWrapper = styled.div`
     padding: 10px;
     margin: 10px 0;
     overflow: hidden;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
     span{
         color: ${props => props.theme.MainAccent};
         margin: 5px;
@@ -169,6 +171,27 @@ export const DepositWrapper = styled.div`
         height: 25vh;
     }
 `;
+export const SmallDepositWrapper = styled.div`
+    width: 60%;
+    height: 15vh;
+    border: 2px solid ${props => props.theme.text};
+    ${props => props.theme.displayFlexColumn};
+    text-align: center;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    overflow: hidden;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+    span{
+        color: ${props => props.theme.MainAccent};
+        margin: 5px;
+    }
+    @media(max-width: 490px){
+        width: 90%; 
+        height: 20vh;
+    }
+`;
 
 export const DepositTokenRow = styled.div`
     width: 100%;
@@ -176,13 +199,13 @@ export const DepositTokenRow = styled.div`
     ${props => props.theme.displayFlexColumn};
 `;
 export const DepositTokenRowSmall = styled.div`
-    width: 80%;
+    width: 90%;
     height: 50%;
     ${props => props.theme.displayFlexCenter};
     text-align: center;
     h2{
         color: ${props => props.theme.text};
-        font-size: 18px;
+        font-size: 14px;
         font-weight: bold;
     }
     span{

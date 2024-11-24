@@ -1,6 +1,6 @@
 import React,{useEffect, useState} from 'react'
 import {motion, AnimatePresence} from 'framer-motion'
-import { CloseStats,BetSection,DepositWrapper,LinkInputField,SmallDepositTitle,DepositTitle,DepositBigTitle,BalanceWrapper, DepositTokenRow, TokenColumn, TokenHolder, LogoHolder, TokenNameHolder, DepositTokenFrom, DepositTokenToken, SmallLogoHolder, InputHolder, InputInput, DepositTokenRowSmall } from './index' 
+import { CloseStats,BetSection,DepositWrapper,LinkInputField,SmallDepositTitle,DepositTitle,DepositBigTitle,BalanceWrapper, DepositTokenRow, TokenColumn, TokenHolder, LogoHolder, TokenNameHolder, DepositTokenFrom, DepositTokenToken, SmallLogoHolder, InputHolder, InputInput, DepositTokenRowSmall, SmallDepositWrapper } from './index' 
 import {BetInput, StyledMenu} from '../../components/index'
 import { StyledButton } from '../../pages';
 import { TonClient, Address, internal } from '@ton/ton';
@@ -597,6 +597,12 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
             <DepositTokenRowSmall><StyledButton onClick={handleSendTonculaTransaction} style={{fontSize: '18px'}}>DEPOSIT</StyledButton></DepositTokenRowSmall>
           </DepositWrapper>
         )}
+        <DepositWrapper>
+        <DepositTokenRowSmall>
+            <h2>If you find any trouble with your deposit, you can always deposit manually in our bot.</h2>
+            </DepositTokenRowSmall>
+            <DepositTokenRowSmall><a href="https://t.me/PactonGamingZoneBot" target="_blank"><StyledButton>GO TO BOT</StyledButton></a></DepositTokenRowSmall>
+        </DepositWrapper>
     </StyledMenu>
     
   )
