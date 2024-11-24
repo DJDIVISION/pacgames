@@ -80,7 +80,7 @@ const NewFantasy = () => {
     ]
     const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
-    
+    const [loadingRating, setLoadingRating] = useState(false)
     const navigate = useNavigate()
     const [startDate, setStartDate] = useState("2024-11-22 20:30:00")
     const [endDate, setEndDate] = useState('2024-11-25 23:00:00')
@@ -899,24 +899,6 @@ const toggleMenu = () => {
         }, 500)
     }
 
-    async function fetchPlayerData(leagueName) {
-        let currentRound
-        const filter = leagues.filter((el) => el.league === leagueName)
-        currentRound = filter[0].currentRound
-        const {data, error} = await supabase
-            .from("fixtures")
-            .select(`${currentRound}`)
-            .eq("leagueName", leagueName);
-    
-        if (error) {
-            console.error(`Error fetching data for ${leagueName}:`, response.error);
-            return null;
-        } else {
-            return response.data.response;
-        }
-        
-    }
-
     async function fetchFixtureData(fixtureId,playerId,teamName) {
         const options = {
             method: 'GET',
@@ -935,10 +917,47 @@ const toggleMenu = () => {
                     el.players.forEach((player) => {
                         if(player.player.id === playerId){
                             console.log(player.statistics[0].games.rating)
+                            const areas = Object.values(droppedTeamPlayers)
+                            for (const area of areas){
+                                for (const man of area){
+                                    if(man.id === playerId){
+                                        if(player.statistics[0].games.rating === null){
+                                            man.lastMatchRating = 0 
+                                        } else {
+                                            man.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                            droppedPlayers.forEach((man) => {
+                                if(man.id === playerId){
+                                    player.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
+                                }
+                            })
                         }
+                        
                     })
                 }
             })
+            const date = new Date();
+            const updatedData = {
+                players: droppedTeamPlayers,
+                teamRating: teamAverage,
+                date: date
+            }
+            const { error: updateError } = await supabase
+                    .from('fantasyFootball')
+                    .update({ nextMatch: updatedData}) 
+                    .eq('id', user.id); // Identify which user to update
+    
+                if (updateError) {
+                    console.error('Error updating user data:', updateError.message);
+                } else {
+                   console.log("Your player has been saved!")
+            }
+            
+           
             
         } catch (error) {
             console.error(`Error fetching fixture ${fixtureId}:`, error);
@@ -946,8 +965,10 @@ const toggleMenu = () => {
         }
     }
 
+    
+
     async function fetchDataFromSupabase(leagueName,playerId,teamName) {
-        console.log(`Fetching data for player ${playerId} in league ${leagueName}`);
+        
         let currentRound
         const filter = leagues.filter((el) => el.league === leagueName)
         currentRound = filter[0].currentRound
@@ -960,18 +981,19 @@ const toggleMenu = () => {
             console.error(`Error fetching data for ${leagueName}:`, response.error);
             return null;
         } else {
-            console.log(data[0][currentRound])
             data[0][currentRound].forEach((match) => {
                 fetchFixtureData(match.fixture.id,playerId,teamName)
             })
         }
         await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
-        console.log(`Data fetched for player ${playerId}`);
+        
     }
     
 
 
     const getLastMatchRating = async () => {
+        setLoadingRating(true)
+        console.log("starting to fetch")
         if (droppedTeamPlayers) {
             console.log(droppedTeamPlayers)
             const areas = Object.values(droppedTeamPlayers); // Get all areas
@@ -980,18 +1002,25 @@ const toggleMenu = () => {
                     if (player.lastMatchRating === null) {
                         await fetchDataFromSupabase(player.leagueName, player.id, player.teamName);
                         // Add a delay between requests if needed
-                        await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
+                        await new Promise(resolve => setTimeout(resolve, 500)); 
+                        console.log(`Fetching rating for ${player.name}`)
+                        
+                    } else {
+                        return
                     }
                 }
             }
         }
+        setDroppedTeamPlayers(droppedTeamPlayers)
+        setLoadingRating(false)
     }
+    
 
-    const getData = () => {
-        getLastMatchRating().then(results => {
-            console.log("Results:", results);
-        });
-    }
+    useEffect(() => {
+        if(gameStarted && openDropMenu){
+            getLastMatchRating()
+        }
+    }, [gameStarted])
 
 
 
@@ -1170,14 +1199,15 @@ const toggleMenu = () => {
                           {group.position === "Midfielder" && `${t("fantasy.positionOrder2")}`}{group.position === "Defender" && `${t("fantasy.positionOrder3")}`}
                           {group.position === "Goalkeeper" && `${t("fantasy.positionOrder4")}`}</h2></MyPlayerPosition>
                             <MyPlayerRow>
-                                {group.players.map((player) => (
-                                    <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
-                                      width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
-                                      height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
-                                  }} /><PlayerTeamLogoValue><h2>{player.value}M€</h2></PlayerTeamLogoValue><PlayerTeamLogoShort><img src={player.teamLogo} alt="logo" /></PlayerTeamLogoShort>{gameStarted ? 
-                                    <PlayerTeamRatingShort style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRatingShort> : 
-                                    <PlayerTeamRatingShort style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRatingShort>}</MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
-                                ))}
+                                {group.players.map((player) => {
+                                    console.log(player)
+                                    return(
+                                        <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
+                                            width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
+                                            height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
+                                        }} /><PlayerTeamLogoValue><h2>{player.value}M€</h2></PlayerTeamLogoValue><PlayerTeamLogoShort><img src={player.teamLogo} alt="logo" /></PlayerTeamLogoShort><PlayerTeamRatingShort style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRatingShort></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
+                                    )
+                                })}
                            </MyPlayerRow>
                            </div>
                       )
@@ -1302,9 +1332,7 @@ const toggleMenu = () => {
                         {droppedPlayers.map((player) => {
                             return(
                                 <MyTeamPlayerHolder>
-                                    <MyTeamAvatar><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
-                        <PlayerTeamRating style={{background: player.lastMatchRating ? getBackgroundColor(player.lastMatchRating) : 'aqua'}}>{player.lastMatchRating}</PlayerTeamRating> : 
-                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}<Player key={player.id} player={player} /></MyTeamAvatar>
+                                    <MyTeamAvatar><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><Player key={player.id} player={player} /></MyTeamAvatar>
                                     <MyTeamName><h2>{player.name}</h2></MyTeamName>
                                 </MyTeamPlayerHolder>
                             )
@@ -1314,7 +1342,7 @@ const toggleMenu = () => {
                 <MyTeamRow>
                     <AbsoluteDivLeft>
                         {gameStarted ? (
-                            <h3 onClick={getData}>WAITING FOR RESULTS</h3>
+                            <h3>WAITING FOR RESULTS</h3>
                         ) : (
                             <StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton>
                         )}
