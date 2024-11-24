@@ -935,7 +935,7 @@ const toggleMenu = () => {
         animate={isDateExpanded ? "expanded" : "collapsed"} 
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
-            <h2>{t("fantasy.title1")} {startDate} {t("fantasy.title2")} {endDate}</h2>
+            <h2>{t("fantasy.title1")} {startDate} <br/>{t("fantasy.title2")} {endDate}</h2>
         </Title>
         <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
         <AnimatePresence>
@@ -1091,7 +1091,8 @@ const toggleMenu = () => {
                     exit="exit"
                     transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                 <MyBalanceRow><h2>{t("fantasy.title3")}: {balance}M€</h2></MyBalanceRow>
-                <MyBalanceRow>{droppedPlayers.length > 0 ? <h2>{t("fantasy.title11")}: <span style={{color: getBackgroundColor(teamRating)}}>{teamRating}</span></h2> : <h2></h2>}</MyBalanceRow>
+                <MyBalanceRow>{droppedPlayers.length > 0 ? <h2>{t("fantasy.title11")}: {gameStarted ? <span style={{color: getBackgroundColor(teamNewAverage)}}>{teamNewAverage}</span>
+                : <span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span>}</h2> : <h2></h2>}</MyBalanceRow>
                 {droppedPlayers.length > 0 ? (
                     <MyPlayerContainer >
                     {groupedPlayers.map((group) => (
@@ -1105,7 +1106,9 @@ const toggleMenu = () => {
                                     <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
                                       width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
                                       height: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 }
-                                  }} /><PlayerTeamLogoValue><h2>{player.value}M€</h2></PlayerTeamLogoValue><PlayerTeamLogoShort><img src={player.teamLogo} alt="logo" /></PlayerTeamLogoShort><PlayerTeamRatingShort style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRatingShort></MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
+                                  }} /><PlayerTeamLogoValue><h2>{player.value}M€</h2></PlayerTeamLogoValue><PlayerTeamLogoShort><img src={player.teamLogo} alt="logo" /></PlayerTeamLogoShort>{gameStarted ? 
+                                    <PlayerTeamRatingShort style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRatingShort> : 
+                                    <PlayerTeamRatingShort style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRatingShort>}</MyPlayerAvatar><MyPlayerName><h2>{player.name}</h2></MyPlayerName></MyPlayer>
                                 ))}
                            </MyPlayerRow>
                            </div>

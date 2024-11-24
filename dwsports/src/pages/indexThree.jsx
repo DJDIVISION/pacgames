@@ -182,14 +182,14 @@ text-align: center;
 position: relative;
 overflow: hidden;
 h2{
-    font-size: 24px;
+    font-size: 18px;
     width: 80%;
     color: ${props => props.theme.text};
 }
 @media(max-width: 498px){
     height: 10vh;
     h2{
-        font-size: 18px;
+        font-size: 14px;
         width: 70%;
     }
 }
