@@ -46,39 +46,45 @@ const NewFantasy = () => {
             league: "Premier League",
             logo: england,
             name: "England",
-            id: 1
+            id: 1,
+            currentRound: 12
         },
         {
             league: "La Liga",
             logo: spain,
             name: "Spain",
-            id: 2
+            id: 2,
+            currentRound: 14
         },
         {
             league: "Serie A",
             logo: italy,
             name: "Italy",
-            id: 3
+            id: 3,
+            currentRound: 13
         },
         {
             league: "Ligue 1",
             logo: france,
             name: "France",
-            id: 4
+            id: 4,
+            currentRound: 12
         },
         {
             league: "Bundesliga",
             logo: germany,
             name: "Germany",
-            id: 5
+            id: 5,
+            currentRound: 11
         }
     ]
     const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
     
     const navigate = useNavigate()
-    const [startDate, setStartDate] = useState('2024-11-01')
-    const [endDate, setEndDate] = useState('2024-11-05')
+    const [startDate, setStartDate] = useState("2024-11-22 20:30:00")
+    const [endDate, setEndDate] = useState('2024-11-25 23:00:00')
+    const [gameStarted, setGameStarted] = useState(false)
     const [allLeagues, setAllLeagues] = useState(leagues)
     const [availableLeagues, setAvailableLeagues] = useState([])
     const [activeBall, setActiveBall] = useState(1)
@@ -118,6 +124,7 @@ const NewFantasy = () => {
     const [playerToFind, setPlayerToFind] = useState("")
     const [width, setWidth] = useState(0);
     const [teamAverage, setTeamAverage] = useState(0)
+    const [teamNewAverage, setTeamNewAverage] = useState(0)
     const carroussel = useRef(null);
     const [playerHasTeam, setPlayerHasTeam] = useState(false)
     const [playerToRemove, setPlayerToRemove] = useState(null)
@@ -135,6 +142,14 @@ const NewFantasy = () => {
         area10: [],
         area11: []
       });
+
+    useEffect(() => {
+        const start = new Date(startDate)
+        const end = new Date(endDate)
+        const now = new Date(); // Current date and time
+        const isBetween = now >= start && now <= end;
+        setGameStarted(isBetween)
+    }, [])
 
       useEffect(() => {
         if(droppedPlayers){
@@ -434,7 +449,7 @@ const toggleMenu = () => {
     }
 }
 
-    console.log(activePlayer)
+
     const placePlayer = (areaId) => {
         setAreaId(areaId)
         setOpenConfirmMenu(true)
@@ -890,11 +905,8 @@ const toggleMenu = () => {
             const allIds = Object.values(droppedTeamPlayers).flat().map(item => item.id);  
             const options = {
                 method: 'GET',
-                url: 'https://api-football-v1.p.rapidapi.com/v3/players',
-                params: {
-                  id: '9',
-                  season: '2024'
-                },
+                url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+                params: {id: '1208139'},
                 headers: {
                   'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
                   'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
@@ -1219,7 +1231,9 @@ const toggleMenu = () => {
                         {droppedPlayers.map((player) => {
                             return(
                                 <MyTeamPlayerHolder>
-                                    <MyTeamAvatar><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating><Player key={player.id} player={player} /></MyTeamAvatar>
+                                    <MyTeamAvatar><PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}<Player key={player.id} player={player} /></MyTeamAvatar>
                                     <MyTeamName><h2>{player.name}</h2></MyTeamName>
                                 </MyTeamPlayerHolder>
                             )
@@ -1227,8 +1241,14 @@ const toggleMenu = () => {
                     </MyPlayersInnerRow>
                 </MyPlayersRow>
                 <MyTeamRow>
-                    <AbsoluteDivLeft><StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton></AbsoluteDivLeft>
-                    <AbsoluteDivRight><h3>TEAM AVERAGE: <span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span></h3></AbsoluteDivRight>
+                    <AbsoluteDivLeft>
+                        {gameStarted ? (
+                            <h3>WAITING FOR RESULTS</h3>
+                        ) : (
+                            <StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton>
+                        )}
+                    </AbsoluteDivLeft>
+                    <AbsoluteDivRight><h3>TEAM AVERAGE: <br/>{gameStarted ? <span style={{color: getBackgroundColor(teamNewAverage)}}>{teamNewAverage}</span> : <span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span>}</h3></AbsoluteDivRight>
                     <FieldWrapper className='layout1'>
                     <BetArea id="area1" className='droppable-area'>
                     {droppedTeamPlayers.area1.map((player) => {
@@ -1237,7 +1257,9 @@ const toggleMenu = () => {
                             
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                        <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>
+                        <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}
                         </div>
                         )
                     })}
@@ -1249,7 +1271,9 @@ const toggleMenu = () => {
                             
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                        <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>
+                        <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}
                         </div>
                         )
                     })}
@@ -1261,7 +1285,9 @@ const toggleMenu = () => {
                             
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
                     </BetArea>
@@ -1271,7 +1297,9 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                            <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                            <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
                     </BetArea>
@@ -1281,7 +1309,9 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
                     </BetArea>
@@ -1291,7 +1321,9 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
                     </BetArea>
@@ -1301,7 +1333,9 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
                     </BetArea>
@@ -1311,7 +1345,9 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
                     </BetArea>
@@ -1321,7 +1357,9 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
                     </BetArea>
@@ -1331,7 +1369,9 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
                     </BetArea>
@@ -1341,7 +1381,9 @@ const toggleMenu = () => {
                         <div key={player.id} style={{position: 'relative'}}>
                         <Avatar alt="Image" src={player.image} sx={{ width: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 }, 
                         height: { xs: 50, sm: 50, md: 40, lg: 60, xl: 60 },}} />
-                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo><PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>                        </div>
+                    <PlayerTeamLogo onClick={() => removePlayer(player)}><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>{gameStarted ? 
+                        <PlayerTeamRating style={{background: player.newRating ? getBackgroundColor(player.newRating) : 'aqua'}}>{player.newRating}</PlayerTeamRating> : 
+                        <PlayerTeamRating style={{background: getBackgroundColor(player.rating)}}>{player.rating}</PlayerTeamRating>}</div>
                         )
                     })}
                     </BetArea>
@@ -1538,7 +1580,13 @@ const AbsoluteDivLeft = styled.div`
     top: 10px;
     left: 20px;
     z-index: 50;
+    text-align: center;
     ${props => props.theme.displayFlexCenter};
+    h3{
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+    }
 `;
 
 const AbsoluteDivRight = styled.div`
