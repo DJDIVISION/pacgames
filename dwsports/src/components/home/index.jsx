@@ -103,10 +103,12 @@ export const RowerRowBets = styled.div`
 
 export const WalletsRow = styled.div`
     width: 200px;
-    height: 70px;
+    height: 100%;
     border-radius: 8px;
+    border: 1px solid white;
     ${props => props.theme.displayFlexCenter};
-    background: ${props => props.theme.body};
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
     margin: 15px 0;
     //box-shadow: inset 0 0 25px ${props => props.theme.text};
     img{

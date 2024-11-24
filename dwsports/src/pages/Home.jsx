@@ -26,7 +26,7 @@ import back4 from '../assets/backs/back9.png'
 import WalletMenu from '../components/menus/WalletMenu'
 import Footer from '../components/Footer/Footer'
 import SmartFooter from '../components/Footer/SmartFooter'
-import { Burguer,CloseBurguer, DarkIcon, LightIcon, RowerRowBetsCenter, StaggerAvatarName, StaggerContainer, StaggerImageHolder, StaggerRow } from '../components'
+import { Burguer,CloseBurguer, DarkIcon, FormWrapper, ImageClicker, LightIcon, RowerInput, RowerRowBetsCenter, RowerSmallCenter, StaggerAvatarName, StaggerContainer, StaggerImageHolder, StaggerRow } from '../components'
 import { AbsoluteHomeLeft } from './indexThree'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase/client'
@@ -51,6 +51,11 @@ const Home = ({toggleTheme}) => {
   const theme = useTheme();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const {admin, isAdmin} = FantasyState();
+  const [login, setLogin] = useState(true)
+  const [register, setRegister] = useState(false)
+  const [email, setEmail] = useState(null)
+  const [password, setPassword] = useState(null)
+  const [profileImage, setProfileImage] = useState(null)
   
   useEffect(() => {
     if(session === null){
@@ -85,6 +90,7 @@ const Home = ({toggleTheme}) => {
         setCurrentUser(session.user); // Set user when signed in
       } else if (event === 'SIGNED_OUT') {
         setCurrentUser(null); // Clear user on sign out
+        setSession(null)
       }
     });
 
@@ -287,11 +293,52 @@ const Home = ({toggleTheme}) => {
         ) : (
       <StaticSection>
             <Container>
-              <RowerRowBetsCenter style={{ height: '70px' }} onClick={() => handleGoogleSignIn()}><WalletsRow>
+              <RowerRowBetsCenter onClick={() => handleGoogleSignIn()}><WalletsRow>
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
-              <RowerRowBetsCenter style={{ height: '70px' }}>
+              <RowerRowBetsCenter >
               </RowerRowBetsCenter>
+              <RowerRowBetsCenter>{login ? <h2>EMAIL LOG IN</h2> : <h2>REGISTER</h2>}</RowerRowBetsCenter>
+              {login ? (
+                <>
+                <FormWrapper>
+              
+                <RowerSmallCenter><h3>Email</h3></RowerSmallCenter>
+                <RowerInput type="email" required placeholder="Enter your email" />
+                <RowerSmallCenter><h3>Password</h3></RowerSmallCenter>
+                <RowerInput type="password" required placeholder="Enter your password" />
+                <RowerSmallCenter style={{height: '20px'}}></RowerSmallCenter>
+                <RowerSmallCenter><StyledButton style={{fontSize: '16px', padding: '5px 15px'}}>LOG IN</StyledButton></RowerSmallCenter>
+                </FormWrapper>
+                <RowerSmallCenter onClick={() => setLogin(false)} style={{transform: 'translateY(10px)'}}><h3>REGISTER HERE</h3></RowerSmallCenter>
+                </>
+              ) : (
+                <>
+                <FormWrapper style={{minHeight: '60vh'}}>
+                <RowerSmallCenter><h3>Avatar</h3></RowerSmallCenter>
+              <RowerSmallCenter style={{height: '70px'}}>
+                <ImageClicker>
+                    {profileImage ? (
+                      <h3>IMAGE</h3>
+                    ) : (
+                      <h3>CLICK TO ADD</h3>
+                    )}
+                </ImageClicker>
+              </RowerSmallCenter>
+              <RowerSmallCenter><h3>Email</h3></RowerSmallCenter>
+              <RowerInput type="email" required placeholder="Enter your email" />
+              
+              
+              <RowerSmallCenter><h3>Password</h3></RowerSmallCenter>
+              <RowerInput type="password" required placeholder="Enter your password" />
+              <RowerSmallCenter style={{height: '20px'}}></RowerSmallCenter>
+              <RowerSmallCenter><StyledButton style={{fontSize: '16px', padding: '5px 15px'}}>REGISTER</StyledButton></RowerSmallCenter>
+              
+              </FormWrapper>
+              <RowerSmallCenter onClick={() => setLogin(true)} style={{transform: 'translateY(10px)'}}><h3>LOG IN HERE</h3></RowerSmallCenter>
+              
+              </>
+              )}
               </Container>
       </StaticSection>
         )}
@@ -304,7 +351,7 @@ export default Home
 
 const Container = styled.div`
     width: 80vw;
-    height: 50vh;
+    height: 80vh;
     ${props => props.theme.displayFlexColumn};
     justify-content: space-around;
 `;

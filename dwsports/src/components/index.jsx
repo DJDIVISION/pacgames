@@ -1009,9 +1009,69 @@ export const RowerRowBets = styled.div`
 `;
 export const RowerRowBetsCenter = styled.div`
     width: 100%;
-    min-height: 50px;
+    height: 60px;
     ${props => props.theme.displayFlexCenter};
     margin: 5px 0;
+    h2{
+        font-size: 20px;
+        color: ${props => props.theme.text};
+    }
+`;
+export const RowerInput = styled.input`
+    width: 100%;
+    height: 50px;
+    ${props => props.theme.displayFlexCenter};
+    margin: 5px 0;
+    border: 1px solid #c3c3c3;
+    background: transparent;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    color: ${props => props.theme.MainAccent};
+    &:focus{
+        outline: none;
+    }
+`;
+
+export const ImageClicker = styled.div`
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid ${props => props.theme.card};
+    ${props => props.theme.displayFlexCenter};
+    background: #3c3c3c;
+    text-align: center;
+    h3{
+        font-size: 10px !important;
+        width: 80%;
+        color: white;
+    }
+`;
+
+export const RowerSmallCenter = styled.div`
+    width: 100%;
+    height: 40px;
+    ${props => props.theme.displayFlexCenter};
+    margin: 5px 0;
+    h2{
+        color: white;
+        font-size: 20px;
+    }
+    h3{
+        color: white;
+        font-size: 16px;
+    }
+`;
+
+export const FormWrapper = styled.div`
+    width: 90%;
+    min-height: 50vh;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 10px;
+    ${props => props.theme.displayFlexColumn};
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
 `;
 
 export const AbsoluteScore = styled.h2`
