@@ -599,7 +599,7 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
         )}
         <DepositWrapper>
         <DepositTokenRowSmall>
-            <h2>If you find any trouble with your deposit, you can always deposit manually in our bot.</h2>
+            <h2>If you find any trouble with your deposit, you can always do it manually in our bot.</h2>
             </DepositTokenRowSmall>
             <DepositTokenRowSmall><a href="https://t.me/PactonGamingZoneBot" target="_blank"><StyledButton>GO TO BOT</StyledButton></a></DepositTokenRowSmall>
         </DepositWrapper>
