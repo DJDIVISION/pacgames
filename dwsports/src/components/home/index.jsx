@@ -93,8 +93,21 @@ export const RowerRowBets = styled.div`
         font-size: 14px;
         color: ${props => props.theme.text};
     }
+`;
+
+export const LanguagesRow = styled.div`
+    width: 100%;
+    height: 70px;
+    ${props => props.theme.displayFlexCenter};
+    justify-content: space-around;
+`;
+
+export const LanguageHolder = styled.div`
+    width: 25%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
     img{
-        width: 75%;
+        width: 50%;
         display: block;
         object-fit: cover;
     }

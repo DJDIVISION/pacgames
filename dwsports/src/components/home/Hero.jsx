@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled, {useTheme} from 'styled-components'
 import { motion, useTransform, useScroll, useAnimation, AnimatePresence } from 'framer-motion';
-import {HeroSection, StyledButton} from './index'
+import {HeroSection, LanguageHolder, LanguagesRow, StyledButton} from './index'
 import Ton from '../../assets/logos/ton.png'
 import Sho from '../../assets/logos/sho.png'
 import back2 from '../../assets/backs/zone.jpg'
-import back from '../../assets/backs/back9.jpg'
+import ES from '../../assets/svg/es.png';
+import FR from '../../assets/svg/fr.png';
+import EN from '../../assets/svg/uk.png';
 import connect from '../../assets/logos/connect.png'
 import { TonConnectButton, TonConnectUIProvider, useTonConnectUI, useTonWallet, useTonAddress } from '@tonconnect/ui-react';
 import { getUserBalance, useAuth } from '../../pages/functions';
@@ -28,7 +30,6 @@ import Web3 from "web3";
 import axios from 'axios';
 import { registerServiceWorker, requestPermission, listenForNotifications, handleForegroundNotifications, unsubscribeFromNotifications } from '../../firebase'
 import { initializeApp } from 'firebase/app';
-import { getMessaging, onMessage } from 'firebase/messaging';
 import { initializePushNotifications  } from "../../push.js";
 import { TonClient } from "@ton/ton";
 import {Address, beginCell, Cell} from '@ton/core'
@@ -64,7 +65,20 @@ const Hero = () => {
     const userFriendlyAddress = useTonAddress();
     const {session, setSession} = FantasyState();
     const {currentUser, setCurrentUser} = FantasyState();
-    
+    const languages = [
+        {
+            icon: <img src={ES} alt="ES" onClick={() => i18n.changeLanguage("es")} />,
+            name: 'ES'
+        },
+        {
+            icon: <img src={FR} alt="FR" onClick={() => i18n.changeLanguage("fr")} />,
+            name: 'FR'
+        },
+        {
+            icon: <img src={EN} alt="EN" onClick={() => i18n.changeLanguage("en")} />,
+            name: 'EN'
+        }
+    ];
     
     
     
@@ -602,7 +616,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedProfile === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleProfile()} /> : <SmallArrowDownFlex onClick={() => toggleProfile()} />}</MiniIconButton>
-                    <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>PROFILE</h2></RowerSmall>
+                    <RowerSmall><h2 style={{color: expandedProfile === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>{t("hero.title6")}</h2></RowerSmall>
                   {expandedProfile === true && (
                      <LowRower >
                      {(currentUser !== null || session !== null) ? (
@@ -616,9 +630,15 @@ const Hero = () => {
                              <RowerRowBets>
                              <h3>{currentUser && currentUser?.email}</h3>
                              </RowerRowBets>
-                            
+                             <LanguagesRow>
+                                {languages.map((lang) => {
+                                    return(
+                                        <LanguageHolder>{lang.icon}</LanguageHolder>
+                                    )
+                                })}
+                             </LanguagesRow>
                              <RowerRowBets style={{ height: '70px' }}>
-                                 <StyledButton onClick={handleLogout}>LOGOUT</StyledButton>
+                                 <StyledButton onClick={handleLogout}>{t("hero.title10")}</StyledButton>
                              </RowerRowBets>
                              {/* <RowerRowBets>
                                  <h2>NOTIFICATIONS</h2>
@@ -656,7 +676,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedWallet === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleWallet()} /> : <SmallArrowDownFlex onClick={() => toggleWallet()} />}</MiniIconButton>
-                    <RowerSmall><h2 style={{color: expandedWallet === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>WALLETS</h2></RowerSmall>
+                    <RowerSmall><h2 style={{color: expandedWallet === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>{t("hero.title7")}</h2></RowerSmall>
                   {expandedWallet === true && (
                       <LowRower >
                       <RowerRowBets>
@@ -730,7 +750,7 @@ const Hero = () => {
                   transition={{ duration: 0.5 }}
                   >
                     <MiniIconButton>{expandedReferrals === true ? <SmallArrowDownFlex style={{ transform: 'rotate(180deg)' }} onClick={() => toggleReferrals()} /> : <SmallArrowDownFlex onClick={() => toggleReferrals()} />}</MiniIconButton>
-                  <RowerSmall><h2 style={{color: expandedReferrals === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>REFERRALS</h2></RowerSmall>
+                  <RowerSmall><h2 style={{color: expandedReferrals === true ? `${theme.MainAccentTwo}` : `${theme.MainAccent}`}}>{t("hero.title8")}</h2></RowerSmall>
                   {expandedReferrals === true && (
                     <LowRower>
                        {referrals?.map((referral) => {
