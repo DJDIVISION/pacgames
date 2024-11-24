@@ -836,7 +836,7 @@ const toggleMenu = () => {
       }, [droppedTeamPlayers])
 
       const date = new Date();
-      
+      console.log(teamAverage)
 
       const saveDroppedTeam = async () => {
         setButtonDisabled(true)
@@ -913,7 +913,7 @@ const toggleMenu = () => {
         try {
             const response = await axios.request(options);
             response.data.response[0].players.forEach((el) => {
-                if(el.team.name === teamName){
+                if(el.team.name === teamName && response.data.response[0].fixture.status.short === "FT"){
                     el.players.forEach((player) => {
                         if(player.player.id === playerId){
                             console.log(player.statistics[0].games.rating)
@@ -922,7 +922,7 @@ const toggleMenu = () => {
                                 for (const man of area){
                                     if(man.id === playerId){
                                         if(player.statistics[0].games.rating === null){
-                                            man.lastMatchRating = 0 
+                                            man.lastMatchRating = null 
                                         } else {
                                             man.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
                                         }
@@ -985,7 +985,8 @@ const toggleMenu = () => {
                 fetchFixtureData(match.fixture.id,playerId,teamName)
             })
         }
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+        
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API delay
         
     }
     
@@ -993,7 +994,7 @@ const toggleMenu = () => {
 
     const getLastMatchRating = async () => {
         setLoadingRating(true)
-        console.log("starting to fetch")
+        
         if (droppedTeamPlayers) {
             console.log(droppedTeamPlayers)
             const areas = Object.values(droppedTeamPlayers); // Get all areas
@@ -1003,8 +1004,7 @@ const toggleMenu = () => {
                         await fetchDataFromSupabase(player.leagueName, player.id, player.teamName);
                         // Add a delay between requests if needed
                         await new Promise(resolve => setTimeout(resolve, 500)); 
-                        console.log(`Fetching rating for ${player.name}`)
-                        
+                        message.success(`Fetching rating for ${player.name}`)
                     } else {
                         return
                     }
@@ -1012,15 +1012,16 @@ const toggleMenu = () => {
             }
         }
         setDroppedTeamPlayers(droppedTeamPlayers)
+        setTeamAverage(getAveragePlayerRating())
         setLoadingRating(false)
     }
     
 
     useEffect(() => {
-        if(gameStarted && openDropMenu){
+        if(gameStarted && openStatsMenu){
             getLastMatchRating()
         }
-    }, [gameStarted])
+    }, [gameStarted,openStatsMenu])
 
 
 
@@ -1188,7 +1189,7 @@ const toggleMenu = () => {
                     exit="exit"
                     transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                 <MyBalanceRow><h2>{t("fantasy.title3")}: {balance}M€</h2></MyBalanceRow>
-                <MyBalanceRow>{droppedPlayers.length > 0 ? <h2>{t("fantasy.title11")}: {gameStarted ? <span style={{color: getBackgroundColor(teamNewAverage)}}>{teamNewAverage}</span>
+                <MyBalanceRow>{droppedPlayers.length > 0 ? <h2>{t("fantasy.title11")}: {gameStarted ? <span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span>
                 : <span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span>}</h2> : <h2></h2>}</MyBalanceRow>
                 {droppedPlayers.length > 0 ? (
                     <MyPlayerContainer >
@@ -1347,7 +1348,7 @@ const toggleMenu = () => {
                             <StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton>
                         )}
                     </AbsoluteDivLeft>
-                    <AbsoluteDivRight><h3>TEAM AVERAGE: <br/>{gameStarted ? <span style={{color: getBackgroundColor(teamNewAverage)}}>{teamNewAverage}</span> : <span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span>}</h3></AbsoluteDivRight>
+                    <AbsoluteDivRight><h3>TEAM AVERAGE: <br/><span style={{color: getBackgroundColor(teamAverage)}}>{gameStarted ? "Pending" : teamAverage}</span></h3></AbsoluteDivRight>
                     <FieldWrapper className='layout1'>
                     <BetArea id="area1" className='droppable-area'>
                     {droppedTeamPlayers.area1.map((player) => {
