@@ -1005,7 +1005,7 @@ const toggleMenu = () => {
         setLoadingRating(true)
         const end = new Date(endDate)
         const now = new Date();
-        if (droppedTeamPlayers && now < end) {
+        if (droppedTeamPlayers && now > end) {
             /* console.log(droppedTeamPlayers) */
             const areas = Object.values(droppedTeamPlayers); // Get all areas
             for (const area of areas) {
@@ -1395,10 +1395,13 @@ const toggleMenu = () => {
                 <MyTeamRow>
                     <AbsoluteDivLeft>
                         {startAgain ? (
-                            <StyledButton disabled={buttonDisabled} style={{fontSize: '10px'}}>START AGAIN</StyledButton>
+                            <StyledButton disabled={buttonDisabled} style={{fontSize: '10px'}}>START NEXT</StyledButton>
                         ) : (
-                            gameStarted ? <h3>WAITING FOR REAULTS</h3>
-                            : <StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton>
+                            gameFinished ? (
+                                <h3>WAITING FOR RESULTS</h3>
+                            ) : (
+                                <StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton>
+                            )
                         )}
                     </AbsoluteDivLeft>
                     <AbsoluteDivRight><h3>TEAM AVERAGE: <br/><span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span></h3></AbsoluteDivRight>
