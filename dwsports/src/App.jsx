@@ -13,7 +13,6 @@ import Home from './pages/Home';
 import PlayerStats from './pages/PlayerStats';
 import TeamStats from './components/menus/TeamStats';
 import Login from './pages/Login';
-import Fantasy from './pages/Fantasy';
 import BlackJack from './pages/BlackJack';
 import Roulette from './pages/Roulette';
 import Casino from './pages/Casino';

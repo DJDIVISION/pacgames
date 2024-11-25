@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
 import styled from 'styled-components'
-import { BetSection, StyledButton } from './index'
+import { ArrowLeftRelative, BetSection, StyledButton } from './index'
 import { set } from 'lodash'
+import SendFantasy from '../components/admin/SendFantasy'
+import { AbsoluteIconButtonLeft } from './indexThree'
+import { useNavigate } from 'react-router-dom'
 
 const Admin = () => {
 
-
-    let processedEvents = {}; // Global dictionary to track processed events per match
+    const navigate = useNavigate()
+    /* let processedEvents = {}; // Global dictionary to track processed events per match
 
     function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
@@ -61,7 +64,7 @@ const Admin = () => {
                 //const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
 
                 // Check if the event has already been processed for this match
-                /* if (!processedEvents[matchId].has(eventId)) {
+                if (!processedEvents[matchId].has(eventId)) {
                     // Prepare the message
                     const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
 
@@ -71,7 +74,7 @@ const Admin = () => {
 
                     // Mark this event as processed
                     processedEvents[matchId].add(eventId);
-                } */
+                }
             }
         }
     }
@@ -123,14 +126,17 @@ const Admin = () => {
     React.useEffect(() => {
         const intervalId = setInterval(fetchLiveMatches, 60000); // Set interval for fetching matches
         return () => clearInterval(intervalId); // Cleanup interval on component unmount
-    }, []);
+    }, []); */
 
 
 
   return (
+    <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <StyledButton style={{fontSize: '18px'}}>REQUEST</StyledButton>
+      <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
     </BetSection>
+    <SendFantasy />
+    </>
   )
 }
 

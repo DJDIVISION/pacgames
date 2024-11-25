@@ -94,7 +94,7 @@ const NewFantasy = () => {
     const [activePlayerSell, setActivePlayerSell] = useState(null)
     const [activePlayerDrag, setActivePlayerDrag] = useState(null)
     const [openLeagueMenu, setOpenLeagueMenu] = useState(true)
-    const [startAgain, setStartAgain] = useState(false)
+    const [startAgain, setStartAgain] = useState(true)
     const [openTeamMenu, setOpenTeamMenu] = useState(false)
     const [openPlayerMenu, setOpenPlayerMenu] = useState(false)
     const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
@@ -819,13 +819,13 @@ const toggleMenu = () => {
       const getAveragePlayerRating = () => {
         if(!gameStarted){
             const allPlayers = Object.values(droppedTeamPlayers).flat(); 
-            console.log(allPlayers)
+            
             const totalRating = allPlayers.reduce((sum, player) => sum + player.rating, 0);
             const averageRating = totalRating / allPlayers.length;
             return parseFloat(averageRating.toFixed(2));
         } else {
             const allPlayers = Object.values(droppedTeamPlayers).flat(); 
-            console.log(allPlayers)
+            
             const totalRating = allPlayers.reduce((sum, player) => sum + player.lastMatchRating, 0);
             const averageRating = totalRating / allPlayers.length;
             return parseFloat(averageRating.toFixed(2));
@@ -1076,6 +1076,50 @@ const toggleMenu = () => {
             getLastMatchRating()
         }
     }, [gameStarted,openStatsMenu])
+
+
+    const ReStartGame = async () => {
+        const now = new Date();
+        const {data: firstData, error: firstError} = await supabase
+        .from('fantasyFootball')
+        .select('*') // Update the jsonb column
+        .eq('id', user.id);
+        if(firstError){
+            console.log("error", firstError)
+        } else {
+            console.log(firstData[0])
+            const updatedData = {
+                trainings: firstData[0].trainingsNumber,
+                teamRating: teamAverage,
+                date: now,
+                players: droppedTeamPlayers
+            }
+            const {data: secondData, error: secondError} = await supabase
+            .from('fantasyFootball')
+            .update({firstRound: updatedData, trainingsNumber: 0, nextMatch: null}) // Update the jsonb column
+            .eq('id', user.id);
+            if(secondError){
+                console.log("error", secondError)
+            } else {
+                message.success("data inserted with my ass")
+            }
+            setDroppedTeamPlayers({
+                area1: [],
+                area2: [],
+                area3: [],
+                area4: [],
+                area5: [],
+                area6: [],
+                area7: [],
+                area8: [],
+                area9: [],
+                area10: [],
+                area11: []
+            })
+            setTeamAverage(0)
+            setStartAgain(false)
+        }
+    }
 
 
 
@@ -1396,7 +1440,7 @@ const toggleMenu = () => {
                 <MyTeamRow>
                     <AbsoluteDivLeft>
                         {startAgain ? (
-                            <StyledButton disabled={buttonDisabled} style={{fontSize: '10px'}}>START NEXT</StyledButton>
+                            <StyledButton disabled={buttonDisabled} style={{fontSize: '10px'}} onClick={ReStartGame}>START NEXT</StyledButton>
                         ) : (
                             gameStarted ? (
                                 <h3>WAITING FOR RESULTS</h3>
