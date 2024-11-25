@@ -25,6 +25,7 @@ import Ton from '../../assets/logos/ton.png'
 import Sho from '../../assets/logos/sho.png'
 import PGZ from '../../assets/logos/pgz.png'
 import { toast } from 'react-toastify';
+import TonWeb from 'tonweb'
 
 const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
 
@@ -60,8 +61,8 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
 
     const tokens = [
       { name: 'SHO', logo: Sho, ratio: '7040' },
-      { name: 'TON', logo: Ton, ratio: '0.189893' }/* ,
-      { name: 'TNcula', logo: Toncula, ratio: '0.189893' } */
+      { name: 'TON', logo: Ton, ratio: '0.189893' },
+      { name: 'TNcula', logo: Toncula, ratio: '0.189893' }
     ];
     const [activeToken, setActiveToken] = useState("SHO");
     const [selectedToken, setSelectedToken] = useState(tokens[0])
@@ -403,72 +404,14 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
         toast('Please enter any amount of TON');
         return
       }
-  };
-    const handleSendTonculaTransaction = async () => {
+    };
+
+  const handleSendTonculaTransaction = async () => {
+
+    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', {apiKey: '481d4304fa46d936c86c12e75e678243252bfcef2e71941ae1bbb986411d2b5c'}));
+    console.log(tonweb)
     
-    const jettonMasterAddress = 'EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh';
-    const recipientAddress = 'UQDrPy40C4Aea1jXRJqDRkNwg2apTNyVAx39gu7VEJeAgp7g';
-    closeDepositMenu()
-          
-      
-    // Show confirmation prompt to user
-    toast('Please confirm the transaction \n on your wallet');
-    try {
-        // Get the wallet address for the sender's Jetton using tonConnectUI
-        const jettonWalletAddress = await tonConnectUI.getJettonWalletAddress(jettonMasterAddress);
-
-        // Ensure the Jetton wallet address is fetched
-        if (!jettonWalletAddress) {
-            throw new Error('Failed to fetch Jetton wallet address for the connected account.');
-        }
-
-        // Encode the payload for Jetton transfer
-        const jettonPayload = new TextEncoder().encode(JSON.stringify({
-            op: 'transfer',
-            amount: (tonculaAmount * 1e9).toString(), // Convert to nanoJettons
-            recipient: recipientAddress,
-        }));
-
-        // Construct the transaction
-        const jettonTransaction = {
-            validUntil: Math.floor(Date.now() / 1000) + 60, // Transaction expiration in 60 seconds
-            messages: [
-                {
-                    address: jettonWalletAddress, // Jetton wallet address of the sender
-                    amount: '0', // No TON sent, only Jettons
-                    payload: jettonPayload.toString('base64'), // Base64 encoded payload
-                },
-            ],
-        };
-        
-
-        // Send the transaction using TonConnect
-        await tonConnectUI.sendTransaction(jettonTransaction);
-        
-        // Confirm success
-        Swal.fire({
-            title: "Transfer Confirmed",
-            text: `Successfully sent ${tonculaAmount} TNcula.`,
-            icon: "success",
-        });
-    } catch (error) {
-        console.error('Jetton transaction failed:', error);
-
-        // Handle errors gracefully
-        if (error.message.includes("User rejects the action")) {
-            Swal.fire({
-                title: "Transaction Rejected",
-                text: "You have rejected the transaction.",
-                icon: "error",
-            });
-        } else {
-            Swal.fire({
-                title: "Transaction Failed",
-                text: `Error: ${error.message}`,
-                icon: "error",
-            });
-        }
-    }
+    
   };
 
     

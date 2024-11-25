@@ -93,7 +93,24 @@ const Hero = () => {
     ];
 
     
-    
+    async function connectMetaMask() {
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                // Request account access if needed
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                setMetaMaskWalletAddress(accounts[0])
+                Swal.fire({
+                    title: "Wallet Connected!",
+                    text: "Your Wallet is now connected",
+                    icon: "success"
+                  });
+            } catch (error) {
+                console.error('User denied account access', error);
+            }
+        } else {
+            alert('MetaMask is not installed!');
+        }
+    }
     
     
 
@@ -701,7 +718,7 @@ const Hero = () => {
                       {!metaMaskWalletAddress ? (
                           <>
                               {isDesktop ? (
-                                  <WalletsRow onClick={connectWallet}>
+                                  <WalletsRow onClick={connectMetaMask}>
                                       {metaMaskWalletAddress !== null ? (
                                           <LinkInputField readOnly value={metaMaskWalletAddress} onClick={() => disconnectWallet()}/>
                                       ) : (
