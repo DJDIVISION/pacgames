@@ -94,6 +94,7 @@ const NewFantasy = () => {
     const [activePlayerSell, setActivePlayerSell] = useState(null)
     const [activePlayerDrag, setActivePlayerDrag] = useState(null)
     const [openLeagueMenu, setOpenLeagueMenu] = useState(true)
+    const [startAgain, setStartAgain] = useState(false)
     const [openTeamMenu, setOpenTeamMenu] = useState(false)
     const [openPlayerMenu, setOpenPlayerMenu] = useState(false)
     const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
@@ -816,10 +817,19 @@ const toggleMenu = () => {
       
 
       const getAveragePlayerRating = () => {
-        const allPlayers = Object.values(droppedTeamPlayers).flat(); 
-        const totalRating = allPlayers.reduce((sum, player) => sum + player.rating, 0);
-        const averageRating = totalRating / allPlayers.length;
-        return parseFloat(averageRating.toFixed(2));
+        if(!gameStarted){
+            const allPlayers = Object.values(droppedTeamPlayers).flat(); 
+            console.log(allPlayers)
+            const totalRating = allPlayers.reduce((sum, player) => sum + player.rating, 0);
+            const averageRating = totalRating / allPlayers.length;
+            return parseFloat(averageRating.toFixed(2));
+        } else {
+            const allPlayers = Object.values(droppedTeamPlayers).flat(); 
+            console.log(allPlayers)
+            const totalRating = allPlayers.reduce((sum, player) => sum + player.lastMatchRating, 0);
+            const averageRating = totalRating / allPlayers.length;
+            return parseFloat(averageRating.toFixed(2));
+        }
       };
     
       useEffect(() => {
@@ -897,7 +907,7 @@ const toggleMenu = () => {
         }, 500)
     }
 
-    async function fetchFixtureData(fixtureId,playerId,teamName) {
+    async function fetchFixtureData(fixtureId,playerId,teamName,type) {
         const options = {
             method: 'GET',
             url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
@@ -914,15 +924,19 @@ const toggleMenu = () => {
                 if(el.team.name === teamName && response.data.response[0].fixture.status.short === "FT"){
                     el.players.forEach((player) => {
                         if(player.player.id === playerId){
-                            
+                            console.log("player", player)
                             const areas = Object.values(droppedTeamPlayers)
                             for (const area of areas){
                                 for (const man of area){
                                     if(man.id === playerId){
                                         if(player.statistics[0].games.rating === null){
-                                            man.lastMatchRating = null 
+                                            if(type === "local"){
+                                                man.lastMatchRating = null 
+                                            } else if(type === "finished"){
+                                                man.lastMatchRating = 0  
+                                            }
                                         } else {
-                                            localStorage.setItem(`${player.player.name}`, `${player.statistics[0].games.rating}`)
+                                            //localStorage.setItem(`${player.player.name}`, `${player.statistics[0].games.rating}`)
                                             man.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
                                         }
                                         
@@ -1004,28 +1018,51 @@ const toggleMenu = () => {
                             await new Promise(resolve => setTimeout(resolve, 500)); 
                             message.success(`Fetching rating for ${player.name}`)
                         } else {
-                            console.log(first)
-                            console.log(`not null for ${player.name}`)
+                            /* console.log(first)
+                            console.log(`not null for ${player.name}`) */
                             const areas = Object.values(droppedTeamPlayers)
                             for (const area of areas){
                                 for (const man of area){
                                     if(man.id === player.id){
-                                        man.lastMatchRating = first 
+                                        man.lastMatchRating = parseFloat(parseFloat(first).toFixed(2)) 
                                     }
                                 }
                             }
                         }
-                        /* await fetchDataFromSupabase(player.leagueName, player.id, player.teamName);
-                        // Add a delay between requests if needed
-                        await new Promise(resolve => setTimeout(resolve, 500)); 
-                        message.success(`Fetching rating for ${player.name}`) */
                     } else {
                         return
                     }
                 }
             }
         } else {
-            console.log("week finished")
+            console.log(droppedTeamPlayers)
+            const areas = Object.values(droppedTeamPlayers);
+            for (const area of areas){
+                for (const player of area) {
+                    //localStorage.removeItem(`${player.name}`)
+                    let first = localStorage.getItem(`${player.name}`)
+                        if(first === null){
+                            await fetchDataFromSupabase(player.leagueName, player.id, player.teamName, "finished");
+                            // Add a delay between requests if needed
+                            await new Promise(resolve => setTimeout(resolve, 500)); 
+                            message.success(`Fetching rating for ${player.name}`)
+                        } else {
+                            const areas = Object.values(droppedTeamPlayers)
+                            for (const area of areas){
+                                for (const man of area){
+                                    if(man.id === player.id){
+                                        man.lastMatchRating = parseFloat(parseFloat(first).toFixed(2)) 
+                                    }
+                                }
+                            }
+                    }
+                    if(player.lastMatchRating === null){
+                        player.lastMatchRating = 0
+                    }
+                    setStartAgain(true)
+                }
+            }
+            
         }
         setDroppedTeamPlayers(droppedTeamPlayers)
         setTeamAverage(getAveragePlayerRating())
@@ -1357,13 +1394,14 @@ const toggleMenu = () => {
                 </MyPlayersRow>
                 <MyTeamRow>
                     <AbsoluteDivLeft>
-                        {gameStarted ? (
-                            <h3>WAITING FOR RESULTS</h3>
+                        {startAgain ? (
+                            <StyledButton disabled={buttonDisabled} style={{fontSize: '10px'}}>START AGAIN</StyledButton>
                         ) : (
-                            <StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton>
+                            gameStarted ? <h3>WAITING FOR REAULTS</h3>
+                            : <StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton>
                         )}
                     </AbsoluteDivLeft>
-                    <AbsoluteDivRight><h3>TEAM AVERAGE: <br/><span style={{color: getBackgroundColor(teamAverage)}}>{gameStarted ? "Pending" : teamAverage}</span></h3></AbsoluteDivRight>
+                    <AbsoluteDivRight><h3>TEAM AVERAGE: <br/><span style={{color: getBackgroundColor(teamAverage)}}>{teamAverage}</span></h3></AbsoluteDivRight>
                     <FieldWrapper className='layout1'>
                     <BetArea id="area1" className='droppable-area'>
                     {droppedTeamPlayers.area1.map((player) => {
