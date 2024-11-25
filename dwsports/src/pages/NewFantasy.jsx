@@ -1398,7 +1398,7 @@ const toggleMenu = () => {
                         {startAgain ? (
                             <StyledButton disabled={buttonDisabled} style={{fontSize: '10px'}}>START NEXT</StyledButton>
                         ) : (
-                            gameFinished ? (
+                            gameStarted ? (
                                 <h3>WAITING FOR RESULTS</h3>
                             ) : (
                                 <StyledButton disabled={buttonDisabled} onClick={saveDroppedTeam} style={{fontSize: '10px'}}>SAVE TEAM</StyledButton>
