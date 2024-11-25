@@ -1059,6 +1059,7 @@ const toggleMenu = () => {
                     if(player.lastMatchRating === null){
                         player.lastMatchRating = 0
                     }
+                    localStorage.removeItem(`${player.name}`)
                     setStartAgain(true)
                 }
             }
