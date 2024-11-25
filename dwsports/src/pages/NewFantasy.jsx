@@ -1101,7 +1101,7 @@ const toggleMenu = () => {
             if(secondError){
                 console.log("error", secondError)
             } else {
-                message.success("data inserted with my ass")
+                message.success("You can create your next team now!")
             }
             setDroppedTeamPlayers({
                 area1: [],
