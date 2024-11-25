@@ -835,8 +835,6 @@ const toggleMenu = () => {
         }
       }, [droppedTeamPlayers])
 
-      const date = new Date();
-      console.log(teamAverage)
 
       const saveDroppedTeam = async () => {
         setButtonDisabled(true)
@@ -916,7 +914,7 @@ const toggleMenu = () => {
                 if(el.team.name === teamName && response.data.response[0].fixture.status.short === "FT"){
                     el.players.forEach((player) => {
                         if(player.player.id === playerId){
-                            console.log(player.statistics[0].games.rating)
+                            
                             const areas = Object.values(droppedTeamPlayers)
                             for (const area of areas){
                                 for (const man of area){
@@ -924,23 +922,20 @@ const toggleMenu = () => {
                                         if(player.statistics[0].games.rating === null){
                                             man.lastMatchRating = null 
                                         } else {
+                                            localStorage.setItem(`${player.player.name}`, `${player.statistics[0].games.rating}`)
                                             man.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
                                         }
                                         
                                     }
                                 }
                             }
-                            droppedPlayers.forEach((man) => {
-                                if(man.id === playerId){
-                                    player.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
-                                }
-                            })
+                            
                         }
                         
                     })
                 }
             })
-            const date = new Date();
+            /* const date = new Date();
             const updatedData = {
                 players: droppedTeamPlayers,
                 teamRating: teamAverage,
@@ -955,7 +950,7 @@ const toggleMenu = () => {
                     console.error('Error updating user data:', updateError.message);
                 } else {
                    console.log("Your player has been saved!")
-            }
+            } */
             
            
             
@@ -967,7 +962,7 @@ const toggleMenu = () => {
 
     
 
-    async function fetchDataFromSupabase(leagueName,playerId,teamName) {
+    async function fetchDataFromSupabase(leagueName,playerId,teamName,type) {
         
         let currentRound
         const filter = leagues.filter((el) => el.league === leagueName)
@@ -982,11 +977,11 @@ const toggleMenu = () => {
             return null;
         } else {
             data[0][currentRound].forEach((match) => {
-                fetchFixtureData(match.fixture.id,playerId,teamName)
+                fetchFixtureData(match.fixture.id,playerId,teamName,type)
             })
         }
         
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
         
     }
     
@@ -994,22 +989,43 @@ const toggleMenu = () => {
 
     const getLastMatchRating = async () => {
         setLoadingRating(true)
-        
-        if (droppedTeamPlayers) {
-            console.log(droppedTeamPlayers)
+        const end = new Date(endDate)
+        const now = new Date();
+        if (droppedTeamPlayers && now < end) {
+            /* console.log(droppedTeamPlayers) */
             const areas = Object.values(droppedTeamPlayers); // Get all areas
             for (const area of areas) {
                 for (const player of area) {
                     if (player.lastMatchRating === null) {
-                        await fetchDataFromSupabase(player.leagueName, player.id, player.teamName);
+                        let first = localStorage.getItem(`${player.name}`)
+                        if(first === null){
+                            await fetchDataFromSupabase(player.leagueName, player.id, player.teamName, "local");
+                            // Add a delay between requests if needed
+                            await new Promise(resolve => setTimeout(resolve, 500)); 
+                            message.success(`Fetching rating for ${player.name}`)
+                        } else {
+                            console.log(first)
+                            console.log(`not null for ${player.name}`)
+                            const areas = Object.values(droppedTeamPlayers)
+                            for (const area of areas){
+                                for (const man of area){
+                                    if(man.id === player.id){
+                                        man.lastMatchRating = first 
+                                    }
+                                }
+                            }
+                        }
+                        /* await fetchDataFromSupabase(player.leagueName, player.id, player.teamName);
                         // Add a delay between requests if needed
                         await new Promise(resolve => setTimeout(resolve, 500)); 
-                        message.success(`Fetching rating for ${player.name}`)
+                        message.success(`Fetching rating for ${player.name}`) */
                     } else {
                         return
                     }
                 }
             }
+        } else {
+            console.log("week finished")
         }
         setDroppedTeamPlayers(droppedTeamPlayers)
         setTeamAverage(getAveragePlayerRating())
@@ -1201,7 +1217,6 @@ const toggleMenu = () => {
                           {group.position === "Goalkeeper" && `${t("fantasy.positionOrder4")}`}</h2></MyPlayerPosition>
                             <MyPlayerRow>
                                 {group.players.map((player) => {
-                                    console.log(player)
                                     return(
                                         <MyPlayer><MyPlayerAvatar><Avatar alt="Image" src={player.photo} sx={{
                                             width: { xs: 50, sm: 50, md: 30, lg: 60, xl: 60 },
