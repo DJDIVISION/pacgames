@@ -80,7 +80,7 @@ export const Nav = styled.nav`
     top: ${({ scrollNavDown }) => (scrollNavDown ? "-100px" : "0")};
     opacity: 0.9;
     transition: 0.5s all ease;
-    z-index: 1000;
+    z-index: 9999;
     padding: 0 30px;
     @media(max-width: 698px){
         display: none;

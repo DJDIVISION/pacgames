@@ -15,7 +15,7 @@ import { FantasyState } from '../context/FantasyContext';
 import { useTranslation } from 'react-i18next'
 import withdraw from '../assets/logos/withdraw.png'
 
-const NavBar = () => {
+const NavBar = ({isDepositExpanded,setIsDepositExpanded,isWithdrawExpanded,setIsWithdrawExpanded}) => {
 
     const [active, setActive] = useState("menuOne");
     const [scrollNavDown, setScrollNavDown] = useState(false);
@@ -35,7 +35,14 @@ const NavBar = () => {
           // Redirect to the login page or home page
           navigate('/login')
         }
-      }
+    }
+
+    const openDeposit = () => {
+        setIsDepositExpanded(!isDepositExpanded)
+    }
+    const openWithdraw = () => {
+        setIsWithdrawExpanded(!isWithdrawExpanded)
+    }
 
     useEffect(() => {
        window.addEventListener('scroll', changeNavDown) 
@@ -82,13 +89,13 @@ const NavBar = () => {
             </NavIcon>
             <NavText>OUR PARTNERS</NavText>
         </NavColumn></LinkR>
-        <NavColumn onClick={() => setDepositMenu(true)}>
+        <NavColumn onClick={openDeposit}>
             <NavIcon>
                 <img src={deposit} alt="casino" />
             </NavIcon>
             <NavText>{t("navbar.deposit")}</NavText>
         </NavColumn>
-        <NavColumn onClick={() => setWalletMenu(true)}>
+        <NavColumn onClick={openWithdraw}>
             <NavIcon>
                 <img src={withdraw} alt="casino" />
             </NavIcon>

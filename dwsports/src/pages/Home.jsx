@@ -187,7 +187,7 @@ const Home = ({toggleTheme}) => {
           </>
         ) : (
           <NavBar key="navbar"
-            toggleTheme={toggleTheme}
+            toggleTheme={toggleTheme} isDepositExpanded={isDepositExpanded} setIsDepositExpanded={setIsDepositExpanded} isWithdrawExpanded={isWithdrawExpanded} setIsWithdrawExpanded={setIsDepositExpanded}
           />
         )}
             <MenuSection initial={{ height: 0 }} // Initial height
@@ -287,7 +287,15 @@ const Home = ({toggleTheme}) => {
         {isMobile ? (
               <SmartFooter key="smartfooter"/>
             ) : (
+              <>
+              {isDepositExpanded && (
+                <DepositMenu isDepositExpanded={isDepositExpanded} setIsDepositExpanded={setIsDepositExpanded}/>
+              )}
+              {isWithdrawExpanded && (
+                <WalletMenu isWithdrawExpanded={isWithdrawExpanded} setIsWithdrawExpanded={setIsWithdrawExpanded}/>
+              )}
               <Footer key="footer"/>
+              </>
             )}
           </>
         ) : (
@@ -342,6 +350,7 @@ const Home = ({toggleTheme}) => {
               </Container>
       </StaticSection>
         )}
+        
         </AnimatePresence>
     </motion.div>
   )

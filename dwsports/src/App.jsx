@@ -22,7 +22,6 @@ import Slots from './pages/Slots';
 import Tonopoly from './pages/Tonopoly';
 import Airdrop from './pages/Airdrop';
 import NewFantasy from './pages/NewFantasy'; 
-import SmartNavBar from './components/SmartNavBar';
 import NavBar from './components/NavBar';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
