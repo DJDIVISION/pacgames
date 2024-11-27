@@ -12,7 +12,7 @@ const SendFantasy = () => {
     const { data: firstData, error: firstError } = await supabase
         .from('footballPlayers')
         .select('id')
-        .eq("leagueName", "Premier League");
+        .eq("leagueName", "La Liga");
 
     if (firstError) {
         console.log("firstError", firstError);
@@ -47,7 +47,7 @@ const SendFantasy = () => {
         console.log(response.data.response);
         for(const player of response.data.response){
           for(const stat of player.statistics){
-            if(stat.league.name === "Premier League"){
+            if(stat.league.name === "La Liga"){
               const rating = stat.games.rating
               const parsed = parseFloat(rating).toFixed(2)
               console.log(parsed)
@@ -84,7 +84,7 @@ const SendFantasy = () => {
       } catch (error) {
         console.error(error);
       }
-      await delay(500);
+      await delay(1000);
     }
   }
 
@@ -123,7 +123,7 @@ const SendFantasy = () => {
 
   return (
     <FantasySection>
-      <Title><h2>PREMIER LEAGUE</h2></Title>
+      <Title><h2>LA LIGA</h2></Title>
       <StyledButton onClick={getData}>REQUEST</StyledButton>
     </FantasySection>
   )
