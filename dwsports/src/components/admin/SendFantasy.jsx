@@ -12,7 +12,7 @@ const SendFantasy = () => {
     const { data: firstData, error: firstError } = await supabase
         .from('footballPlayers')
         .select('id')
-        .eq("leagueName", "Serie A");
+        .eq("leagueName", "Bundesliga");
 
     if (firstError) {
         console.log("firstError", firstError);
@@ -47,7 +47,7 @@ const SendFantasy = () => {
         console.log(response.data.response);
         for(const player of response.data.response){
           for(const stat of player.statistics){
-            if(stat.league.name === "Serie A"){
+            if(stat.league.name === "Bundesliga"){
               const rating = stat.games.rating
               const parsed = parseFloat(rating).toFixed(2)
               console.log(parsed)
@@ -64,23 +64,6 @@ const SendFantasy = () => {
             }
           }
         }
-        /* response.data.response[0].statistics.forEach(async (stat) => {
-          if(stat.league.name === "Premier League"){
-            const rating = stat.games.rating
-            const parsed = parseFloat(rating).toFixed(2)
-            console.log(parsed)
-            const { data: firstData, error: firstError } = await supabase
-            .from('footballPlayers')
-            .update({rating: parsed})
-            .eq("id", response.data.response[0].player.id);
-
-          if (firstError) {
-            console.log("firstError", firstError);
-          } else {
-            console.log(`updated data for ${player.name}`)
-          }
-          }
-        }) */
       } catch (error) {
         console.error(error);
       }
@@ -123,7 +106,7 @@ const SendFantasy = () => {
 
   return (
     <FantasySection>
-      <Title><h2>SERIE A</h2></Title>
+      <Title><h2>Bundesliga</h2></Title>
       <StyledButton onClick={getData}>REQUEST</StyledButton>
     </FantasySection>
   )

@@ -30,6 +30,7 @@ import {Section,BottomRow,IconHolder,Container,LeagueRow,item,LeagueHolder,Absol
     Title,AbsoluteIconButtonLeft,TeamCircularRow,TeamRow,TeamHolder
 } from './indexThree'
 
+
 const NewFantasy = () => {
 
 
@@ -131,6 +132,8 @@ const NewFantasy = () => {
     const [playerHasTeam, setPlayerHasTeam] = useState(false)
     const [playerToRemove, setPlayerToRemove] = useState(null)
     const [buttonDisabled, setButtonDisabled] = useState(false)
+    const [allFantasyTeams, setAllFantasyTeams] = useState([])
+    const [loadingFantasyTeams, setLoadingFantasyTeams] = useState(false)
     const [droppedTeamPlayers, setDroppedTeamPlayers] = useState({
         area1: [],
         area2: [],
@@ -143,7 +146,7 @@ const NewFantasy = () => {
         area9: [],
         area10: [],
         area11: []
-      });
+    });
 
     useEffect(() => {
         const start = new Date(startDate)
@@ -152,6 +155,37 @@ const NewFantasy = () => {
         const isBetween = now >= start && now <= end;
         setGameStarted(isBetween)
     }, [])
+
+    const getAllFantasyTeams = async () => {
+        setLoadingFantasyTeams(true)
+        const teams = []
+          const { data: firstData, error: firstError } = await supabase
+              .from('fantasyFootball')
+              .select('*')
+              
+  
+          if (firstError) {
+              console.log("error", firstError);
+          } else {
+              console.log(firstData)
+              firstData.forEach((player) => {
+                  if(player.nextMatch !== null){
+                      teams.push(player.nextMatch, player.avatar, player.playerName, player.teamRating)
+                  }
+              })
+              
+          }
+          setAllFantasyTeams(teams)
+        setLoadingFantasyTeams(false)
+      }
+
+    useEffect(() => {
+        if(openAllTeamsMenu){
+            getAllFantasyTeams();
+        }
+    }, [openAllTeamsMenu])
+
+    console.log(allFantasyTeams)
 
       useEffect(() => {
         if(droppedPlayers){
@@ -299,6 +333,7 @@ const NewFantasy = () => {
         setTeams([])
         setActivePlayer(null)
         setOpenSearchMenu(false)
+        setOpenAllTeamsMenu(false)
         setActiveTeam(null)
         if(openTeamMenu){
             setOpenTeamMenu(false)
@@ -315,14 +350,27 @@ const NewFantasy = () => {
         setOpenDropMenu(false)
         setOpenSellMenu(false)
         setOpenTrainingMenu(false)
+        setOpenAllTeamsMenu(false)
         setTimeout(() => {
             setOpenStatsMenu((prev) => !prev);
+        },500)
+    }
+    const openTeamsMenu = () => {
+        setOpenDropMenu(false)
+        setOpenSellMenu(false)
+        setOpenTrainingMenu(false) 
+        setOpenLeagueMenu(false)
+        setOpenSearchMenu(false)
+        setOpenPlayerMenu(false)
+        setTimeout(() => {
+            setOpenAllTeamsMenu((prev) => !prev);
         },500)
     }
     const openSell = () => {
         setOpenDropMenu(false)
         setOpenStatsMenu(false)
         setOpenTrainingMenu(false)
+        setOpenAllTeamsMenu(false)
         setTimeout(() => {
             setOpenSellMenu((prev) => !prev);
         },500)
@@ -331,6 +379,7 @@ const NewFantasy = () => {
         setOpenDropMenu(false)
         setOpenStatsMenu(false)
         setOpenSellMenu(false)
+        setOpenAllTeamsMenu(false)
         setTimeout(() => {
             setOpenTrainingMenu((prev) => !prev);
         },500)
@@ -348,6 +397,7 @@ const NewFantasy = () => {
             setOpenLeagueMenu(false)
             setOpenDropMenu(false)
             setOpenPlayerMenu(false)
+            setOpenAllTeamsMenu(false)
             setTimeout(() => {
                 setOpenSearchMenu((prev) => !prev);
             },500)
@@ -377,6 +427,7 @@ const setAllPlayers = (team) => {
     console.log(team)
     handleTeamChange(team.teamId)
     setOpenTeamMenu(false)
+    setOpenAllTeamsMenu(false)
     setActiveTeam(team)
     setTimeout(() => {
         setOpenPlayerMenu(true)
@@ -1676,6 +1727,19 @@ const toggleMenu = () => {
                 </motion.div>
                 </Container>
         )}
+        {openAllTeamsMenu && (
+            <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
+                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2.5%'}} variants={item}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                            ALL FANTASY TEAMS
+                
+                </motion.div>
+                </Container>
+        )}
         </AnimatePresence>
       <BottomRow>
         <IconHolder>
@@ -1740,12 +1804,12 @@ const toggleMenu = () => {
                             <CountryBallText initial={{y:-15}} >{activePlayer?.name}</CountryBallText>
                         </BallColumn>
                     )}
-                    {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) &&  (
+                    {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) ?  (
                         <h2 onClick={openSell} style={{color: openSellMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title23")}</h2> 
+                    ) : (
+                        <h2 onClick={openTeamsMenu} style={{color: openPlayerMenu ? "rgba(244,215,21,1)" : ""}}>ALL TEAMS</h2>
                     )}
-                    {(!openDropMenu || !openSellMenu || !openStatsMenu || !openTrainingMenu) &&  (
-                        <h2 style={{color: openPlayerMenu ? "rgba(244,215,21,1)" : ""}}>ALL TEAMS</h2>
-                    )}
+                    
                     </>
                  )}
                 </>
