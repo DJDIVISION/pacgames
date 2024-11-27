@@ -158,24 +158,16 @@ const NewFantasy = () => {
 
     const getAllFantasyTeams = async () => {
         setLoadingFantasyTeams(true)
-        const teams = []
-          const { data: firstData, error: firstError } = await supabase
+          const { data: rows, error: firstError } = await supabase
               .from('fantasyFootball')
               .select('*')
-              
+              .not('nextMatch', 'is', null);
   
           if (firstError) {
               console.log("error", firstError);
           } else {
-              console.log(firstData)
-              firstData.forEach((player) => {
-                  if(player.nextMatch !== null){
-                      teams.push(player.nextMatch, player.avatar, player.playerName, player.teamRating)
-                  }
-              })
-              
+            setAllFantasyTeams(rows)
           }
-          setAllFantasyTeams(teams)
         setLoadingFantasyTeams(false)
       }
 
