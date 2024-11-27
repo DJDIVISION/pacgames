@@ -89,3 +89,7 @@ const getData = async () => {
     console.log(allIds);
     await writeData(allIds);
 };
+
+
+// SEND PLAYER RATINGS TO DATABASE
+

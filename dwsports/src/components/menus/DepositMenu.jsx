@@ -1,11 +1,9 @@
 import React,{useEffect, useState} from 'react'
 import {motion, AnimatePresence} from 'framer-motion'
-import { CloseStats,BetSection,DepositWrapper,LinkInputField,SmallDepositTitle,DepositTitle,DepositBigTitle,BalanceWrapper, DepositTokenRow, TokenColumn, TokenHolder, LogoHolder, TokenNameHolder, DepositTokenFrom, DepositTokenToken, SmallLogoHolder, InputHolder, InputInput, DepositTokenRowSmall, SmallDepositWrapper } from './index' 
+import { CloseStats,BetSection,DepositWrapper,LinkInputField,SmallDepositTitle,DepositTitle,DepositBigTitle,BalanceWrapper, DepositTokenRow, TokenColumn, TokenHolder, LogoHolder, TokenNameHolder, DepositTokenFrom, DepositTokenToken, SmallLogoHolder, InputHolder, InputInput, DepositTokenRowSmall, SmallDepositWrapper, FromTitle } from './index' 
 import {BetInput, StyledMenu} from '../../components/index'
 import { StyledButton } from '../../pages';
-import { TonClient, Address, internal } from '@ton/ton';
-import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
-import { mnemonicNew, mnemonicToPrivateKey } from "@ton/crypto";
+
 import Swal from "sweetalert2";
 import  { useTheme } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
@@ -26,7 +24,11 @@ import Sho from '../../assets/logos/sho.png'
 import PGZ from '../../assets/logos/pgz.png'
 import { toast } from 'react-toastify';
 import TonWeb from 'tonweb'
-
+import { Address, beginCell, internal, storeMessageRelaxed, toNano } from '@ton/ton';
+import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
+import { mnemonicToKeyPair } from "tonweb-mnemonic";
+import { mnemonicNew, mnemonicToPrivateKey } from "@ton/crypto";
+import { TonConnect } from "@tonconnect/sdk";
 const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
 
 
@@ -77,6 +79,7 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
     const {walletBalance,setWalletBalance} = FantasyState();
     const {metaMaskWalletAddress, setMetaMaskWalletAddress} = FantasyState();
     const {tonWalletAddress, setTonWalletAddress} = FantasyState();
+    const {tonculaWalletBalance,setTonculaWalletBalance} = FantasyState();
     const [transactionHash, setTransactionHash] = useState(null);
     const [notConnected, setNotConnected] = useState(false)
     const {user} = useAuth();
@@ -86,10 +89,11 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
     const isDesktop = useMediaQuery({ query: '(min-width: 1100px)' });
     const [tonPrice, setTonPrice] = useState(null)
     const [shoPrice, setShoPrice] = useState(0.0001408)
-    const [tonculaPrice, setTonculaPrice] = useState(0.0004571)
-
+    const [tonculaPrice, setTonculaPrice] = useState(0.0002357)
+    const [senderWalletAddress, setSenderWalletAddress] = useState(null)
+    const [recipientWalletAddress, setRecipientWalletAddress] = useState(null)
     
- 
+    
     const closeDepositMenu = () => {
       setIsDepositExpanded(false)
     }
@@ -406,16 +410,93 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
       }
     };
 
-  const handleSendTonculaTransaction = async () => {
-
-    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', {apiKey: '481d4304fa46d936c86c12e75e678243252bfcef2e71941ae1bbb986411d2b5c'}));
-    console.log(tonweb)
-    
-    
-  };
-
     
 
+      async function fetchJettonWalletAddress(jettonMasterAddress, ownerWalletAddress) {
+        const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', { apiKey: '481d4304fa46d936c86c12e75e678243252bfcef2e71941ae1bbb986411d2b5c' }));
+        console.log(tonweb)
+        try {
+          const jettonMinter = new TonWeb.token.jetton.JettonMinter(tonweb.provider, {
+            address: jettonMasterAddress
+          });
+          const jettonWalletAddress = await jettonMinter.getJettonWalletAddress(
+            new TonWeb.utils.Address(ownerWalletAddress)
+          );
+          const recipientWalletAddress = await jettonMinter.getJettonWalletAddress(
+            new TonWeb.utils.Address("UQDrPy40C4Aea1jXRJqDRkNwg2apTNyVAx39gu7VEJeAgp7g")
+          );
+          const jettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, {
+            address: jettonWalletAddress
+          });
+          /* const jettonData = await jettonWallet.getData();
+          if (jettonData.jettonMinterAddress.toString(false) !== jettonMinter.address.toString(false)) {
+            throw new Error('Jetton minter address from jetton wallet does not match the expected minter address');
+          } */
+          setSenderWalletAddress(jettonWalletAddress.toString(true, true, true))
+          setRecipientWalletAddress(recipientWalletAddress.toString(true, true, true))
+          console.log('Jetton wallet address:', jettonWalletAddress.toString(true, true, true));
+          console.log('recipientWalletAddress wallet address:', recipientWalletAddress.toString(true, true, true));
+          const masterAddress = jettonWalletAddress.toString(true, true, true)
+          fetchJettonBalance(masterAddress,tonweb)
+        } catch (error) {
+          console.error('Error fetching jetton wallet address:', error);
+        }
+      }
+
+      async function fetchJettonBalance(walletAddress,tonweb) {
+        try {
+          const jettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, { address: walletAddress });
+          const data = await jettonWallet.getData();
+  
+          console.log('Jetton balance:', data.balance.toString());
+          setTonculaWalletBalance(parseFloat(data.balance.toString() / 1e9).toFixed(2))
+          console.log('Jetton owner address:', data.ownerAddress.toString(true, true, true));
+        } catch (error) {
+          console.error('Error fetching jetton balance:', error);
+        }
+      }
+
+      const fetchTonculaBalance = () => {
+        const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
+        fetchJettonWalletAddress(jettonMasterAddress,tonWalletAddress);
+      }
+
+      async function transferJettons() {
+        const recipientWalletAddress = "EQA7lxWJ3NWRuZY0y0hm-X-XA-6br-z4zuxEKNayOaoruSEx"
+        const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
+        const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', { apiKey: 'my-api-key' }));
+        try {
+            // Initialize sender's JettonWallet instance
+            const senderJettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, {
+                address: senderWalletAddress
+            });
+            console.log(senderWalletAddress)
+    
+            // Specify the amount to transfer in nanoton
+            const amountInNanoton = BigInt(tonculaAmount * 1e9);
+    
+            // Perform the transfer
+            const seqno = await senderJettonWallet.transfer({
+                toAddress: recipientWalletAddress,
+                amount: amountInNanoton,
+                forwardAmount: 0, // Forward TON to recipient (if needed, usually 0)
+                payload: null, // Custom payload (optional)
+                fromWalletAddress: new TonWeb.utils.Address(tonWalletAddress), // TON wallet address
+                jettonMasterAddress: new TonWeb.utils.Address(jettonMasterAddress), // Jetton master contract address
+            });
+    
+            console.log(`Transfer initiated. Sequence number: ${seqno}`);
+        } catch (error) {
+            console.error('Error transferring jettons:', error);
+        }
+    }
+    
+
+      useEffect(() => {
+        if(activeToken === "TNcula"){
+          fetchTonculaBalance();
+        }
+      }, [activeToken])
 
     const item={
         initial: { opacity: 0 },
@@ -427,6 +508,12 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
       setActiveToken(token.name)
       setSelectedToken(token)
     }
+
+    useEffect(() => {
+      if(activeToken === "Tncula"){
+        
+      }
+    })
 
   return (
     
@@ -499,9 +586,12 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
         {(tonculaPrice && activeToken === "TNcula") &&  (
         <DepositWrapper>
           <DepositTokenRow>
-            <DepositTokenFrom><h2>From:</h2></DepositTokenFrom>
-            <DepositTokenToken>
-              <SmallLogoHolder><img src={selectedToken.logo} alt="" /></SmallLogoHolder>
+            <DepositTokenFrom>
+              <FromTitle><h2>From:</h2></FromTitle>
+              <FromTitle style={{padding: '0 0 0 25px'}}>{tonWalletAddress ? <h2>{tonculaWalletBalance} TNcula</h2> : <h2>Connect Your Wallet</h2>}</FromTitle>
+            </DepositTokenFrom>
+            <DepositTokenToken >
+              <SmallLogoHolder><img src={selectedToken.logo} alt="" style={{borderRadius: '50%', width: '60%'}}/></SmallLogoHolder>
               <SmallLogoHolder><h2>{selectedToken.name}</h2></SmallLogoHolder>
               <InputHolder><InputInput type="number" placeholder='0.0' onChange={(e) => setTonculaAmount(e.target.value)}></InputInput></InputHolder>
             </DepositTokenToken>
@@ -537,7 +627,7 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
             <DepositTokenRowSmall>
             <h2>Current TNcula Price: <br/><span>{tonculaPrice} USDT</span></h2>
             </DepositTokenRowSmall>
-            <DepositTokenRowSmall><StyledButton onClick={handleSendTonculaTransaction} style={{fontSize: '18px'}}>DEPOSIT</StyledButton></DepositTokenRowSmall>
+            <DepositTokenRowSmall><StyledButton onClick={transferJettons /* () => tonConnectUI.sendTransaction(myTransaction) */} style={{fontSize: '18px'}}>DEPOSIT</StyledButton></DepositTokenRowSmall>
           </DepositWrapper>
         )}
         <DepositWrapper>

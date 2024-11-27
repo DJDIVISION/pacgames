@@ -11,7 +11,7 @@ export const FantasySection = styled.div`
 export const Title = styled.div`
     width: 100%;
     height: 10vh;
-    border: 1px solid red;
+    margin-bottom: 40px;
     ${props => props.theme.displayFlexCenter};
     h2{
         font-size: 18px;

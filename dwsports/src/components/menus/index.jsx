@@ -220,6 +220,18 @@ export const DepositTokenFrom = styled.div`
     height: 30%;
     ${props => props.theme.displayFlex};
     padding: 0 10px;
+    transform: translateY(-5px);
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 12px;
+        font-weight: bold;
+    }
+`;
+
+export const FromTitle = styled.div`
+    width: 50%;
+    height: 100%;
+    ${props => props.theme.displayFlex};
     h2{
         color: ${props => props.theme.text};
         font-size: 12px;

@@ -70,6 +70,18 @@ const Hero = () => {
     const {currentUser, setCurrentUser} = FantasyState();
     const images = [back1, back4, back3];
     const [currentImage, setCurrentImage] = useState(0);
+    const [tonConnectUI, setOptions] = useTonConnectUI();
+    const [jettonWalletAddress, setJettonWalletAddress] = useState(null);
+
+    tonConnectUI.onStatusChange(walletInfo => {
+        const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
+        if (walletInfo) {
+          console.log('Connected wallet address:', walletInfo.account.address);
+          setTonWalletAddress(walletInfo.account.address)
+        }
+      });
+
+    
     useEffect(() => {
         const interval = setInterval(() => {
           setCurrentImage((prev) => (prev + 1) % images.length);
@@ -171,58 +183,13 @@ const Hero = () => {
           });
     };
 
-    const tonClient = new TonClient({ endpoint: " https://toncenter.com/api/v2/jsonRPC" });
-    const jettonMasterAddress = "EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh";
-
-    async function getUserWalletAddress(userFriendlyAddress) {
-        const jettonMasterAddress = Address.parse('EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh'); // Example address
-        const userAddress = Address.parse(userFriendlyAddress);
-        const client = new TonClient({
-            endpoint: 'https://toncenter.com/api/v2/jsonRPC',
-        });
     
-        const userAddressCell = beginCell().storeAddress(userAddress).endCell();
-        const response = await client.runMethod(jettonMasterAddress, "get_wallet_address", [
-            {type: "slice", cell: userAddressCell}
-        ]);
     
-        return response.stack.readAddress();
-    }
-
-    async function getOwnerAddressFromJettonWallet() {
-        const jettonWalletAddress = Address.parse('EQAt98Gs26LGMvdMJAUkUEPvHj7YSY8QaP40jLIN07M0ideh');
-        const client = new TonClient({
-            endpoint: 'https://toncenter.com/api/v3/jsonRPC', // Using Toncenter v3 endpoint
-        });
-    
-        try {
-            // Query the Jetton wallet contract for data
-            const response = await client.runMethod(jettonWalletAddress, 'get_wallet_data', []);
-    
-            // The method returns a stack with balance, owner address, jetton address, and wallet code.
-            const ownerAddress = response.stack.readAddress(); // Extracting the owner address from the stack
-            console.log('Owner Address:', ownerAddress);
-            return ownerAddress;
-        } catch (error) {
-            console.error('Error fetching wallet data:', error);
-            throw error;
-        }
-    }
-    
-
-    
-    useEffect(() => {
+    /* useEffect(() => {
         if (userFriendlyAddress) {
             setTonWalletAddress(userFriendlyAddress);
-            getOwnerAddressFromJettonWallet(userFriendlyAddress)
-                .then(ownerAddress => {
-                    console.log('Owner Address:', ownerAddress);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
         }
-    }, [userFriendlyAddress]);
+    }, [userFriendlyAddress]); */
 
     const expandDiv = () => {
         setIsExpanded((prev) => !prev);

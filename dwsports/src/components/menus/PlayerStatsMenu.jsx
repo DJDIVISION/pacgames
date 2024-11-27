@@ -258,7 +258,7 @@ const PlayerStatsMenu = ({selectedPlayerMenu,setSelectedPlayerMenu}) => {
       setPlayerToUpdate([]); 
   }
 
-  console.log(playerToUpdate.id)
+  console.log(playerToUpdate)
 
   
   
