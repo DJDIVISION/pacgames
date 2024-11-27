@@ -45,7 +45,26 @@ const SendFantasy = () => {
       try {
         const response = await axios.request(options);
         console.log(response.data.response);
-        response.data.response[0].statistics.forEach(async (stat) => {
+        for(const player of response.data.response){
+          for(const stat of player.statistics){
+            if(stat.league.name === "Premier League"){
+              const rating = stat.games.rating
+              const parsed = parseFloat(rating).toFixed(2)
+              console.log(parsed)
+              const { data: firstData, error: firstError } = await supabase
+              .from('footballPlayers')
+              .update({rating: parsed})
+              .eq("id", response.data.response[0].player.id);
+  
+            if (firstError) {
+              console.log("firstError", firstError);
+            } else {
+              console.log(`updated data for ${player.player.name}`)
+            }
+            }
+          }
+        }
+        /* response.data.response[0].statistics.forEach(async (stat) => {
           if(stat.league.name === "Premier League"){
             const rating = stat.games.rating
             const parsed = parseFloat(rating).toFixed(2)
@@ -61,7 +80,7 @@ const SendFantasy = () => {
             console.log(`updated data for ${player.name}`)
           }
           }
-        })
+        }) */
       } catch (error) {
         console.error(error);
       }
@@ -87,12 +106,14 @@ const SendFantasy = () => {
     try {
       const response = await axios.request(options);
       console.log(response.data.response[0])
-      response.data.response[0].statistics.forEach((stat) => {
-        if(stat.league.name === "Serie A"){
+      response.data.response[0].forEach((player) => {
+        console.log(player)
+        /* if(stat.league.name === "Serie A"){
           const rating = stat.games.rating
           const parsed = parseFloat(rating).toFixed(2)
           console.log(parsed)
-        }
+          console.log(player)
+        } */
       })
     } catch (error) {
       console.error(error);
