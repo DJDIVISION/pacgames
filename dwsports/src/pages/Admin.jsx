@@ -24,9 +24,10 @@ const Admin = () => {
             console.log("error", firstError);
         } else {
             console.log(firstData)
-            const teams = []
             firstData.forEach((player) => {
-                console.log(player.nextMatch)
+                if(player.nextMatch !== null){
+                    teams.push(player.nextMatch)
+                }
             })
             setAllTeams(teams)
         }
@@ -39,7 +40,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton onClick={fetchTeams}>REQUEST</StyledButton>
+      {/* <StyledButton onClick={fetchTeams}>REQUEST</StyledButton> */}
     </BetSection>
     <SendFantasy />
     </>

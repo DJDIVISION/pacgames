@@ -97,6 +97,7 @@ const NewFantasy = () => {
     const [startAgain, setStartAgain] = useState(true)
     const [openTeamMenu, setOpenTeamMenu] = useState(false)
     const [openPlayerMenu, setOpenPlayerMenu] = useState(false)
+    const [openAllTeamsMenu, setOpenAllTeamsMenu] = useState(false)
     const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
     const [openDropMenu, setOpenDropMenu] = useState(false)
     const [openConfirmMenu, setOpenConfirmMenu] = useState(false)
@@ -1724,6 +1725,7 @@ const toggleMenu = () => {
             )}
         </IconHolder>
         <IconHolder>
+        
             {openPlayerMenu ? (
                 <h2 style={{color: openPlayerMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title22")}</h2>
             ):(
@@ -1740,6 +1742,9 @@ const toggleMenu = () => {
                     )}
                     {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) &&  (
                         <h2 onClick={openSell} style={{color: openSellMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title23")}</h2> 
+                    )}
+                    {(!openDropMenu || !openSellMenu || !openStatsMenu || !openTrainingMenu) &&  (
+                        <h2 style={{color: openPlayerMenu ? "rgba(244,215,21,1)" : ""}}>ALL TEAMS</h2>
                     )}
                     </>
                  )}

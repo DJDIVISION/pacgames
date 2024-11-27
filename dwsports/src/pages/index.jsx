@@ -131,6 +131,9 @@ export const CountryBallText = styled(motion.div)`
     line-height: 1.1;
     transform: translateY(-50%);
     text-shadow: ${props => props.theme.textShadowTwo};
+    @media(max-width: 498px){
+        font-size: 14px;
+    }
 `;
 
 export const PlayersContainer = styled.div`
