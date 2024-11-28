@@ -882,6 +882,50 @@ export const Rower = styled.div`
     height: 130px;
     ${props => props.theme.displayFlexCenter};
 `;
+export const SmallRower = styled.div`
+    width: 100%;
+    height: 100px;
+    ${props => props.theme.displayFlex};
+`;
+
+export const SmallAvatar = styled.div`
+    width: 20%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    text-align: center;
+    h2{
+        font-size: 10px;
+        color: white;
+    }
+    span{
+        font-size: 18px;
+        color: white; 
+    }
+`;
+export const SmallAvatarTwo = styled.div`
+    width: 20%;
+    height: 100%;
+    ${props => props.theme.displayFlexCenter};
+    text-align: center;
+    h2{
+        font-size: 16px;
+        color: white;
+    }
+    span{
+        font-size: 18px;
+        color: white; 
+    }
+`;
+export const SmallPlayerName = styled.div`
+    width: 40%;
+    height: 100%;
+    text-align: center;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        font-size: 16px;
+        color: white;
+    }
+`;
 
 export const RowerColumn = styled.div`
     width: 100%;

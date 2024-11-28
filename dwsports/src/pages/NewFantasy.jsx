@@ -10,14 +10,14 @@ import italy from '../assets/logos/italy.png'
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
 import field from '../assets/lineups/vertField.png' 
-import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative } from './index';
+import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo } from './index';
 import { FantasyState } from '../context/FantasyContext';
 import { CircularProgress } from '@mui/material';
 import { AverageDisplay, BalanceDisplay, startCountdown, useAuth, useGetTeams } from './functions';
 import { useMediaQuery } from 'react-responsive';
 
 import { message } from 'antd';
-import { StyledButton } from '../components';
+import { LowRower, Rower, RowerRow, SmallAvatar, SmallAvatarTwo, SmallPlayerName, SmallRower, StyledButton } from '../components';
 import TeamStats from '../components/menus/TeamStats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 import {useTranslation} from "react-i18next";
@@ -27,7 +27,8 @@ import axios from 'axios'
 import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core';
 import {Section,BottomRow,IconHolder,Container,LeagueRow,item,LeagueHolder,AbsoluteIconButton,ArrowUp,ArrowDown,
-    Title,AbsoluteIconButtonLeft,TeamCircularRow,TeamRow,TeamHolder
+    Title,AbsoluteIconButtonLeft,TeamCircularRow,TeamRow,TeamHolder,
+    TeamBetsHolder
 } from './indexThree'
 
 
@@ -100,6 +101,7 @@ const NewFantasy = () => {
     const [openPlayerMenu, setOpenPlayerMenu] = useState(false)
     const [openAllTeamsMenu, setOpenAllTeamsMenu] = useState(false)
     const [selectedTeamMenu, setSelectedTeamMenu] = useState(false)
+    const [expandedIndex, setExpandedIndex] = useState(null);
     const [openDropMenu, setOpenDropMenu] = useState(false)
     const [openConfirmMenu, setOpenConfirmMenu] = useState(false)
     const [openConfirmSellMenu, setOpenConfirmSellMenu] = useState(false)
@@ -1043,83 +1045,11 @@ const toggleMenu = () => {
         
     }
     
+    const toggleExpand = (index) => {
+        setExpandedIndex(expandedIndex === index ? null : index);
+      };
 
-
-    const getLastMatchRating = async () => {
-        setLoadingRating(true)
-        const end = new Date(endDate)
-        const now = new Date();
-        if (droppedTeamPlayers && now > end) {
-            /* console.log(droppedTeamPlayers) */
-            const areas = Object.values(droppedTeamPlayers); // Get all areas
-            for (const area of areas) {
-                for (const player of area) {
-                    if (player.lastMatchRating === null) {
-                        let first = localStorage.getItem(`${player.name}`)
-                        if(first === null){
-                            await fetchDataFromSupabase(player.leagueName, player.id, player.teamName, "local");
-                            // Add a delay between requests if needed
-                            await new Promise(resolve => setTimeout(resolve, 500)); 
-                            message.success(`Fetching rating for ${player.name}`)
-                        } else {
-                            /* console.log(first)
-                            console.log(`not null for ${player.name}`) */
-                            const areas = Object.values(droppedTeamPlayers)
-                            for (const area of areas){
-                                for (const man of area){
-                                    if(man.id === player.id){
-                                        man.lastMatchRating = parseFloat(parseFloat(first).toFixed(2)) 
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        return
-                    }
-                }
-            }
-        } else {
-            console.log(droppedTeamPlayers)
-            const areas = Object.values(droppedTeamPlayers);
-            for (const area of areas){
-                for (const player of area) {
-                    //localStorage.removeItem(`${player.name}`)
-                    let first = localStorage.getItem(`${player.name}`)
-                        if(first === null){
-                            await fetchDataFromSupabase(player.leagueName, player.id, player.teamName, "finished");
-                            // Add a delay between requests if needed
-                            await new Promise(resolve => setTimeout(resolve, 500)); 
-                            message.success(`Fetching rating for ${player.name}`)
-                        } else {
-                            const areas = Object.values(droppedTeamPlayers)
-                            for (const area of areas){
-                                for (const man of area){
-                                    if(man.id === player.id){
-                                        man.lastMatchRating = parseFloat(parseFloat(first).toFixed(2)) 
-                                    }
-                                }
-                            }
-                    }
-                    if(player.lastMatchRating === null){
-                        player.lastMatchRating = 0
-                    }
-                    localStorage.removeItem(`${player.name}`)
-                    setStartAgain(true)
-                }
-            }
-            
-        }
-        setDroppedTeamPlayers(droppedTeamPlayers)
-        setTeamAverage(getAveragePlayerRating())
-        setLoadingRating(false)
-    }
     
-
-    useEffect(() => {
-        if(gameStarted && openStatsMenu){
-            getLastMatchRating()
-        }
-    }, [gameStarted,openStatsMenu])
 
 
     const ReStartGame = async () => {
@@ -1722,12 +1652,59 @@ const toggleMenu = () => {
         {openAllTeamsMenu && (
             <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"} 
             variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }} style={{flexDirection: 'column'}}>
-                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2.5%'}} variants={item}
+                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '50px'}} variants={item}
                     initial="initial"
                     animate="animate"
                     exit="exit"
                     transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                            ALL FANTASY TEAMS
+                        {allFantasyTeams?.map((team, index) => {
+                            console.log(team.nextMatch.players)
+                            return(
+                                <TeamBetsHolder key={index}
+                                initial={{ height: '100px' }}
+                                animate={{ height: expandedIndex === index ? '330px' : '100px' }}
+                                transition={{ duration: 0.5 }}>
+                                {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                                    <SmallRower>
+                                       <SmallAvatar>
+                                       <Avatar alt="Home Team Logo" src={team.avatar} sx={{
+                                        width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                                        height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                                        }} />
+                                        </SmallAvatar> 
+                                        <SmallPlayerName><h2>{team.playerName}</h2></SmallPlayerName>
+                                        <SmallAvatar><h2>TRAININGS: <br/><span>{team.trainingsNumber}</span></h2></SmallAvatar>
+                                        <SmallAvatar><h2>TEAM RATING: <br/><span style={{color: getBackgroundColor(team.teamRating)}}>{team.nextMatch.teamRating}</span></h2></SmallAvatar>
+                                    </SmallRower>
+                                    {expandedIndex === index && (
+                                        <LowRower>
+                                            {Object.entries(team.nextMatch.players).map(([area, players]) => {
+                                                return(
+                                                    <>
+                                                    {players.map((player, playerIndex) => {
+                                                        
+                                                        return(
+                                                            <RowerRow >
+                                                                <SmallAvatar>
+                                                            <Avatar alt="Home Team Logo" src={player.image} sx={{
+                                                                width: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
+                                                                height: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
+                                                                }} />
+                                                                </SmallAvatar> 
+                                                                <SmallPlayerName style={{border: '1px solid red'}}><h2>{player.name}</h2></SmallPlayerName>
+                                                                <SmallAvatarTwo><h2>{player.position.charAt(0)}</h2></SmallAvatarTwo>
+                                                                <SmallAvatarTwo><h2>{player.rating !== null ? player.rating : 0}</h2></SmallAvatarTwo>
+                                                            </RowerRow>
+                                                        )
+                                                    })}
+                                                    </>
+                                                )
+                                            })}
+                                        </LowRower>
+                                    )}
+                                </TeamBetsHolder>
+                            )
+                        })}
                 
                 </motion.div>
                 </Container>

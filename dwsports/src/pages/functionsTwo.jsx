@@ -306,4 +306,80 @@ const BetPerRowsWrapper = styled.div`
     }
 `;
 
+////////////////////////////////////
 
+const getLastMatchRating = async () => {
+  setLoadingRating(true)
+  const end = new Date(endDate)
+  const now = new Date();
+  if (droppedTeamPlayers && now > end) {
+      /* console.log(droppedTeamPlayers) */
+      const areas = Object.values(droppedTeamPlayers); // Get all areas
+      for (const area of areas) {
+          for (const player of area) {
+              if (player.lastMatchRating === null) {
+                  let first = localStorage.getItem(`${player.name}`)
+                  if(first === null){
+                      await fetchDataFromSupabase(player.leagueName, player.id, player.teamName, "local");
+                      // Add a delay between requests if needed
+                      await new Promise(resolve => setTimeout(resolve, 500)); 
+                      message.success(`Fetching rating for ${player.name}`)
+                  } else {
+                      /* console.log(first)
+                      console.log(`not null for ${player.name}`) */
+                      const areas = Object.values(droppedTeamPlayers)
+                      for (const area of areas){
+                          for (const man of area){
+                              if(man.id === player.id){
+                                  man.lastMatchRating = parseFloat(parseFloat(first).toFixed(2)) 
+                              }
+                          }
+                      }
+                  }
+              } else {
+                  return
+              }
+          }
+      }
+  } else {
+      console.log(droppedTeamPlayers)
+      const areas = Object.values(droppedTeamPlayers);
+      for (const area of areas){
+          for (const player of area) {
+              //localStorage.removeItem(`${player.name}`)
+              let first = localStorage.getItem(`${player.name}`)
+                  if(first === null){
+                      await fetchDataFromSupabase(player.leagueName, player.id, player.teamName, "finished");
+                      // Add a delay between requests if needed
+                      await new Promise(resolve => setTimeout(resolve, 500)); 
+                      message.success(`Fetching rating for ${player.name}`)
+                  } else {
+                      const areas = Object.values(droppedTeamPlayers)
+                      for (const area of areas){
+                          for (const man of area){
+                              if(man.id === player.id){
+                                  man.lastMatchRating = parseFloat(parseFloat(first).toFixed(2)) 
+                              }
+                          }
+                      }
+              }
+              if(player.lastMatchRating === null){
+                  player.lastMatchRating = 0
+              }
+              localStorage.removeItem(`${player.name}`)
+              setStartAgain(true)
+          }
+      }
+      
+  }
+  setDroppedTeamPlayers(droppedTeamPlayers)
+  setTeamAverage(getAveragePlayerRating())
+  setLoadingRating(false)
+}
+
+
+/* useEffect(() => {
+  if(gameStarted && openStatsMenu){
+      getLastMatchRating()
+  }
+}, [gameStarted,openStatsMenu]) */
