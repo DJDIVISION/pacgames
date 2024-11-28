@@ -1691,7 +1691,7 @@ const toggleMenu = () => {
                                                                 height: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
                                                                 }} />
                                                                 </SmallAvatar> 
-                                                                <SmallPlayerName style={{border: '1px solid red'}}><h2>{player.name}</h2></SmallPlayerName>
+                                                                <SmallPlayerName><h2>{player.name}</h2></SmallPlayerName>
                                                                 <SmallAvatarTwo><h2>{player.position.charAt(0)}</h2></SmallAvatarTwo>
                                                                 <SmallAvatarTwo><h2>{player.rating !== null ? player.rating : 0}</h2></SmallAvatarTwo>
                                                             </RowerRow>
