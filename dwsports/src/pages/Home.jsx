@@ -32,6 +32,10 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabase/client'
 import axios from 'axios'
 import TelegramLogin from '../components/home/TelegramLogin'
+import back10 from '../assets/backs/betsBack.jpg'
+import back20 from '../assets/backs/fantasyBack.jpg'
+import back30 from '../assets/backs/fantasyText.jpg'
+import back40 from '../assets/backs/betsText.jpg'
 
 
 
@@ -56,6 +60,7 @@ const Home = ({toggleTheme}) => {
   const [email, setEmail] = useState(null)
   const [password, setPassword] = useState(null)
   const [profileImage, setProfileImage] = useState(null)
+  const images = [back1, back2];
   
   useEffect(() => {
     if(session === null){
@@ -301,6 +306,11 @@ const Home = ({toggleTheme}) => {
         ) : (
       <StaticSection>
             <Container>
+              <ImageHolder>
+
+              </ImageHolder>
+              <RowerRowImage></RowerRowImage>
+              <RowerRowBetsCenter></RowerRowBetsCenter>
               <RowerRowBetsCenter onClick={() => handleGoogleSignIn()}><WalletsRow>
                 {theme.body === '#202020' ? <img src={googleDark} alt="googleDark" /> : <img src={googleLight} alt="googleLight" />}
               </WalletsRow></RowerRowBetsCenter>
@@ -358,6 +368,31 @@ const Home = ({toggleTheme}) => {
 
 export default Home
 
+const RowerRowImage = styled.div`
+    width: 150px;
+    min-height: 100px;
+    ${props => props.theme.displayFlexCenter};
+    margin: 5px 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    animation: other 20s infinite;
+    border-radius: 10px;
+    margin: 30px 0;
+          @keyframes other {
+              0% {
+              background-image: url(${back40});
+              }
+              50% {
+              background-image: url(${back30});
+              }
+              100% {
+              background-image: url(${back40});
+              }
+          }
+    
+`;
+
 const Container = styled.div`
     width: 80vw;
     height: 80vh;
@@ -404,4 +439,27 @@ const StaticSection = styled.div`
   @media(max-width: 498px){
     background-image: url(${back2});
   }
+`;
+
+const ImageHolder = styled.div`
+  width: 80%;
+  min-height: 50vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  animation: backgroundChange 20s infinite;
+  img{
+    border-radius: 10px;
+  }
+        @keyframes backgroundChange {
+            0% {
+            background-image: url(${back10});
+            }
+            50% {
+            background-image: url(${back20});
+            }
+            100% {
+            background-image: url(${back10});
+            }
+        }
 `;

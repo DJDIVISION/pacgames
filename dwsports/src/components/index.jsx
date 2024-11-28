@@ -1051,6 +1051,7 @@ export const RowerRowBets = styled.div`
         color: ${props => props.theme.text};
     }
 `;
+
 export const RowerRowBetsCenter = styled.div`
     width: 100%;
     height: 60px;
