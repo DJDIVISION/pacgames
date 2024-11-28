@@ -280,3 +280,224 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
         return () => clearInterval(intervalId); // Cleanup interval on component unmount
     }, []);
 
+
+
+//////// FANTASY FOOTBALL FETCH
+
+const fetchTeams = async () => {
+    const teams = []
+    const { data: firstData, error: firstError } = await supabase
+        .from('fantasyFootball')
+        .select('nextMatch')
+        
+
+    if (firstError) {
+        console.log("error", firstError);
+    } else {
+        const teams = []
+        firstData.forEach((player) => {
+            if(player.nextMatch !== null){
+                
+                console.log(player)
+                const start = new Date(startDate)
+                const end = new Date(endDate)
+                const now = new Date(player.nextMatch.date);
+                if(now >= start && now <= end){
+                    teams.push(player)
+                }
+            }
+        })
+        setAllTeams(teams)
+    }
+}
+
+async function fetchFixtureData(fixtureId,playerId,teamName) {
+    const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+        params: {id: fixtureId},
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+
+    try {
+        const response = await axios.request(options);
+        /* console.log(response.data.response) */
+        response.data.response[0].players.forEach((el) => {
+            /* console.log(el) */
+            if(el.team.name === teamName && response.data.response[0].fixture.status.short === "FT"){
+                el.players.forEach((player) => {
+                    if(player.player.id === playerId){
+                        console.log("player", player)
+                        const areas = Object.values(allTeams)
+                        console.log(areas)
+                        for (const area of areas){
+                            for (const man of area.nextMatch){
+                                if(man.id === playerId){
+                                    if(player.statistics[0].games.rating === null){
+                                        man.lastMatchRating = 0  
+                                    } else {
+                                        //localStorage.setItem(`${player.player.name}`, `${player.statistics[0].games.rating}`)
+                                        man.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
+                                    }
+                                    
+                                }
+                                
+                            }
+                        }
+                        /* const areas = Object.values(allTeams)
+                        for (const area of areas){
+                            for (const man of area){
+                                if(man.id === playerId){
+                                    if(player.statistics[0].games.rating === null){
+                                        man.lastMatchRating = 0  
+                                    } else {
+                                        //localStorage.setItem(`${player.player.name}`, `${player.statistics[0].games.rating}`)
+                                        man.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
+                                    }
+                                    
+                                }
+                                
+                            }
+                            console.log(man)
+                        } */
+                        
+                    }
+                    
+                })
+            }
+        })
+
+    } catch (error) {
+        console.error(`Error fetching fixture ${fixtureId}:`, error);
+        return null;
+    }
+}
+
+useEffect(()=> {
+    if(allTeams){
+        fetchRating(allTeams)
+    }
+}, [allTeams])
+
+const fetchRating = async () => {
+    for(const team of allTeams){
+        console.log(team)
+        const areas = Object.values(team.nextMatch.players)
+            for (const area of areas) {
+                for (const player of area){
+                    let currentRound
+                    const filter = leagues.filter((el) => el.league === player.leagueName)
+                    
+                    currentRound = filter[0].currentRound
+                    
+                    if(currentRound){
+                        const {data, error} = await supabase
+                        .from("fixtures")
+                        .select(`${currentRound}`)
+                        .eq("leagueName", player.leagueName);
+                        if (error) {
+                            console.error(`Error fetching data for ${leagueName}:`, response.error);
+                            return null;
+                        } else {
+                            console.log(data)
+                            data[0][currentRound].forEach(async (match) => {
+                                
+                                await fetchFixtureData(match.fixture.id,player.id,player.teamName)
+                            })
+                        }
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 1000)); 
+                }
+            }
+        /* const start = new Date(startDate)
+        const end = new Date(endDate)
+        const now = new Date(team.date);
+        console.log(now)
+        const isBetween = now >= start && now <= end;
+        if(isBetween){
+            console.log(team.players)
+            const areas = Object.values(team.players)
+            for (const area of areas) {
+                for (const player of area){
+                    let currentRound
+                    const filter = leagues.filter((el) => el.league === player.leagueName)
+                    
+                    currentRound = filter[0].currentRound
+                    
+                    if(currentRound){
+                        const {data, error} = await supabase
+                        .from("fixtures")
+                        .select(`${currentRound}`)
+                        .eq("leagueName", player.leagueName);
+                        if (error) {
+                            console.error(`Error fetching data for ${leagueName}:`, response.error);
+                            return null;
+                        } else {
+                            console.log(data)
+                            data[0][currentRound].forEach(async (match) => {
+                                
+                                await fetchFixtureData(match.fixture.id,player.id,player.teamName)
+                            })
+                        }
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 1000)); 
+                }
+            }
+        } */
+    }
+}
+
+
+//////// SEND INJURIES
+
+const writeDataInjuries = async (id,type,reason) => {
+    console.log(id)
+    console.log(type)
+    console.log(reason)
+    const { data: firstData, error: firstError } = await supabase
+          .from('footballPlayers')
+          .update({injuryType: type, injuryReason: reason})
+          .eq("id", id);
+
+        if (firstError) {
+          console.log("firstError", firstError);
+        } else {
+            console.log(`data written for player ${id}`)
+    }
+    await delay(1000);
+}
+
+const fetchInjuries = async () => {
+    const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/injuries',
+        params: {date: '2024-12-02'},
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+      
+      try {
+          const response = await axios.request(options);
+          console.log(response.data.response);
+          for (const player of response.data.response){
+            console.log(player)
+            const id = player.player.id
+            const type = player.player.type
+            const reason = player.player.reason
+            if(player.league.id === 39 || player.league.id === 140 || player.league.id === 61 || 
+                player.league.id === 78 || player.league.id === 135
+            ){
+                await writeData(player.player.id,player.player.type,player.player.reason)
+            }
+            
+          }
+      } catch (error) {
+          console.error(error);
+      }
+      await new Promise(resolve => setTimeout(resolve, 1500)); 
+}

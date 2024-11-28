@@ -18,3 +18,36 @@ export const Title = styled.div`
         color: white;
     }
 `;
+
+export const leagues = [
+    {
+        league: "Premier League",
+        name: "England",
+        id: 1,
+        currentRound: 12
+    },
+    {
+        league: "La Liga",
+        name: "Spain",
+        id: 2,
+        currentRound: 14
+    },
+    {
+        league: "Serie A",
+        name: "Italy",
+        id: 3,
+        currentRound: 13
+    },
+    {
+        league: "Ligue 1",
+        name: "France",
+        id: 4,
+        currentRound: 12
+    },
+    {
+        league: "Bundesliga",
+        name: "Germany",
+        id: 5,
+        currentRound: 11
+    }
+]

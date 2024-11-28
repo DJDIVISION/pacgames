@@ -3,7 +3,7 @@ import {FantasySection,Title} from './index.jsx'
 import axios from 'axios'
 import { StyledButton } from '../index.jsx'
 import { supabase } from '../../supabase/client.jsx'
-import { message } from 'antd'
+import { message } from 'antd' 
 
 const SendFantasy = () => {
 

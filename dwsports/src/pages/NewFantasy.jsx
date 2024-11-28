@@ -1776,7 +1776,7 @@ const toggleMenu = () => {
                     {(openDropMenu || openSellMenu || openStatsMenu || openTrainingMenu) ?  (
                         <h2 onClick={openSell} style={{color: openSellMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title23")}</h2> 
                     ) : (
-                        <h2 onClick={openTeamsMenu} style={{color: openPlayerMenu ? "rgba(244,215,21,1)" : ""}}>ALL TEAMS</h2>
+                        <h2 onClick={openTeamsMenu} style={{color: openPlayerMenu ? "rgba(244,215,21,1)" : ""}}>ROUND TEAMS</h2>
                     )}
                     
                     </>
