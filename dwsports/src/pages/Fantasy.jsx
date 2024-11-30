@@ -502,7 +502,7 @@ const Fantasy = () => {
                       console.log('Failed to send message');
                     }
                   } catch (error) {
-                    console.log('Error sending message');
+                    console.log('Error sending message', error);
                   }
         }
       }
