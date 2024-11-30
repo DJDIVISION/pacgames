@@ -18,7 +18,7 @@ import axios from 'axios'
 const Fantasy = () => {
 
     const [isDateExpanded, setIsDateExpanded] = useState(false)
-    const [startDate, setStartDate] = useState("2024-12-02 13:30:00")
+    const [startDate, setStartDate] = useState("2024-11-02 13:30:00")
     const [endDate, setEndDate] = useState('2024-12-02 23:00:00')
     const [t, i18n] = useTranslation("global");
     const [allFantasyTeams, setAllFantasyTeams] = useState([])
