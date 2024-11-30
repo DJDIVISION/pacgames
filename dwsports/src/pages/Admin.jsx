@@ -146,7 +146,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton onClick={fixRatings}>REQUEST</StyledButton>
+      <StyledButton /* onClick={fixRatings} */>REQUEST</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
