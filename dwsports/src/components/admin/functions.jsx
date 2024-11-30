@@ -1,6 +1,6 @@
 // SEND ALL PLAYERS TO DATABASE
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 
 const writeData = async (allIds) => {
     for (const id of allIds) {
