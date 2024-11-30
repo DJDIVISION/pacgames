@@ -13,6 +13,7 @@ const Admin = () => {
 
     const navigate = useNavigate()
     const [allTeams, setAllTeams] = useState([])
+    const [newTeams, setNewTeams] = useState([])
     const [startDate, setStartDate] = useState("2024-11-15 20:30:00")
     const [endDate, setEndDate] = useState('2024-11-25 23:00:00')
     /* console.log(leagues) */
@@ -20,7 +21,6 @@ const Admin = () => {
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     const fetchTeams = async () => {
-      const teams = []
       const { data: firstData, error: firstError } = await supabase
           .from('fantasyFootball')
           .select('nextMatch')
@@ -42,144 +42,178 @@ const Admin = () => {
                   }
               }
           })
-          setAllTeams(teams)
+          fetchRating(teams)
       }
   }
-
-  console.log(allTeams)
-
-  useEffect(() => {
-    if(allTeams){
-      fetchRating(allTeams)
-      console.log(allTeams)
-    }
-  }, [allTeams])
-
-  const fetchRating = async () => {
-    for(const team of allTeams){
-        console.log(team)
-        const areas = Object.values(team.nextMatch.players)
-            for (const area of areas) {
-                for (const player of area){
-                    let currentRound
-                    const filter = leagues.filter((el) => el.league === player.leagueName)
-                    
-                    currentRound = filter[0].currentRound
-                    
-                    if(currentRound){
-                        const {data, error} = await supabase
-                        .from("fixtures")
-                        .select(`${currentRound}`)
-                        .eq("leagueName", player.leagueName);
-                        if (error) {
-                            console.error(`Error fetching data for ${leagueName}:`, response.error);
-                            return null;
-                        } else {
-                            console.log(data)
-                            data[0][currentRound].forEach(async (match) => {
-                                
-                                await fetchFixtureData(match.fixture.id,player.id,player.teamName)
-                            })
-                        }
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 1000)); 
-                }
-            }
-        /* const start = new Date(startDate)
-        const end = new Date(endDate)
-        const now = new Date(team.date);
-        console.log(now)
-        const isBetween = now >= start && now <= end;
-        if(isBetween){
-            console.log(team.players)
-            const areas = Object.values(team.players)
-            for (const area of areas) {
-                for (const player of area){
-                    let currentRound
-                    const filter = leagues.filter((el) => el.league === player.leagueName)
-                    
-                    currentRound = filter[0].currentRound
-                    
-                    if(currentRound){
-                        const {data, error} = await supabase
-                        .from("fixtures")
-                        .select(`${currentRound}`)
-                        .eq("leagueName", player.leagueName);
-                        if (error) {
-                            console.error(`Error fetching data for ${leagueName}:`, response.error);
-                            return null;
-                        } else {
-                            console.log(data)
-                            data[0][currentRound].forEach(async (match) => {
-                                
-                                await fetchFixtureData(match.fixture.id,player.id,player.teamName)
-                            })
-                        }
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 1000)); 
-                }
-            }
-        } */
-    }
-}
   
-  async function fetchFixtureData(fixtureId,playerId,teamName) {
-      const options = {
-          method: 'GET',
-          url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-          params: {id: fixtureId},
-          headers: {
-            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-          }
-        };
-  
-      try {
-          const response = await axios.request(options);
-          /* console.log(response.data.response) */
-          response.data.response[0].players.forEach((el) => {
-              
-              if(el.team.name === teamName && response.data.response[0].fixture.status.short === "FT"){
-                  el.players.forEach((player) => {
-                      if(player.player.id === playerId){
-                          //console.log("player", player)
-                          const areas = Object.values(allTeams)
-                          console.log(areas)
-                          for (const area of areas){
-                            console.log(area.nextMatch)
-                            for (const man of area.nextMatch.players){
-                              if(man.id === playerId){
-                                  if(player.statistics[0].games.rating === null){
-                                      man.lastMatchRating = 0  
-                                  } else {
-                                      //localStorage.setItem(`${player.player.name}`, `${player.statistics[0].games.rating}`)
-                                      man.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
-                                  }
-                                  
-                              }
-                              
-                          }
-                          }
-                      }
-                      
-                  })
-              }
-          })
-  
-      } catch (error) {
-          console.error(`Error fetching fixture ${fixtureId}:`, error);
-          return null;
-      }
-      await delay(1000);
-  }
 
+
+
+  
+
+  const fetchRating = async (teams) => {
+    const allFetchPromises = []; // To track all fetchFixtureData calls
     
+    for (const team of teams) {
+      const areas = Object.values(team.nextMatch.players);
+  
+      for (const area of areas) {
+        for (const player of area) {
+          let currentRound;
+          const filter = leagues.filter((el) => el.league === player.leagueName);
+          currentRound = filter[0]?.currentRound;
+  
+          if (currentRound) {
+            const { data, error } = await supabase
+              .from("fixtures")
+              .select(`${currentRound}`)
+              .eq("leagueName", player.leagueName);
+  
+            if (error) {
+              console.error(`Error fetching data for ${player.leagueName}:`, error);
+              return null;
+            } else {
+              data[0][currentRound].forEach((match) => {
+                // Collect the Promise from fetchFixtureData
+                const fetchPromise = fetchFixtureData(
+                  match.fixture.id,
+                  player.id,
+                  player.teamName,
+                  teams
+                );
+                allFetchPromises.push(fetchPromise); // Add the Promise to the array
+              });
+            }
+          }
+  
+          // Add delay here to avoid overwhelming the server with requests
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+    }
+  
+    // Wait for all fetchFixtureData calls to complete
+    await Promise.allSettled(allFetchPromises);
+    console.log("All fetchFixtureData tasks completed!");
+  
+    // Update the state after all tasks finish
+    setAllTeams(teams)
+    console.log(teams);
+    for (const team of teams) {
+        const areas = Object.values(team.nextMatch.players);
+        for (const area of areas) {
+            for (const player of area){
+                if(player.lastMatchRating === null){
+                    player.lastMatchRating = 0
+                }
+            } 
+        }
+        const { error: updateError } = await supabase
+                .from('fantasyFootball')
+                .update({ nextMatch: team.nextMatch}) 
+                .eq('id', team.nextMatch.userId); // Identify which user to update
+
+            if (updateError) {
+                console.error('Error updating user data:', updateError.message);
+            } else {
+               console.log("All teams have been saved!")
+        }
+    }
+  };
+  
+  async function fetchFixtureData(fixtureId, playerId, teamName, teams) {
+    const options = {
+      method: "GET",
+      url: "https://api-football-v1.p.rapidapi.com/v3/fixtures",
+      params: { id: fixtureId },
+      headers: {
+        "x-rapidapi-key": "5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2",
+        "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+      },
+    };
+  
+    try {
+      const response = await axios.request(options);
+  
+      // Check if the fixture status is "FT" (Full Time)
+      if (response.data.response[0].fixture.status.short === "FT") {
+        response.data.response[0].players.forEach((el) => {
+          if (el.team.name === teamName) {
+            // Check if player matches and update rating
+            el.players.forEach((player) => {
+              if (player.player.id === playerId) {
+                console.log("Found player:", player);
+  
+                const playerRating = player.statistics[0].games.rating;
+                
+                console.log("Player rating:", playerRating);
+  
+                // Now, let's ensure the teams data gets updated
+                const areas = Object.values(teams);
+                areas.forEach((team) => {
+                  const players = team.nextMatch.players;
+                  Object.keys(players).forEach((area) => {
+                    players[area].forEach((p) => {
+                      if (p.id === playerId) {
+                        console.log(`Updating player: ${p.name}`);
+                        p.lastMatchRating = playerRating ? parseFloat(parseFloat(playerRating).toFixed(2)) : 0;
+                      }
+                    });
+                  });
+                });
+              }
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.error(`Error fetching fixture ${fixtureId}:`, error);
+    }
+  
+    // Adding delay to throttle the requests
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay
+  }
+
+  const writeData = async (player) => {
+        console.log(player)
+        const { data, error } = await supabase
+        .from('footballPlayers')
+        .update({rating: 0})
+        .eq("id", player.id)
+
+        if (error) {
+        console.error('Error fetching players:', error.message);
+        } else {
+            console.log(`data updated for ${player.name}`)
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+
+  const fixRatings = async () => {
+    const { data, error } = await supabase
+        .from('footballPlayers')
+        .select('*')
+        .eq("rating", "NaN")
+
+        if (error) {
+        console.error('Error fetching players:', error.message);
+        } else {
+            if(data){
+                for(const player of data){
+                    await writeData(player)
+                }
+            } else {
+                console.log("no data")
+            }
+        }
+  }
+
 
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton onClick={fetchTeams}>REQUEST</StyledButton>
+      <StyledButton onClick={fixRatings}>REQUEST</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

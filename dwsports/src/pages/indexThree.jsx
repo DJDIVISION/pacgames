@@ -3,6 +3,79 @@ import { motion } from "framer-motion";
 import { IconButton } from "@mui/material";
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import field from '../assets/lineups/vertField.png' 
+
+export const BuyPlayerName = styled.div`
+width: 100%;
+height: 20%;
+${props => props.theme.displayFlexCenter}
+h2{
+    color: ${props => props.theme.text};
+    font-size: 24px;
+    font-weight: bold; 
+}
+span{
+    color: ${props => props.theme.pacColor};
+    font-size: 24px;
+    font-weight: bold;  
+}
+`;
+
+export const BuyPlayerAvatar = styled.div`
+    width: 100%;
+    height: 60%;
+    ${props => props.theme.displayFlexCenter}
+`;
+
+export const BuyPlayerHolder = styled.div`
+width: 100%;
+height: 30%;
+${props => props.theme.displayFlexColumn}
+margin: 20px 0;
+`;
+
+export const BigTeamName = styled.div`
+width: 70%;
+height: 15%;
+text-align: center;
+${props => props.theme.displayFlexCenter}
+padding: 10px;
+text-align: center;
+position: relative;
+h2{
+    color: ${props => props.theme.text};
+    font-size: 20px;
+    font-weight: bold;
+}
+`;
+
+export const MyTeamRow = styled(motion.div)`
+width: 100%;
+height: 85%;
+position: relative;
+${props => props.theme.displayFlexCenter}
+padding: 0px;
+text-align: center;
+h2{
+    color: ${props => props.theme.MainAccent};
+    font-size: 20px;
+    font-weight: bold; 
+}
+`;
+
+export const PlayerDroppingArea = styled.div`
+width: 50px;
+height: 50px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+background: #2cf5fcac;
+@media(max-width: 968px){
+    width: 40px;
+    height: 40px; 
+}
+`;
 
 export const Section = styled.div`
 width: 100vw;
@@ -37,13 +110,17 @@ position: relative; /* Ensure the parent div is relative */
 width: 10%;
 height: 100%;
 background: #3f3e3e;
-color: ${props => props.theme.text};
+
 ${props => props.theme.displayFlexCenter};
 padding: 5px;
 cursor: pointer;
+a{
+    text-decoration: none;
+}
 h2{
     font-size: 12px !important;
     font-weight: bold; 
+    color: ${props => props.theme.text};
 }
 
 &::before {
@@ -63,10 +140,304 @@ h2{
 }
 `;
 
+export const MyPlayerContainer = styled.div`
+width: 60%;
+height: 87.5%;
+padding: 10px;
+${props => props.theme.displayFlexColumn};
+overflow-y: auto;
+@media(max-width: 968px){
+    grid-template-columns: repeat(2, 1fr);
+    height: 85%;
+}
+@media(max-width: 498px){
+    grid-template-columns: repeat(1, 1fr);
+    width: 100%;
+}
+`;
+
+export const MyPlayerRow = styled.div`
+width: 100%;
+height: auto;
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+`;
+
+export const MyPlayer = styled.div`
+    width: 100px;
+    height: 100px;
+    ${props => props.theme.displayFlexColumn}
+`;
+
+export const AbsoluteDivLeft = styled.div`
+    width: 130px;
+    height: 50px;
+    position: absolute;
+    border-radius: 10px;
+    border: 1px solid ${props => props.theme.text};
+    background: ${props => props.theme.body};
+    backdrop-filter: blur(10px);
+    top: 10px;
+    left: 20px;
+    z-index: 50;
+    text-align: center;
+    ${props => props.theme.displayFlexCenter};
+    h3{
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+    }
+`;
+
+export const AbsoluteDivRight = styled.div`
+width: 130px;
+height: 50px;
+position: absolute;
+top: 10px;
+right: 10px;
+border-radius: 10px;
+border: 1px solid ${props => props.theme.text};
+background: ${props => props.theme.body};
+backdrop-filter: blur(10px);
+z-index: 50;
+${props => props.theme.displayFlexCenter};
+h3{
+    color: ${props => props.theme.text};
+    font-size: 14px;
+    font-weight: bold;
+}
+`;
+
+export const FieldWrapper = styled.div`
+width: 80%;
+height: 420px;
+position: relative;
+background-image: url(${field});
+background-position: center;
+background-size: cover;
+background-repeat: no-repeat;
+`;
+
+export const PlayerTeamLogo = styled.div`
+width: 30px;
+height: 30px;
+border-radius: 50%;
+position: absolute;
+top: 0px;
+left: 0px;
+z-index: 10;
+@media(max-width: 490px){
+    width: 25px;
+    height: 25px;
+    top: -5px;
+    left: -5px;
+}
+`;
+
+export const MyPlayersRow = styled(motion.div)`
+width: 100%;
+height: 15%;
+overflow: hidden;
+display: flex;
+align-items: center;
+text-align: center;
+margin-top: 30px;
+padding: 5px;
+h2{
+    color: ${props => props.theme.MainAccent};
+    font-size: 20px;
+    font-weight: bold; 
+}
+`;
+
+export const MyPlayersInnerRow = styled(motion.div)`
+width: auto;
+height: 100%;
+${props => props.theme.displayFlex}
+
+
+h2{
+    color: ${props => props.theme.MainAccent};
+    font-size: 20px;
+    font-weight: bold; 
+}
+`;
+
+export const MyTeamPlayerHolder = styled.div`
+    width: 60px;
+    height: 100%;
+    margin: 0 10px;
+    ${props => props.theme.displayFlexColumn}
+`;
+
+export const MyTeamAvatar = styled.div`
+    width: 100%;
+    height: 70%;
+    ${props => props.theme.displayFlexCenter}
+    position: relative;
+`;
+
+export const MyTeamName = styled.div`
+    width: 100%;
+    height: 30%;
+    ${props => props.theme.displayFlexCenter}
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 12px;
+        font-weight: bold;  
+        transform: translateY(-3px);
+    }
+`;
+
+export const PlayerTeamRating = styled.div`
+width: 30px;
+height: 30px;
+border-radius: 50%;
+${props => props.theme.displayFlexCenter};
+z-index: 1000;
+position: absolute; 
+bottom: 0;
+right: 0;
+font-size: 14px;
+font-weight: bold;
+@media(max-width: 968px){
+    font-size: 14px; 
+    width: 30px;
+    height: 30px;
+}
+@media(max-width: 490px){
+    font-size: 12px; 
+    width: 25px;
+    height: 25px;
+    bottom: -5px;
+    right: -5px;
+}
+`;
+
+export const MyPlayerAvatar = styled.div`
+    width: 100%;
+    height: 70%;
+    ${props => props.theme.displayFlexCenter}
+    position: relative;
+`;
+
+export const MyPlayerName = styled.div`
+width: 100%;
+height: 20%;
+${props => props.theme.displayFlexCenter}
+text-align: center;
+h2{
+    color: ${props => props.theme.text};
+    font-size: 12px;
+    font-weight: bold; 
+    transform: translateY(-5px);
+}
+`;
+
+export const SellPlayerRow = styled.div`
+width: 70%;
+height: 15%;
+${props => props.theme.displayFlexCenter}
+padding: 10px;
+text-align: center;
+h2{
+    color: ${props => props.theme.MainAccent};
+    font-size: 16px;
+    font-weight: bold; 
+}
+`;
+
+export const PlayerTeamLogoValue = styled.div`
+    h2{
+        color: gold;
+        font-size: 14px;
+    }
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    z-index: 10;
+    @media(max-width: 490px){
+        width: 25px;
+        height: 25px;
+        top: -5px;
+        right: 10px;
+    }
+`;
+
+export const PlayerTeamLogoShort = styled.div`
+width: 30px;
+height: 30px;
+border-radius: 50%;
+position: absolute;
+top: 0px;
+left: 0px;
+z-index: 10;
+@media(max-width: 490px){
+    width: 25px;
+    height: 25px;
+    top: 5px;
+    left: 5px;
+}
+`;
+
+export const PlayerTeamRatingShort = styled.div`
+width: 30px;
+height: 30px;
+border-radius: 50%;
+${props => props.theme.displayFlexCenter};
+z-index: 1000;
+position: absolute; 
+bottom: 0;
+right: 0;
+font-size: 14px;
+font-weight: bold;
+@media(max-width: 968px){
+    font-size: 14px; 
+    width: 30px;
+    height: 30px;
+}
+@media(max-width: 490px){
+    font-size: 12px; 
+    width: 25px;
+    height: 25px;
+    bottom: 5px;
+    right: 5px;
+}
+`;
+
+export const MyPlayerPosition = styled.div`
+    width: 100%;
+    height: 40px;
+    ${props => props.theme.displayFlex}
+    padding: 20px;
+    h2{
+        color: ${props => props.theme.MainAccent};
+        font-size: 16px;
+        font-weight: bold; 
+    }
+`;
+
+export const MyBalanceRow = styled.div`
+width: 100%;
+height: 5%;
+${props => props.theme.displayFlexCenter}
+padding: 20px;
+text-align: center;
+h2{
+    color: ${props => props.theme.MainAccent};
+    font-size: 20px;
+    font-weight: bold; 
+}
+span{
+    margin: 0 5px;
+}
+`;
+
 export const Container = styled(motion.div)`
     width: 100%;
     ${props => props.theme.displayFlexCenter}
     height: 70vh;
+    border: 1px solid green;
     @media(max-width: 498px){
         height: 80vh;
     }
@@ -79,7 +450,7 @@ padding: 10px;
 ${props => props.theme.displayFlexCenter}
 justify-content: space-around;
 @media(max-width: 498px){
-    height: 80vh; 
+    height: 100%; 
     flex-direction: column;
     overflow-y: auto;
     

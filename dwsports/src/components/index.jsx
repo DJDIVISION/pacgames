@@ -922,7 +922,7 @@ export const SmallPlayerName = styled.div`
     text-align: center;
     ${props => props.theme.displayFlexCenter};
     h2{
-        font-size: 16px;
+        font-size: 14px !important;
         color: white;
     }
 `;

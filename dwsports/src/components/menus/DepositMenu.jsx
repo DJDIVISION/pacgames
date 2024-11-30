@@ -470,22 +470,39 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
             const senderJettonWallet = new TonWeb.token.jetton.JettonWallet(tonweb.provider, {
                 address: senderWalletAddress
             });
-            console.log(senderWalletAddress)
+            console.log(senderJettonWallet)
     
             // Specify the amount to transfer in nanoton
             const amountInNanoton = BigInt(tonculaAmount * 1e9);
+
+            /* const transferBody = await senderJettonWallet.createTransferBody({
+              toAddress: recipientWalletAddress, // Jetton wallet address of the recipient
+              amount: amountInNanoton, // Amount to transfer
+              forwardAmount: BigInt(0), // Forward TON to recipient (optional, usually 0)
+              payload: null // Optional payload
+            }) */
+
+            const wallet = tonweb.wallet.create({
+              publicKey: tonWalletKeyPair.publicKey
+            });
+
+            console.log(wallet)
+  
+          const seqno = await wallet.getSeqno();
+  
+          // Send the transaction
+          const sendResult = await wallet.transfer({
+              secretKey: tonWalletKeyPair.secretKey, // Sender's secret key
+              toAddress: senderWalletAddress, // Sender's jetton wallet address
+              amount: TonWeb.utils.toNano(0.05), // TON for gas fees
+              seqno: seqno,
+              payload: transferBody
+          });
+  
+          console.log('Jetton transfer initiated:', sendResult);
     
             // Perform the transfer
-            const seqno = await senderJettonWallet.transfer({
-                toAddress: recipientWalletAddress,
-                amount: amountInNanoton,
-                forwardAmount: 0, // Forward TON to recipient (if needed, usually 0)
-                payload: null, // Custom payload (optional)
-                fromWalletAddress: new TonWeb.utils.Address(tonWalletAddress), // TON wallet address
-                jettonMasterAddress: new TonWeb.utils.Address(jettonMasterAddress), // Jetton master contract address
-            });
-    
-            console.log(`Transfer initiated. Sequence number: ${seqno}`);
+            
         } catch (error) {
             console.error('Error transferring jettons:', error);
         }

@@ -29,6 +29,7 @@ import Partners from './pages/Partners';
 import NewRoulette from './pages/NewRoulette';
 import { FantasyState } from './context/FantasyContext';
 import Admin from './pages/Admin';
+import Fantasy from './pages/Fantasy';
 
 
 function App() {
@@ -52,7 +53,8 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/bets" element={<ProtectedRoute><Bets /></ProtectedRoute>} />
         <Route path="/casino" element={<ProtectedRoute><Casino /></ProtectedRoute>} />
-        <Route path="/fantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />
+        <Route path="/fantasy" element={<ProtectedRoute><Fantasy /></ProtectedRoute>} />
+        <Route path="/newfantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />
         <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />
         <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
         <Route path="/partners" element={<ProtectedRoute><Partners /></ProtectedRoute>} />
