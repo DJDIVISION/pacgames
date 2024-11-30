@@ -22,9 +22,9 @@ const Admin = () => {
 
     let processedEvents = {}; // Global dictionary to track processed events per match
 
-    function delay(ms) {
+    /* function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
-    }
+    } */
 
     async function processMatchEvents(matches, sendTelegramMessage) {
         for (const match of matches) { // Use `for...of` to handle async operations
