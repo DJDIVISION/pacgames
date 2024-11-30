@@ -77,7 +77,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "https://pactongamingzone.onrender.com",
+  origin: "https://pactongamingzone.vercel.app",
   methods: ['GET', 'POST'],
   credentials: true
 }));
