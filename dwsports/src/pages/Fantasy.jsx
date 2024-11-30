@@ -494,7 +494,7 @@ const Fantasy = () => {
                 }
                 try {
       
-                    const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-message', { messageToSend });
+                    const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend });
                     
                     if (response.data.success) {
                       console.log('Message sent successfully!');
