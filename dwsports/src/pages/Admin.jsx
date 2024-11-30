@@ -18,13 +18,13 @@ const Admin = () => {
     const [endDate, setEndDate] = useState('2024-11-25 23:00:00')
     /* console.log(leagues) */
 
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    //const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     let processedEvents = {}; // Global dictionary to track processed events per match
 
-    /* function delay(ms) {
+    function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
-    } */
+    }
 
     async function processMatchEvents(matches, sendTelegramMessage) {
         for (const match of matches) { // Use `for...of` to handle async operations
@@ -92,7 +92,7 @@ const Admin = () => {
     async function sendTelegramMessage(messageToSend) {
         console.log(`Sending to Telegram: ${messageToSend}`);
         try {
-            const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-message', { messageToSend });
+            const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend });
             if (response.data.success) {
                 console.log('Message sent successfully!');
             } else {
