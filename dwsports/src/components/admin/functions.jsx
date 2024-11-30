@@ -501,3 +501,8 @@ const fetchInjuries = async () => {
       }
       await new Promise(resolve => setTimeout(resolve, 1500)); 
 }
+
+
+
+/////FANTASY FOOTBALL FETCH 2
+
