@@ -84,7 +84,7 @@ const Admin = () => {
                     //const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
 
                     // Send message to Telegram with a delay between each call
-                    await sendTelegramMessage(messageToSend);
+                    await sendTelegramMessage(messageToSend,imageUrl);
                     await delay(3000); // 1-second delay to avoid flooding the endpoint
 
                     // Mark this event as processed
