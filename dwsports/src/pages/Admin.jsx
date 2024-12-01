@@ -20,7 +20,7 @@ const Admin = () => {
 
     //const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    let processedEvents = {}; // Global dictionary to track processed events per match
+    /* let processedEvents = {}; // Global dictionary to track processed events per match
 
     function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
@@ -143,7 +143,7 @@ const Admin = () => {
         return () => clearInterval(intervalId); // Cleanup interval on component unmount
     }, []);
 
-
+ */
 
     
 
