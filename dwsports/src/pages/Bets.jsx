@@ -352,6 +352,16 @@ const Bets = () => {
       return secondHome === secondAway || secondAway === secondHome;
   } else if (name === "Double Chance - Second Half" && value === "Draw/Away") {
       return secondHome === secondAway || secondAway > secondHome;
+  } else if(name === "Results/Both Teams Score" && value === "Home/Yes"){
+    return(home > away && away > 0)
+  } else if(name === "Results/Both Teams Score" && value === "Draw/Yes"){
+    return(home === away && away > 0 && home > 0)
+  } else if(name === "Results/Both Teams Score" && value === "Away/Yes"){
+    return(away > home && home > 0)
+  } else if(name === "Win Both Halves" && value === "Home"){
+    return(halfHome > halfAway && secondHome > secondAway)
+  } else if(name === "Win Both Halves" && value === "Away"){
+    return(halfAway > halfHome && secondAway > secondHome)
   } else {
       return false;
   }
@@ -528,6 +538,28 @@ const proceedWithBet = async (bet) => {
   const allBetsFulfilled = bet.bet.every((el) => el.isWinningBet === true);
   // Add your logic to process the bet here
   if (allBetsFulfilled) {
+    console.log(bet)
+    const winnings = bet.possibleWinnings
+    const amount = bet.amount
+    let result = bet.bet.map((match, index) => {
+      return `\n${match.match.teams.home.name} vs ${match.match.teams.away.name}\nOdds: ${match.odd}\nResult: ${match.name} - ${match.value} ✅`;
+  }).join("\n");
+  
+  const messageToSend = `${user.user_metadata.name} has won a bet! 🎉🎉🎉 \n ${result} \n\nAmount: ${amount} PGZ \nWinnings: ${winnings} PGZ !!!`
+  console.log(messageToSend)
+  const imageUrl = "https://i.postimg.cc/xd1JfnGL/Apuestas-de-Futbol-1220x600.webp"
+  try {
+      
+    const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
+    
+    if (response.data.success) {
+      console.log('Message sent successfully!');
+    } else {
+      console.log('Failed to send message');
+    }
+  } catch (error) {
+    console.log('Error sending message');
+  }
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -540,6 +572,7 @@ const proceedWithBet = async (bet) => {
         const newBalance = data[0].appBalance + bet.possibleWinnings
         console.log(newBalance)
         setBalance((prev) => prev + bet.possibleWinnings)
+        const messageToSend = `${user.user_metadata.name} has placed a bet! \n ${result} \n\nAmount: ${amount} PGZ \nPossible Winnings: ${winnings} PGZ`
         const { error: firstError } = await supabase
           .from('bets')
           .update({ status: 'Won', bet: bet.bet })
@@ -555,10 +588,12 @@ const proceedWithBet = async (bet) => {
                 console.error('Error inserting/updating user session data:', error.message)
               } else {
                 message.success("You have won one bet 🤑")
-              }
+            }
+            
           }
        }
   } else {
+    console.log(bet)
       const { data, error } = await supabase
       .from('bets')
       .update({ status: 'Lost', bet: bet.bet })
