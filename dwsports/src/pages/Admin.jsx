@@ -55,17 +55,17 @@ const Admin = () => {
             for (const event of events) {
                 console.log(event)
                 const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
-                if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId) ){
+                if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId) && event.player.name !== null){
                     const messageToSend = `\n${league} GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
                     await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
                 }
-                if((event.detail === "Penalty" && event.type === "Goal") && !processedEvents[matchId].has(eventId) ){
+                if((event.detail === "Penalty" && event.type === "Goal") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
                     const messageToSend = `\n${league} PENALTY GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
                     await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
                 }
-                if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId)){
+                if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
                     const messageToSend = `\n${league} GOAL DISALLOWED!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
                     await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
@@ -92,7 +92,7 @@ const Admin = () => {
     async function sendTelegramMessage(messageToSend) {
         console.log(`Sending to Telegram: ${messageToSend}`);
         try {
-            const response = await axios.post('https://pacgames-roulette-server.onrender.com/send-message', { messageToSend });
+            const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend });
             if (response.data.success) {
                 console.log('Message sent successfully!');
             } else {
