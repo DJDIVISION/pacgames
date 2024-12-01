@@ -48,7 +48,7 @@ const Chip = ({ chipValue, image }) => {
 
   return (
     <div className="chip" ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      <img src={image} alt={`Chip ${chipValue}`} style={{width: '60%'}} />
+      <img src={image} alt={`Chip ${chipValue}`} style={{width: '50%'}} />
     </div>
   );
 };

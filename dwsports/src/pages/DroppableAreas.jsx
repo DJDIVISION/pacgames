@@ -5,7 +5,7 @@ import { useDroppable } from '@dnd-kit/core';
 
 
 
-export const CornerDropArea = ({ card, allDroppedCornerChips }) => {
+export const CornerDropArea = ({ card, droppedCornerChips,setDroppedCornerChips,removeBet }) => {
     const { isOver, setNodeRef } = useDroppable({
         id: `corner-${card.number}`, // Unique ID for the corner area
     });
@@ -19,23 +19,24 @@ export const CornerDropArea = ({ card, allDroppedCornerChips }) => {
             ref={setNodeRef}
             id={`corner-${card.number}`}
         >
-            {allDroppedCornerChips[card.cornerLeftId]?.length > 0 && (
-                <div className="corner-chips">
-                    {allDroppedCornerChips[card.cornerLeftId].map((chip, index) => (
-                        <img
-                            key={index}
-                            src={chip.avatar}
-                            alt={`Chip ${chip.chipValue}`}
-                            className="corner-dropped-chip-small"
-                        />
-                    ))}
-                </div>
+            {droppedCornerChips[card.cornerLeftId]?.length > 0 && (
+              <div className="corner-chips">
+                {droppedCornerChips[card.cornerLeftId].map((chip, index) => (
+                  <img
+                    key={index}
+                    src={chip.chipImage}
+                    alt={`Chip ${chip.chipValue}`}
+                    className="corner-dropped-chip"
+                    onClick={() => removeBet(chip,droppedCornerChips,setDroppedCornerChips)}
+                  />
+                ))}
+              </div>
             )}
         </CornerLeft>
     );
 };
 
-export const BorderLeftArea = ({ card,allDroppedBorderLeftChips }) => {
+export const BorderLeftArea = ({ card,droppedBorderLeftChips,setDroppedBorderLeftChips,removeBet }) => {
     const { isOver, setNodeRef } = useDroppable({
       id: `split-${card.number}`, // Unique ID for the corner area
     });
@@ -47,45 +48,48 @@ export const BorderLeftArea = ({ card,allDroppedBorderLeftChips }) => {
     return (
         <BorderLeft ref={setNodeRef} id={`split-${card.number}`}>
         {/* Display chips if there are any */}
-        {allDroppedBorderLeftChips[wrappedId]?.length > 0 && (
-          <div className="corner-chips">
-            {allDroppedBorderLeftChips[wrappedId].map((chip, index) => (
-              <img
-                key={index}
-                src={chip.avatar}
-                alt={`Chip ${chip.chipValue}`}
-                className="borderLeft-dropped-chip-small"
-              />
-            ))}
-          </div>
-        )}
+        {droppedBorderLeftChips[wrappedId]?.length > 0 && (
+              <div className="corner-chips">
+                {droppedBorderLeftChips[wrappedId].map((chip, index) => (
+                  <img
+                    key={index}
+                    src={chip.chipImage}
+                    alt={`Chip ${chip.chipValue}`}
+                    className="borderLeft-dropped-chip"
+                    onClick={() => removeBet(chip,droppedBorderLeftChips,setDroppedBorderLeftChips)}
+                  />
+                ))}
+              </div>
+            )}
       </BorderLeft>
     );
 };
 
-export const BorderTopArea = ({ card, allDroppedBorderTopChips }) => {
+export const BorderTopArea = ({ card, removeBet, droppedBorderTopChips, setDroppedBorderTopChips}) => {
     const { isOver, setNodeRef } = useDroppable({
         id: `borderTop-${card.number}`, // Unique ID for the border-top area
     });
     if(isOver){
         console.log(`borderTop-${card.number}`) 
      }
+     const wrappedId = "borderTop-"+card.number
     return (
         <BorderTop
             ref={setNodeRef}
             id={`borderTop-${card.number}`}
         >
-            {allDroppedBorderTopChips[card.borderTopId]?.length > 0 && (
-                <div className="border-top-chips">
-                    {allDroppedBorderTopChips[card.borderTopId].map((chip, index) => (
-                        <img
-                            key={index}
-                            src={chip.avatar}
-                            alt={`Chip ${chip.chipValue}`}
-                            className="borderTop-dropped-chip-small"
-                        />
-                    ))}
-                </div>
+            {droppedBorderTopChips[wrappedId]?.length > 0 && (
+              <div className="corner-chips">
+                {droppedBorderTopChips[wrappedId].map((chip, index) => (
+                  <img
+                    key={index}
+                    src={chip.chipImage}
+                    alt={`Chip ${chip.chipValue}`}
+                    className="borderTop-dropped-chip"
+                    onClick={() => removeBet(chip,droppedBorderTopChips,setDroppedBorderTopChips)}
+                  />
+                ))}
+              </div>
             )}
         </BorderTop>
     );

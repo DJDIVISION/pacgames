@@ -405,8 +405,7 @@ const Roulete = () => {
                 };
             });
         };
-/*         console.log("dropppppppppped",droppedNumberId)
- */        // Check if the droppedNumberId is a number
+
         if (!isNaN(droppedNumberId) && droppedNumberId !== 0 && droppedNumberId !== "00") {
             const item = allRows.find(el => el.number === droppedNumberId);
             const color = item.color
@@ -535,6 +534,42 @@ const Roulete = () => {
         }
     }; 
 
+    const handleLeave = (id) => {
+        if (activeContainer === id) {
+          setActiveContainer(null); 
+        }
+    };
+
+    const removeBet = (chip,elements,updateChipsFn) => {
+    
+        const id = chip.droppedNumberId
+        const value = chip.chipValue
+        setBalance(balance + value)
+        setPlacedBet(placedBet - value)
+        const { [id]: removed, ...updatedElements } = elements;
+    
+        // Check if the element was found and removed
+        if (removed) {
+            console.log(removed)
+            for (let key in allBets) {
+                // Filter out the items where number is "corner-25" and typeofBet is "corner-4-bet"
+                allBets[key] = allBets[key].filter(
+                  (bet) => !(bet.number === id)
+                );
+                
+                // Remove the key if the array is empty
+                if (allBets[key].length === 0) {
+                  delete allBets[key];
+                }
+              }
+            
+        } else {
+            console.log(`No element found with id: ${id}`);
+        }
+        updateChipsFn(updatedElements)
+    
+    }
+
 
   return (
     <Section>
@@ -594,9 +629,10 @@ const Roulete = () => {
                 <FirstColumn key="#17">
                             {ThirdRow.map((card, index) => {
                                 return (
-                                    <BetNumbersArea key={index} activeNumbers={activeNumbers} isDateExpanded={isDateExpanded}
-                                        card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} setAllDroppedCornerChips={setAllDroppedCornerChips}
-                                        allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}
+                                    <BetNumbersArea key={index} activeContainer={activeContainer} 
+                                    card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
+                                    droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} 
+                                    removeBet={removeBet} activeNumbers={activeNumbers}
                                     />
                                 )
                             })}
@@ -604,9 +640,10 @@ const Roulete = () => {
                 <FirstColumn key="#18">
                             {SecondRowNoZeroes.map((card, index) => {
                                 return (
-                                    <BetNumbersArea key={index} activeNumbers={activeNumbers} isDateExpanded={isDateExpanded}
-                                        card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} setAllDroppedCornerChips={setAllDroppedCornerChips}
-                                        allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}
+                                    <BetNumbersArea key={index} activeContainer={activeContainer} 
+                                    card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
+                                    droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} 
+                                    removeBet={removeBet} activeNumbers={activeNumbers}
                                     />
                                 )
                             })}
@@ -614,9 +651,10 @@ const Roulete = () => {
                 <FirstColumn key="#19">
                             {FirstRowNoZeroes.map((card, index) => {
                                 return (
-                                    <BetNumbersArea key={index} activeNumbers={activeNumbers} isDateExpanded={isDateExpanded}
-                                        card={card} allDroppedChips={allDroppedChips} allDroppedCornerChips={allDroppedCornerChips} setAllDroppedCornerChips={setAllDroppedCornerChips}
-                                        allDroppedBorderLeftChips={allDroppedBorderLeftChips} setAllDroppedBorderLeftChips={setAllDroppedBorderLeftChips} allDroppedBorderTopChips={allDroppedBorderTopChips} setAllDroppedBorderTopChips={setAllDroppedBorderTopChips}
+                                    <BetNumbersArea key={index} activeContainer={activeContainer} 
+                                    card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
+                                    droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} 
+                                    removeBet={removeBet} activeNumbers={activeNumbers}
                                     />
                                 )
                             })}
