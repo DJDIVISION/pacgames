@@ -358,12 +358,12 @@ const Roulete = () => {
             }
         }
     };
-
+    console.log(droppedChips)
     const handleDragEnd = (event) => {
         const { over, active } = event;
-        if(active){
+        /* if(active){
             console.log(active)
-        }
+        } */
         const chipValue = active.data.current.chipValue;
         const chipImage = active.data.current.chipImage;
         const avatar = user.user_metadata.avatar_url
@@ -411,9 +411,9 @@ const Roulete = () => {
             const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
         } else if (droppedNumberId === 0 || droppedNumberId === "00") {
-            const item = allRows.find(el => el.number === droppedNumberId);
-/*             console.log("item", item)
- */            const color = item.color
+            const item = Zeroes.find(el => el.number === droppedNumberId);
+            console.log("item", item)
+            const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
         } else if (droppedNumberId.startsWith('corner')) {
             const item = allRows.find(el => el.cornerLeftId === droppedNumberId);
@@ -604,7 +604,7 @@ const Roulete = () => {
                         <ColumnHolder key="#13">
                             {Zeroes.map((card, index) => {
                                 return (
-                                    <ZeroesArea activeNumbers={activeNumbers} card={card} key={index} allDroppedChips={allDroppedChips} setAllDroppedChips={setAllDroppedChips} />
+                                    <ZeroesArea activeNumbers={activeNumbers} card={card} key={index} allDroppedChips={allDroppedChips} setAllDroppedChips={setAllDroppedChips} activeContainer={activeContainer}/>
                                 )
                             })}
                         </ColumnHolder>
@@ -615,14 +615,14 @@ const Roulete = () => {
                 <FirstColumn key="#15">
                             {LastRow.map((card, index) => {
                                 return (
-                                    <LastRowArea card={card} key={index} allDroppedLastRowChips={allDroppedLastRowChips} setAllDroppedLastRowChips={setAllDroppedLastRowChips} />
+                                    <LastRowArea card={card} key={index} droppedLastRowChips={droppedLastRowChips} setDroppedLastRowChips={setDroppedLastRowChips} removeBet={removeBet}/>
                                 )
                             })}
                 </FirstColumn>
                 <FirstColumn key="#16">
                             {BetPerRows.map((card, index) => {
                                 return (
-                                    <BetPerRowsArea card={card} key={index} allDroppedRowChips={allDroppedRowChips} setAllDroppedRowChips={setAllDroppedRowChips} />
+                                    <BetPerRowsArea card={card} key={index} droppedRowChips={droppedRowChips} setDroppedRowChips={setDroppedRowChips} removeBet={removeBet}/>
                                 )
                             })}
                 </FirstColumn>
@@ -665,7 +665,7 @@ const Roulete = () => {
                         <ColumnHolder key="#22">
                             {BetPerColumns.map((card, index) => {
                                 return (
-                                    <BetPerColumnsArea card={card} key={index} allDroppedColumnChips={allDroppedColumnChips} setAllDroppedColumnChips={setAllDroppedColumnChips} />
+                                    <BetPerColumnsArea card={card} key={index} droppedColumnChips={droppedColumnChips} setDroppedColumnChips={setDroppedColumnChips} removeBet={removeBet}/>
                                 )
                             })}
                         </ColumnHolder>

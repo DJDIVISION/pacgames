@@ -5,7 +5,7 @@ import { BorderLeftArea, BorderTopArea, CornerDropArea } from './DroppableAreas.
 import { TouchSensor, MouseSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
 
 
-export const LastRowArea = ({card,allDroppedLastRowChips  }) => {
+export const LastRowArea = ({card,droppedLastRowChips,setDroppedLastRowChips,removeBet  }) => {
   const { isOver, setNodeRef } = useDroppable({
     id: card.id,
   });
@@ -17,26 +17,27 @@ export const LastRowArea = ({card,allDroppedLastRowChips  }) => {
     <LastRowWrapper style={{background: `${card.color}`}} ref={setNodeRef} id={card.id} className="number-inactive" 
      key={card.id}  >
       {
-          !allDroppedLastRowChips[card.id] || allDroppedLastRowChips[card.id].length === 0 ? (
-              <div><h2>{name}</h2></div>
-          ) : (
-              <div className="roulette-dropped-chips">
-              {allDroppedLastRowChips[card.id].map((chip, index) => (
-                  <img
-                  key={index}
-                  src={chip.avatar}
-                  alt={`Chip ${chip.avatar}`}
-                  className="first-dropped-chip-small"
-                  />
-              ))}
-              </div>
-          )
-          }
+                !droppedLastRowChips[card.id] || droppedLastRowChips[card.id].length === 0 ? (
+                    <div><h2>{name}</h2></div>
+                ) : (
+                    <div className="roulette-dropped-chips">
+                    {droppedLastRowChips[card.id].map((chip, index) => (
+                        <img
+                        key={index}
+                        src={chip.chipImage}
+                        alt={`Chip ${chip.chipValue}`}
+                        className="first-dropped-chip"
+                        onClick={() => removeBet(chip,droppedLastRowChips,setDroppedLastRowChips)}
+                        />
+                    ))}
+                    </div>
+                )
+                }
     </LastRowWrapper>
   );
 };
 
-export const BetPerRowsArea = ({card,allDroppedRowChips }) => {
+export const BetPerRowsArea = ({card,droppedRowChips,setDroppedRowChips,removeBet }) => {
   const { isOver, setNodeRef } = useDroppable({
     id: card.name,
   });
@@ -45,28 +46,29 @@ export const BetPerRowsArea = ({card,allDroppedRowChips }) => {
   const numbers = card.numbers
   return (
     <BetPerRowsWrapper ref={setNodeRef} id={name} className="number-inactive" key={name}  >
-      {
-          !allDroppedRowChips[name] || allDroppedRowChips[name].length === 0 ? (
-              <div><h2>{name}</h2></div>
-          ) : (
-              <div className="roulette-dropped-chips">
-              {allDroppedRowChips[name].map((chip, index) => (
-                  <img
-                  key={index}
-                  src={chip.avatar}
-                  alt={`Chip ${chip.avatar}`}
-                  className="first-dropped-chip-small"
-                  />
-              ))}
-              </div>
-          )
+          {
+              !droppedRowChips[name] || droppedRowChips[name].length === 0 ? (
+                  <div><h2>{name}</h2></div>
+              ) : (
+                  <div className="roulette-dropped-chips">
+                      {droppedRowChips[name].map((chip, index) => (
+                          <img
+                              key={index}
+                              src={chip.chipImage}
+                              alt={`Chip ${chip.chipValue}`}
+                              className="first-dropped-chip"
+                              onClick={() => removeBet(chip, droppedRowChips, setDroppedRowChips)}
+                          />
+                      ))}
+                  </div>
+              )
           }
     </BetPerRowsWrapper>
   );
 };
 
 export const BetNumbersArea = ({ card,droppedChips,setDroppedChips,droppedCornerChips,setDroppedCornerChips,droppedBorderLeftChips,setDroppedBorderLeftChips,
-    droppedBorderTopChips,setDroppedBorderTopChips,activeNumbers,isDateExpanded,removeBet}) => {
+    droppedBorderTopChips,setDroppedBorderTopChips,activeNumbers,isDateExpanded,removeBet,activeContainer}) => {
   const { isOver, setNodeRef } = useDroppable({
       id: card.number,
   });
@@ -84,12 +86,18 @@ export const BetNumbersArea = ({ card,droppedChips,setDroppedChips,droppedCorner
         width: '25px',
         height: '25px'
     },
-};
+    };
+
+    const isActive = 
+        // Check if activeContainer is a number and matches this number's id
+        (typeof activeContainer === 'number' && activeContainer === number) ||
+        // Check if activeContainer is a string and this number is in the activeNumbers array
+        (typeof activeContainer === 'string' && activeNumbers.includes(number));
 
   return (
       <ColumnNumber
           
-          className={activeNumbers.includes(number) ? 'number-active' : 'number-inactive'}
+        className={isActive ? 'number-active' : 'number-inactive'}
           
           key={card.number}
       >
@@ -137,7 +145,7 @@ export const BetNumbersArea = ({ card,droppedChips,setDroppedChips,droppedCorner
   );
 };
 
-export const BetPerColumnsArea = ({card,allDroppedColumnChips}) => {
+export const BetPerColumnsArea = ({card,droppedColumnChips,setDroppedColumnChips,removeBet}) => {
   const { isOver, setNodeRef } = useDroppable({
     id: card.id,
   });
@@ -150,35 +158,37 @@ export const BetPerColumnsArea = ({card,allDroppedColumnChips}) => {
   return (
     <ColumnNumber ref={setNodeRef} id={card.id} className="number-inactive" key={card.id}  >
       {
-          !allDroppedColumnChips[card.id] || allDroppedColumnChips[card.id].length === 0 ? (
-              <div><h2>{name}</h2></div>
-          ) : (
-              <div className="roulette-dropped-chips">
-              {allDroppedColumnChips[card.id].map((chip, index) => (
-                  <img
-                  key={index}
-                  src={chip.avatar}
-                  alt={`Chip ${chip.avatar}`}
-                  className="roulette-dropped-chip-small"
-                  />
-              ))}
-              </div>
-          )
-          }
+                !droppedColumnChips[card.id] || droppedColumnChips[card.id].length === 0 ? (
+                    <div><h2>{name}</h2></div>
+                ) : (
+                    <div className="roulette-dropped-chips">
+                    {droppedColumnChips[card.id].map((chip, index) => (
+                        <img
+                        key={index}
+                        src={chip.chipImage}
+                        alt={`Chip ${chip.chipValue}`}
+                        className="first-dropped-chip"
+                        onClick={() => removeBet(chip,droppedColumnChips,setDroppedColumnChips)}
+                        />
+                    ))}
+                    </div>
+                )
+                }
     </ColumnNumber>
   );
 };
 
-export const ZeroesArea = ({card,allDroppedChips,activeNumbers }) => {
+export const ZeroesArea = ({card,allDroppedChips,activeNumbers,activeContainer }) => {
   const { isOver, setNodeRef } = useDroppable({
     id: card.id,
   });
+  const number = card.number
 
   
   
-  const number = card.number
+  
   return (
-    <Zero  className={activeNumbers.includes(number) ? 'number-active' : 'number-inactive'} key={card.id}  >
+    <Zero  className={activeContainer === number ? "number-active" : "number-inactive"}   key={card.id}  >
       <NumberZeroWrapper  style={{background: `${card.color}`}} ref={setNodeRef} id={card.id} ><h2>{number}</h2></NumberZeroWrapper>
       {
           !allDroppedChips[number] || allDroppedChips[number].length === 0 ? (
