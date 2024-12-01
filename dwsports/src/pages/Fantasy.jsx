@@ -1,5 +1,5 @@
 import React, {useState,useEffect,useRef} from 'react'
-import { AbsoluteDivLeft, AbsoluteDivRight, AbsoluteIconButton,AbsoluteIconButtonLeft,ArrowDown,ArrowUp,BigTeamName,BottomRow,BuyPlayerAvatar,BuyPlayerHolder,BuyPlayerName,Container,FieldWrapper,IconHolder,item,LeagueRow,MyBalanceRow,MyPlayer,MyPlayerAvatar,MyPlayerContainer,MyPlayerName,MyPlayerPosition,MyPlayerRow,MyPlayersInnerRow,MyPlayersRow,MyTeamAvatar,MyTeamName,MyTeamPlayerHolder,MyTeamRow,PlayerDroppingArea,PlayerTeamLogo,PlayerTeamLogoShort,PlayerTeamLogoValue,PlayerTeamRating,PlayerTeamRatingShort,Section,SellPlayerRow,TeamBetsHolder,Title } from './indexThree'
+import { AbsoluteDivLeft, AbsoluteDivRight, AbsoluteIconButton,AbsoluteIconButtonLeft,ArrowDown,ArrowUp,BigTeamName,BottomRow,BuyPlayerAvatar,BuyPlayerHolder,BuyPlayerName,Container,FieldWrapper,IconHolder,item,LeagueRow,LeagueRowBets,MyBalanceRow,MyPlayer,MyPlayerAvatar,MyPlayerContainer,MyPlayerName,MyPlayerPosition,MyPlayerRow,MyPlayersInnerRow,MyPlayersRow,MyTeamAvatar,MyTeamName,MyTeamPlayerHolder,MyTeamRow,PlayerDroppingArea,PlayerTeamLogo,PlayerTeamLogoShort,PlayerTeamLogoValue,PlayerTeamRating,PlayerTeamRatingShort,Section,SellPlayerRow,TeamBetsHolder,Title } from './indexThree'
 import { useMediaQuery } from 'react-responsive'
 import {useTranslation} from "react-i18next";
 import { ArrowLeftRelative, SmallArrowDown } from './index';
@@ -588,11 +588,11 @@ const Fantasy = () => {
         {openTeamsNextRound && (
         <Container initial="expanded" animate={isDateExpanded ? "collapsed" : "expanded"} 
             variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
-                <motion.div style={{width:'100%', height:'100%',display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '50px'}} variants={item}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                 <LeagueRowBets variants={item}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                         {allFantasyTeams?.map((team, index) => {
                             console.log(team.nextMatch.players)
                             return(
@@ -640,7 +640,7 @@ const Fantasy = () => {
                                 </TeamBetsHolder>
                             )
                         })}
-                </motion.div>
+                </LeagueRowBets>
         </Container>
         )}
         {openPlayersMenu && (

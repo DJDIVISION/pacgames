@@ -87,15 +87,14 @@ export const BetNumbersArea = ({ card,allDroppedChips,allDroppedCornerChips,allD
 
   return (
       <ColumnNumber
-          ref={setNodeRef}
-          id={card.number}
+          
           className={activeNumbers.includes(number) ? 'number-active' : 'number-inactive'}
 
           key={card.number}
       >
-          <NumberWrapper style={{ background: `${card.color}` }} initial="expanded" key="#1"
+          <NumberWrapper style={{ background: `${card.color}` }} initial="expanded" 
         animate={isDateExpanded ? "collapsed" : "expanded"} 
-        variants={variants}
+        variants={variants} ref={setNodeRef} id={card.number}
         transition={{ type: 'tween', ease: 'linear', duration: 0.4 }}><h2>{number}</h2></NumberWrapper>
 
           <CornerDropArea 
@@ -166,7 +165,7 @@ export const BetPerColumnsArea = ({card,allDroppedColumnChips}) => {
   );
 };
 
-export const ZeroesArea = ({card,allDroppedChips }) => {
+export const ZeroesArea = ({card,allDroppedChips,activeNumbers }) => {
   const { isOver, setNodeRef } = useDroppable({
     id: card.id,
   });
@@ -175,8 +174,8 @@ export const ZeroesArea = ({card,allDroppedChips }) => {
   
   const number = card.number
   return (
-    <Zero ref={setNodeRef} id={card.id} className="number-inactive" key={card.id}  >
-      <NumberZeroWrapper  style={{background: `${card.color}`}}  ><h2>{number}</h2></NumberZeroWrapper>
+    <Zero  className={activeNumbers.includes(number) ? 'number-active' : 'number-inactive'} key={card.id}  >
+      <NumberZeroWrapper  style={{background: `${card.color}`}} ref={setNodeRef} id={card.id} ><h2>{number}</h2></NumberZeroWrapper>
       {
           !allDroppedChips[number] || allDroppedChips[number].length === 0 ? (
               <div></div>
@@ -233,8 +232,8 @@ const NumberWrapper = styled(motion.div)`
 `;
 
 const Number = styled.div`
-    width: 100%;
-    height: calc(100%/12);
+    width: 50%;
+    height: 50;
     border: 1px solid white;
     position: relative;
     display: flex;

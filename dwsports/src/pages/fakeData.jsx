@@ -1,3 +1,5 @@
+import { borderLeft, borderTop } from "@mui/system"
+
 export const Zeroes = [
     {
         number: 0,
@@ -147,8 +149,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-3",
         borderLeftId : "split-3",
         borderTopId : "borderTop-3",
-        borderTop: [3,2,1],
-        borderLeft: [0,3],
+        borderTop: ["00",3],
+        borderLeft: [3,2,1],
         color: "red"
     },
     {
@@ -157,8 +159,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-6",
         borderLeftId : "split-6",
         borderTopId : "borderTop-6",
-        borderLeft: [3,6],
-        borderTop: [6,5,4],
+        borderLeft: [6,5,4],
+        borderTop: [3,6],
         color: "black"
     },
     {
@@ -167,8 +169,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-9",
         borderLeftId : "split-9",
         borderTopId : "borderTop-9",
-        borderTop: [9,8,7],
-        borderLeft: [9,6],
+        borderTop: [9,6],
+        borderLeft: [9,8,7],
         color: "red"
     },
     {
@@ -177,8 +179,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-12",
         borderLeftId : "split-12",
         borderTopId : "borderTop-12",
-        borderTop: [12,11,10],
-        borderLeft: [9,12],
+        borderTop: [9,12],
+        borderLeft: [12,11,10],
         color: "red"
     },
     {
@@ -187,8 +189,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-15",
         borderLeftId : "split-15",
         borderTopId : "borderTop-15",
-        borderTop: [13,14,15],
-        borderLeft: [12,15],
+        borderTop: [12,15],
+        borderLeft: [13,14,15],
         color: "black"
     },
     {
@@ -197,8 +199,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-18",
         borderLeftId : "split-18",
         borderTopId : "borderTop-18",
-        borderTop: [16,17,18],
-        borderLeft: [15,18],
+        borderTop: [15,18],
+        borderLeft: [16,17,18],
         color: "red"
     },
     {
@@ -207,8 +209,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-21",
         borderLeftId : "split-21",
         borderTopId : "borderTop-21",
-        borderTop: [19,20,21],
-        borderLeft: [18,21],
+        borderTop: [18,21],
+        borderLeft: [19,20,21],
         color: "red"
     },
     {
@@ -217,8 +219,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-24",
         borderLeftId : "split-24",
         borderTopId : "borderTop-24",
-        borderTop: [22,23,24],
-        borderLeft: [21,24],
+        borderTop: [21,24],
+        borderLeft: [22,23,24],
         color: "black"
     },
     {
@@ -227,8 +229,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-27",
         borderLeftId : "split-27",
         borderTopId : "borderTop-27",
-        borderTop: [25,26,27],
-        borderLeft: [24,27],
+        borderTop: [24,27],
+        borderLeft: [25,26,27],
         color: "red"
     },
     {
@@ -237,8 +239,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-30",
         borderLeftId : "split-30",
         borderTopId : "borderTop-30",
-        borderTop: [28,29,30],
-        borderLeft: [27,30],
+        borderTop: [27,30],
+        borderLeft: [28,29,30],
         color: "red"
     },
     {
@@ -247,8 +249,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-33",
         borderLeftId : "split-33",
         borderTopId : "borderTop-33",
-        borderTop: [31,32,33],
-        borderLeft: [30,33],
+        borderTop: [30,33],
+        borderLeft: [31,32,33],
         color: "black"
     },
     {
@@ -257,8 +259,8 @@ export const FirstRowNoZeroes = [
         cornerLeftId : "corner-36",
         borderLeftId : "split-36",
         borderTopId : "borderTop-36",
-        borderTop: [34,35,36],
-        borderLeft: [33,36],
+        borderTop: [33,36],
+        borderLeft: [34,35,36],
         color: "red"
     }
 ]
@@ -396,12 +398,12 @@ export const SecondRowNoZeroes = [
     
     {
         number: 2,
-        cornerLeft: [0,3,2],
+        cornerLeft: ["00",3,2],
         cornerLeftId : "corner-2",
         borderLeftId : "split-2",
         borderTopId : "borderTop-2",
-        borderTop: [3,2],
-        borderLeft: ["00",0,2],
+        borderTop: ["00",0,2],
+        borderLeft: [3,2],
         color: "black"
     },
     {
@@ -410,8 +412,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-5",
         borderLeftId : "split-5",
         borderTopId : "borderTop-5",
-        borderLeft: [2,5],
-        borderTop: [6,5],
+        borderTop: [2,5],
+        borderLeft: [6,5],
         color: "red"
     },
     {
@@ -420,8 +422,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-8",
         borderLeftId : "split-8",
         borderTopId : "borderTop-8",
-        borderTop: [9,8],
-        borderLeft: [5,8],
+        borderTop: [5,8],
+        borderLeft: [9,8],
         color: "black"
     },
     {
@@ -430,8 +432,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-11",
         borderLeftId : "split-11",
         borderTopId : "borderTop-11",
-        borderTop: [12,11],
-        borderLeft: [11,8],
+        borderTop: [8,11],
+        borderLeft: [11,12],
         color: "black"
     },
     {
@@ -440,8 +442,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-14",
         borderLeftId : "split-14",
         borderTopId : "borderTop-14",
-        borderTop: [14,15],
-        borderLeft: [11,14],
+        borderTop: [14,11],
+        borderLeft: [15,14],
         color: "red"
     },
     {
@@ -450,8 +452,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-17",
         borderLeftId : "split-17",
         borderTopId : "borderTop-17",
-        borderTop: [17,18],
-        borderLeft: [14,17],
+        borderTop: [17,14],
+        borderLeft: [18,17],
         color: "black"
     },
     {
@@ -460,8 +462,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-20",
         borderLeftId : "split-20",
         borderTopId : "borderTop-20",
-        borderTop: [20,21],
-        borderLeft: [17,20],
+        borderTop: [20,17],
+        borderLeft: [21,20],
         color: "black"
     },
     {
@@ -470,8 +472,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-23",
         borderLeftId : "split-23",
         borderTopId : "borderTop-23",
-        borderTop: [23,24],
-        borderLeft: [20,23],
+        borderTop: [23,20],
+        borderLeft: [24,23],
         color: "red"
     },
     {
@@ -480,8 +482,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-26",
         borderLeftId : "split-26",
         borderTopId : "borderTop-26",
-        borderTop: [26,27],
-        borderLeft: [23,26],
+        borderTop: [26,23],
+        borderLeft: [27,26],
         color: "black"
     },
     {
@@ -490,8 +492,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-29",
         borderLeftId : "split-29",
         borderTopId : "borderTop-29",
-        borderTop: [29,30],
-        borderLeft: [26,29],
+        borderTop: [29,26],
+        borderLeft: [30,29],
         color: "black"
     },
     {
@@ -500,8 +502,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-32",
         borderLeftId : "split-32",
         borderTopId : "borderTop-32",
-        borderTop: [32,33],
-        borderLeft: [29,32],
+        borderTop: [32,29],
+        borderLeft: [33,32],
         color: "red"
     },
     {
@@ -510,8 +512,8 @@ export const SecondRowNoZeroes = [
         cornerLeftId : "corner-35",
         borderLeftId : "split-35",
         borderTopId : "borderTop-35",
-        borderTop: [35,36],
-        borderLeft: [32,35],
+        borderTop: [35,32],
+        borderLeft: [36,35],
         color: "black"
     }
 ]
@@ -520,12 +522,12 @@ export const ThirdRow = [
     
     {
         number: 1,
-        cornerLeft: ["00",1,2],
+        cornerLeft: [0,1,2],
         cornerLeftId : "corner-1",
         borderLeftId : "split-1",
         borderTopId : "borderTop-1",
-        borderTop: [1,2],
-        borderLeft: ["00",1],
+        borderTop: [1,0],
+        borderLeft: [2,1],
         color: "red"
     },
     {
@@ -534,8 +536,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-4",
         borderLeftId : "split-4",
         borderTopId : "borderTop-4",
-        borderLeft: [1,4],
-        borderTop: [4,5],
+        borderLeft: [5,4],
+        borderTop: [4,1],
         color: "black"
     },
     {
@@ -544,8 +546,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-7",
         borderLeftId : "split-7",
         borderTopId : "borderTop-7",
-        borderTop: [7,8],
-        borderLeft: [4,7],
+        borderTop: [7,4],
+        borderLeft: [8,7],
         color: "red"
     },
     {
@@ -554,8 +556,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-10",
         borderLeftId : "split-10",
         borderTopId : "borderTop-10",
-        borderTop: [10,11],
-        borderLeft: [7,10],
+        borderTop: [10,7],
+        borderLeft: [11,10],
         color: "black"
     },
     {
@@ -564,8 +566,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-13",
         borderLeftId : "split-13",
         borderTopId : "borderTop-13",
-        borderTop: [14,13],
-        borderLeft: [10,13],
+        borderTop: [10,13],
+        borderLeft: [14,13],
         color: "black"
     },
     {
@@ -574,8 +576,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-16",
         borderLeftId : "split-16",
         borderTopId : "borderTop-16",
-        borderTop: [16,17],
-        borderLeft: [13,16],
+        borderTop: [16,13],
+        borderLeft: [17,16],
         color: "red"
     },
     {
@@ -584,8 +586,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-19",
         borderLeftId : "split-19",
         borderTopId : "borderTop-19",
-        borderTop: [19,20],
-        borderLeft: [16,19],
+        borderTop: [19,16],
+        borderLeft: [20,19],
         color: "red"
     },
     {
@@ -594,8 +596,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-22",
         borderLeftId : "split-22",
         borderTopId : "borderTop-22",
-        borderTop: [22,23],
-        borderLeft: [19,22],
+        borderTop: [22,19],
+        borderLeft: [23,22],
         color: "black"
     },
     {
@@ -604,8 +606,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-25",
         borderLeftId : "split-25",
         borderTopId : "borderTop-25",
-        borderTop: [25,26],
-        borderLeft: [22,25],
+        borderTop: [25,22],
+        borderLeft: [26,25],
         color: "red"
     },
     {
@@ -614,8 +616,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-28",
         borderLeftId : "split-28",
         borderTopId : "borderTop-28",
-        borderTop: [28,29],
-        borderLeft: [25,28],
+        borderTop: [28,25],
+        borderLeft: [29,28],
         color: "black"
     },
     {
@@ -624,8 +626,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-31",
         borderLeftId : "split-31",
         borderTopId : "borderTop-31",
-        borderTop: [31,32],
-        borderLeft: [28,31],
+        borderTop: [31,28],
+        borderLeft: [32,31],
         color: "black"
     },
     {
@@ -634,8 +636,8 @@ export const ThirdRow = [
         cornerLeftId : "corner-34",
         borderLeftId : "split-34",
         borderTopId : "borderTop-34",
-        borderTop: [34,35],
-        borderLeft: [31,34],
+        borderTop: [34,31],
+        borderLeft: [35,34],
         color: "red"
     }
 ]
@@ -756,7 +758,7 @@ export const BetPerColumns = [
     {
         id: 'column-3',
         name: "2:1",
-        numbers: [3,6,9,12,15,18,21,24,27,30,33,36]
+        numbers: [1,4,7,10,13,16,19,22,25,28,31,34]
     },
     {
         id: 'column-2',
@@ -767,7 +769,7 @@ export const BetPerColumns = [
     {
         id: 'column-1',
         name: "2:1",
-        numbers: [1,4,7,10,13,16,19,22,25,28,31,34]
+        numbers: [3,6,9,12,15,18,21,24,27,30,33,36]
     }
 ]
 

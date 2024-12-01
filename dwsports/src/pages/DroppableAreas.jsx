@@ -93,14 +93,13 @@ export const BorderTopArea = ({ card, allDroppedBorderTopChips }) => {
 
 const CornerLeft = styled(motion.div)`
 position: absolute;
-width: 15px;
-height: 15px;
+width: 20px;
+height: 20px;
 border-radius: 50px;
-border: 1px solid blue;
 //background: aqua;
 top: 0;
-left: 0;
-transform: translate(-50%,-50%);
+right: 0;
+transform: translate(50%,-50%);
 z-index: 9000;
 `;
 
@@ -109,16 +108,17 @@ const BorderLeft = styled.div`
     height: 60%;
     background: transparent;
     position: absolute;
-    border: 1px solid red;
     top: 20%;
-    left: -15%;
+    right: 0%;
+    transform: translate(50%,0%);
 `;
 
 const BorderTop = styled.div`
-width: 60%;
-height: 20px;
+width: 70%;
+height: 10px;
 background: transparent;
 position: absolute;
-top: -10%;
-left: 20%;
+top: -20%;
+left: 0%;
+transform: translate(25%,0%);
 `;

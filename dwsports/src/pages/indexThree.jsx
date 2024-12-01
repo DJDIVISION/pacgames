@@ -437,7 +437,6 @@ export const Container = styled(motion.div)`
     width: 100%;
     ${props => props.theme.displayFlexCenter}
     height: 70vh;
-    border: 1px solid green;
     @media(max-width: 498px){
         height: 80vh;
     }

@@ -569,7 +569,7 @@ const Roulete = () => {
                         <ColumnHolder key="#13">
                             {Zeroes.map((card, index) => {
                                 return (
-                                    <ZeroesArea card={card} key={index} allDroppedChips={allDroppedChips} setAllDroppedChips={setAllDroppedChips} />
+                                    <ZeroesArea activeNumbers={activeNumbers} card={card} key={index} allDroppedChips={allDroppedChips} setAllDroppedChips={setAllDroppedChips} />
                                 )
                             })}
                         </ColumnHolder>
