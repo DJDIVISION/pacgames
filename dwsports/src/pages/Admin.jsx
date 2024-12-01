@@ -56,23 +56,23 @@ const Admin = () => {
                 console.log(event)
                 const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
                 if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-                    await sendTelegramMessage(messageToSend);
+                    const messageToSend = `\n${league} GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 if((event.detail === "Penalty" && event.type === "Goal") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} PENALTY GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-                    await sendTelegramMessage(messageToSend);
+                    const messageToSend = `\n${league} PENALTY GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 if((event.detail === "Red Card") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
                     const messageToSend = `\n${league} RED CARD!!! 🟥 \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.comments} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-                    await sendTelegramMessage(messageToSend);
+                    await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} GOAL DISALLOWED!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-                    await sendTelegramMessage(messageToSend);
+                    const messageToSend = `\n${league} GOAL DISALLOWED!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 // Generate a unique identifier for the event
