@@ -94,10 +94,10 @@ const Admin = () => {
         }
     }
 
-    async function sendTelegramMessage(messageToSend) {
+    async function sendTelegramMessage(messageToSend,imageUrl) {
         console.log(`Sending to Telegram: ${messageToSend}`);
         try {
-            const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend });
+            const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrl });
             if (response.data.success) {
                 console.log('Message sent successfully!');
             } else {
