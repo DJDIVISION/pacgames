@@ -65,6 +65,11 @@ const Admin = () => {
                     await sendTelegramMessage(messageToSend);
                     processedEvents[matchId].add(eventId);
                 }
+                if((event.detail === "Red Card") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
+                    const messageToSend = `\n${league} RED CARD!!! 🟥 \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.comments} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    await sendTelegramMessage(messageToSend);
+                    processedEvents[matchId].add(eventId);
+                }
                 if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
                     const messageToSend = `\n${league} GOAL DISALLOWED!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
                     await sendTelegramMessage(messageToSend);
@@ -76,7 +81,7 @@ const Admin = () => {
                 // Check if the event has already been processed for this match
                 if (!processedEvents[matchId].has(eventId)) {
                     // Prepare the message
-                    const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    //const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
 
                     // Send message to Telegram with a delay between each call
                     await sendTelegramMessage(messageToSend);
