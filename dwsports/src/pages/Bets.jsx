@@ -66,42 +66,42 @@ const Bets = () => {
       logo: champions,
       name: "UEFA",
       id: 2,
-      currentRound: 5
+      currentRound: 6
     },
     {
         league: "Premier League",
         logo: england,
         name: "England",
         id: 39,
-        currentRound: 12
+        currentRound: 13
     },
     {
         league: "La Liga",
         logo: spain,
         name: "Spain",
         id: 140,
-        currentRound: 14
+        currentRound: 15
     },
     {
         league: "Serie A",
         logo: italy,
         name: "Italy",
         id: 135,
-        currentRound: 13
+        currentRound: 14
     },
     {
         league: "Ligue 1",
         logo: france,
         name: "France",
         id: 61,
-        currentRound: 12
+        currentRound: 13
     },
     {
         league: "Bundesliga",
         logo: germany,
         name: "Germany",
         id: 78,
-        currentRound: 11
+        currentRound: 12
     }
 ]
   const theme = useTheme();

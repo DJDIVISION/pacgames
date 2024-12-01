@@ -529,78 +529,82 @@ const fetchTeamsTwo = async () => {
             }
         })
         fetchRatingTwo(teams)
+        console.log(teams)
     }
 }
 
+console.log(leagues)
 
 const fetchRatingTwo = async (teams) => {
-  const allFetchPromises = []; // To track all fetchFixtureData calls
-  
-  for (const team of teams) {
-    const areas = Object.values(team.nextMatch.players);
-
-    for (const area of areas) {
-      for (const player of area) {
-        let currentRound;
-        const filter = leagues.filter((el) => el.league === player.leagueName);
-        currentRound = filter[0]?.currentRound;
-
-        if (currentRound) {
-          const { data, error } = await supabase
-            .from("fixtures")
-            .select(`${currentRound}`)
-            .eq("leagueName", player.leagueName);
-
-          if (error) {
-            console.error(`Error fetching data for ${player.leagueName}:`, error);
-            return null;
-          } else {
-            data[0][currentRound].forEach((match) => {
-              // Collect the Promise from fetchFixtureData
-              const fetchPromise = fetchFixtureData(
-                match.fixture.id,
-                player.id,
-                player.teamName,
-                teams
-              );
-              allFetchPromises.push(fetchPromise); // Add the Promise to the array
-            });
-          }
-        }
-
-        // Add delay here to avoid overwhelming the server with requests
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-    }
-    await Promise.allSettled(allFetchPromises);
-    console.log("All fetchFixtureData tasks completed!");
-  
-    // Update the state after all tasks finish
-    setAllTeams(teams)
-    console.log(teams);
+    const allFetchPromises = []; // To track all fetchFixtureData calls
+    
     for (const team of teams) {
-        const areas = Object.values(team.nextMatch.players);
-        for (const area of areas) {
-            for (const player of area){
-                if(player.lastMatchRating === null){
-                    player.lastMatchRating = 0
-                }
-            } 
-        }
-        const { error: updateError } = await supabase
-                .from('fantasyFootball')
-                .update({ nextMatch: team.nextMatch}) 
-                .eq('id', team.nextMatch.userId); // Identify which user to update
-                if (updateError) {
-                    console.error('Error updating user data:', updateError.message);
-                } else {
-                    console.log("All teams have been saved!")
-                }
+      const areas = Object.values(team.nextMatch.players);
+      console.log("areas", areas)
+      for (const area of areas) {
+        for (const player of area) {
+            console.log("player", player)
+          let currentRound;
+          const filter = leagues.filter((el) => el.league === player.leagueName);
+          console.log("filter", filter)
+          currentRound = filter[0]?.currentRound;
+            
+          if (currentRound) {
+            const { data, error } = await supabase
+              .from("fixtures")
+              .select(`${currentRound}`)
+              .eq("leagueName", player.leagueName);
+  
+            if (error) {
+              console.error(`Error fetching data for ${player.leagueName}:`, error);
+              return null;
+            } else {
+              data[0][currentRound].forEach((match) => {
+                // Collect the Promise from fetchFixtureData
+                const fetchPromise = fetchFixtureData(
+                  match.fixture.id,
+                  player.id,
+                  player.teamName,
+                  teams
+                );
+                allFetchPromises.push(fetchPromise); // Add the Promise to the array
+              });
             }
           }
+  
+          // Add delay here to avoid overwhelming the server with requests
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
+      }
+      await Promise.allSettled(allFetchPromises);
+      console.log("All fetchFixtureData tasks completed!");
+    
+      // Update the state after all tasks finish
+      setAllTeams(teams)
+      console.log(teams);
+      for (const team of teams) {
+          const areas = Object.values(team.nextMatch.players);
+          for (const area of areas) {
+              for (const player of area){
+                  if(player.lastMatchRating === null){
+                      player.lastMatchRating = null
+                  }
+              } 
+          }
+          const { error: updateError } = await supabase
+                  .from('fantasyFootball')
+                  .update({ nextMatch: team.nextMatch}) 
+                  .eq('id', team.nextMatch.userId); // Identify which user to update
+                  if (updateError) {
+                      console.error('Error updating user data:', updateError.message);
+                  } else {
+                      console.log("All teams have been saved!")
+                  }
+              }
+            }
+          }
 
-        async function fetchFixtureData(fixtureId, playerId, teamName, teams) {
+          async function fetchFixtureData(fixtureId, playerId, teamName, teams) {
             const options = {
               method: "GET",
               url: "https://api-football-v1.p.rapidapi.com/v3/fixtures",
@@ -635,7 +639,7 @@ const fetchRatingTwo = async (teams) => {
                             players[area].forEach((p) => {
                               if (p.id === playerId) {
                                 console.log(`Updating player: ${p.name}`);
-                                p.lastMatchRating = playerRating ? parseFloat(parseFloat(playerRating).toFixed(2)) : 0;
+                                p.lastMatchRating = playerRating ? parseFloat(parseFloat(playerRating).toFixed(2)) : null;
                               }
                             });
                           });
@@ -652,33 +656,3 @@ const fetchRatingTwo = async (teams) => {
             // Adding delay to throttle the requests
             await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay
           }
-          const writeDataThree = async (player) => {
-                console.log(player)
-                const { data, error } = await supabase
-                .from('footballPlayers')
-                .update({rating: 0})
-                .eq("id", player.id)
-                if (error) {
-                console.error('Error fetching players:', error.message);
-                } else {
-                    console.log(`data updated for ${player.name}`)
-                }
-                await new Promise((resolve) => setTimeout(resolve, 500));
-          }
-          const fixRatings = async () => {
-            const { data, error } = await supabase
-                .from('footballPlayers')
-                .select('*')
-                .eq("rating", "NaN")
-                if (error) {
-                console.error('Error fetching players:', error.message);
-                } else {
-                    if(data){
-                        for(const player of data){
-                            await writeData(player)
-                        }
-                    } else {
-                        console.log("no data")
-                    }
-                }
-            }
