@@ -558,7 +558,7 @@ const proceedWithBet = async (bet) => {
       console.log('Failed to send message');
     }
   } catch (error) {
-    console.log('Error sending message');
+    console.log('Error sending message', error);
   }
     const { data, error } = await supabase
       .from('users')
