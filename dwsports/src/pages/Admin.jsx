@@ -137,7 +137,7 @@ const Admin = () => {
               icon = "🔟"
             }
         return `\n${icon} ${player.name} - ${player.rating}`
-      }).join("")
+      }).join("\n")
       const messageToSend = `📊 Top 10 players of 2024/12/01 📊 \n ${result}`
       console.log(messageToSend)
       try {
