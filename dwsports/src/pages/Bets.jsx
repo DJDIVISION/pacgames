@@ -32,7 +32,7 @@ import axios from 'axios';
 import ownGoal from '../assets/logos/ownGoal.png'
 import goal from '../assets/logos/goal.png'
 import redCard from '../assets/logos/redCard.png'
-import betting from '../assets/logos/liveBetting.jpg'
+import betting from '../assets/logos/h2h.png'
 import penalty from '../assets/logos/penalty.png'
 import yellowCard from '../assets/logos/yellowCard.png'
 import { LowRower,Rower,RowerColumn,RowerRowBets,MiniRower,MiniRowerType,MiniRowerAmount,RowerFirstEvent, RowerRow, RowerRowEvent, RowerRowName, RowerTeamEvent, AbsoluteScore,
@@ -57,6 +57,7 @@ import TeamStats from '../components/menus/TeamStats';
 import PlayerStatsMenu from '../components/menus/PlayerStatsMenu';
 import SendOdds from '../components/menus/SendOdds';
 import SelectedBet from '../components/menus/SelectedBet';
+import { CloseChatRoomIcon } from '../components/chats';
 
 const Bets = () => {
 
@@ -144,7 +145,9 @@ const Bets = () => {
   const [lostBets, setLostBets] = useState([])
   const [liveOdds, setLiveOdds] = useState([])
   const [myBets, setMyBets] = useState([])
+  const [headToHead, setHeadToHead] = useState([])
   const [winOrLostBets, setWinOrLostBets] = useState([])
+  const [selectedFixture, setSelectedFixture] = useState([])
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [leagueStatsMenu, setLeagueStatsMenu] = useState(false);
   const navigate = useNavigate()
@@ -714,7 +717,6 @@ const proceedWithBet = async (bet) => {
     }, 500)
   }
   const openLiveBet = () => {
-    
     setOpenLeagueMenu(false); 
     setOpenMyBetsMenu(false)
     setOpenMatchesMenu(false)
@@ -724,6 +726,15 @@ const proceedWithBet = async (bet) => {
     setOpenLiveMatchesMenu(false)
     setTimeout(() => {
       setOpenLiveBetMenu(true)
+    }, 500)
+  }
+
+  const closeLiveBet = () => {
+    setHeadToHead([])
+    setSelectedFixture([])
+    setOpenLiveBetMenu(false)
+    setTimeout(() => {
+      setOpenMatchesMenu(true)
     }, 500)
   }
 
@@ -1104,6 +1115,46 @@ const getWinnings = (el) => {
     }
   }
 
+  const getHeadToHead = async (homeId, awayId) => {
+    console.log(homeId, awayId)
+    const options = {
+      method: 'GET',
+      url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures/headtohead',
+      params: {h2h: `${homeId}-${awayId}`},
+      headers: {
+        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+      }
+    };
+    
+    try {
+      const response = await axios.request(options);
+      console.log(response.data.response);
+      setHeadToHead(response.data.response)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const getMatchStats = async (id) => {
+    const options = {
+      method: 'GET',
+      url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+      params: {id: id},
+      headers: {
+        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+      }
+    };
+    
+    try {
+      const response = await axios.request(options);
+      setSelectedFixture(response.data.response);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
 
   useEffect(() => {
     getOddsFromBooker();
@@ -1170,7 +1221,9 @@ const getWinnings = (el) => {
                       initial={{ height: '130px' }}
                       animate={{ height: expandedIndex === index ? '400px' : '130px' }}
                       transition={{ duration: 0.5 }}>
-                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => {toggleExpand(index);setFixtureId(null)}} /> : <SmallArrowDown onClick={() => {toggleExpand(index);setFixtureId(match.fixture.id);}} />}
+                        {match.fixture.status.short === "NS" && <LiveBetIcon onClick={() => {openLiveBet();getHeadToHead(match.teams.home.id,match.teams.away.id);}}><img src={betting} alt="logo" style={{width: '60%'}}/></LiveBetIcon>}
+                        {match.fixture.status.short === "FT" && <LiveBetIcon onClick={() => {setFixtureId(match.fixture.id);openLiveBet();getMatchStats(match.fixture.id)}}><img src={betting} alt="logo" style={{width: '60%'}}/></LiveBetIcon>}
+                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => {toggleExpand(index);setFixtureId(null)}} /> : match.fixture.status.short !== "FT" ? <SmallArrowDown onClick={() => {toggleExpand(index);setFixtureId(match.fixture.id);}} /> : ""}
                       <Rower>
                         <TeamsLogo>
                           {loadingMatches ? (
@@ -1324,9 +1377,108 @@ const getWinnings = (el) => {
               <TeamRow variants={item}
                 initial="initial"
                 animate="animate"
-                exit="exit"  style={{paddingTop: '60px'}}
+                exit="exit"  style={{paddingTop: '0px'}}
                 transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                  LIVE BETS MENU
+                  <IconButton><CloseChatRoomIcon onClick={closeLiveBet}/></IconButton>
+                  {headToHead?.sort((a, b) => {
+                    const dateA = new Date(a.fixture.date);
+                    const dateB = new Date(b.fixture.date);
+                    return dateB - dateA; // This sorts by date in ascending order (earliest first)
+                  }).map((match, index) => {
+                    console.log(match)
+                    const date = new Date(match.fixture.date).toLocaleString();
+                    return(
+                      <TeamBetsHolder key={index}
+                      initial={{ height: '130px' }}
+                      animate={{ height: expandedIndex === index ? '330px' : '130px' }}
+                      transition={{ duration: 0.5 }}>
+                      
+{/*                         <LiveBetIcon onClick={() => {setFixtureId(match.fixture.id);openLiveBet();}} style={{backgroundImage: `url(${betting})`, backgroundSize: 'cover', backgroundPosition: 'center'}}></LiveBetIcon>
+ */}                      <Rower>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.home.name}</TeamLogoText>
+                        </TeamsLogo>
+                        <TeamsResult>
+                          <DateRow>{date}</DateRow>
+                          <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
+                          <BigDateRow>{match.fixture.status.long}</BigDateRow>
+                          <VenueRow>{match.fixture.venue.name}, {match.fixture.venue.city}</VenueRow>
+                        </TeamsResult>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.away.id)} alt="Away Team Logo" src={match.teams.away.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.away.name}</TeamLogoText>
+                        </TeamsLogo>
+                      </Rower>
+                    </TeamBetsHolder>
+                    )
+                  })}
+                  {selectedFixture?.map((match, index) => {
+                    console.log(match)
+                    const date = new Date(match.fixture.date).toLocaleString();
+                    return(
+                      <TeamBetsHolder key={index}
+                      initial={{ height: '130px' }}
+                      animate={{ height: expandedIndex === index ? '330px' : '130px' }}
+                      transition={{ duration: 0.5 }}>
+                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                     <Rower>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.home.name}</TeamLogoText>
+                        </TeamsLogo>
+                        <TeamsResult>
+                          <DateRow>{date}</DateRow>
+                          <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
+                          <BigDateRow>{match.fixture.status.long}</BigDateRow>
+                          <VenueRow>{match.fixture.venue.name}, {match.fixture.venue.city}</VenueRow>
+                        </TeamsResult>
+                        <TeamsLogo>
+                          <TeamLogoWrapper>
+                            <Avatar onClick={() => openTeamMenu(match.teams.away.id)} alt="Away Team Logo" src={match.teams.away.logo} sx={{
+                              width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                              height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                            }} />
+                          </TeamLogoWrapper>
+                          <TeamLogoText>{match.teams.away.name}</TeamLogoText>
+                        </TeamsLogo>
+                      </Rower>
+                      {expandedIndex === index && (
+                        <LowRower >
+                          {match?.events?.map((event) => {
+                            
+                            return (
+                              <RowerRow>
+                                <RowerRowEvent><img src={event?.team?.logo} alt="owngoal" /></RowerRowEvent>
+                                <RowerFirstEvent>{event?.detail === "Own Goal" ? <img style={{ transform: 'rotate(180deg)' }} src={ownGoal} alt="owngoal" /> : event.detail === "Yellow Card" ? <img src={yellowCard} alt="owngoal" /> : event.detail === "Red Card" ? <img src={redCard} alt="owngoal" /> : event.detail === "Normal Goal" ? <img src={goal} alt="owngoal" /> :
+                                  event.detail.startsWith("Substitution") ? <h2>OUT: {event?.assist?.name}</h2> : event.detail.startsWith("Goal Disallowed") ? <img src={ownGoal} alt="owngoal" style={{transform: 'rotate(180deg)'}}/> : event.detail === "Penalty" ? <img src={penalty} alt="owngoal" /> : event.detail === "Goal cancelled" ? <img src={ownGoal} alt="owngoal" /> : event?.detail}</RowerFirstEvent>
+                                <RowerRowName><h2>{event?.player?.name}</h2></RowerRowName>
+                                <RowerRowEvent><h2>{event?.time?.elapsed}'</h2></RowerRowEvent>
+
+                              </RowerRow>
+                            )
+                          })}
+
+                        </LowRower>
+                      )}
+                    </TeamBetsHolder>
+                    )
+                  })}
                 </TeamRow>
             )}
           </Container>

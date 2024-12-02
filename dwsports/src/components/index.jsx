@@ -1129,10 +1129,11 @@ export const AbsoluteScore = styled.h2`
 `;
 
 export const RowerFirstEvent = styled.div`
-    width: 50%;
+    width: 30%;
     height: 100%;
     ${props => props.theme.displayFlexCenter};
     text-align: center;
+    color: ${props => props.theme.text};
     h2{
         font-size: 12px;
         color: ${props => props.theme.text};
@@ -1150,7 +1151,7 @@ export const RowerRowEvent = styled.div`
     ${props => props.theme.displayFlexCenter};
     position: relative;
     h2{
-        font-size: 18px;
+        font-size: 14px;
         z-index: 3;
         color: ${props => props.theme.text};
         text-shadow: ${props => props.theme.textShadowTwo};
@@ -1254,7 +1255,7 @@ export const RowerRowName = styled.div`
     height: 100%;
     ${props => props.theme.displayFlexCenter};
     h2{
-        font-size: 14px;
+        font-size: 14px !important;
         color: ${props => props.theme.text};
     }
 `;

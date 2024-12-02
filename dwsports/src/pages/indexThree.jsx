@@ -639,6 +639,7 @@ padding: 10px;
 
 export const LiveBetIcon = styled.div`
     position: absolute;
+    border: 1px solid ${props => props.theme.card};
     top: 0px;
     right: 0px;
     width: 40px;
