@@ -999,8 +999,9 @@ const getWinnings = (el) => {
             }
       return `\n${league} ${match.match.teams.home.name} vs ${match.match.teams.away.name}\nOdds: ${match.odd}\nResult: ${match.name} - ${match.value}`;
   }).join("\n");
+  const imageUrl = "https://i.postimg.cc/4x16yPYt/bet.jpg"
   const messageToSend = `${user.user_metadata.name} has placed a bet! \n ${result} \n\nAmount: ${amount} PGZ \nPossible Winnings: ${winnings} PGZ`
-  
+  console.log(messageToSend)
   console.log(messageToSend);
     if(amount === null){
       message.error("You must enter the amount of the bet!")
@@ -1060,7 +1061,7 @@ const getWinnings = (el) => {
         message.success("You have placed your bet. Good luck!🤞")
         try {
       
-          const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend });
+          const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrl });
           
           if (response.data.success) {
             console.log('Message sent successfully!');
@@ -1068,7 +1069,7 @@ const getWinnings = (el) => {
             console.log('Failed to send message');
           }
         } catch (error) {
-          console.log('Error sending message');
+          console.log('Error sending message', error);
         }
       }
         }
