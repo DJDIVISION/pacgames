@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react'
 import styled, {useTheme} from 'styled-components'
-import { Section } from './indexThree'
+import { BottomRow, IconHolder, item} from './indexThree'
 import { StyledButton } from '../components'
 import { motion } from 'framer-motion'
 import Select from '@mui/material/Select';
@@ -27,6 +27,10 @@ const CryptoPrediction = () => {
     const [rank, setRank] = useState(null)
     const [historicData, setHistoricData] = useState();
     const [chartData, setChartData] = useState(null);
+    const [openPlaceMenu, setOpenPlaceMenu] = useState(true);
+    const [openPredictionsMenu, setOpenPredictionsMenu] = useState(false);
+    const [openGoUpMenu, setOpenGoUpMenu] = useState(false);
+    const [openGoDownMenu, setOpenGoDownMenu] = useState(false);
     const [chartOptions, setChartOptions] = useState({});
     const [days, setDays] = useState(1);
     const [flag,setflag] = useState(false);
@@ -94,7 +98,7 @@ const CryptoPrediction = () => {
     const fetchHistoricData = async () => {
         try {
             const response = await fetch(
-              `https://api.coingecko.com/api/v3/coins/${crypto}/market_chart?vs_currency=${currency}&days=${days}`
+              `https://temp-server-pi.vercel.app/api/cryptocurrency/${id}/chart?days=${days}&currency=${currency}`
             );
             const data = await response.json();
     
@@ -110,7 +114,7 @@ const CryptoPrediction = () => {
                 {
                   label: `Price in ${currency.toUpperCase()}`,
                   data: prices,
-                  borderColor: theme.pacColor,
+                  borderColor: 'rgba(244,215,21,1)',
                   backgroundColor: 'rgba(75, 192, 192, 0.2)',
                   pointRadius: 2,
                   fill: true,
@@ -150,6 +154,40 @@ const CryptoPrediction = () => {
           }
         setLoading(false)
     };
+
+    const openPredictions = () => {
+        setOpenPlaceMenu(false)
+        setOpenGoDownMenu(false)
+        setOpenGoUpMenu(false)
+        setTimeout(() => {
+            setOpenPredictionsMenu(true)
+        }, 400)
+    }
+    const closePredictions = () => {
+        setOpenPredictionsMenu(false)
+        setOpenGoDownMenu(false)
+        setOpenGoUpMenu(false)
+        setTimeout(() => {
+            setOpenPlaceMenu(true)  
+        }, 400)
+    }
+
+    const openGoUp = () => {
+        setOpenPredictionsMenu(false)
+        setOpenPlaceMenu(false)
+        setOpenGoDownMenu(false)
+        setTimeout(() => {
+            setOpenGoUpMenu(true)  
+        }, 400)
+    }
+    const openGoDown = () => {
+        setOpenPredictionsMenu(false)
+        setOpenPlaceMenu(false)
+        setOpenGoUpMenu(false)
+        setTimeout(() => {
+            setOpenGoDownMenu(true)  
+        }, 400)
+    }
 
     
 
@@ -199,7 +237,13 @@ const CryptoPrediction = () => {
         </LoadingArea>
     ) : (
         <>
-        <Logo><img src={logo} alt={logo} style={{borderRadius: '50%'}}/></Logo>
+        {openPlaceMenu && (
+            <MenuContainer variants={item}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <Logo><img src={logo} alt={logo} style={{borderRadius: '50%'}}/></Logo>
         <SecondLine><h2>{name} - #{rank}</h2></SecondLine>
         <SecondLine><h2>{symbol}{price}</h2></SecondLine>
         <SecondLine></SecondLine>
@@ -210,11 +254,41 @@ const CryptoPrediction = () => {
             ""// Placeholder while data is being fetched
             )}
         </Chart>
-        <SecondLine><h2>{name} WILL </h2></SecondLine>
-        <LastLine>
-            <StyledButton style={{fontSize: '14px'}}>GO UP</StyledButton>
-            <StyledButton style={{fontSize: '14px'}}>GO DOWN</StyledButton>
-        </LastLine>
+            </MenuContainer>
+        )}
+        {openPredictionsMenu && (
+            <MenuContainer variants={item}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                PREDICTIONS MENU
+            </MenuContainer>
+        )}
+        {openGoUpMenu && (
+            <MenuContainer variants={item}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                GO UP
+            </MenuContainer>
+        )}
+        {openGoDownMenu && (
+            <MenuContainer variants={item}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                GO DOWN
+            </MenuContainer>
+        )}
+        <BottomRow>
+            <IconHolder><h2 onClick={closePredictions} style={{color: openPlaceMenu ? "rgba(244,215,21,1)" : ""}}>PLACE PREDICTION</h2></IconHolder>
+            <IconHolder><h2 onClick={openGoUp} style={{color: openGoUpMenu ? "rgba(244,215,21,1)" : ""}}>{name} <br/> WILL GO<br/> UP</h2></IconHolder>
+            <IconHolder><h2 onClick={openGoDown} style={{color: openGoDownMenu ? "rgba(244,215,21,1)" : ""}}>{name} <br/> WILL GO<br/> DOWN</h2></IconHolder>
+            <IconHolder><h2 onClick={openPredictions} style={{color: openPredictionsMenu ? "rgba(244,215,21,1)" : ""}}>MY PREDICTIONS</h2></IconHolder>
+        </BottomRow>
         </>
     )}
     </Section>
@@ -224,6 +298,15 @@ const CryptoPrediction = () => {
 }
 
 export default CryptoPrediction
+
+const Section = styled.div`
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    ${props => props.theme.displayFlexColumn}
+    background: ${props => props.theme.body};
+    overflow: hidden;
+`;
 
 const CoinList = (currency) =>
     `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=100&page=1&sparkline=false`;
@@ -254,7 +337,13 @@ const chartDays = [
         label: "1 Year",
         value: 365,
       },
-    ];
+];
+
+const MenuContainer = styled(motion.div)`
+    width: 100%;
+    height: 75vh;
+    ${props => props.theme.displayFlexColumnCenter}
+`;
 
 const TopLine = styled.div`
     width: 100vw;
