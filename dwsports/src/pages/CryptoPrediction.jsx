@@ -2,6 +2,7 @@ import React, {useState,useEffect} from 'react'
 import styled, {useTheme} from 'styled-components'
 import { Section } from './indexThree'
 import { StyledButton } from '../components'
+import { motion } from 'framer-motion'
 import Select from '@mui/material/Select';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import MenuItem from "@mui/material/MenuItem";
@@ -9,6 +10,7 @@ import axios from 'axios'
 import { CircularProgress } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js';
+import { transitionLong,animationFive } from '../animations';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
@@ -149,14 +151,11 @@ const CryptoPrediction = () => {
         setLoading(false)
     };
 
-    /* useEffect(() => {
-        trendingCoins();
-    }, []); */
-
     
 
   return (
     <ThemeProvider theme={darkTheme}>
+    <motion.div initial="out" animate="in" variants={animationFive} transition={transitionLong}>
     <Section>
       <TopLine>
         <h2>SELECT CURRENCY</h2>
@@ -205,7 +204,11 @@ const CryptoPrediction = () => {
         <SecondLine><h2>{symbol}{price}</h2></SecondLine>
         <SecondLine></SecondLine>
         <Chart>
-        <Line data={chartData} options={chartOptions} />
+        {chartData ? (
+            <Line data={chartData} options={chartOptions} />
+            ) : (
+            ""// Placeholder while data is being fetched
+            )}
         </Chart>
         <SecondLine><h2>{name} WILL </h2></SecondLine>
         <LastLine>
@@ -215,6 +218,7 @@ const CryptoPrediction = () => {
         </>
     )}
     </Section>
+    </motion.div>
     </ThemeProvider>
   )
 }
