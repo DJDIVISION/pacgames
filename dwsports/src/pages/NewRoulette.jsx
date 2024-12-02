@@ -201,11 +201,13 @@ const Roulete = () => {
                 const filter = allRows.filter(el => el.cornerLeftId === activeContainer);
                 const numbers = filter[0]?.cornerLeft || [];
                 setActiveNumbers(numbers); 
-            }
+            } 
         } else {
             setActiveNumbers([])
         }
     }, [activeContainer])
+
+    
 
     useEffect(() => {
         soundEffectsRef.current = [
@@ -405,13 +407,13 @@ const Roulete = () => {
                 };
             });
         };
-
-        if (!isNaN(droppedNumberId) && droppedNumberId !== 0 && droppedNumberId !== "00") {
+        console.log("droppedNumberId",droppedNumberId)
+        if (!isNaN(droppedNumberId) && droppedNumberId !== '0-single' && droppedNumberId !== '0-double') {
             const item = allRows.find(el => el.number === droppedNumberId);
             const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
-        } else if (droppedNumberId === 0 || droppedNumberId === "00") {
-            const item = Zeroes.find(el => el.number === droppedNumberId);
+        } else if (droppedNumberId === '0-single' || droppedNumberId === '0-double') {
+            const item = Zeroes.find(el => el.id === droppedNumberId);
             console.log("item", item)
             const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');

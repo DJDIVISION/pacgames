@@ -12,22 +12,136 @@ import { leagues } from '../components/admin'
 const Admin = () => {
 
     const navigate = useNavigate()
-    const [allTeams, setAllTeams] = useState([])
+    const [allPlayers, setAllPlayers] = useState([])
+    const [topPlayers, setTopPlayers] = useState([])
+    const [matchesProcessed, setMatchesProcessed] = useState(false);
+    const [imagesProcessed, setImagesProcessed] = useState(false);
+    const [imageUrls, setImageUrls] = useState([])
     const [newTeams, setNewTeams] = useState([])
     const [startDate, setStartDate] = useState("2024-11-26 20:30:00")
     const [endDate, setEndDate] = useState('2024-12-01 23:00:00')
     /* console.log(leagues) */
 
-    //const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const fetchTopPlayers = async () => {
+      const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+        params: {date: '2024-12-01'},
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+      
+      try {
+        let matches = []
+        const response = await axios.request(options);
+        console.log(response.data.response);
+        for (const match of response.data.response){
+          if(match.league.id === 39 || match.league.id === 61 || match.league.id === 78 ||
+            match.league.id === 135 ||match.league.id === 140){
+              matches.push(match.fixture.id)
+            }
+        }
+        await fetchPlayerRating(matches)
+        await delay(1000);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    const fetchPlayerRating = async (matches) => {
+      for (const match of matches){
+        const options = {
+          method: 'GET',
+          url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+          params: {id: match},
+          headers: {
+            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+          }
+        };
+        try {
+          const response = await axios.request(options);
+          console.log(response.data.response);
+          const players = []
+          response.data.response[0].players.forEach((team) => {
+            for(const player of team.players){
+              //console.log(player)
+              const rating = player.statistics[0].games.rating
+              const parsed = parseFloat(parseFloat(rating).toFixed(2))
+              player.player.rating = parsed
+              players.push(player.player)
+            }
+            
+          })
+          setAllPlayers((prevPlayers) => [...prevPlayers, ...players]);
+        } catch (error) {
+          console.error(error);
+        }
+        await delay(1000);
+      }
+      setMatchesProcessed(true);
+    }
+
+    const processData = () => {
+      //console.log('All players:', allPlayers);
+      const topTenPlayers = allPlayers
+      .filter(player => !isNaN(player.rating)) // Exclude players with NaN ratings
+      .sort((a, b) => b.rating - a.rating)    // Sort by rating in descending order
+      .slice(0, 10);                          // Take the first 10 players
+
+      setTopPlayers(topTenPlayers);
+      const images = []
+      for (const player of topTenPlayers){
+        images.push(player.photo)
+      }
+      setImageUrls(images)
+      setImagesProcessed(true)
+    };
+
+    const processImages = async () => {
+      console.log(imageUrls)
+      let result = topPlayers.map((player, index) => {
+        return `\n${index + 1}.- ${player.name} - ${player.rating}`
+      }).join("\n")
+      const messageToSend = `Top 10 players on 2024/12/01! \n ${result}`
+      console.log(messageToSend)
+      try {
+      
+        const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrls });
+        
+        if (response.data.success) {
+          console.log('Message sent successfully!');
+        } else {
+          console.log('Failed to send message');
+        }
+      } catch (error) {
+        console.log('Error sending message', error);
+      }
+    }
 
     
+  
+    useEffect(() => {
+      if (imagesProcessed) {
+        processImages();
+      }
+    }, [imagesProcessed]);
+    useEffect(() => {
+      if (matchesProcessed) {
+        processData();
+      }
+    }, [matchesProcessed, allPlayers]);
     
 
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton /* onClick={fetchTeamsTwo} */ onClick={() => navigate('/newroulette')}>REQUEST</StyledButton>
+      <StyledButton onClick={fetchTopPlayers} /* onClick={() => navigate('/newroulette')} */>REQUEST</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

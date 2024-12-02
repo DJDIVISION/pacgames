@@ -4,11 +4,11 @@ export const Zeroes = [
     {
         number: 0,
         color: "green",
-        id: 1000
+        id: '0-single'
     },
     {
         number: "00",
-        id: 1001,
+        id: '0-double',
         color: "green",
         borderTopId : "borderTop-00",
         borderTop: [0,"00"],

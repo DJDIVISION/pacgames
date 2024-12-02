@@ -72,9 +72,7 @@ export const BetNumbersArea = ({ card,droppedChips,setDroppedChips,droppedCorner
   const { isOver, setNodeRef } = useDroppable({
       id: card.number,
   });
-  if(isOver){
-    console.log(card.number) 
- }
+  
   const number = card.number;
 
   const variants = {
@@ -184,12 +182,16 @@ export const ZeroesArea = ({card,allDroppedChips,activeNumbers,activeContainer }
   });
   const number = card.number
 
-  
-  
+  if(isOver){
+    console.log(`${card.number}`)
+    console.log(`${card.id}`)
+    console.log(activeContainer)
+    console.log(number)
+  }
   
   return (
-    <Zero  className={activeContainer === number ? "number-active" : "number-inactive"}   key={card.id}  >
-      <NumberZeroWrapper  style={{background: `${card.color}`}} ref={setNodeRef} id={card.id} ><h2>{number}</h2></NumberZeroWrapper>
+    <Zero  className="number-inactive" id={card.id}  key={card.id}  >
+      <NumberZeroWrapper  style={{background: `${card.color}`}} ref={setNodeRef}  ><h2>{number}</h2></NumberZeroWrapper>
       {
           !allDroppedChips[number] || allDroppedChips[number].length === 0 ? (
               <div></div>

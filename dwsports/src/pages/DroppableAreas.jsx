@@ -69,9 +69,7 @@ export const BorderTopArea = ({ card, removeBet, droppedBorderTopChips, setDropp
     const { isOver, setNodeRef } = useDroppable({
         id: `borderTop-${card.number}`, // Unique ID for the border-top area
     });
-    if(isOver){
-        console.log(`borderTop-${card.number}`) 
-     }
+    
      const wrappedId = "borderTop-"+card.number
     return (
         <BorderTop
