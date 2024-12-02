@@ -105,11 +105,42 @@ const Admin = () => {
     const processImages = async () => {
       console.log(imageUrls)
       let result = topPlayers.map((player, index) => {
-        return `\n${index + 1}.- ${player.name} - ${player.rating}`
-      }).join("\n")
-      const messageToSend = `Top 10 players on 2024/12/01! \n ${result}`
+            let icon
+            if(index === 0){
+              icon = "1️⃣"
+            }
+            if(index === 1){
+              icon = "2️⃣"
+            }
+            if(index === 2){
+              icon = "3️⃣"
+            }
+            if(index === 3){
+              icon = "4️⃣"
+            }
+            if(index === 4){
+              icon = "5️⃣"
+            }
+            if(index === 5){
+              icon = "6️⃣"
+            }
+            if(index === 6){
+              icon = "7️⃣"
+            }
+            if(index === 7){
+              icon = "8️⃣"
+            }
+            if(index === 8){
+              icon = "9️⃣"
+            }
+            if(index === 9){
+              icon = "🔟"
+            }
+        return `\n${icon} ${player.name} - ${player.rating}`
+      }).join("")
+      const messageToSend = `📊 Top 10 players of 2024/12/01 📊 \n ${result}`
       console.log(messageToSend)
-      try {
+      /* try {
       
         const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrls });
         
@@ -120,7 +151,7 @@ const Admin = () => {
         }
       } catch (error) {
         console.log('Error sending message', error);
-      }
+      } */
     }
 
     
