@@ -140,7 +140,7 @@ const Admin = () => {
       }).join("")
       const messageToSend = `📊 Top 10 players of 2024/12/01 📊 \n ${result}`
       console.log(messageToSend)
-      /* try {
+      try {
       
         const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrls });
         
@@ -151,7 +151,7 @@ const Admin = () => {
         }
       } catch (error) {
         console.log('Error sending message', error);
-      } */
+      }
     }
 
     
