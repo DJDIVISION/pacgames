@@ -30,6 +30,7 @@ import NewRoulette from './pages/NewRoulette';
 import { FantasyState } from './context/FantasyContext';
 import Admin from './pages/Admin';
 import Fantasy from './pages/Fantasy';
+import CryptoPrediction from './pages/CryptoPrediction';
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
         <Route path="/newfantasy" element={<ProtectedRoute><NewFantasy /></ProtectedRoute>} />
         <Route path="/blackjack" element={<ProtectedRoute><BlackJack /></ProtectedRoute>} />
         <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+        <Route path="/crypto-prediction" element={<ProtectedRoute><CryptoPrediction /></ProtectedRoute>} />
         <Route path="/partners" element={<ProtectedRoute><Partners /></ProtectedRoute>} />
         <Route path="/texas" element={<ProtectedRoute><Texas /></ProtectedRoute>} />
         <Route path="/tonopoly" element={<ProtectedRoute><Tonopoly /></ProtectedRoute>} />

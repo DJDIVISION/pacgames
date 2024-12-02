@@ -1374,16 +1374,17 @@ const getWinnings = (el) => {
                 <CircularProgress sx={{ width: 80, height: 80 }} />
               </TeamCircularRow>
             ) : (
-              <TeamRow variants={item}
+              <TeamRow variants={item} 
                 initial="initial"
                 animate="animate"
                 exit="exit"  style={{paddingTop: '0px'}}
                 transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                   <IconButton><CloseChatRoomIcon onClick={closeLiveBet}/></IconButton>
+                  {selectedFixture ? <h3>MATCH STATS</h3> : <h3>HEAD TO HEAD</h3>}
                   {headToHead?.sort((a, b) => {
-                    const dateA = new Date(a.fixture.date);
-                    const dateB = new Date(b.fixture.date);
-                    return dateB - dateA; // This sorts by date in ascending order (earliest first)
+                    const dateA = new Date(a.fixture.date)
+                    const dateB = new Date(b.fixture.date)
+                    return dateB - dateA
                   }).map((match, index) => {
                     console.log(match)
                     const date = new Date(match.fixture.date).toLocaleString();
@@ -1392,9 +1393,7 @@ const getWinnings = (el) => {
                       initial={{ height: '130px' }}
                       animate={{ height: expandedIndex === index ? '330px' : '130px' }}
                       transition={{ duration: 0.5 }}>
-                      
-{/*                         <LiveBetIcon onClick={() => {setFixtureId(match.fixture.id);openLiveBet();}} style={{backgroundImage: `url(${betting})`, backgroundSize: 'cover', backgroundPosition: 'center'}}></LiveBetIcon>
- */}                      <Rower>
+                     <Rower>
                         <TeamsLogo>
                           <TeamLogoWrapper>
                             <Avatar onClick={() => openTeamMenu(match.teams.home.id)} alt="Home Team Logo" src={match.teams.home.logo} sx={{

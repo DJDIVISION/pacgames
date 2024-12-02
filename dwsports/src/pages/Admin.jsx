@@ -24,31 +24,14 @@ const Admin = () => {
 
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const fetchH2H = async () => {
-    const options = {
-      method: 'GET',
-      url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures/headtohead',
-      params: {h2h: '42-33'},
-      headers: {
-        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-      }
-    };
-    
-    try {
-      const response = await axios.request(options);
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  
     
 
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton onClick={fetchH2H} /* onClick={() => navigate('/newroulette')} */>SEND</StyledButton>
+      <StyledButton /* onClick={fetchH2H} */ onClick={() => navigate('/crypto-prediction')}>GO</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
