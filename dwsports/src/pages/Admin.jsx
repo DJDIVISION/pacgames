@@ -172,7 +172,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton onClick={fetchTopPlayers} /* onClick={() => navigate('/newroulette')} */>REQUEST</StyledButton>
+      <StyledButton onClick={fetchTopPlayers} /* onClick={() => navigate('/newroulette')} */>SEND</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
