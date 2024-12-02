@@ -979,8 +979,25 @@ const getWinnings = (el) => {
   const handleSwitchSendBet = async (event) => {
     console.log(selectedBet)
     const winnings = calculateTotalWinnings();
+    
     let result = selectedBet.map((match, index) => {
-      return `\n${match.match.teams.home.name} vs ${match.match.teams.away.name}\nOdds: ${match.odd}\nResult: ${match.name} - ${match.value}`;
+      let league
+            if(match.match.league.name === "Premier League"){
+                league = "🇬🇧"
+            }
+            if(match.match.league.name === "La Liga"){
+                league = "🇪🇸"
+            }
+            if(match.match.league.name === "Serie A"){
+                league = "🇮🇹"
+            }
+            if(match.match.league.name === "Bundesliga"){
+                league = "🇩🇪"
+            }
+            if(match.match.league.name === "Ligue 1"){
+                league = "🇫🇷"
+            }
+      return `\n${league} ${match.match.teams.home.name} vs ${match.match.teams.away.name}\nOdds: ${match.odd}\nResult: ${match.name} - ${match.value}`;
   }).join("\n");
   const messageToSend = `${user.user_metadata.name} has placed a bet! \n ${result} \n\nAmount: ${amount} PGZ \nPossible Winnings: ${winnings} PGZ`
   

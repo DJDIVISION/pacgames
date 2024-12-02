@@ -259,10 +259,12 @@ const Fantasy = () => {
 
     const getTeamRating = () => {
         const allPlayers = Object.values(droppedTeamPlayers).flat(); 
-        const totalRating = allPlayers.reduce((sum, player) => sum + player.lastMatchRating, 0);
+        const totalRating = allPlayers.reduce((sum, player) => sum + player.rating, 0);
         const averageRating = totalRating / allPlayers.length;
         return parseFloat(averageRating.toFixed(2));
     }
+
+    console.log(teamAverage)
 
     const confirmPlayerSell = async () => {
         const newBalance = balance + (activePlayerSell.value * 75/100)
@@ -349,16 +351,12 @@ const Fantasy = () => {
         }
       }, [droppedTeamPlayers])
       
-    const getAveragePlayerRating = () => {
+    const getAveragePlayerRating = (allPlayers) => {
         if(!gameStarted){
-            const allPlayers = Object.values(droppedTeamPlayers).flat(); 
-            
             const totalRating = allPlayers.reduce((sum, player) => sum + player.rating, 0);
             const averageRating = totalRating / allPlayers.length;
             return parseFloat(averageRating.toFixed(2));
         } else {
-            const allPlayers = Object.values(droppedTeamPlayers).flat(); 
-            
             const totalRating = allPlayers.reduce((sum, player) => sum + player.lastMatchRating, 0);
             const averageRating = totalRating / allPlayers.length;
             return parseFloat(averageRating.toFixed(2));
@@ -371,12 +369,24 @@ const Fantasy = () => {
             const allPlayers = Object.values(droppedTeamPlayers).flat();
             
             if(allPlayers.length > 0){
-            setTeamAverage(getAveragePlayerRating())
+            setTeamAverage(getAveragePlayerRating(allPlayers))
             } else {
             setTeamAverage(0)
             }
         }
-    }, [droppedTeamPlayers])
+        if(allFantasyTeams && gameStarted){
+            for (const team of allFantasyTeams){
+                console.log(team)
+                const allPlayers = Object.values(team.nextMatch.players).flat();
+                if (allPlayers.length > 0) {
+                    team.nextMatch.teamAverage = getAveragePlayerRating(allPlayers)
+                    console.log(team)
+                } else {
+                    setTeamAverage(0)
+                }
+            }
+        }
+    }, [droppedTeamPlayers,allFantasyTeams,gameStarted])
 
     useEffect(() => {
         if(droppedPlayers){
@@ -594,7 +604,7 @@ const Fantasy = () => {
               exit="exit"
               transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                         {allFantasyTeams?.map((team, index) => {
-                            console.log(team.nextMatch.players)
+                            
                             return(
                                 <TeamBetsHolder key={index}
                                 initial={{ height: '100px' }}
@@ -610,7 +620,8 @@ const Fantasy = () => {
                                         </SmallAvatar> 
                                         <SmallPlayerName><h2>{team.playerName}</h2></SmallPlayerName>
                                         <SmallAvatar><h2>TRAININGS: <br/><span>{team.trainingsNumber}</span></h2></SmallAvatar>
-                                        <SmallAvatar><h2>TEAM RATING: <br/><span style={{color: getBackgroundColor(team.teamRating)}}>{team.nextMatch.teamRating}</span></h2></SmallAvatar>
+                                        <SmallAvatar><h2>TEAM RATING: <br/>{gameStarted ? <span style={{color: getBackgroundColor(team.nextMatch.teamAverage)}}>{team.nextMatch.teamAverage}</span> : 
+                                        <span style={{color: getBackgroundColor(team.teamRating)}}>{team.nextMatch.teamRating}</span>}</h2></SmallAvatar>
                                     </SmallRower>
                                     {expandedIndex === index && (
                                         <LowRower>
@@ -628,7 +639,8 @@ const Fantasy = () => {
                                                                 </SmallAvatar> 
                                                                 <SmallPlayerName><h2>{player.name}</h2></SmallPlayerName>
                                                                 <SmallAvatarTwo><h2>{player.position.charAt(0)}</h2></SmallAvatarTwo>
-                                                                <SmallAvatarTwo><h2 style={{color: getBackgroundColor(player.rating)}}>{player.rating !== null ? player.rating : 0}</h2></SmallAvatarTwo>
+                                                                <SmallAvatarTwo>{gameStarted ? <h2 style={{color: getBackgroundColor(player.lastMatchRating)}}>{player.lastMatchRating !== null ? player.lastMatchRating : ''}</h2>
+                                                                : <h2 style={{color: getBackgroundColor(player.rating)}}>{player.rating !== null ? player.rating : 0}</h2>}</SmallAvatarTwo>
                                                             </RowerRow>
                                                         )
                                                     })}
