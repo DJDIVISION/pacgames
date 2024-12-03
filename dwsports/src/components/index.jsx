@@ -926,6 +926,16 @@ export const SmallPlayerName = styled.div`
         color: white;
     }
 `;
+export const SmallSmallPlayerName = styled.div`
+    width: 20%;
+    height: 100%;
+    text-align: center;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        font-size: 12px !important;
+        color: white;
+    }
+`;
 
 export const RowerColumn = styled.div`
     width: 100%;

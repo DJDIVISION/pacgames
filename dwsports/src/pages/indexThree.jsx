@@ -462,6 +462,11 @@ height: 35vh;
 padding: 10px;
 ${props => props.theme.displayFlexCenter}
 justify-content: space-around;
+text-align: center;
+h2{
+    color: white;
+    font-size: 18px;
+}
 @media(max-width: 498px){
     height: 85vh; 
     flex-direction: column;

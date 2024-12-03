@@ -1,12 +1,12 @@
 import React, {useState,useEffect,useRef} from 'react'
-import { AbsoluteDivLeft, AbsoluteDivRight, AbsoluteIconButton,AbsoluteIconButtonLeft,ArrowDown,ArrowUp,BigTeamName,BottomRow,BuyPlayerAvatar,BuyPlayerHolder,BuyPlayerName,Container,FieldWrapper,IconHolder,item,LeagueRow,LeagueRowBets,MyBalanceRow,MyPlayer,MyPlayerAvatar,MyPlayerContainer,MyPlayerName,MyPlayerPosition,MyPlayerRow,MyPlayersInnerRow,MyPlayersRow,MyTeamAvatar,MyTeamName,MyTeamPlayerHolder,MyTeamRow,PlayerDroppingArea,PlayerTeamLogo,PlayerTeamLogoShort,PlayerTeamLogoValue,PlayerTeamRating,PlayerTeamRatingShort,Section,SellPlayerRow,TeamBetsHolder,Title } from './indexThree'
+import { AbsoluteDivLeft, AbsoluteDivRight, AbsoluteIconButton,AbsoluteIconButtonLeft,ArrowDown,ArrowIconHolder,ArrowsHolder,ArrowUp,BigTeamName,BottomRow,BuyPlayerAvatar,BuyPlayerHolder,BuyPlayerName,Container,FieldWrapper,IconHolder,item,LeagueRow,LeagueRowBets,MyBalanceRow,MyPlayer,MyPlayerAvatar,MyPlayerContainer,MyPlayerName,MyPlayerPosition,MyPlayerRow,MyPlayersInnerRow,MyPlayersRow,MyTeamAvatar,MyTeamName,MyTeamPlayerHolder,MyTeamRow,PlayerDroppingArea,PlayerTeamLogo,PlayerTeamLogoShort,PlayerTeamLogoValue,PlayerTeamRating,PlayerTeamRatingShort,RoundNameHolder,Section,SellPlayerRow,TeamBetsHolder,Title } from './indexThree'
 import { useMediaQuery } from 'react-responsive'
 import {useTranslation} from "react-i18next";
-import { ArrowLeftRelative, SmallArrowDown } from './index';
+import { ArrowLeftRelative, ArrowRightRelative, SmallArrowDown } from './index';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence,motion } from 'framer-motion';
 import {Link as LinkR} from 'react-router-dom'
-import { LowRower, RowerRow, SmallAvatar, SmallAvatarTwo, SmallPlayerName, SmallRower, StyledButton } from '../components';
+import { LowRower, RowerRow, SmallAvatar, SmallAvatarTwo, SmallPlayerName, SmallRower, SmallSmallPlayerName, StyledButton } from '../components';
 import { Avatar } from '@mui/material';
 import { supabase } from '../supabase/client';
 import { getBackgroundColor, startCountdown, useAuth } from './functions';
@@ -22,8 +22,11 @@ const Fantasy = () => {
     const [endDate, setEndDate] = useState('2024-12-02 23:00:00')
     const [t, i18n] = useTranslation("global");
     const [allFantasyTeams, setAllFantasyTeams] = useState([])
+    const [allFantasyPastTeams, setAllFantasyPastTeams] = useState([])
     const [droppedPlayers, setDroppedPlayers] = useState([])
+    const [currentRound, setCurrentRound] = useState("firstRound")
     const [openTeamsNextRound, setOpenTeamsNextRound] = useState(true)
+    const [openTeamsPastRound, setOpenTeamsPastRound] = useState(false)
     const [openPlayersMenu, setOpenPlayersMenu] = useState(false)
     const [openTrainingMenu, setOpenTrainingMenu] = useState(false)
     const [openSellMenu, setOpenSellMenu] = useState(false)
@@ -85,6 +88,7 @@ const Fantasy = () => {
         setOpenSellMenu(false)
         setOpenTeamsNextRound(false)
         setOpenNextTeamMenu(false)
+        setOpenTeamsPastRound(false) 
         setTimeout(() => {
             setOpenTrainingMenu(true);
         },500)
@@ -94,6 +98,7 @@ const Fantasy = () => {
         setOpenPlayersMenu(false)
         setOpenTrainingMenu(false)
         setOpenNextTeamMenu(false)
+        setOpenTeamsPastRound(false) 
         setTimeout(() => {
             setOpenSellMenu(true);
         },500)
@@ -105,6 +110,7 @@ const Fantasy = () => {
         setOpenTrainingMenu(false)
         setOpenNextTeamMenu(false)
         setOpenSellMenu(false)
+        setOpenTeamsPastRound(false) 
         setTimeout(() => {
             setOpenPlayersMenu(true) 
         }, 500)
@@ -115,6 +121,7 @@ const Fantasy = () => {
         setOpenTrainingMenu(false)
         setOpenNextTeamMenu(false)
         setOpenSellMenu(false)
+        setOpenTeamsPastRound(false) 
         setTimeout(() => {
             setOpenTeamsNextRound(true) 
         }, 500)
@@ -126,6 +133,7 @@ const Fantasy = () => {
         setOpenTeamsNextRound(false) 
         setOpenNextTeamMenu(false)
         setOpenSellMenu(false)
+        setOpenTeamsPastRound(false) 
         setTimeout(() => {
             setOpenNextTeamMenu(true)
         }, 500)
@@ -136,8 +144,20 @@ const Fantasy = () => {
         setOpenTrainingMenu(false)
         setOpenNextTeamMenu(false)
         setOpenSellMenu(false)
+        setOpenTeamsPastRound(false)
         setTimeout(() => {
             setOpenTeamsNextRound(true) 
+        }, 500)
+    }
+
+    const openPastTeam = () => {
+        setOpenTeamsNextRound(false) 
+        setOpenPlayersMenu(false) 
+        setOpenTrainingMenu(false)
+        setOpenNextTeamMenu(false)
+        setOpenSellMenu(false)
+        setTimeout(() => {
+            setOpenTeamsPastRound(true) 
         }, 500)
     }
 
@@ -204,6 +224,27 @@ const Fantasy = () => {
               console.log("error", firstError);
           } else {
             setAllFantasyTeams(rows)
+          }
+        setLoadingFantasyTeams(false)
+    }
+
+    const getPastFantasyTeams = async () => {
+        setLoadingFantasyTeams(true)
+          const { data: rows, error: firstError } = await supabase
+              .from('fantasyFootball')
+              .select('*')
+              .not(currentRound, 'is', null);
+  
+          if (firstError) {
+              console.log("error", firstError);
+          } else {
+            //setAllFantasyPastTeams(rows)
+            console.log(currentRound)
+            const teams = []
+            for(const row of rows){
+                teams.push(row)
+            }
+            setAllFantasyPastTeams(teams)
           }
         setLoadingFantasyTeams(false)
     }
@@ -399,6 +440,11 @@ const Fantasy = () => {
             getAllFantasyTeams();
         }
     }, [openTeamsNextRound])
+    useEffect(() => {
+        if(openTeamsPastRound){
+            getPastFantasyTeams();
+        }
+    }, [openTeamsPastRound])
 
     useEffect(() => {
         if(openPlayersMenu){
@@ -603,7 +649,9 @@ const Fantasy = () => {
               animate="animate"
               exit="exit"
               transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                        {allFantasyTeams?.map((team, index) => {
+                        {allFantasyTeams?.length > 0 ? (
+                            <>
+                                {allFantasyTeams?.map((team, index) => {
                             
                             return(
                                 <TeamBetsHolder key={index}
@@ -652,6 +700,80 @@ const Fantasy = () => {
                                 </TeamBetsHolder>
                             )
                         })}
+                            </>
+                        ) : (
+                            <h2>THERE ARE <br/>NO TEAMS YET</h2>
+                        )}
+                </LeagueRowBets>
+        </Container>
+        )}
+        {openTeamsPastRound && (
+        <Container initial="expanded" animate={isDateExpanded ? "collapsed" : "expanded"} 
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
+                 <LeagueRowBets variants={item}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+                <ArrowsHolder>
+                    <ArrowIconHolder><ArrowLeftRelative /* onClick={lowRound} */ style={{transform: 'translateX(15px) rotate(90deg)'}}></ArrowLeftRelative></ArrowIconHolder>
+                    <RoundNameHolder><h2>Round: {currentRound === "firstRound" ? 1 : ""}</h2></RoundNameHolder>
+                    <ArrowIconHolder><ArrowRightRelative /* onClick={raiseRound} */ style={{transform: 'translateX(-15px) rotate(270deg)'}}></ArrowRightRelative></ArrowIconHolder>
+                  </ArrowsHolder>
+                        {allFantasyPastTeams?.length > 0 ? (
+                            <>
+                                {allFantasyPastTeams?.sort((a, b) => b.finalAverage - a.finalAverage).map((team, index) => {
+                                    console.log(team)
+                            return(
+                                <TeamBetsHolder key={index}
+                                initial={{ height: '100px' }}
+                                animate={{ height: expandedIndex === index ? '330px' : '100px' }}
+                                transition={{ duration: 0.5 }}>
+                                {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                                    <SmallRower>
+                                       <SmallAvatar>
+                                       <Avatar alt="Home Team Logo" src={team.avatar} sx={{
+                                        width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                                        height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
+                                        }} />
+                                        </SmallAvatar> 
+                                        <SmallSmallPlayerName><h2>{team.playerName}</h2></SmallSmallPlayerName>
+                                        <SmallAvatar><h2>FIXTURE RATING: <br/><span style={{color: getBackgroundColor(team.firstRound.teamAverage)}}>{team.firstRound.teamAverage}</span></h2></SmallAvatar>
+                                        <SmallAvatar><h2>PUSH FOR TRAININGS: <br/><span style={{color: team.firstRound.addedAverage > 0 ? "green" : "white"}}>{team.firstRound.addedAverage > 0 && "+"} {team.firstRound.addedAverage}</span></h2></SmallAvatar>
+                                        <SmallAvatar><h2>FINAL RATING: <br/><span style={{color: getBackgroundColor(team.firstRound.finalAverage)}}>{team.firstRound.finalAverage}</span></h2></SmallAvatar>
+                                    </SmallRower>
+                                    {expandedIndex === index && (
+                                        <LowRower>
+                                            {Object.entries(team.firstRound.players).map(([area, players]) => {
+                                                return(
+                                                    <>
+                                                    {players.map((player, playerIndex) => {
+                                                        return(
+                                                            <RowerRow key={playerIndex}>
+                                                                <SmallAvatar>
+                                                            <Avatar alt="Home Team Logo" src={player.image} sx={{
+                                                                width: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
+                                                                height: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
+                                                                }} />
+                                                                </SmallAvatar> 
+                                                                <SmallPlayerName><h2>{player.name}</h2></SmallPlayerName>
+                                                                <SmallAvatarTwo><h2>{player.position.charAt(0)}</h2></SmallAvatarTwo>
+                                                                <SmallAvatarTwo><h2 style={{color: getBackgroundColor(player.lastMatchRating)}}>{player.lastMatchRating !== null ? player.lastMatchRating : ''}</h2></SmallAvatarTwo>
+                                                            </RowerRow>
+                                                        )
+                                                    })}
+                                                    </>
+                                                )
+                                            })}
+                                        </LowRower>
+                                    )}
+                                </TeamBetsHolder>
+                            )
+                        })}
+                            </>
+                        ) : (
+                            <h2>THERE ARE <br/>NO PAST TEAMS YET</h2>
+                        )}
                 </LeagueRowBets>
         </Container>
         )}
@@ -1018,19 +1140,31 @@ const Fantasy = () => {
         </AnimatePresence>
         <BottomRow>
             <IconHolder >
-                {openTeamsNextRound ? (<h2 onClick={openTeams} style={{color: openTeamsNextRound ? "rgba(244,215,21,1)" : ""}}>THIS ROUND TEAMS</h2>) : (
+                {openTeamsNextRound ? (
+                    <h2 onClick={openTeams} style={{color: openTeamsNextRound ? "rgba(244,215,21,1)" : ""}}>THIS ROUND TEAMS</h2>
+                ) : openTeamsPastRound ? (
+                    <h2 onClick={openTeams} style={{color: openTeamsNextRound ? "rgba(244,215,21,1)" : ""}}>THIS ROUND TEAMS</h2>
+                ) : (openTrainingMenu || openSellMenu || openPlayersMenu || openNextTeamMenu) ? (
                     <h2 style={{color: openTrainingMenu ? "rgba(244,215,21,1)" : ""}} onClick={openTraining}>{t("fantasy.training")}</h2>
-                )}
+                ) : ""}
             </IconHolder>
             <IconHolder>
-            {openTeamsNextRound ? (<LinkR to="/newfantasy"><h2></h2></LinkR>) : (
+            {openTeamsNextRound ? (
+                    <h2 style={{color: openTeamsPastRound ? "rgba(244,215,21,1)" : ""}} onClick={openPastTeam}>PAST ROUND TEAMS</h2>
+                ) : openTeamsPastRound ? (
+                    <h2 style={{color: openTeamsPastRound ? "rgba(244,215,21,1)" : ""}} onClick={openPastTeam}>PAST ROUND TEAMS</h2>
+                ) : (openSellMenu || openPlayersMenu || openTrainingMenu || openNextTeamMenu) ? (
                     <h2 onClick={openNextTeam} style={{color: openNextTeamMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.stats")}</h2>
-                )}
+                ) : ""}
             </IconHolder>
             <IconHolder>
-            {openTeamsNextRound ? (<LinkR to="/newfantasy"><h2>BUILD TEAM</h2></LinkR>) : (
+            {openTeamsNextRound ? (
+                    <LinkR to="/newfantasy"><h2>BUILD TEAM</h2></LinkR>
+                ) : openTeamsPastRound ? (
+                    <LinkR to="/newfantasy"><h2>BUILD TEAM</h2></LinkR>
+                ) : (openSellMenu || openPlayersMenu || openTrainingMenu || openNextTeamMenu) ? (
                     <h2 onClick={openSell} style={{color: openSellMenu ? "rgba(244,215,21,1)" : ""}}>{t("fantasy.title23")}</h2> 
-                )}
+                ) : ""}
             </IconHolder>
             <IconHolder>
             
