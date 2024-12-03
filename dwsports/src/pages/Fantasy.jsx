@@ -1,5 +1,5 @@
 import React, {useState,useEffect,useRef} from 'react'
-import { AbsoluteDivLeft, AbsoluteDivRight, AbsoluteIconButton,AbsoluteIconButtonLeft,ArrowDown,ArrowIconHolder,ArrowsHolder,ArrowUp,BigTeamName,BottomRow,BuyPlayerAvatar,BuyPlayerHolder,BuyPlayerName,Container,FieldWrapper,IconHolder,item,LeagueRow,LeagueRowBets,MyBalanceRow,MyPlayer,MyPlayerAvatar,MyPlayerContainer,MyPlayerName,MyPlayerPosition,MyPlayerRow,MyPlayersInnerRow,MyPlayersRow,MyTeamAvatar,MyTeamName,MyTeamPlayerHolder,MyTeamRow,PlayerDroppingArea,PlayerTeamLogo,PlayerTeamLogoShort,PlayerTeamLogoValue,PlayerTeamRating,PlayerTeamRatingShort,RoundNameHolder,Section,SellPlayerRow,TeamBetsHolder,Title } from './indexThree'
+import { AbsoluteDivLeft, AbsoluteDivRight, AbsoluteIconButton,AbsoluteIconButtonLeft,ArrowDown,ArrowIconHolder,ArrowsHolder,ArrowUp,BigTeamName,BottomRow,BuyPlayerAvatar,BuyPlayerHolder,BuyPlayerName,Container,FieldWrapper,IconHolder,item,LeagueRow,LeagueRowBets,LiveBetIcon,MyBalanceRow,MyPlayer,MyPlayerAvatar,MyPlayerContainer,MyPlayerName,MyPlayerPosition,MyPlayerRow,MyPlayersInnerRow,MyPlayersRow,MyTeamAvatar,MyTeamName,MyTeamPlayerHolder,MyTeamRow,PlayerDroppingArea,PlayerTeamLogo,PlayerTeamLogoShort,PlayerTeamLogoValue,PlayerTeamRating,PlayerTeamRatingShort,RoundNameHolder,Section,SellPlayerRow,TeamBetsHolder,Title } from './indexThree'
 import { useMediaQuery } from 'react-responsive'
 import {useTranslation} from "react-i18next";
 import { ArrowLeftRelative, ArrowRightRelative, SmallArrowDown } from './index';
@@ -729,6 +729,7 @@ const Fantasy = () => {
                                 initial={{ height: '100px' }}
                                 animate={{ height: expandedIndex === index ? '330px' : '100px' }}
                                 transition={{ duration: 0.5 }}>
+                                    <LiveBetIcon>{index === 0 ? "1st" : index === 1 ? "2nd" : index === 2 ? "3rd" : (index + 1) + "th"}</LiveBetIcon>
                                 {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
                                     <SmallRower>
                                        <SmallAvatar>
