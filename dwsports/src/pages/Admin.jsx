@@ -29,7 +29,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton onClick={fetchTeamsTwo} /* onClick={() => navigate('/crypto-prediction')} */>GO</StyledButton>
+      <StyledButton /* onClick={fetchTeamsTwo} */ onClick={() => navigate('/crypto-prediction')}>GO</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

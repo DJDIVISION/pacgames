@@ -1,17 +1,26 @@
 import React, {useState,useEffect} from 'react'
 import styled, {useTheme} from 'styled-components'
-import { BottomRow, IconHolder, item} from './indexThree'
-import { StyledButton } from '../components'
+import { AbsoluteIconButtonLeft, BottomRow, IconHolder, item, TeamBetsHolder} from './indexThree'
+import { LowRower, MiniRowerRow, Rower, RowerRow, SmallAvatar, SmallPlayerName, SmallRower, StyledButton } from '../components'
 import { motion } from 'framer-motion'
 import Select from '@mui/material/Select';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import MenuItem from "@mui/material/MenuItem";
 import axios from 'axios'
-import { CircularProgress } from '@mui/material';
+import Swal from "sweetalert2";
+import { Avatar, CircularProgress } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js';
 import { transitionLong,animationFive } from '../animations';
 import { FantasyState } from '../context/FantasyContext'
+import { ArrowLeftRelative, SmallArrowDown, TeamLogoText, TeamLogoWrapper, TeamsLogo } from './index'
+import { useNavigate } from 'react-router-dom'
+import { message } from 'antd'
+import { useAuth } from './functions'
+import { supabase } from '../supabase/client'
+import drops from '../assets/logos/drops.avif'
+import rises from '../assets/logos/rises.jpg'
+import black from '../assets/logos/black.jpg'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
@@ -27,17 +36,61 @@ const CryptoPrediction = () => {
     const [logo, setLogo] = useState(null)
     const [name, setName] = useState(null)
     const [rank, setRank] = useState(null)
+    const [change, setChange] = useState(null)
     const [historicData, setHistoricData] = useState();
     const [chartData, setChartData] = useState(null);
+    const [expandedIndex, setExpandedIndex] = useState(null);
     const [openPlaceMenu, setOpenPlaceMenu] = useState(true);
     const [openPredictionsMenu, setOpenPredictionsMenu] = useState(false);
     const [openGoUpMenu, setOpenGoUpMenu] = useState(false);
     const [openGoDownMenu, setOpenGoDownMenu] = useState(false);
     const [chartOptions, setChartOptions] = useState({});
+    const [timeRemainingMap, setTimeRemainingMap] = useState({});
+    const [myPredictions, setMyPredictions] = useState([])
     const [days, setDays] = useState(1);
     const [flag,setflag] = useState(false);
     const [amount, setAmount] = useState(null)
     const theme = useTheme();
+    const navigate = useNavigate()
+    const {user} = useAuth();
+
+    useEffect(() => {
+        // Function to calculate remaining time for all predictions
+        const calculateTimeRemaining = () => {
+          const now = Date.now();
+          const updatedTimes = {};
+    
+          myPredictions.forEach((pred) => {
+            const targetTime = pred.date + 24 * 60 * 60 * 1000; // 24 hours in ms
+            updatedTimes[pred.date] = Math.max(targetTime - now, 0); // Avoid negative times
+          });
+    
+          setTimeRemainingMap(updatedTimes);
+        };
+    
+        // Initial calculation
+        calculateTimeRemaining();
+    
+        // Update countdown every second
+        const interval = setInterval(() => {
+          calculateTimeRemaining();
+        }, 1000);
+    
+        return () => clearInterval(interval); // Cleanup on unmount
+      }, [myPredictions]);
+
+      const formatTime = (ms) => {
+        const totalSeconds = Math.floor(ms / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+    
+        return `${hours}h ${minutes}m ${seconds}s`;
+      };
+
+    const toggleExpand = (index) => {
+        setExpandedIndex(expandedIndex === index ? null : index);
+      };
 
     const darkTheme = createTheme({
         palette: {
@@ -66,6 +119,7 @@ const CryptoPrediction = () => {
             setLogo(res.image.small)
             setRank(res.market_cap_rank)
             setName(res.name)
+            setChange(parseFloat(res.market_data.price_change_percentage_24h).toFixed(3))
             setPrice(res.market_data.current_price[currency])
             setflag(true)
         })
@@ -101,7 +155,8 @@ const CryptoPrediction = () => {
     const fetchHistoricData = async () => {
         try {
             const response = await fetch(
-              `https://temp-server-pi.vercel.app/api/cryptocurrency/${crypto}/chart?days=${days}&currency=${currency}`
+              /* `https://temp-server-pi.vercel.app/api/cryptocurrency/${crypto}/chart?days=${days}&currency=${currency}` */
+              `http://localhost:8080/api/cryptocurrency/${crypto}/chart?days=${days}&currency=${currency}`
             );
             const data = await response.json();
     
@@ -196,25 +251,111 @@ const CryptoPrediction = () => {
         }, 400)
     }
 
-    useEffect(() => {
+    /* useEffect(() => {
         if(amount){
             setBalance((prevBal) => prevBal - amount)
         }
-    }, [amount])
+    }, [amount]) */
+
+    const handlePrediction = async (type) => {
+        console.log(name)
+        console.log(price)
+        const now = new Date().getTime();
+        console.log(now)
+        if(!amount){
+            message.error("You must enter the amount for your prediction!")
+            return
+        }
+        if(amount > balance){
+            message.error("You don't have anough balance!")
+            return
+        }
+        if(amount === 0){
+            message.error("The amount can not be 0!")
+            return
+        }
+        const updatedData = {
+            userId: user.id,
+            date: now,
+            crypto: crypto,
+            amount: amount,
+            type: type,
+            currency: currency,
+            symbol: symbol,
+            name: name,
+            price: price,
+            logo: logo,
+            status: "Pending"
+        }
+        const { data: secondData, error: secondError } = await supabase
+            .from('users')
+            .select('appBalance')
+            .eq('id', user.id)
+            if(secondError){
+                console.log("second error")
+            } else {
+                console.log(secondData)
+                const appBalance = secondData[0].appBalance
+                const newBalance = appBalance - amount
+                const parsed = parseFloat(parseFloat(newBalance).toFixed(2))
+                setBalance((prev) => prev - amount)
+                const { data, error } = await supabase
+                .from('predictions')
+                .insert([updatedData])
+                if (error) {
+                console.error('Error retrieving data from Supabase:', error.message);
+                } else {
+                    const { data: secondData, error: secondError } = await supabase
+                    .from('users')
+                    .update({appBalance: parsed})
+                    .eq('id', user.id)
+                    if(secondError){
+                        console.log("second error")
+                    } else {
+                        Swal.fire({
+                            title: "Prediction placed!",
+                            text: `Token: ${name}\nPrediction: ${type}\nAmount: ${amount} GPZ`,
+                            icon: "success"
+                        });
+                        closePredictions()
+                    }
+                }
+        }
+    }
+
+    const fetchPredictions = async () => {
+        const { data: secondData, error: secondError } = await supabase
+                    .from('predictions')
+                    .select('*')
+                    .eq('userId', user.id)
+                    if(secondError){
+                        console.log("second error")
+                    } else {
+                        console.log(secondData)
+                        setMyPredictions(secondData)
+                    }
+    }
+
+    useEffect(() => {
+        if(openPredictionsMenu){
+            fetchPredictions();
+        }
+    }, [openPredictionsMenu])
 
     
 
   return (
     <ThemeProvider theme={darkTheme}>
     <motion.div initial="out" animate="in" variants={animationFive} transition={transitionLong}>
-    <Section>
+    <Section style={{backgroundImage: `url(${black})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', 
+    backgroundPosition: openPlaceMenu ? 'left center' : openPredictionsMenu ? 'right center' : (openGoDownMenu || openGoUpMenu) ? 'bottom center' : 'center center'}}>
       {openGoUpMenu ? (
             <TopOnlyLine><h2>{name} WILL GO UP</h2></TopOnlyLine>
       ) : openGoDownMenu ? (
             <TopOnlyLine><h2>{name} WILL GO DOWN</h2></TopOnlyLine>
       ) : openPlaceMenu ? (
         <>
-            <TopLine>
+            <TopLine style={{marginTop: '6vh'}}>
         <h2>SELECT CURRENCY</h2>
         <Select
             variant="outlined"
@@ -229,13 +370,14 @@ const CryptoPrediction = () => {
             <MenuItem value={"inr"} style={{ fontFamily: "Quicksand" }}>INR</MenuItem>
         </Select>
     </TopLine>
+    <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
     <TopLine>
         <h2>SELECT CRYPTO</h2>
         <Select
             variant="outlined"
             value={crypto}
             style={{ width: 100, height: '90%', marginLeft: 'auto', fontFamily: "Quicksand" }}
-            onChange={(e) => setCrypto(e.target.value)}
+            onChange={(e) => {setCrypto(e.target.value)}}
         >
             <MenuItem value={"the-open-network"} style={{ fontFamily: "Quicksand" }}>TON</MenuItem>
             <MenuItem value={"bitcoin"} style={{ fontFamily: "Quicksand" }}>BTC</MenuItem>
@@ -261,7 +403,7 @@ const CryptoPrediction = () => {
     ) : (
         <>
         {openPlaceMenu && (
-            <MenuContainer variants={item}
+            <MenuContainer variants={item} style={{ height: '70vh'}}
             initial="initial"
             animate="animate"
             exit="exit"
@@ -269,7 +411,7 @@ const CryptoPrediction = () => {
                 <Logo><img src={logo} alt={logo} style={{borderRadius: '50%'}}/></Logo>
         <SecondLine><h2>{name} - #{rank}</h2></SecondLine>
         <SecondLine><h2>{symbol}{price}</h2></SecondLine>
-        <SecondLine></SecondLine>
+        <SecondLine><h2>Last 24h: <span style={{color: change > 0 ? "green" : change < 0 ? "red" : "aqua" }}>{change > 0 && "+"}{change}%</span></h2></SecondLine>
         <Chart>
         {chartData ? (
             <Line data={chartData} options={chartOptions} />
@@ -285,7 +427,39 @@ const CryptoPrediction = () => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                PREDICTIONS MENU
+                {myPredictions?.map((pred, index) => {
+                    
+                    const date = new Date(pred.created_at).toLocaleString();
+                    const timeRemaining = timeRemainingMap[pred.date] || 0;
+                    
+                    return(
+                        <TeamBetsHolder key={index}
+                      initial={{ height: '100px' }}
+                      animate={{ height: expandedIndex === index ? '250px' : '100px' }}
+                      transition={{ duration: 0.5 }}>
+                    {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} /> }
+                    <SmallRower>
+                    <SmallAvatar>
+                        <Avatar alt="Home Team Logo" src={pred.logo} sx={{
+                        width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
+                        height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }
+                        }} />
+                    </SmallAvatar> 
+                    <SmallAvatar><h2 style={{fontSize: '14px'}}>{date}</h2></SmallAvatar>
+                    <SmallAvatar><h2 style={{fontSize: '14px'}}>{pred.name}</h2></SmallAvatar>
+                    <SmallAvatar><h2 style={{fontSize: '14px'}}>{pred.type}</h2></SmallAvatar>
+                    <SmallAvatar><h2 style={{fontSize: '14px'}}>{pred.status}</h2></SmallAvatar>
+                    </SmallRower>
+                    {expandedIndex === index && (
+                        <LowRower>
+                            <MiniRowerRow ><h2>Bet Amount: {pred.amount} GPZ</h2></MiniRowerRow>
+                            <MiniRowerRow ><h2>Price: {pred.symbol}{pred.price}</h2></MiniRowerRow>
+                            <MiniRowerRow ><h2>Time Remaining: {formatTime(timeRemaining)}</h2></MiniRowerRow>
+                        </LowRower>
+                    )}
+                      </TeamBetsHolder>
+                    )
+                })}
             </MenuContainer>
         )}
         {openGoUpMenu && (
@@ -297,6 +471,7 @@ const CryptoPrediction = () => {
                 <Logo><img src={logo} alt={logo} style={{borderRadius: '50%'}}/></Logo>
         <SecondLine><h2>{name} - #{rank}</h2></SecondLine>
         <SecondLine><h2>{symbol}{price}</h2></SecondLine>
+        <SecondLine><h2>Last 24h: <span style={{color: change > 0 ? "green" : change < 0 ? "red" : "aqua" }}>{change > 0 && "+"}{change}%</span></h2></SecondLine>
         <InputLine><h2>ENTER AMOUNT:</h2></InputLine>
         <LastLine>
             <Balance><h2>Balance: {balance} GPZ</h2></Balance>
@@ -318,6 +493,7 @@ const CryptoPrediction = () => {
         stroke={amount > 0 ? "limegreen" :  "#333"} 
         strokeWidth="5"
         className="circleAbs"
+        onClick={() => handlePrediction("WILL GO UP")}
       />
 
       {/* Smooth upward arrow */}
@@ -352,7 +528,7 @@ const CryptoPrediction = () => {
                 <Logo><img src={logo} alt={logo} style={{borderRadius: '50%'}}/></Logo>
         <SecondLine><h2>{name} - #{rank}</h2></SecondLine>
         <SecondLine><h2>{symbol}{price}</h2></SecondLine>
-        <SecondLine></SecondLine>
+        <SecondLine><h2>Last 24h: <span style={{color: change > 0 ? "green" : change < 0 ? "red" : "aqua" }}>{change > 0 && "+"}{change}%</span></h2></SecondLine>
         <InputLine><h2>ENTER AMOUNT:</h2></InputLine>
         <LastLine>
             <Balance><h2>Balance: {balance} GPZ</h2></Balance>
@@ -374,6 +550,7 @@ const CryptoPrediction = () => {
         stroke={amount > 0 ? "#f31111" :  "#333"} 
         strokeWidth="5"
         className="circleAbs"
+        onClick={() => handlePrediction("WILL GO DOWN")}
       />
 
       {/* Smooth upward arrow */}
@@ -399,7 +576,7 @@ const CryptoPrediction = () => {
             </MenuContainer>
         )}
         <BottomRow>
-            <IconHolder><h2 onClick={closePredictions} style={{color: openPlaceMenu ? "rgba(244,215,21,1)" : ""}}>PLACE PREDICTION</h2></IconHolder>
+            <IconHolder><h2 onClick={closePredictions} style={{color: openPlaceMenu ? "rgba(244,215,21,1)" : ""}}>CHARTS</h2></IconHolder>
             <IconHolder><h2 onClick={openGoUp} style={{color: openGoUpMenu ? "rgba(244,215,21,1)" : ""}}>{name} <br/> WILL GO<br/> UP</h2></IconHolder>
             <IconHolder><h2 onClick={openGoDown} style={{color: openGoDownMenu ? "rgba(244,215,21,1)" : ""}}>{name} <br/> WILL GO<br/> DOWN</h2></IconHolder>
             <IconHolder><h2 onClick={openPredictions} style={{color: openPredictionsMenu ? "rgba(244,215,21,1)" : ""}}>MY PREDICTIONS</h2></IconHolder>
@@ -461,10 +638,11 @@ const MenuContainer = styled(motion.div)`
 `;
 
 const TopLine = styled.div`
-    width: 100vw;
+    width: 80vw;
     height: 7.5vh;
     ${props => props.theme.displayFlex}
-    padding: 10px;
+    padding: 5px;
+    margin: 5px 0;
     h2{
         color: ${props => props.theme.MainAccent};
         font-size: 18px;
@@ -478,7 +656,7 @@ const TopOnlyLine = styled.div`
     padding: 10px;
     h2{
         color: ${props => props.theme.text};
-        font-size: 18px;
+        font-size: 24px;
 
     }
 `;
@@ -550,8 +728,9 @@ const LastLine = styled.div`
 
 const Logo = styled.div`
     width: 50%;
-    height: 15vh;
+    height: 10vh;
     ${props => props.theme.displayFlexCenter}
+    transform: translateY(-10px);
     img{
         width: 40%;
         display: block;

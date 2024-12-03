@@ -1050,6 +1050,11 @@ export const RowerRow = styled.div`
     ${props => props.theme.displayFlexCenter};
     margin: 5px 0;
 `;
+export const MiniRowerRow = styled.div`
+    width: 100%;
+    height: 50px;
+    ${props => props.theme.displayFlexCenter};
+`;
 
 export const RowerRowBets = styled.div`
     width: 100%;
