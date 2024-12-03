@@ -11,13 +11,15 @@ import { CircularProgress } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js';
 import { transitionLong,animationFive } from '../animations';
+import { FantasyState } from '../context/FantasyContext'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
 const CryptoPrediction = () => {
 
     
-    const [crypto, setCrypto] = useState("bitcoin")
+    const [crypto, setCrypto] = useState("the-open-network")
+    const {balance, setBalance} = FantasyState();
     const [loading, setLoading] = useState(false)
     const [price, setPrice] = useState(null)
     const [currency, setCurrency] = useState("usd");
@@ -34,6 +36,7 @@ const CryptoPrediction = () => {
     const [chartOptions, setChartOptions] = useState({});
     const [days, setDays] = useState(1);
     const [flag,setflag] = useState(false);
+    const [amount, setAmount] = useState(null)
     const theme = useTheme();
 
     const darkTheme = createTheme({
@@ -159,6 +162,7 @@ const CryptoPrediction = () => {
         setOpenPlaceMenu(false)
         setOpenGoDownMenu(false)
         setOpenGoUpMenu(false)
+        setAmount(null)
         setTimeout(() => {
             setOpenPredictionsMenu(true)
         }, 400)
@@ -167,6 +171,7 @@ const CryptoPrediction = () => {
         setOpenPredictionsMenu(false)
         setOpenGoDownMenu(false)
         setOpenGoUpMenu(false)
+        setAmount(null)
         setTimeout(() => {
             setOpenPlaceMenu(true)  
         }, 400)
@@ -176,6 +181,7 @@ const CryptoPrediction = () => {
         setOpenPredictionsMenu(false)
         setOpenPlaceMenu(false)
         setOpenGoDownMenu(false)
+        setAmount(null)
         setTimeout(() => {
             setOpenGoUpMenu(true)  
         }, 400)
@@ -184,10 +190,17 @@ const CryptoPrediction = () => {
         setOpenPredictionsMenu(false)
         setOpenPlaceMenu(false)
         setOpenGoUpMenu(false)
+        setAmount(null)
         setTimeout(() => {
             setOpenGoDownMenu(true)  
         }, 400)
     }
+
+    useEffect(() => {
+        if(amount){
+            setBalance((prevBal) => prevBal - amount)
+        }
+    }, [amount])
 
     
 
@@ -195,7 +208,13 @@ const CryptoPrediction = () => {
     <ThemeProvider theme={darkTheme}>
     <motion.div initial="out" animate="in" variants={animationFive} transition={transitionLong}>
     <Section>
-      <TopLine>
+      {openGoUpMenu ? (
+            <TopOnlyLine><h2>{name} WILL GO UP</h2></TopOnlyLine>
+      ) : openGoDownMenu ? (
+            <TopOnlyLine><h2>{name} WILL GO DOWN</h2></TopOnlyLine>
+      ) : openPlaceMenu ? (
+        <>
+            <TopLine>
         <h2>SELECT CURRENCY</h2>
         <Select
             variant="outlined"
@@ -218,9 +237,9 @@ const CryptoPrediction = () => {
             style={{ width: 100, height: '90%', marginLeft: 'auto', fontFamily: "Quicksand" }}
             onChange={(e) => setCrypto(e.target.value)}
         >
+            <MenuItem value={"the-open-network"} style={{ fontFamily: "Quicksand" }}>TON</MenuItem>
             <MenuItem value={"bitcoin"} style={{ fontFamily: "Quicksand" }}>BTC</MenuItem>
             <MenuItem value={"ethereum"} style={{ fontFamily: "Quicksand" }}>ETH</MenuItem>
-            <MenuItem value={"the-open-network"} style={{ fontFamily: "Quicksand" }}>TON</MenuItem>
             <MenuItem value={"ripple"} style={{ fontFamily: "Quicksand" }}>XRP</MenuItem>
             <MenuItem value={"solana"} style={{ fontFamily: "Quicksand" }}>SOL</MenuItem>
             <MenuItem value={"binancecoin"} style={{ fontFamily: "Quicksand" }}>BNB</MenuItem>
@@ -230,7 +249,11 @@ const CryptoPrediction = () => {
             <MenuItem value={"monero"} style={{ fontFamily: "Quicksand" }}>XMR</MenuItem>
             <MenuItem value={"cardano"} style={{ fontFamily: "Quicksand" }}>ADA</MenuItem>
         </Select>
-    </TopLine>   
+    </TopLine> 
+        </>
+      ) : (
+        ""
+      )}  
     {loading ? (
         <LoadingArea>
         <CircularProgress style={{width: 60, height: 60, color: theme.MainAccent}}/>
@@ -271,7 +294,53 @@ const CryptoPrediction = () => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                GO UP
+                <Logo><img src={logo} alt={logo} style={{borderRadius: '50%'}}/></Logo>
+        <SecondLine><h2>{name} - #{rank}</h2></SecondLine>
+        <SecondLine><h2>{symbol}{price}</h2></SecondLine>
+        <InputLine><h2>ENTER AMOUNT:</h2></InputLine>
+        <LastLine>
+            <Balance><h2>Balance: {balance} GPZ</h2></Balance>
+            <Input type="number" onChange={(e) => setAmount(e.target.value)}/>
+        </LastLine>
+        <SVG>
+        <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 200 200"
+      width="200"
+      height="200"
+    >
+      {/* Rounded background */}
+      <motion.circle whileTap={{scale: 0.95}}
+        cx="100"
+        cy="100"
+        r="75"
+        fill="#f4f4f40"
+        stroke={amount > 0 ? "limegreen" :  "#333"} 
+        strokeWidth="5"
+        className="circleAbs"
+      />
+
+      {/* Smooth upward arrow */}
+      <motion.path
+      className="motionPath"
+        d="M100 140 L100 80 M80 100 L100 80 L120 100" 
+        fill="none"
+        stroke="#42e90f"
+        strokeWidth="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{
+          duration: 2,
+          ease: "easeInOut",
+          repeat: Infinity,
+          repeatType: "reverse",
+        }}
+      />
+    </svg>
+        </SVG>
+                
             </MenuContainer>
         )}
         {openGoDownMenu && (
@@ -280,7 +349,53 @@ const CryptoPrediction = () => {
             animate="animate"
             exit="exit"
             transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-                GO DOWN
+                <Logo><img src={logo} alt={logo} style={{borderRadius: '50%'}}/></Logo>
+        <SecondLine><h2>{name} - #{rank}</h2></SecondLine>
+        <SecondLine><h2>{symbol}{price}</h2></SecondLine>
+        <SecondLine></SecondLine>
+        <InputLine><h2>ENTER AMOUNT:</h2></InputLine>
+        <LastLine>
+            <Balance><h2>Balance: {balance} GPZ</h2></Balance>
+            <Input type="number" onChange={(e) => setAmount(e.target.value)}/>
+        </LastLine>
+        <SVG>
+        <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 200 200"
+      width="200"
+      height="200"
+    >
+      {/* Rounded background */}
+      <motion.circle whileTap={{scale: 0.95}}
+        cx="100"
+        cy="100"
+        r="75"
+        fill="#f4f4f40"
+        stroke={amount > 0 ? "#f31111" :  "#333"} 
+        strokeWidth="5"
+        className="circleAbs"
+      />
+
+      {/* Smooth upward arrow */}
+      <motion.path
+        d="M100 70 L100 140 M70 110 L100 140 L130 110"
+        fill="none"
+        stroke="#f31111"
+        strokeWidth="12"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{
+          duration: 2,
+          ease: "easeInOut",
+          repeat: Infinity,
+          repeatType: "reverse",
+        }}
+      />
+    </svg>
+        </SVG>
+        
             </MenuContainer>
         )}
         <BottomRow>
@@ -356,6 +471,17 @@ const TopLine = styled.div`
 
     }
 `;
+const TopOnlyLine = styled.div`
+    width: 100vw;
+    height: 12.5vh;
+    ${props => props.theme.displayFlexCenter}
+    padding: 10px;
+    h2{
+        color: ${props => props.theme.text};
+        font-size: 18px;
+
+    }
+`;
 const LoadingArea = styled.div`
     width: 100vw;
     height: 85vh;
@@ -372,11 +498,48 @@ const SecondLine = styled.div`
 
     }
 `;
+const InputLine = styled.div`
+    width: 100vw;
+    height: 15vh;
+    ${props => props.theme.displayFlexCenter}
+    padding: 10px;
+    h2{
+        font-size: 20px;
+        color: white;
+    }
+`;
+
+const Input = styled.input`
+    width: 40%;
+    height: 95%;
+    border: 1px solid white;
+    border-radius: 8px;
+    padding: 10px;
+    transform: translateY(-15px);
+    text-align: center;
+    font-size: 24px;
+    color: aqua;
+    background: transparent;
+    &:focus{
+        outline: none;
+    }
+`;
+const Balance = styled.div`
+    width: 60%;
+    height: 5%;
+    transform: translateY(-25px);
+    padding: 10px;
+    background: transparent;
+    text-align: center;
+    h2{
+        color: white;
+        font-size: 12px !important;
+    }
+`;
 const LastLine = styled.div`
     width: 100vw;
     height: 10vh;
-    ${props => props.theme.displayFlex}
-    justify-content: space-around;
+    ${props => props.theme.displayFlexColumn}
     padding: 10px;
     h2{
         color: ${props => props.theme.text};
@@ -399,6 +562,12 @@ const Logo = styled.div`
 const Chart = styled.div`
     width: 100%;
     height: 40vh;
+    ${props => props.theme.displayFlexCenter};
+`;
+const SVG = styled.div`
+    width: 100%;
+    height: 30vh;
+    ${props => props.theme.displayFlexCenter};
 `;
 
 
