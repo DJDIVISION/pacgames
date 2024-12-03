@@ -6,6 +6,7 @@ import styled, { useTheme } from 'styled-components'
 import { animationFive, transition } from '../animations'
 import sportsIcon from '../assets/sportsIcon.png'
 import fantasy from '../assets/fantasy.png'
+import candle from '../assets/logos/candle.png'
 import deposit from '../assets/logos/shoDeposit.png'
 import withdraw from '../assets/logos/withdraw.png'
 import partners from '../assets/logos/partners.png'
@@ -219,6 +220,12 @@ const Home = ({toggleTheme}) => {
                     transition={{ delay: 0.8 }} >
                     <StaggerImageHolder><img src={fantasy} alt="fantasy" /></StaggerImageHolder>
                     <StaggerAvatarName>{t("navbar.fantasy")}</StaggerAvatarName>
+                  </StaggerRow></LinkR>
+                  <LinkR to="/crypto-prediction"><StaggerRow initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }} >
+                    <StaggerImageHolder><img src={candle} alt="fantasy" style={{width: '50%'}}/></StaggerImageHolder>
+                    <StaggerAvatarName>PredicTON</StaggerAvatarName>
                   </StaggerRow></LinkR>
                   <LinkR to="/partners"><StaggerRow initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}

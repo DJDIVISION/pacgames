@@ -155,8 +155,8 @@ const CryptoPrediction = () => {
     const fetchHistoricData = async () => {
         try {
             const response = await fetch(
-              /* `https://temp-server-pi.vercel.app/api/cryptocurrency/${crypto}/chart?days=${days}&currency=${currency}` */
-              `http://localhost:8080/api/cryptocurrency/${crypto}/chart?days=${days}&currency=${currency}`
+              `https://temp-server-pi.vercel.app/api/cryptocurrency/${crypto}/chart?days=${days}&currency=${currency}`
+              /* `http://localhost:8080/api/cryptocurrency/${crypto}/chart?days=${days}&currency=${currency}` */
             );
             const data = await response.json();
     
