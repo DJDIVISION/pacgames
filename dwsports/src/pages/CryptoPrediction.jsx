@@ -379,7 +379,7 @@ const CryptoPrediction = () => {
                 if (type === "WILL GO UP") {
                     if (finalPrice > price) {
                         console.log("This go up bet wins");
-                        const messageToSend = `📈 ${user.user_metadata.name} has won on PredicTON!!! 📈 🎉🎉🎉\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \nEnd date: ${endDate} \nPrice after 24h: ${symbol}${finalPrice} \n\nAmount won: ${amount} GPZ ✅`
+                        const messageToSend = `📈 ${user.user_metadata.name} has won on PredicTON!!! 📈 🎉🎉🎉\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \n\nEnd date: ${endDate} \nPrice after 24h: ${symbol}${finalPrice} \n\nAmount won: ${amount} GPZ ✅`
                         console.log(messageToSend)
                         try {
                             const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
@@ -422,6 +422,7 @@ const CryptoPrediction = () => {
                             }
                         }
                     } else {
+                        message.error(`You have lost the ${name} prediction!`)
                         return; // Skip further processing for losing bet
                     }
                 }
@@ -429,7 +430,7 @@ const CryptoPrediction = () => {
                 if (type === "WILL GO DOWN") {
                     if (finalPrice < price) {
                         console.log("This go down bet wins");
-                        const messageToSend = `📈 ${user.user_metadata.name} has won on PredicTON!!! 📈 🎉🎉🎉\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \nEnd date: ${endDate} \nPrice after 24h: ${symbol}${finalPrice} \n\nAmount won: ${amount} GPZ ✅`
+                        const messageToSend = `📈 ${user.user_metadata.name} has won on PredicTON!!! 📈 🎉🎉🎉\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \n\nEnd date: ${endDate} \nPrice after 24h: ${symbol}${finalPrice} \n\nAmount won: ${amount} GPZ ✅`
                         console.log(messageToSend)
                         try {
       
@@ -473,6 +474,7 @@ const CryptoPrediction = () => {
                             }
                         }
                     } else {
+                        message.error(`You have lost the ${name} prediction!`)
                         return; // Skip further processing for losing bet
                     }
                 }
