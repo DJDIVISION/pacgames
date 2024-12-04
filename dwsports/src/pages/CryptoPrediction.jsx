@@ -341,6 +341,165 @@ const CryptoPrediction = () => {
         }, 3000)
     }
 
+    function delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    const writeBet = async (bet) => {
+        const now = new Date().getTime();
+        console.log(now)
+        const date = bet.date
+        const startDate = new Date(date).toLocaleString();
+        const finishDate = date + 86400000
+        const endDate = new Date(finishDate).toLocaleString();
+        const token = bet.crypto
+        const name = bet.name
+        const type = bet.type
+        const symbol = bet.symbol
+        const currency = bet.currency
+        const price = bet.price
+        const amount = bet.amount
+        const elapsed = now - date
+        console.log("finishDate",finishDate)
+        if (elapsed > 86400000) {
+            const roundedNumber = Math.ceil(now / date);
+            console.log(roundedNumber)
+            try {
+                const response = await fetch(
+                    `https://api.coingecko.com/api/v3/coins/${token}/market_chart?vs_currency=${currency}&days=${roundedNumber}`
+                    
+                );
+                const data = await response.json();
+                
+                const result = data.prices.find(item => 
+                    finishDate >= item[0] && finishDate <= item[0] + 86400000
+                  );
+                const finalPrice = parseFloat(parseFloat(result[1]).toFixed(2))
+                const imageUrl = "https://i.postimg.cc/1zGGy6wv/upOrDown.png"
+                if (type === "WILL GO UP") {
+                    if (finalPrice > price) {
+                        console.log("This go up bet wins");
+                        const messageToSend = `📈 ${user.user_metadata.name} has won on PredicTON!!! 📈 🎉🎉🎉\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \nEnd date: ${endDate} \nPrice after 24h: ${symbol}${finalPrice} \n\nAmount won: ${amount} GPZ ✅`
+                        console.log(messageToSend)
+                        try {
+                            const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
+                            
+                            if (response.data.success) {
+                              console.log('Message sent successfully!');
+                            } else {
+                              console.log('Failed to send message');
+                            }
+                          } catch (error) {
+                            console.log('Error sending message', error);
+                          }
+                        const { data: firstData, error: firstError } = await supabase
+                        .from('predictions')
+                        .update({status: 'Won'})
+                        .eq('userId', user.id)
+                        .eq('date', date)
+                        if(firstError){
+                            console.log("second error", firstError)
+                        } else {
+                           console.log(`data updated for bet with date ${date}`, firstData) 
+                           const { data: secondData, error: secondError } = await supabase
+                            .from('users')
+                            .select('appBalance')
+                            .eq('id', user.id)
+                            if(secondError){
+                                console.log("second error", secondError)
+                            } else {
+                                const balance = secondData[0].appBalance
+                                const newBalance = balance + amount
+                                const { data: thirdData, error: thirdError } = await supabase
+                                .from('users')
+                                .update({appBalance: newBalance})
+                                .eq('id', user.id)
+                                if(thirdError){
+                                    console.log("third error", thirdError)
+                                } else {
+                                    message.success(`You have won the ${name} prediction!`)
+                                }
+                            }
+                        }
+                    } else {
+                        return; // Skip further processing for losing bet
+                    }
+                }
+        
+                if (type === "WILL GO DOWN") {
+                    if (finalPrice < price) {
+                        console.log("This go down bet wins");
+                        const messageToSend = `📈 ${user.user_metadata.name} has won on PredicTON!!! 📈 🎉🎉🎉\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \nEnd date: ${endDate} \nPrice after 24h: ${symbol}${finalPrice} \n\nAmount won: ${amount} GPZ ✅`
+                        console.log(messageToSend)
+                        try {
+      
+                            const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
+                            
+                            if (response.data.success) {
+                              console.log('Message sent successfully!');
+                            } else {
+                              console.log('Failed to send message');
+                            }
+                          } catch (error) {
+                            console.log('Error sending message', error);
+                          }
+                        const { data: firstData, error: firstError } = await supabase
+                        .from('predictions')
+                        .update({status: 'Won'})
+                        .eq('userId', user.id)
+                        .eq('date', date)
+                        if(firstError){
+                            console.log("second error", firstError)
+                        } else {
+                           console.log(`data updated for bet with date ${date}`, firstData) 
+                           const { data: secondData, error: secondError } = await supabase
+                            .from('users')
+                            .select('appBalance')
+                            .eq('id', user.id)
+                            if(secondError){
+                                console.log("second error", secondError)
+                            } else {
+                                const balance = secondData[0].appBalance
+                                const newBalance = balance + amount
+                                const { data: thirdData, error: thirdError } = await supabase
+                                .from('users')
+                                .update({appBalance: newBalance})
+                                .eq('id', user.id)
+                                if(thirdError){
+                                    console.log("third error", thirdError)
+                                } else {
+                                    message.success(`You have won the ${name} prediction!`)
+                                }
+                            }
+                        }
+                    } else {
+                        return; // Skip further processing for losing bet
+                    }
+                }
+            } catch (err) {
+                console.log("error fetching", err)
+            }
+            await delay(1500);
+        } else {
+            return
+        }
+    }
+
+    const fetchResults = async () => {
+        
+        const { data: firstData, error: firstError } = await supabase
+        .from('predictions')
+        .select('*')
+        .eq('userId', user.id)
+        if(firstError){
+            console.log("second error", firstError)
+        } else {
+            for (const bet of firstData){
+                await writeBet(bet)
+            }
+        }
+    }
+
   return (
     <ThemeProvider theme={darkTheme}>
     <motion.div initial="out" animate="in" variants={animationFive} transition={transitionLong}>
@@ -374,7 +533,7 @@ const CryptoPrediction = () => {
             <MenuItem value={"inr"} style={{ fontFamily: "Quicksand" }}>INR</MenuItem>
         </Select>
     </TopLine>
-    <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
+    <AbsoluteIconButtonLeft onClick={/* () => navigate('/') */ fetchResults}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
     <TopLine>
         <h2>SELECT CRYPTO</h2>
         <Select
@@ -608,7 +767,7 @@ const Section = styled.div`
 const CoinList = (currency) =>
     `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=100&page=1&sparkline=false`;
   
-const SingleCoin = (id="drip-network") =>
+const SingleCoin = (id) =>
     `https://api.coingecko.com/api/v3/coins/${id}`;
   
 const HistoricalChart = (id, days, currency) =>

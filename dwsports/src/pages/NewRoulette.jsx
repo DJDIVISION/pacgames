@@ -12,6 +12,7 @@ import {LatestNumbers,LeagueRowBets,ArrowDown,ArrowUp,AbsoluteIconButton,Title,S
 import { FirstRowNoZeroes, SecondRowNoZeroes, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, americanRouletteNumbers, SecondRow, FirstRow } from './fakeData'
 import { BetNumbersArea, BetPerColumnsArea, BetPerRowsArea, LastRowArea, ZeroesArea } from './functionsTwo';
 import ChipsTwo from '../components/roulette/ChipsTwo.jsx';
+import { io } from "socket.io-client";
 import { DndContext } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
 import { RouletteState } from '../context/RouletteContext.jsx';
@@ -66,7 +67,9 @@ import youLose from '../assets/sounds/youLose.ogg'
 import placeYourBet from '../assets/sounds/placeYourBet.ogg'
 import { useNavigate } from 'react-router-dom';
 import { DisplayHolder, SmallIconHolder } from './indexTwo.jsx';
+import { message as ANTDmessage } from 'antd';
 
+const socket = io.connect("http://localhost:8080")
 
 const Roulete = () => {
 
@@ -89,12 +92,12 @@ const Roulete = () => {
     const intervalRef = useRef(null);
     const [seconds, setSeconds] = useState(null);
     const [allBets, setAllBets] = useState({})
-    const [playerName, setPlayerName] = useState(null);
     const [activeRoom, setActiveRoom] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [activeContainer, setActiveContainer] = useState(null)
     const {placedBet, setPlacedBet} = RouletteState();
     const {lastBet, setLastBet} = RouletteState();
+    const {myId, setMyId} = RouletteState();
     const {balance, setBalance} = FantasyState();
     const { user } = useAuth(); 
     const [allowEffects, setAllowEffects] = useState(true);
@@ -107,6 +110,41 @@ const Roulete = () => {
     const {droppedColumnChips, setDroppedColumnChips} = RouletteState();
     const {droppedBorderLeftChips, setDroppedBorderLeftChips} = RouletteState();
     const {droppedBorderTopChips, setDroppedBorderTopChips} = RouletteState();
+    const [playerAvatar, setPlayerAvatar] = useState("https://lh3.googleusercontent.com/a/ACg8ocLECQcSdS5Tc1zKpfviRv5Mr7cY4IeOunMK0Z9-dpbtJUvGsdgf=s96-c");
+    const [playerName, setPlayerName] = useState("Victor Ramirez");
+    const [placeBets, setPlaceBets] = useState(false)
+    const [timeOutStarted, setTimeOutStarted] = useState(false)
+    const [gameStarted, setGameStarted] = useState(false)
+    const [playerFolds, setPlayerFolds] = useState(false)
+    const {winningNumber, setWinningNumber} = RouletteState();
+    const {winnings, setWinnings} = RouletteState();
+    const [spinning, setSpinning] = useState(false);
+    const totalNumbers = americanRouletteNumbers.length;
+    const {showMotionDiv, setShowMotionDiv} = RouletteState();
+
+    useEffect(() => {
+        if(playerFolds){
+            setAllBets([])
+            setBalance((prevBalance) => prevBalance + placedBet);
+            setPlacedBet(null)
+            setDroppedChips({})
+            setDroppedCornerChips({})
+            setDroppedRowChips({})
+            setDroppedLastRowChips({})
+            setDroppedColumnChips({})
+            setDroppedBorderLeftChips({})
+            setDroppedBorderTopChips({})
+            setAllDroppedChips({})
+            setAllDroppedCornerChips({})
+            setAllDroppedRowChips({})
+            setAllDroppedLastRowChips({})
+            setAllDroppedColumnChips({})
+            setAllDroppedBorderLeftChips({})
+            setAllDroppedBorderTopChips({})
+        }
+    }, [playerFolds])
+    
+    
 
     useEffect(() => {
         if (droppedChips) {
@@ -556,15 +594,38 @@ const Roulete = () => {
     
         const id = chip.droppedNumberId
         const value = chip.chipValue
-        setBalance(balance + value)
-        setPlacedBet(placedBet - value)
+        
         const { [id]: removed, ...updatedElements } = elements;
     
         // Check if the element was found and removed
         if (removed) {
             console.log(removed)
+            const totalValue = removed.reduce((sum, chip) => sum + chip.chipValue, 0);
+            console.log("Total Chip Value:", totalValue);
+            let toReduce
+            if(removed[0].betType === "Split"){
+                toReduce = totalValue / 2
+            } else if (removed[0].betType === "Corner"){
+                toReduce = totalValue / 4
+            } else if (removed[0].betType === "Street"){
+                toReduce = totalValue / 3
+            } else if (removed[0].betType === "Basket"){
+                toReduce = totalValue / 5
+            } else if (removed[0].betType === "Six Line"){
+                toReduce = totalValue / 6
+            } else if (removed[0].betType === "Dozen"){
+                toReduce = totalValue / 12
+            } else if (removed[0].betType === "Low (1-18)" || removed[0].betType === "High (19-36)" || removed[0].betType === "Even"
+                || removed[0].betType === "Odd" || removed[0].betType === "Blacks" || removed[0].betType === "Reds"){
+                toReduce = totalValue / 18
+            } else if (removed[0].betType === "Straight"){
+                toReduce = totalValue 
+            }
+            setBalance((prev) => prev + toReduce)
+            setPlacedBet((prev) => prev - toReduce)
             for (let key in allBets) {
-                // Filter out the items where number is "corner-25" and typeofBet is "corner-4-bet"
+                console.log(key)
+                console.log(allBets[key])
                 allBets[key] = allBets[key].filter(
                   (bet) => !(bet.number === id)
                 );
@@ -581,6 +642,127 @@ const Roulete = () => {
         updateChipsFn(updatedElements)
     
     }
+
+    useEffect(() => {
+        /* const fetchInitialData = () => {
+            socket.emit('getRooms');
+            socket.emit('getAllPlayers');
+        };
+        fetchInitialData(); */
+        
+        
+        socket?.on('thisIsYourId', (data) => {
+            setMyId(data.playerId)
+            setActiveRoom(data.room)
+            ANTDmessage.success(data.playerId)
+            //setPlayOnline(true)
+            //waitingtToStarttNotify('Waiting for other players to join the room... ⌛')
+        });
+        socket?.on('update_players', (data) => {
+            const { message, dealer, dealer_avatar, sendedBy } = data;
+            console.log(message)
+            /* const messageToUpdate = {
+                message: message,
+                playerName: dealer,
+                user_avatar: dealer_avatar,
+                sendedBy: sendedBy,
+                room_id: activeRoom
+            } */
+            ANTDmessage.success(message)
+            setTimeout(() => {
+                setPlaceBets(true)
+                playEffect(42)
+                setTimeOutStarted(true)
+                setOpenRouletteMenu(false)
+                setTimeout(() => {
+                    setOpenTableMenu(true)
+                }, 400)
+            }, 10000)
+        });
+        socket?.on('timeoutStarting', () => {
+            setTimeout(() => {
+                startCountdown();
+            }, 10000)
+        });
+        socket?.on('close-betting-table', (data) => {
+            const { message, dealer, dealer_avatar, sendedBy } = data;
+            /* const messageToUpdate = {
+                message: message,
+                playerName: dealer,
+                user_avatar: dealer_avatar,
+                sendedBy: sendedBy,
+                room_id: activeRoom
+            } */
+            //(messageToUpdate)
+            ANTDmessage.success(message)
+            setGameStarted(true)
+            setTimeOutStarted(false)
+            setPlayerFolds(true)
+            setOpenTableMenu(false)
+            setTimeout(() => {
+                setOpenRouletteMenu(true)
+            }, 400)
+        });
+        socket.on('winning-number', (winningNumber) => {
+            setWinningNumber(winningNumber)
+            //startRoulette();
+        });
+        return () => {
+            socket.off('thisIsYourId');
+            socket.off('update_players');
+            socket.off('timeoutStarting');
+            socket.off('close-betting-table');
+            socket.off('winning-number');
+        }
+    }, [socket]);
+
+    const joinRoom = async (room) => {
+        socket?.emit("join-room", {
+          playerName: playerName,
+          googleId: "3500e55b-9df7-4213-961f-4afde3a2b9ed",
+          avatar: playerAvatar,
+          roomId: "1"
+        });
+    }
+
+    const getRotationForNumber = (winningNumber) => {
+        const targetIndex = americanRouletteNumbers.findIndex(num => num.number === winningNumber.number);
+        const degreesPerNumber = 360 / totalNumbers;
+        const targetRotation = targetIndex * degreesPerNumber;
+        const fullRotations = 8 * 360; // 3 full spins
+        const finalRotation = fullRotations + (360 - targetRotation);
+        return finalRotation;
+    };
+
+    const spinRoulette = () => {
+        setSpinning(true);
+        const finalRotation = getRotationForNumber(winningNumber);
+        setRotationDegrees(finalRotation);
+        setTimeout(() => { setSpinning(false); setRotationDegrees(0);setShowMotionDiv(true)}, 10000); 
+    };
+
+    useEffect(() => {
+        if(showMotionDiv){
+            socket.emit("game-finished", { activeRoom, myId, allBets });
+                const sound = (winningNumber.number)
+                console.log("sound to play", sound)
+                if (sound > 0 && sound <= 36) {
+                    playEffect(sound)
+                }else if (sound === "00") {
+                    playEffect(43)
+                }
+        } 
+    }, [showMotionDiv])
+
+    useEffect(() => {
+        if(winningNumber){
+            spinRoulette();
+            setWinnings(null)
+            playEffect(37)
+            playEffect(38)
+        } 
+    }, [winningNumber])
+    
 
 
   return (
@@ -745,7 +927,7 @@ const Roulete = () => {
                           </BetsHolder>
                           <BalanceHolder>
                               <BalanceColumn>
-                                    <SmallIconHolder><img src={balanceIcon} alt="balance" /></SmallIconHolder>
+                                    <SmallIconHolder onClick={joinRoom}><img src={balanceIcon} alt="balance" /></SmallIconHolder>
                                     <DisplayHolder><BalanceDisplay balance={balance} /></DisplayHolder>
                               </BalanceColumn>
                               <BalanceColumn>
