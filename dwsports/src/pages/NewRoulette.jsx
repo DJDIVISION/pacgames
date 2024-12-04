@@ -6,8 +6,9 @@ import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import Ton from '../assets/logos/ton.png'
 import {LatestNumbers,LeagueRowBets,ArrowDown,ArrowUp,AbsoluteIconButton,Title,Section,Container,SmallNumberWrapper,FirstColumn,ChipsHolder,ZeroRowBets,
     ColumnBets,EmptySpace,ColumnHolder,HalfZeroRowBets,WheelContainer,TableContainer,RouletteContainer,Wheel,SpinButton,Span,Number,NumberSpan,BallHolder,
-    BigNumberContainer,BetsHolder,BetHolder,BetNumberHolder,NumberWrapper,BetAmount,AbsoluteIconButtonLeft,ChatRoomIcon,MessagesWrapper,ChatInputWrapper,BalanceHolder} from './indexFour'
-import { FirstRowNoZeroes, SecondRowNoZeroes, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, americanRouletteNumbers } from './fakeData'
+    BigNumberContainer,BetsHolder,BetHolder,BetNumberHolder,NumberWrapper,BetAmount,AbsoluteIconButtonLeft,ChatRoomIcon,MessagesWrapper,ChatInputWrapper,BalanceHolder,
+    ZeroHolder} from './indexFour'
+import { FirstRowNoZeroes, SecondRowNoZeroes, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, americanRouletteNumbers, SecondRow, FirstRow } from './fakeData'
 import { BetNumbersArea, BetPerColumnsArea, BetPerRowsArea, LastRowArea, ZeroesArea } from './functionsTwo';
 import ChipsTwo from '../components/roulette/ChipsTwo.jsx';
 import { DndContext } from '@dnd-kit/core';
@@ -59,6 +60,7 @@ import S00 from '../assets/sounds/00.ogg'
 import youWin from '../assets/sounds/youWin.ogg'
 import youLose from '../assets/sounds/youLose.ogg'
 import placeYourBet from '../assets/sounds/placeYourBet.ogg'
+import { useNavigate } from 'react-router-dom';
 
 
 const Roulete = () => {
@@ -78,6 +80,7 @@ const Roulete = () => {
     const [activeNumbers, setActiveNumbers] = useState([]);
     const [rotationDegrees, setRotationDegrees] = useState(0);
     const scrollableDivRef = useRef(null);
+    const navigate = useNavigate();
     const intervalRef = useRef(null);
     const [seconds, setSeconds] = useState(null);
     const [allBets, setAllBets] = useState({})
@@ -175,7 +178,7 @@ const Roulete = () => {
     }, [droppedChips, droppedCornerChips, droppedRowChips, droppedLastRowChips, droppedColumnChips, droppedBorderLeftChips, droppedBorderTopChips])
 
     useEffect(() => {
-        const allRows = FirstRowNoZeroes.concat(SecondRowNoZeroes).concat(ThirdRow)
+        const allRows = FirstRowNoZeroes.concat(SecondRowNoZeroes).concat(ThirdRow).concat(Zeroes)
         if(activeContainer !== null){
             if(typeof activeContainer === 'string' && ['first', 'last', 'EVEN', 'ODD', 'black', 'red'].some(prefix => activeContainer.startsWith(prefix))){
                 const filter = LastRow.filter(el => el.id === activeContainer);
@@ -195,6 +198,7 @@ const Roulete = () => {
                 setActiveNumbers(numbers); 
             }  else if(typeof activeContainer === 'string' && activeContainer.startsWith('split')){
                 const filter = allRows.filter(el => el.borderLeftId === activeContainer);
+                console.log("filter",filter)
                 const numbers = filter[0]?.borderLeft || [];
                 setActiveNumbers(numbers); 
             }  else if(typeof activeContainer === 'string' && activeContainer.startsWith('corner')){
@@ -360,7 +364,7 @@ const Roulete = () => {
             }
         }
     };
-    console.log(droppedChips)
+    
     const handleDragEnd = (event) => {
         const { over, active } = event;
         /* if(active){
@@ -370,7 +374,8 @@ const Roulete = () => {
         const chipImage = active.data.current.chipImage;
         const avatar = user.user_metadata.avatar_url
         let droppedNumberId = over?.id;
-        const allRows = FirstRowNoZeroes.concat(SecondRowNoZeroes).concat(ThirdRow);
+        const allRows = FirstRowNoZeroes.concat(SecondRowNoZeroes).concat(ThirdRow).concat(Zeroes);
+        console.log(allRows)
         if(over){
             const newBalance = balance - chipValue;
             setBalance(newBalance)
@@ -408,16 +413,16 @@ const Roulete = () => {
             });
         };
         console.log("droppedNumberId",droppedNumberId)
-        if (!isNaN(droppedNumberId) && droppedNumberId !== '0-single' && droppedNumberId !== '0-double') {
+        if (!isNaN(droppedNumberId)) {
             const item = allRows.find(el => el.number === droppedNumberId);
             const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
-        } else if (droppedNumberId === '0-single' || droppedNumberId === '0-double') {
-            const item = Zeroes.find(el => el.id === droppedNumberId);
+        } /* else if (droppedNumberId === 100 || droppedNumberId === 101) {
+            const item = allRows.find(el => el.id === droppedNumberId);
             console.log("item", item)
             const color = item.color
             updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
-        } else if (droppedNumberId.startsWith('corner')) {
+        } */ else if (droppedNumberId.startsWith('corner')) {
             const item = allRows.find(el => el.cornerLeftId === droppedNumberId);
             const numbers = item?.cornerLeft || [];
             if(numbers.length === 4){
@@ -577,7 +582,7 @@ const Roulete = () => {
     <Section>
         <AnimatePresence>
             <AbsoluteIconButton key="#4">{openTableMenu ? <ArrowDown onClick={closeTable}/> : <ArrowUp onClick={openTable}/>}</AbsoluteIconButton>
-            <AbsoluteIconButtonLeft key="#5">{openChatMenu ? <ChatRoomIcon onClick={closeChat}/> : <ChatRoomIcon onClick={openChat}/>}</AbsoluteIconButtonLeft>
+            <AbsoluteIconButtonLeft key="#5">{openChatMenu ? <ChatRoomIcon onClick={() => navigate('/')}/* onClick={closeChat} *//> : <ChatRoomIcon onClick={() => navigate('/')}/* onClick={openChat} *//>}</AbsoluteIconButtonLeft>
             {openTableMenu && (
                 <Container key="#1" variants={item}
                 initial="initial"
@@ -606,7 +611,8 @@ const Roulete = () => {
                         <ColumnHolder key="#13">
                             {Zeroes.map((card, index) => {
                                 return (
-                                    <ZeroesArea activeNumbers={activeNumbers} card={card} key={index} allDroppedChips={allDroppedChips} setAllDroppedChips={setAllDroppedChips} activeContainer={activeContainer}/>
+                                    <ZeroesArea activeNumbers={activeNumbers} card={card} key={index} droppedChips={droppedChips} setDroppedChips={setDroppedChips} activeContainer={activeContainer}
+                                   removeBet={removeBet} droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips}/>
                                 )
                             })}
                         </ColumnHolder>
@@ -725,7 +731,7 @@ const Roulete = () => {
                                           <BetNumberHolder>
                                               <NumberWrapper style={{ background: `${bet.color}` }}>{key}</NumberWrapper>
                                           </BetNumberHolder>
-                                          <BetAmount>${bet.amount}</BetAmount>
+                                          <BetAmount>{bet.amount} GPZ</BetAmount>
                                           <BetAmount>{bet.typeofBet}</BetAmount>
                                       </BetHolder>
                                   ));

@@ -20,7 +20,7 @@ export const CornerDropArea = ({ card, droppedCornerChips,setDroppedCornerChips,
             id={`corner-${card.number}`}
         >
             {droppedCornerChips[card.cornerLeftId]?.length > 0 && (
-              <div className="corner-chips">
+              <Flexer>
                 {droppedCornerChips[card.cornerLeftId].map((chip, index) => (
                   <img
                     key={index}
@@ -30,7 +30,7 @@ export const CornerDropArea = ({ card, droppedCornerChips,setDroppedCornerChips,
                     onClick={() => removeBet(chip,droppedCornerChips,setDroppedCornerChips)}
                   />
                 ))}
-              </div>
+              </Flexer>
             )}
         </CornerLeft>
     );
@@ -40,17 +40,16 @@ export const BorderLeftArea = ({ card,droppedBorderLeftChips,setDroppedBorderLef
     const { isOver, setNodeRef } = useDroppable({
       id: `split-${card.number}`, // Unique ID for the corner area
     });
-    const borderLeft = card.borderLeft
-    const wrappedId = "split-"+card.number
+    
     if(isOver){
-        console.log(`split-${card.number}`) 
+        console.log(card.borderLeftId) 
      }
     return (
         <BorderLeft ref={setNodeRef} id={`split-${card.number}`}>
         {/* Display chips if there are any */}
-        {droppedBorderLeftChips[wrappedId]?.length > 0 && (
-              <div className="corner-chips">
-                {droppedBorderLeftChips[wrappedId].map((chip, index) => (
+        {droppedBorderLeftChips[card.borderLeftId]?.length > 0 && (
+              <FlexerBorder>
+                {droppedBorderLeftChips[card.borderLeftId].map((chip, index) => (
                   <img
                     key={index}
                     src={chip.chipImage}
@@ -59,7 +58,7 @@ export const BorderLeftArea = ({ card,droppedBorderLeftChips,setDroppedBorderLef
                     onClick={() => removeBet(chip,droppedBorderLeftChips,setDroppedBorderLeftChips)}
                   />
                 ))}
-              </div>
+              </FlexerBorder>
             )}
       </BorderLeft>
     );
@@ -77,7 +76,7 @@ export const BorderTopArea = ({ card, removeBet, droppedBorderTopChips, setDropp
             id={`borderTop-${card.number}`}
         >
             {droppedBorderTopChips[wrappedId]?.length > 0 && (
-              <div className="corner-chips">
+              <FlexerTop>
                 {droppedBorderTopChips[wrappedId].map((chip, index) => (
                   <img
                     key={index}
@@ -87,13 +86,13 @@ export const BorderTopArea = ({ card, removeBet, droppedBorderTopChips, setDropp
                     onClick={() => removeBet(chip,droppedBorderTopChips,setDroppedBorderTopChips)}
                   />
                 ))}
-              </div>
+              </FlexerTop>
             )}
         </BorderTop>
     );
 };
 
-const CornerLeft = styled(motion.div)`
+const CornerLeft = styled.div`
 position: absolute;
 width: 20px;
 height: 20px;
@@ -103,6 +102,31 @@ top: 0;
 right: 0;
 transform: translate(50%,-50%);
 z-index: 9000;
+`;
+
+const Flexer = styled.div`
+  width: 100%;
+  height: 100%;
+  ${props => props.theme.displayFlexCenter}
+  img{
+    transform: translate(-10%,-10%);
+  }
+`;
+const FlexerBorder = styled.div`
+  width: 100%;
+  height: 100%;
+  ${props => props.theme.displayFlexCenter}
+  img{
+    transform: translate(-10%,-25%);
+  }
+`;
+const FlexerTop = styled.div`
+  width: 100%;
+  height: 100%;
+  ${props => props.theme.displayFlexCenter}
+  img{
+    transform: translate(-10%,-25%) scale(0.6);
+  }
 `;
 
 const BorderLeft = styled.div`

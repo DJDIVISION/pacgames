@@ -219,6 +219,13 @@ display: flex;
 align-items: center;
 `;
 
+export const ZeroHolder = styled.div`
+    width: 50%;
+    height: 100%;
+    border: 1px solid green;
+    ${props => props.theme.displayFlexCenter};
+`;
+
 export const ChipsHolder = styled(motion.div)`
 width: 100%;
 height: 15%; 

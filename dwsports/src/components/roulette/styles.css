@@ -94,13 +94,7 @@
   border: 1px solid orange;
 }
 
-.corner-dropped-chip{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 30px;
-  height: 30px;
-}
+
 
 .corner-dropped-chip-small{
   position: absolute;
@@ -113,14 +107,7 @@
   border: 1px solid orange;
 }
 
-.borderLeft-dropped-chip{
-  position: absolute;
-  top: 25%;
-  left: 0;
-  width: 30px;
-  height: 30px;
-  transform: translate(-15%,-15%);
-}
+
 
 .borderLeft-dropped-chip-small{
   position: absolute;
@@ -135,8 +122,8 @@
 .borderTop-dropped-chip{
   position: absolute;
   top: 0;
-  left: 0;
-  transform: scale(0.6) translateY(-60%);
+  left: 2.5px;
+  
 }
 
 .borderTop-dropped-chip-small{

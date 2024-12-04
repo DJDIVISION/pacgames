@@ -72,6 +72,10 @@ export const BetNumbersArea = ({ card,droppedChips,setDroppedChips,droppedCorner
   const { isOver, setNodeRef } = useDroppable({
       id: card.number,
   });
+
+  if(isOver){
+    console.log(card.number)
+  }
   
   const number = card.number;
 
@@ -99,10 +103,7 @@ export const BetNumbersArea = ({ card,droppedChips,setDroppedChips,droppedCorner
           
           key={card.number}
       >
-          <NumberWrapper style={{ background: `${card.color}` }} initial="expanded" 
-        animate={isDateExpanded ? "collapsed" : "expanded"} 
-        variants={variants} ref={setNodeRef} id={card.number}
-        transition={{ type: 'tween', ease: 'linear', duration: 0.4 }}><h2>{number}</h2></NumberWrapper>
+          <NumberWrapper style={{ background: `${card.color}` }} ref={setNodeRef} id={card.number}><h2>{number}</h2></NumberWrapper>
 
           <CornerDropArea 
               card={card}
@@ -176,38 +177,46 @@ export const BetPerColumnsArea = ({card,droppedColumnChips,setDroppedColumnChips
   );
 };
 
-export const ZeroesArea = ({card,allDroppedChips,activeNumbers,activeContainer }) => {
+export const ZeroesArea = ({card,droppedChips,activeNumbers,activeContainer,setDroppedChips,removeBet,droppedBorderLeftChips,setDroppedBorderLeftChips }) => {
   const { isOver, setNodeRef } = useDroppable({
     id: card.id,
   });
   const number = card.number
-
   if(isOver){
-    console.log(`${card.number}`)
-    console.log(`${card.id}`)
     console.log(activeContainer)
-    console.log(number)
   }
+
+  const isActive = 
+        // Check if activeContainer is a number and matches this number's id
+        (typeof activeContainer === 'number' && activeContainer === number) ||
+        // Check if activeContainer is a string and this number is in the activeNumbers array
+        (typeof activeContainer === 'string' && activeNumbers.includes(number));
   
   return (
-    <Zero  className="number-inactive" id={card.id}  key={card.id}  >
-      <NumberZeroWrapper  style={{background: `${card.color}`}} ref={setNodeRef}  ><h2>{number}</h2></NumberZeroWrapper>
+    <Zero   className={isActive ? 'number-active' : 'number-inactive'} id={card.id}  key={card.id}  >
+      <NumberZeroWrapper ref={setNodeRef} style={{background: `${card.color}`}}><h2>{number === 100 ? 0 : number === 101 ? "00" : number}</h2></NumberZeroWrapper>
+      <BorderLeftArea 
+              card={card}
+              droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips}
+              removeBet={removeBet}
+          />
       {
-          !allDroppedChips[number] || allDroppedChips[number].length === 0 ? (
-              <div></div>
-          ) : (
-              <div className="roulette-dropped-chips">
-              {allDroppedChips[number].map((chip, index) => (
-                  <img
-                  key={index}
-                  src={chip.avatar}
-                  alt={`Chip ${chip.avatar}`}
-                  className="zero-dropped-chip-small"
-                  />
-              ))}
-              </div>
-          )
-          }
+                !droppedChips[number] || droppedChips[number].length === 0 ? (
+                    <div></div>
+                ) : (
+                    <div className="roulette-dropped-chips">
+                    {droppedChips[number].map((chip, index) => (
+                        <img
+                        key={index}
+                        src={chip.chipImage}
+                        alt={`Chip ${chip.chipValue}`}
+                        className="zero-dropped-chip"
+                        onClick={() => removeBet(chip,droppedChips,setDroppedChips)}
+                        />
+                    ))}
+                    </div>
+                )
+                }
     </Zero>
   );
 };
@@ -238,13 +247,15 @@ const Zero = styled.div`
     }
 `;
 
-const NumberWrapper = styled(motion.div)`
+const NumberWrapper = styled.div`
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid orange;
   color: white;
+  width: 25px;
+  height: 25px;
 `;
 
 const Number = styled.div`

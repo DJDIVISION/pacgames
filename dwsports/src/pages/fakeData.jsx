@@ -2,27 +2,29 @@
 
 export const Zeroes = [
     {
-        number: 0,
+        number: 100,
         color: "green",
-        id: '0-single'
+        borderLeftId : "split-100",
+        borderLeft: [100,101],
+        id: 100
     },
     {
-        number: "00",
-        id: '0-double',
+        number: 101,
         color: "green",
         borderTopId : "borderTop-00",
         borderTop: [0,"00"],
+        id: 101
     }
 ]
 
 export const FirstRow = [
     {
-        number: 0,
+        number: "00",
         color: "green"
     },
     {
         number: 3,
-        cornerLeft: [0,"00",3,2,1],
+        cornerLeft: [100,101,3,2,1],
         cornerLeftId : "corner-3",
         borderLeftId : "split-3",
         borderTopId : "borderTop-3",
@@ -145,11 +147,11 @@ export const FirstRow = [
 export const FirstRowNoZeroes = [
     {
         number: 3,
-        cornerLeft: [0,"00",3,2,1],
+        cornerLeft: [100,101,3,2,1],
         cornerLeftId : "corner-3",
         borderLeftId : "split-3",
         borderTopId : "borderTop-3",
-        borderTop: ["00",3],
+        borderTop: [101,3],
         borderLeft: [3,2,1],
         color: "red"
     },
@@ -267,7 +269,7 @@ export const FirstRowNoZeroes = [
 
 export const SecondRow = [
     {
-        number: "00",
+        number: 0,
         color: "green",
         borderTopId : "borderTop-00",
         borderTop: [0,"00"],
@@ -279,7 +281,7 @@ export const SecondRow = [
         borderLeftId : "split-2",
         borderTopId : "borderTop-2",
         borderTop: [3,2],
-        borderLeft: ["00",0,2],
+        borderLeft: [100,101,2],
         color: "black"
     },
     {
@@ -398,11 +400,11 @@ export const SecondRowNoZeroes = [
     
     {
         number: 2,
-        cornerLeft: ["00",3,2],
+        cornerLeft: [101,3,2],
         cornerLeftId : "corner-2",
         borderLeftId : "split-2",
         borderTopId : "borderTop-2",
-        borderTop: ["00",0,2],
+        borderTop: [100,101,2],
         borderLeft: [3,2],
         color: "black"
     },
@@ -522,7 +524,7 @@ export const ThirdRow = [
     
     {
         number: 1,
-        cornerLeft: [0,1,2],
+        cornerLeft: [100,1,2],
         cornerLeftId : "corner-1",
         borderLeftId : "split-1",
         borderTopId : "borderTop-1",

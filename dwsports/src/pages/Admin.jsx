@@ -25,58 +25,7 @@ const Admin = () => {
     /* console.log(leagues) */
   
 
-    const fetchQuestions = async () => {
-      const options = {
-        method: 'GET',
-        url: 'https://trivia-questions1.p.rapidapi.com/api/trivia/sports',
-        headers: {
-          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-          'x-rapidapi-host': 'trivia-questions1.p.rapidapi.com'
-        }
-      };
-      
-      try {
-        const response = await axios.request(options);
-        console.log(response.data);
-        localStorage.setItem("questions", JSON.stringify(response.data))
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    const sendQuestions = async () => {
-      const str = localStorage.getItem("questions")
-      const json = JSON.parse(str)
-      console.log(json)
-      const { data, error } = await supabase
-          .from('questions')
-          .select('sports')
-          .eq('id', 1)
-          if (error) {
-            console.error('Error inserting/updating user session data:', error.message)
-          } else {
-            console.log(data)
-            const userJsonData = data[0].sports || {}; 
-            userJsonData.sports = userJsonData.sports || []; 
-            for (const question of json.questions){
-              userJsonData.sports.push(question)
-            }
-            
-            console.log(userJsonData)
-            const { error: updateError } = await supabase
-                    .from('questions')
-                    .update({ sports: userJsonData }) // Update the jsonb column
-                    .eq('id', 1); // Identify which user to update
     
-                if (updateError) {
-                    console.error('Error updating user data:', updateError.message);
-                } else {
-                    console.log('User data updated successfully:', userJsonData);
-                    message.success("Data inserted with my dick!!!")
-                }
-          }
-    }
-
 
     
 
@@ -84,8 +33,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={fetchQuestions} /* onClick={() => navigate('/crypto-prediction')} */>FETCH</StyledButton>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={sendQuestions} /* onClick={() => navigate('/crypto-prediction')} */>SEND</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={fetchQuestions} */ onClick={() => navigate('/newroulette')}>FETCH</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
