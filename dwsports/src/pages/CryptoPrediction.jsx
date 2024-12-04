@@ -491,19 +491,23 @@ const CryptoPrediction = () => {
         .from('predictions')
         .select('*')
         .eq('userId', user.id)
+        .eq('status', "Pending")
         if(firstError){
             console.log("second error", firstError)
-            return
-        } else {
+        } 
+        if(firstData.length > 0){
+            console.log("firstData", firstData) 
             for (const bet of firstData){
                 await writeBet(bet)
             }
+        } else {
+            console.log("no data")
         }
     }
 
     useEffect(() => {
         fetchResults();  
-    }, [])
+    }, [user])
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -538,7 +542,7 @@ const CryptoPrediction = () => {
             <MenuItem value={"inr"} style={{ fontFamily: "Quicksand" }}>INR</MenuItem>
         </Select>
     </TopLine>
-    <AbsoluteIconButtonLeft onClick={/* () => navigate('/') */ fetchResults}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
+    <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
     <TopLine>
         <h2>SELECT CRYPTO</h2>
         <Select
