@@ -49,8 +49,9 @@ export const BalanceDisplay = ({ balance }) => {
     <motion.div
       animate={{ opacity: [0, 1] }}
       transition={{ duration: 0.5 }}
+      style={{width: '100%', height: '100%'}}
     >
-     <SmallTextHolder>BALANCE: {displayBalance} PGZ</SmallTextHolder>
+     <SmallTextHolder><h2>BALANCE: <br/><span>{displayBalance} PGZ</span></h2></SmallTextHolder>
     </motion.div>
   );
 };
@@ -178,7 +179,7 @@ export const PlacedBetDisplay = ({ placedBet }) => {
       transition={{ duration: 0.5 }}
       style={{ fontSize: '12px', fontWeight: 'bold' }}
     >
-     <SmallTextHolder>BET: ${displayPlacedBet}</SmallTextHolder>
+     <SmallTextHolder><h2>BET: <br/><span>{displayPlacedBet} GPZ</span></h2></SmallTextHolder>
     </motion.div>
   );
 };
@@ -230,7 +231,7 @@ export const NumbersBetDisplay = ({ allBets }) => {
       transition={{ duration: 0.5 }}
       style={{ fontSize: '12px', fontWeight: 'bold' }}
     >
-     <SmallTextHolder>NUMBERS: {displayNumbersBet}</SmallTextHolder>
+     <SmallTextHolder><h2>NUMBERS: <br/><span>{displayNumbersBet}</span></h2></SmallTextHolder>
     </motion.div>
   );
 };

@@ -13,7 +13,7 @@ import france from '../assets/logos/france.png'
 import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo } from './index';
 import { FantasyState } from '../context/FantasyContext';
 import { CircularProgress } from '@mui/material';
-import { AverageDisplay, BalanceDisplay, startCountdown, useAuth, useGetTeams } from './functions';
+import { AverageDisplay, startCountdown, useAuth, useGetTeams } from './functions';
 import { useMediaQuery } from 'react-responsive';
 
 import { message } from 'antd';

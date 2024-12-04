@@ -106,19 +106,23 @@ export const BallHolder = styled.div`
     display: flex;
     align-items: center;
     overflow-x: auto;
-    border: 1px solid red;
 `;
 export const BalanceHolder = styled.div`
     width: 95%;
     height: 20%;
     display: flex;
     align-items: center;
-    border: 1px solid red;
 `;
+export const BalanceColumn = styled.div`
+    width: calc(100% / 3);
+    height: 100%;
+    display: flex;
+    align-items: center;
+`;
+
 export const BetsHolder = styled.div`
     width: 80%;
     height: 60%;
-    border: 1px solid blue;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -152,6 +156,7 @@ export const BetAmount = styled.div`
   justify-content: center;
   color: white;
   border: 1px solid grey;
+  text-shadow: ${props => props.theme.textShadowTwo};
 `;
 
 export const NumberWrapper = styled.div`

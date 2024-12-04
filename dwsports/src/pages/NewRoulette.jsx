@@ -7,7 +7,8 @@ import Ton from '../assets/logos/ton.png'
 import {LatestNumbers,LeagueRowBets,ArrowDown,ArrowUp,AbsoluteIconButton,Title,Section,Container,SmallNumberWrapper,FirstColumn,ChipsHolder,ZeroRowBets,
     ColumnBets,EmptySpace,ColumnHolder,HalfZeroRowBets,WheelContainer,TableContainer,RouletteContainer,Wheel,SpinButton,Span,Number,NumberSpan,BallHolder,
     BigNumberContainer,BetsHolder,BetHolder,BetNumberHolder,NumberWrapper,BetAmount,AbsoluteIconButtonLeft,ChatRoomIcon,MessagesWrapper,ChatInputWrapper,BalanceHolder,
-    ZeroHolder} from './indexFour'
+    ZeroHolder,
+    BalanceColumn} from './indexFour'
 import { FirstRowNoZeroes, SecondRowNoZeroes, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, americanRouletteNumbers, SecondRow, FirstRow } from './fakeData'
 import { BetNumbersArea, BetPerColumnsArea, BetPerRowsArea, LastRowArea, ZeroesArea } from './functionsTwo';
 import ChipsTwo from '../components/roulette/ChipsTwo.jsx';
@@ -15,8 +16,11 @@ import { DndContext } from '@dnd-kit/core';
 import { TouchSensor, MouseSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
 import { RouletteState } from '../context/RouletteContext.jsx';
 import { FantasyState } from '../context/FantasyContext.jsx';
-import { useAuth } from './functions.jsx';
+import { BalanceDisplay, NumbersBetDisplay, PlacedBetDisplay, useAuth } from './functions.jsx';
 import spin1 from '../assets/sounds/spin2.ogg'
+import balanceIcon from '../assets/chips/balance-bag.png'
+import chips from '../assets/chips/poker-chips.png'
+import roulette from '../assets/chips/roulette.png'
 import noMoreBets from '../assets/sounds/noMoreBets.ogg'
 import chipSound from '../assets/sounds/chipSound.ogg'
 import S0 from '../assets/sounds/0.ogg'
@@ -61,6 +65,7 @@ import youWin from '../assets/sounds/youWin.ogg'
 import youLose from '../assets/sounds/youLose.ogg'
 import placeYourBet from '../assets/sounds/placeYourBet.ogg'
 import { useNavigate } from 'react-router-dom';
+import { DisplayHolder, SmallIconHolder } from './indexTwo.jsx';
 
 
 const Roulete = () => {
@@ -726,10 +731,11 @@ const Roulete = () => {
                           </BallHolder>
                           <BetsHolder key="#32">
                               {allBets && Object.entries(allBets).map(([key, valueArray]) => {
+                                const value = key === "100" ? 0 : key === "101" ? "00" : key
                                   return valueArray.map((bet, index) => (
                                       <BetHolder key={index}>
                                           <BetNumberHolder>
-                                              <NumberWrapper style={{ background: `${bet.color}` }}>{key}</NumberWrapper>
+                                              <NumberWrapper style={{ background: `${bet.color}` }}>{value}</NumberWrapper>
                                           </BetNumberHolder>
                                           <BetAmount>{bet.amount} GPZ</BetAmount>
                                           <BetAmount>{bet.typeofBet}</BetAmount>
@@ -738,7 +744,18 @@ const Roulete = () => {
                               })}
                           </BetsHolder>
                           <BalanceHolder>
-
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={balanceIcon} alt="balance" /></SmallIconHolder>
+                                    <DisplayHolder><BalanceDisplay balance={balance} /></DisplayHolder>
+                              </BalanceColumn>
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={chips} alt="chips" /></SmallIconHolder>
+                                    <DisplayHolder><PlacedBetDisplay placedBet={placedBet} /></DisplayHolder>
+                              </BalanceColumn>
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={roulette} alt="balance" /></SmallIconHolder>
+                                    <DisplayHolder><NumbersBetDisplay allBets={allBets} /></DisplayHolder>
+                              </BalanceColumn>
                           </BalanceHolder>
                       </TableContainer>
                   </Container>

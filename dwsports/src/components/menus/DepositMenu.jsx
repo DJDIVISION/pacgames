@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 /* import TonWeb from 'tonweb'; */
 import axios from 'axios';
 import { FantasyState } from '../../context/FantasyContext';
-import { BalanceDisplay, useAuth } from '../../pages/functions';
+import {  useAuth } from '../../pages/functions';
 import { supabase } from '../../supabase/client';
 import { message } from 'antd';
 import { Navigate } from 'react-router-dom';

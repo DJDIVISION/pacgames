@@ -80,7 +80,18 @@ export const BottomContainerRow = styled.div`
 `;
 
 export const SmallIconHolder = styled.div`
-  width: 40%;
+  width: 30%;
+  height: 100%;
+  ${props => props.theme.displayFlexCenter};
+  img{
+      width: 75%;
+      display: block;
+      object-fit: cover;
+    }
+`;
+
+export const DisplayHolder = styled.div`
+  width: 70%;
   height: 100%;
   ${props => props.theme.displayFlexCenter};
   img{
@@ -125,14 +136,19 @@ export const BigTextWinnings = styled.div`
 `;
 
 export const SmallTextHolder = styled.div`
-  min-width: 90%;
-  height: 80px;
-  color: ${props => props.theme.text};
-  font-size: 32px;
+  width: 100%;
+  height: 100%;
   ${props => props.theme.displayFlexCenter};
-  font-weight: bold;
   text-align: center;
-  transform: translateX(10px);
+  text-shadow: ${props => props.theme.textShadowTwo};
+  h2{
+    color: ${props => props.theme.MainAccentTwo};
+    font-size: 14px;
+    font-weight: bold;
+  }
+  span{
+    color: ${props => props.theme.MainAccent};
+  }
   @media(min-width: 968px){
     font-size: 18px;
     
