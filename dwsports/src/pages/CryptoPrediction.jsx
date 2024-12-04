@@ -375,6 +375,8 @@ const CryptoPrediction = () => {
                     finishDate >= item[0] && finishDate <= item[0] + 86400000
                   );
                 const finalPrice = parseFloat(parseFloat(result[1]).toFixed(2))
+                console.log("initial price", price)
+                console.log("final price", finalPrice)
                 const imageUrl = "https://i.postimg.cc/1zGGy6wv/upOrDown.png"
                 if (type === "WILL GO UP") {
                     if (finalPrice > price) {
@@ -423,12 +425,20 @@ const CryptoPrediction = () => {
                         }
                     } else {
                         message.error(`You have lost the ${name} prediction!`)
+                        const { data: firstData, error: firstError } = await supabase
+                        .from('predictions')
+                        .update({status: 'Won'})
+                        .eq('userId', user.id)
+                        .eq('date', date)
+                        if(firstError){
+                            console.log("second error", firstError)
+                        }
                         return; // Skip further processing for losing bet
                     }
                 }
         
                 if (type === "WILL GO DOWN") {
-                    if (finalPrice < price) {
+                    if (finalPrice > price) {
                         console.log("This go down bet wins");
                         const messageToSend = `📈 ${user.user_metadata.name} has won on PredicTON!!! 📈 🎉🎉🎉\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \n\nEnd date: ${endDate} \nPrice after 24h: ${symbol}${finalPrice} \n\nAmount won: ${amount} GPZ ✅`
                         console.log(messageToSend)
@@ -475,8 +485,16 @@ const CryptoPrediction = () => {
                         }
                     } else {
                         message.error(`You have lost the ${name} prediction!`)
+                        const { data: firstData, error: firstError } = await supabase
+                        .from('predictions')
+                        .update({status: 'Lost'})
+                        .eq('userId', user.id)
+                        .eq('date', date)
+                        if(firstError){
+                            console.log("second error", firstError)
+                        }
                         return; // Skip further processing for losing bet
-                    }
+                    } 
                 }
             } catch (err) {
                 console.log("error fetching", err)
