@@ -493,12 +493,17 @@ const CryptoPrediction = () => {
         .eq('userId', user.id)
         if(firstError){
             console.log("second error", firstError)
+            return
         } else {
             for (const bet of firstData){
                 await writeBet(bet)
             }
         }
     }
+
+    useEffect(() => {
+        fetchResults();  
+    }, [])
 
   return (
     <ThemeProvider theme={darkTheme}>
