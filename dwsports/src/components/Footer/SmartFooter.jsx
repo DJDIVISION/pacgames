@@ -3,14 +3,7 @@ import { motion,AnimatePresence,useAnimation  } from 'framer-motion'
 import {useInView} from "react-intersection-observer";
 import styled, {useTheme} from 'styled-components'
 import {SmartButtonWrapper,Partners,X,Telegram,Bot,Website,Cart,TopSmartRowThree,TopSmartRow,BottomRow,TopSmartRowTwo, SmartFooterSection, Design, Paper, App, StyledIconButton} from './index'
-import x from "../../assets/logos/x.png"
-import telegram from "../../assets/logos/telegram.png"
-import website from "../../assets/logos/website.png"
-import white from "../../assets/logos/white.png"
-import buy from "../../assets/logos/buy.png"
-import brands from '../../assets/logos/brand.png'
-import bot from "../../assets/logos/bot.png"
-import apps from "../../assets/logos/tapps.png"
+
 import Shinobi from '../svg/Shinobi';
 import Fren from '../svg/Fren';
 import Ton from '../svg/Ton';

@@ -18,8 +18,6 @@ import { useNavigate } from 'react-router-dom'
 import { message } from 'antd'
 import { useAuth } from './functions'
 import { supabase } from '../supabase/client'
-import drops from '../assets/logos/drops.avif'
-import rises from '../assets/logos/rises.jpg'
 import black from '../assets/logos/black.jpg'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
@@ -53,6 +51,7 @@ const CryptoPrediction = () => {
     const theme = useTheme();
     const navigate = useNavigate()
     const {user} = useAuth();
+    const [disabled, setDisabled] = useState(false)
 
     useEffect(() => {
         // Function to calculate remaining time for all predictions
@@ -121,36 +120,18 @@ const CryptoPrediction = () => {
             setName(res.name)
             setChange(parseFloat(res.market_data.price_change_percentage_24h).toFixed(3))
             setPrice(res.market_data.current_price[currency])
-            setflag(true)
         })
         .catch(err => console.error(err));
     }
 
+
     useEffect(() => {
-        if(flag){
+        if(crypto && currency && days){
+            fetchCrypto()
             fetchHistoricData()
         }
-    }, [flag,crypto,currency,days])
+    }, [crypto,currency,days])
 
-    useEffect(() => {
-        if(crypto && currency){
-            fetchCrypto()
-        }
-    }, [crypto,currency])
-
-    const trendingCoins  = () => {
-        const options = {
-        method: 'GET',
-        headers: {accept: 'application/json', 'x-cg-demo-api-key': 'CG-3qkmGTgTWXenAouD9JshQYt6'}
-      };
-      
-      fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=gecko_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`, options)
-        .then(res => res.json())
-        .then(res => {
-            console.log(res)
-        })
-        .catch(err => console.error(err));
-    }
 
     const fetchHistoricData = async () => {
         try {
@@ -342,7 +323,23 @@ const CryptoPrediction = () => {
         }
     }, [openPredictionsMenu])
 
-    
+    const selectCurrency = (e) => {
+        setChartData(null)
+        setDisabled(true)
+        setCurrency(e.target.value)
+        setTimeout(() => {
+            setDisabled(false)
+        }, 3000)
+    }
+
+    const selectCrypto = (e) => {
+        setChartData(null)
+        setDisabled(true)
+        setCrypto(e.target.value)
+        setTimeout(() => {
+            setDisabled(false)
+        }, 3000)
+    }
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -361,8 +358,15 @@ const CryptoPrediction = () => {
             variant="outlined"
             value={currency}
             style={{ width: 100, height: '90%', marginLeft: 'auto', fontFamily: "Quicksand" }}
-            onChange={(e) => setCurrency(e.target.value)}
-            
+            onChange={(e) => selectCurrency(e)}
+            /* onChange={(e) => {
+                setDisabled(true)
+                setCurrency(e.target.value)
+                setTimeout(() => {
+                    setDisabled(false)
+                }, 3000)
+            }} */
+            disabled={disabled}
         >
             <MenuItem value={"usd"} style={{ fontFamily: "Quicksand" }}>USD</MenuItem>
             <MenuItem value={"eur"} style={{ fontFamily: "Quicksand" }}>EURO</MenuItem>
@@ -377,7 +381,8 @@ const CryptoPrediction = () => {
             variant="outlined"
             value={crypto}
             style={{ width: 100, height: '90%', marginLeft: 'auto', fontFamily: "Quicksand" }}
-            onChange={(e) => {setCrypto(e.target.value)}}
+            onChange={(e) => selectCrypto(e)}
+            disabled={disabled}
         >
             <MenuItem value={"the-open-network"} style={{ fontFamily: "Quicksand" }}>TON</MenuItem>
             <MenuItem value={"bitcoin"} style={{ fontFamily: "Quicksand" }}>BTC</MenuItem>
