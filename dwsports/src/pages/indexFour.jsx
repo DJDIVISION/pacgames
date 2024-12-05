@@ -449,7 +449,7 @@ export const Wheel = styled(motion.div)`
   position: absolute; 
   width: 100%;
   height: 100%;
-  border: 5px solid ${props => props.theme.card};
+  border: 5px solid ${props => props.theme.MainAccent};
   //filter: drop-shadow(0 0 5px white);
   border-radius: 50%;
   background: linear-gradient(180deg, rgba(0,212,255,1) 0%, rgba(9,9,121,1) 50%, rgba(0,212,255,1) 100%);

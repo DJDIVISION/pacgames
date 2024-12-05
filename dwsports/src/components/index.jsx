@@ -882,6 +882,15 @@ export const Rower = styled.div`
     height: 130px;
     ${props => props.theme.displayFlexCenter};
 `;
+export const LeagueRower = styled.div`
+    width: 100%;
+    height: 60px;
+    ${props => props.theme.displayFlexCenter};
+`;
+export const LeagueWrapper = styled.div`
+    height: 60px;
+    ${props => props.theme.displayFlexCenter};
+`;
 export const SmallRower = styled.div`
     width: 100%;
     height: 100px;
@@ -1039,7 +1048,7 @@ export const BetHolder = styled.div`
     ${props => props.theme.displayFlexCenter};
     background-color: ${({ isSelected, isSelectedTwo }) => (isSelected || isSelectedTwo ? 'green' : 'initial')};
     h2{
-        font-size: 12px;
+        font-size: 12px !important;
         color: ${props => props.theme.text}; 
     }
 `;
@@ -1049,6 +1058,7 @@ export const RowerRow = styled.div`
     min-height: 50px;
     ${props => props.theme.displayFlexCenter};
     margin: 5px 0;
+    position: relative;
 `;
 export const MiniRowerRow = styled.div`
     width: 100%;

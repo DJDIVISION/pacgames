@@ -470,7 +470,7 @@ h2{
 @media(max-width: 498px){
     height: 85vh; 
     flex-direction: column;
-    overflow-y: auto;
+    overflow-y: auto !important;
 }
 `;
 
@@ -496,12 +496,12 @@ position: relative;
 `;
 
 export const  AbsoluteChart = styled.div`
-    width: 60px;
-    height: 60px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     position: absolute;
-    top: 80%;
-    left: 0%;
+    top: 50%;
+    right: 0%;
     transform: translate(-50%,-50%);
     background: ${props => props.theme.cardTwo};
     border: 1px solid ${props => props.theme.card};
@@ -664,6 +664,25 @@ export const TeamBetsHolder = styled(motion.div)`
 width: 98%;
 border: 2px solid ${props => props.theme.card};
 background: ${props => props.theme.cardTwo};
+${props => props.theme.displayFlexColumnCenter}
+box-shadow: inset 0 0 25px ${props => props.theme.text};
+border-radius: 10px;
+cursor: pointer;
+position: relative;
+padding: 10px;
+margin: 10px 0;
+h2{
+    color: ${props => props.theme.text};
+    font-size: 18px;
+    font-weight: bold;
+}
+`;
+
+export const TeamBetsHolderBlur = styled(motion.div)`
+width: 98%;
+border: 2px solid ${props => props.theme.card};
+background: rgba(0,0,0,0.7);
+backdrop-filter: blur(5px);
 ${props => props.theme.displayFlexColumnCenter}
 box-shadow: inset 0 0 25px ${props => props.theme.text};
 border-radius: 10px;

@@ -1227,6 +1227,30 @@ export const TeamsLogo = styled.div`
     width: 25%;
     height: 130px;
     ${props => props.theme.displayFlexColumn};
+    img{
+        width: 75%;
+        display: block;
+        object-fit: cover;
+    }
+`;
+export const LeagueLogo = styled.div`
+    width: 60px;
+    height: 60px;
+    ${props => props.theme.displayFlexCenter};
+    img{
+        width: 75%;
+        display: block;
+        object-fit: cover;
+    }
+`;
+export const LeagueName = styled.div`
+    height: 60px;
+    ${props => props.theme.displayFlexCenter};
+    h2{
+        color: white;
+        font-size: 18px;
+        transform: translateX(-5px);
+    }
 `;
 
 export const TeamLogoWrapper = styled.div`
@@ -1253,7 +1277,7 @@ export const TeamLogoText = styled.div`
 
 export const TeamsResult = styled.div`
     width: 50%;
-    height: 130px;
+    height: 100%;
     ${props => props.theme.displayFlexColumn};
 `;
 export const NewHolder = styled.div`

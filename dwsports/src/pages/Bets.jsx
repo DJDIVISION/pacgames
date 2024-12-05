@@ -1,18 +1,36 @@
 import React, {useState, useEffect} from 'react'
 import { useTheme } from 'styled-components'
-import {motion,AnimatePresence} from 'framer-motion'
+import {motion,AnimatePresence,Reorder,useMotionValue} from 'framer-motion'
 import { useMediaQuery } from 'react-responsive';
 import { useNavigate } from 'react-router-dom';
-import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo, TeamLogoWrapper, TeamLogoText, TeamsResult, DateRow, ResultRow, BigDateRow, VenueRow, ArrowRightRelative, StyledButton, OddsColumn, OddsColumnBig, AllBetsBadge } from './index';
+import { BallColumn,CountryBall,CountryBallText, MiniArrowDownTop, MiniArrowupTop,CountryBallTextTop, PlayerSettingsIcon, Search, SearchIconButton, ArrowLeftRelative, SmallArrowDown, TeamsLogo, TeamLogoWrapper, TeamLogoText, TeamsResult, DateRow, ResultRow, BigDateRow, VenueRow, ArrowRightRelative, StyledButton, OddsColumn, OddsColumnBig, AllBetsBadge, LeagueLogo, LeagueName } from './index';
 import {useTranslation} from "react-i18next";
 import { Avatar, CircularProgress, IconButton, Switch } from '@mui/material';
 import england from '../assets/logos/england.png'
+import back30 from '../assets/backs/back30.jpg'
 import spain from '../assets/logos/spain.png'
-import italy from '../assets/logos/italy.png' 
+import italy from '../assets/logos/italy.png'
+import laliga from '../assets/laliga.png'
+import laliga2 from '../assets/laliga2.png'
+import dfb from '../assets/dfb.png'
+import ligueuno from '../assets/ligue1.png'
+import FACup from '../assets/FA.png'
+import liguedos from '../assets/ligue2.png'
+import bundes from '../assets/bundesliga.png'
+import bundesdos from '../assets/bundesdos.png'
+import coppa from '../assets/coppa.png'
+import premierlogo from '../assets/premier.png'
+import championship from '../assets/championship.png'
+import seriea from '../assets/serieA.png' 
+import serieb from '../assets/serieB.png' 
+import copaRey from '../assets/copaRey.png' 
+import europa from '../assets/europa.png' 
+import europe from '../assets/logos/europe.png' 
 import germany from '../assets/logos/germany.png' 
 import france from '../assets/logos/france.png' 
 import chart from '../assets/logos/chart.png' 
-import champions from '../assets/logos/champions.png' 
+import champions from '../assets/champions.png' 
+import conference from '../assets/conference.png' 
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ToastContainer, toast } from 'react-toastify';
@@ -25,7 +43,8 @@ import {Section,BottomRow,IconHolder,LeagueRowBets,Container,item,LeagueHolder,A
   CurrentBetNameHolder,
   AddIcon,
   LiveBetIcon,
-  CurrentBetRow
+  CurrentBetRow,
+  TeamBetsHolderBlur
 } from './indexThree' 
 import { FantasyState } from '../context/FantasyContext';
 import axios from 'axios';
@@ -45,7 +64,9 @@ import { LowRower,Rower,RowerColumn,RowerRowBets,MiniRower,MiniRowerType,MiniRow
   BigRowBet,
   TopRowBet,
   BottomRowBet,
-  BetHolder
+  BetHolder,
+  LeagueRower,
+  LeagueWrapper
  } from '../components';
 import { supabase } from '../supabase/client';
 import Skeleton from '@mui/material/Skeleton';
@@ -61,58 +82,202 @@ import { CloseChatRoomIcon } from '../components/chats';
 
 const Bets = () => {
 
-  const leagues = [
+  const englandLeagues = [
+    
+  ]
+
+  const spainLeagues = [
+    
+  ]
+
+  const italyLeagues = [
+    
+  ]
+
+  const franceLeagues = [
+    ,
+  ]
+
+  const germanyLeagues = [
+    
+  ]
+
+  const europaLeagues = [
+    
+  ]
+
+  const countries = [
     {
-      league: "Champions League",
-      logo: champions,
-      name: "UEFA",
+      name: "ENGLAND",
+      logo: england,
+      id: 1,
+      leagues: [
+        {
+          league: "Premier League",
+          logo: premierlogo,
+          name: "England",
+          id: 39,
+          currentRound: 13
+        },
+        {
+          league: "Championship",
+          logo: championship,
+          name: "England",
+          id: 40,
+          currentRound: 19
+        },
+        {
+          league: "FA Cup",
+          logo: FACup,
+          name: "England",
+          id: 45,
+          currentRound: 3
+        }
+      ]
+    },
+    {
+      name: "SPAIN",
+      logo: spain,
       id: 2,
-      currentRound: 6
+      leagues: [
+        {
+          league: "La Liga",
+          logo: laliga,
+          name: "Spain",
+          id: 140,
+          currentRound: 15
+        },
+        {
+          league: "La Liga 2",
+          logo: laliga2,
+          name: "Spain",
+          id: 141,
+          currentRound: 18
+        },
+        {
+          league: "Copa del Rey",
+          logo: copaRey,
+          name: "Spain",
+          id: 143,
+          currentRound: 2
+        }
+      ]
     },
     {
-        league: "Premier League",
-        logo: england,
-        name: "England",
-        id: 39,
-        currentRound: 13
+      name: "GERMANY",
+      logo: germany,
+      id: 3,
+      leagues: [
+        {
+          league: "Bundesliga",
+          logo: bundes,
+          name: "Germany",
+          id: 78,
+          currentRound: 12
+        },
+        {
+          league: "2 Bundesliga",
+          logo: bundesdos,
+          name: "Germany",
+          id: 79,
+          currentRound: 15
+        },
+        {
+          league: "DFB Pokal",
+          logo: dfb,
+          name: "Germany",
+          id: 81,
+          currentRound: 16
+        }
+      ]
     },
     {
-        league: "La Liga",
-        logo: spain,
-        name: "Spain",
-        id: 140,
-        currentRound: 15
+      name: "ITALY",
+      logo: italy,
+      id: 4,
+      leagues: [
+        {
+          league: "Serie A",
+          logo: seriea,
+          name: "Italy",
+          id: 135,
+          currentRound: 14
+        },
+        {
+          league: "Serie B",
+          logo: serieb,
+          name: "Italy",
+          id: 136,
+          currentRound: 16
+        },
+        {
+          league: "Coppa Italia",
+          logo: coppa,
+          name: "Italy",
+          id: 137,
+          currentRound: 16
+        }
+      ]
     },
     {
-        league: "Serie A",
-        logo: italy,
-        name: "Italy",
-        id: 135,
-        currentRound: 14
+      name: "FRANCE",
+      logo: france,
+      id: 5,
+      leagues: [
+        {
+          league: "Ligue 1",
+          logo: ligueuno,
+          name: "France",
+          id: 61,
+          currentRound: 13
+        },
+        {
+          league: "Ligue 2",
+          logo: liguedos,
+          name: "France",
+          id: 62,
+          currentRound: 15
+        }
+      ]
     },
     {
-        league: "Ligue 1",
-        logo: france,
-        name: "France",
-        id: 61,
-        currentRound: 13
-    },
-    {
-        league: "Bundesliga",
-        logo: germany,
-        name: "Germany",
-        id: 78,
-        currentRound: 12
+      name: "EUROPE",
+      logo: europe,
+      id: 6,
+      leagues: [
+        {
+          league: "Champions League",
+          logo: champions,
+          name: "UEFA",
+          id: 2,
+          currentRound: 6
+        },
+        {
+          league: "Europa League",
+          logo: europa,
+          name: "UEFA",
+          id: 3,
+          currentRound: 6
+        },
+        {
+          league: "Conference League",
+          logo: conference,
+          name: "UEFA",
+          id: 848,
+          currentRound: 5
+        }
+      ]
     }
-]
+
+  ]
   const theme = useTheme();
   const [checkedMultiple, setCheckedMultiple] = useState(false);
   const [openLeagueMenu, setOpenLeagueMenu] = useState(true)
   const { user } = useAuth();
   const isMobile = useMediaQuery({ query: '(max-width: 498px)' });
-  const [availableLeagues, setAvailableLeagues] = useState(leagues)
+  const [availableLeagues, setAvailableLeagues] = useState(countries)
   const [t, i18n] = useTranslation("global");
-  const [isDateExpanded, setIsDateExpanded] = useState(true)
+  const [isDateExpanded, setIsDateExpanded] = useState(false)
   const [openMatchesMenu, setOpenMatchesMenu] = useState(false)
   const [openWonBetsMenu, setOpenWonBetsMenu] = useState(false)
   const [openLostBetsMenu, setOpenLostBetsMenu] = useState(false)
@@ -830,9 +995,15 @@ const proceedWithBet = async (bet) => {
     console.log(activeLeagueId)
     console.log(activeRound)
     let round
-    if(activeLeagueId === 2){
+    if(activeLeagueId === 2 || activeLeagueId === 848 || activeLeagueId === 3 ){
       round = `League Stage - ${activeRound}`
-    } else {
+    } else if(activeLeagueId === 45){
+      round = `${activeRound}rd Round`
+    } else if (activeLeagueId === 143){
+        round = `${activeRound}nd Round`
+    } else if (activeLeagueId === 137 || activeLeagueId === 81){
+      round = `Round of ${activeRound}`
+  } else {
       round = `Regular Season - ${activeRound}`
     }
     const options = {
@@ -858,6 +1029,7 @@ const proceedWithBet = async (bet) => {
   }
 
   const handleButtonClick = (league) => {
+    setExpandedIndex(null)
     console.log(league)
     setActiveLeagueId(league.id)
     setActiveLeague(league.league)
@@ -868,7 +1040,7 @@ const proceedWithBet = async (bet) => {
     })
   };
 
-  
+  console.log(activeRound)
 
 useEffect(() => {
   if (activeRound) {
@@ -1164,7 +1336,7 @@ const getWinnings = (el) => {
   return (
     <Section>
       {isDateExpanded ? <AbsoluteIconButton onClick={closeDate}><ArrowDown /></AbsoluteIconButton> : <AbsoluteIconButton onClick={closeDate}><ArrowUp /></AbsoluteIconButton>}
-      <Title initial="expanded" 
+      <Title initial="collapsed" 
         animate={isDateExpanded ? "expanded" : "collapsed"} 
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
@@ -1174,13 +1346,49 @@ const getWinnings = (el) => {
       <AnimatePresence>
         {openLeagueMenu && (
           <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"}
-            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
-            <LeagueRowBets variants={item}
+            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}
+            style={{padding: '40px 10px 20px 10px',backgroundImage: `url(${back30})`, backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
+            <LeagueRowBets variants={item} 
               initial="initial"
               animate="animate"
               exit="exit"
               transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
-              {availableLeagues?.map((league, index) => {
+                 {availableLeagues?.map((league, index) => {
+                  return(
+                    <TeamBetsHolderBlur key={index}
+                      initial={{ minHeight: '60px' }}
+                      animate={{ minHeight: expandedIndex === index ? '280px' : '60px' }}
+                      transition={{ duration: 0.5 }}>
+                        {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                        <LeagueRower>
+                          <LeagueWrapper>
+                        <LeagueLogo>
+                            <img src={league.logo} alt={league.logo} />
+                        </LeagueLogo>
+                        <LeagueName><h2>{league.name}</h2></LeagueName>
+                        </LeagueWrapper>
+                        </LeagueRower>
+                        {expandedIndex === index && (
+                        <LowRower >
+                          {league.leagues.map((liga, index) => {
+                            return(
+                              <RowerRow key={index}>
+                                <LeagueWrapper style={{transform: 'translateX(-20px)'}} onClick={() => handleButtonClick(liga)}>
+                                <LeagueLogo>
+                                <img src={liga.logo} alt={liga.logo} style={{width: '50%'}}/>
+                              </LeagueLogo>
+                              <LeagueName><h2>{liga.league}</h2></LeagueName>
+                                </LeagueWrapper>
+                                <AbsoluteChart onClick={() => setOpenLeague(liga)}><img src={chart} alt="chart" /></AbsoluteChart>
+                              </RowerRow>
+                            )
+                          })}
+                        </LowRower>
+                      )}
+                      </TeamBetsHolderBlur>
+                  )
+                 })}
+              {/* {availableLeagues?.map((league, index) => {
                 return (
                   <LeagueHolder whileHover={{ scale: 1.05 }} key={league.name} >
                     <AbsoluteChart onClick={() => setOpenLeague(league)}><img src={chart} alt="chart" /></AbsoluteChart>
@@ -1191,7 +1399,7 @@ const getWinnings = (el) => {
                     </BallColumn>
                   </LeagueHolder>
                 )
-              })}
+              })} */}
             </LeagueRowBets>
           </Container>
         )}
