@@ -8,7 +8,9 @@ import {LatestNumbers,LeagueRowBets,ArrowDown,ArrowUp,AbsoluteIconButton,Title,S
     ColumnBets,EmptySpace,ColumnHolder,HalfZeroRowBets,WheelContainer,TableContainer,RouletteContainer,Wheel,SpinButton,Span,Number,NumberSpan,BallHolder,
     BigNumberContainer,BetsHolder,BetHolder,BetNumberHolder,NumberWrapper,BetAmount,AbsoluteIconButtonLeft,ChatRoomIcon,MessagesWrapper,ChatInputWrapper,BalanceHolder,
     ZeroHolder,
-    BalanceColumn} from './indexFour'
+    BalanceColumn,
+    RouletteBalance,
+    SendBetContainer} from './indexFour'
 import { FirstRowNoZeroes, SecondRowNoZeroes, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, americanRouletteNumbers, SecondRow, FirstRow } from './fakeData'
 import { BetNumbersArea, BetPerColumnsArea, BetPerRowsArea, LastRowArea, ZeroesArea } from './functionsTwo';
 import ChipsTwo from '../components/roulette/ChipsTwo.jsx';
@@ -65,9 +67,11 @@ import S00 from '../assets/sounds/00.ogg'
 import youWin from '../assets/sounds/youWin.ogg'
 import youLose from '../assets/sounds/youLose.ogg'
 import placeYourBet from '../assets/sounds/placeYourBet.ogg'
+import back20 from '../assets/backs/back20.jpg'
 import { useNavigate } from 'react-router-dom';
 import { DisplayHolder, SmallIconHolder } from './indexTwo.jsx';
 import { message as ANTDmessage } from 'antd';
+import { ArrowLeftRelative, StyledButton } from './index.jsx';
 
 const socket = io.connect("http://localhost:8080")
 
@@ -676,7 +680,7 @@ const Roulete = () => {
                 setOpenRouletteMenu(false)
                 setTimeout(() => {
                     setOpenTableMenu(true)
-                }, 400)
+                }, 750)
             }, 10000)
         });
         socket?.on('timeoutStarting', () => {
@@ -701,7 +705,7 @@ const Roulete = () => {
             setOpenTableMenu(false)
             setTimeout(() => {
                 setOpenRouletteMenu(true)
-            }, 400)
+            }, 750)
         });
         socket.on('winning-number', (winningNumber) => {
             setWinningNumber(winningNumber)
@@ -769,24 +773,28 @@ const Roulete = () => {
     <Section>
         <AnimatePresence>
             <AbsoluteIconButton key="#4">{openTableMenu ? <ArrowDown onClick={closeTable}/> : <ArrowUp onClick={openTable}/>}</AbsoluteIconButton>
-            <AbsoluteIconButtonLeft key="#5">{openChatMenu ? <ChatRoomIcon onClick={() => navigate('/')}/* onClick={closeChat} *//> : <ChatRoomIcon onClick={() => navigate('/')}/* onClick={openChat} *//>}</AbsoluteIconButtonLeft>
+            {(openRouletteMenu && !gameStarted) && <AbsoluteIconButtonLeft key="#5"><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}} onClick={() => navigate('/')}/></AbsoluteIconButtonLeft>}
             {openTableMenu && (
                 <Container key="#1" variants={item}
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                transition={{ type: "spring", stiffness: 300, damping: 40,duration: 0.5 }}>
+                transition={{ type: "spring", stiffness: 300, damping: 40,duration: 0.5 }}
+                style={{backgroundImage: `url(${back20})`, backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
                     <DndContext onDragEnd={handleDragEnd} sensors={sensors} onDragOver={handleDragOver} onDragStart={handleDragStart}>
+                        <SendBetContainer>
+                            <motion.div whileTap={{scale: 0.95}}><StyledButton style={{fontSize: '18px'}}>PLACE BET</StyledButton></motion.div>
+                        </SendBetContainer>
                     <ZeroRowBets key="#7">
                         <HalfZeroRowBets style={{height: '60%'}} key="#8"></HalfZeroRowBets>
                         <HalfZeroRowBets style={{height: '40%'}} key="#9">
                         <EmptySpace key="#10">
                         {seconds && (
                             <>
-                                <motion.div key="#11" /* variants={item}
+                                <motion.div key="#11" variants={item}
                                     initial="initial"
                                     animate="animate"
-                                    exit="exit" */>
+                                    exit="exit">
                                     <BigNumberContainer key="#12" style={{ background: seconds > 3 ? '#71f53dd6' : '#fa0606da' }}>
                                     {seconds} 
                                     </BigNumberContainer>
@@ -869,6 +877,20 @@ const Roulete = () => {
                         <ChipsHolder key="#23">
                                 <ChipsTwo key="#24"/>
                         </ChipsHolder>
+                        <RouletteBalance>
+                        <BalanceColumn>
+                                    <SmallIconHolder onClick={joinRoom}><img src={balanceIcon} alt="balance" /></SmallIconHolder>
+                                    <DisplayHolder><BalanceDisplay balance={balance} /></DisplayHolder>
+                              </BalanceColumn>
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={chips} alt="chips" /></SmallIconHolder>
+                                    <DisplayHolder><PlacedBetDisplay placedBet={placedBet} /></DisplayHolder>
+                              </BalanceColumn>
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={roulette} alt="balance" /></SmallIconHolder>
+                                    <DisplayHolder><NumbersBetDisplay allBets={allBets} /></DisplayHolder>
+                              </BalanceColumn>  
+                        </RouletteBalance>
                         </DndContext>
                             </Container>
                         )}

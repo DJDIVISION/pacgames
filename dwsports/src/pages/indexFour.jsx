@@ -203,18 +203,33 @@ export const EmptySpace = styled.div`
     align-items: center;
 `;
 export const BigNumberContainer = styled.div`
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     display: flex;
     border-radius: 50%;
     color: white;
-    font-size: 28px;
+    font-size: 18px;
     font-weight: bold;
     align-items: center;
     justify-content: center;
     position: absolute;
-    top: 30px;
-    left: 60px;
+    top: 10px;
+    left: 50%;
+    transform: translate(-50%,0%);
+`;
+export const SendBetContainer = styled.div`
+    width: 140px;
+    height: 60px;
+    display: flex;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    //transform: translate(-50%,0%);
 `;
 
 export const ColumnHolder = styled.div`
@@ -222,6 +237,8 @@ width: 60%;
 height: 100%; 
 display: flex;
 align-items: center;
+background: rgba(0, 0, 0, 0.6);
+backdrop-filter: blur(5px);
 `;
 
 export const ZeroHolder = styled.div`
@@ -233,10 +250,17 @@ export const ZeroHolder = styled.div`
 
 export const ChipsHolder = styled(motion.div)`
 width: 100%;
-height: 15%; 
+height: 10%; 
 display: flex;
 align-items: center;
 justify-content: space-around;
+`;
+
+export const RouletteBalance = styled.div`
+    width: 100%;
+    height: 5%; 
+    display: flex;
+    align-items: center; 
 `;
 
 export const FirstColumn = styled.div`
@@ -244,6 +268,8 @@ export const FirstColumn = styled.div`
     height: 100%;
     display: flex;
     flex-direction: column;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
 `;
 
 export const FirstCell = styled.div`

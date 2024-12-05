@@ -514,7 +514,7 @@ const CryptoPrediction = () => {
         const { data: firstData, error: firstError } = await supabase
         .from('predictions')
         .select('*')
-        //.eq('userId', user.id)
+        .eq('userId', user.id)
         .eq('status', "Pending")
         if(firstError){
             console.log("second error", firstError)
