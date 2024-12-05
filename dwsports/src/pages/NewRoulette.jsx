@@ -78,9 +78,9 @@ const socket = io.connect("https://pacgames-roulette-server.onrender.com")
 
 const Roulete = () => {
 
-    const [openTableMenu, setOpenTableMenu] = useState(true)
+    const [openTableMenu, setOpenTableMenu] = useState(false)
     const [openChatMenu, setOpenChatMenu] = useState(false)
-    const [openRouletteMenu, setOpenRouletteMenu] = useState(false)
+    const [openRouletteMenu, setOpenRouletteMenu] = useState(true)
     const [isDateExpanded, setIsDateExpanded] = useState(true)
     const [latestNumbers, setLatestNumbers] = useState(LatestNumbers)
     const [allDroppedChips, setAllDroppedChips] = useState({});
@@ -757,6 +757,7 @@ const Roulete = () => {
             setDroppedBorderTopChips({})
             setTimeout(() => {
                 playEffect(41)
+                openTable();
             }, 3000)
         });
         socket.on('player-wins', (data) => {

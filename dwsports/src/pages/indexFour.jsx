@@ -452,7 +452,7 @@ export const Wheel = styled(motion.div)`
   border: 5px solid ${props => props.theme.card};
   //filter: drop-shadow(0 0 5px white);
   border-radius: 50%;
-  background: linear-gradient(180deg, rgba(9,9,121,1) 0%, rgba(0,212,255,1) 50%, rgba(9,9,121,1) 100%);
+  background: linear-gradient(180deg, rgba(0,212,255,1) 0%, rgba(9,9,121,1) 50%, rgba(0,212,255,1) 100%);
   overflow: hidden;
   //transform: rotate(-4.7368deg);
 `;
@@ -464,7 +464,6 @@ export const WheelContainer = styled(motion.div)`
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid blue;
 `;
 export const TableContainer = styled(motion.div)`
     width: 100%;
@@ -473,7 +472,6 @@ export const TableContainer = styled(motion.div)`
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid brown;
 `;
 
 
