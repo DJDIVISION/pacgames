@@ -396,7 +396,7 @@ const CryptoPrediction = () => {
                           }
                         const { data: firstData, error: firstError } = await supabase
                         .from('predictions')
-                        .update({status: 'Won'})
+                        .update({status: 'Won', startDate: startDate, endDate: endDate, finalPrice: finalPrice})
                         .eq('userId', user.id)
                         .eq('date', date)
                         if(firstError){
@@ -427,18 +427,20 @@ const CryptoPrediction = () => {
                         message.error(`You have lost the ${name} prediction!`)
                         const { data: firstData, error: firstError } = await supabase
                         .from('predictions')
-                        .update({status: 'Won'})
+                        .update({status: 'Lost',startDate: startDate, endDate: endDate, finalPrice: finalPrice})
                         .eq('userId', user.id)
                         .eq('date', date)
                         if(firstError){
                             console.log("second error", firstError)
+                        } else {
+                            console.log(`data updated for LOST bet with date ${date}`, firstData) 
                         }
                         return; // Skip further processing for losing bet
                     }
                 }
         
                 if (type === "WILL GO DOWN") {
-                    if (finalPrice > price) {
+                    if (finalPrice < price) {
                         console.log("This go down bet wins");
                         const messageToSend = `📈 ${user.user_metadata.name} has won on PredicTON!!! 📈 🎉🎉🎉\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \n\nEnd date: ${endDate} \nPrice after 24h: ${symbol}${finalPrice} \n\nAmount won: ${amount} GPZ ✅`
                         console.log(messageToSend)
@@ -456,13 +458,13 @@ const CryptoPrediction = () => {
                           }
                         const { data: firstData, error: firstError } = await supabase
                         .from('predictions')
-                        .update({status: 'Won'})
+                        .update({status: 'Won',startDate: startDate, endDate: endDate, finalPrice: finalPrice})
                         .eq('userId', user.id)
                         .eq('date', date)
                         if(firstError){
                             console.log("second error", firstError)
                         } else {
-                           console.log(`data updated for bet with date ${date}`, firstData) 
+                           console.log(`data updated for WON bet with date ${date}`, firstData) 
                            const { data: secondData, error: secondError } = await supabase
                             .from('users')
                             .select('appBalance')
@@ -487,11 +489,13 @@ const CryptoPrediction = () => {
                         message.error(`You have lost the ${name} prediction!`)
                         const { data: firstData, error: firstError } = await supabase
                         .from('predictions')
-                        .update({status: 'Lost'})
+                        .update({status: 'Lost',startDate: startDate, endDate: endDate, finalPrice: finalPrice})
                         .eq('userId', user.id)
                         .eq('date', date)
                         if(firstError){
                             console.log("second error", firstError)
+                        } else {
+                            console.log(`data updated for LOST bet with date ${date}`, firstData) 
                         }
                         return; // Skip further processing for losing bet
                     } 
@@ -510,7 +514,7 @@ const CryptoPrediction = () => {
         const { data: firstData, error: firstError } = await supabase
         .from('predictions')
         .select('*')
-        .eq('userId', user.id)
+        //.eq('userId', user.id)
         .eq('status', "Pending")
         if(firstError){
             console.log("second error", firstError)
@@ -547,13 +551,6 @@ const CryptoPrediction = () => {
             value={currency}
             style={{ width: 100, height: '90%', marginLeft: 'auto', fontFamily: "Quicksand" }}
             onChange={(e) => selectCurrency(e)}
-            /* onChange={(e) => {
-                setDisabled(true)
-                setCurrency(e.target.value)
-                setTimeout(() => {
-                    setDisabled(false)
-                }, 3000)
-            }} */
             disabled={disabled}
         >
             <MenuItem value={"usd"} style={{ fontFamily: "Quicksand" }}>USD</MenuItem>
@@ -624,7 +621,7 @@ const CryptoPrediction = () => {
                     
                     const date = new Date(pred.created_at).toLocaleString();
                     const timeRemaining = timeRemainingMap[pred.date] || 0;
-                    
+                    console.log(pred)
                     return(
                         <TeamBetsHolder key={index}
                       initial={{ height: '100px' }}
@@ -643,12 +640,20 @@ const CryptoPrediction = () => {
                     <SmallAvatar><h2 style={{fontSize: '14px'}}>{pred.type}</h2></SmallAvatar>
                     <SmallAvatar><h2 style={{fontSize: '14px'}}>{pred.status}</h2></SmallAvatar>
                     </SmallRower>
-                    {expandedIndex === index && (
+                    {(expandedIndex === index && pred.status === "Pending") ? (
+                        <LowRower>
+                        <MiniRowerRow ><h2>Bet Amount: {pred.amount} GPZ</h2></MiniRowerRow>
+                        <MiniRowerRow ><h2>Price: {pred.symbol}{pred.price}</h2></MiniRowerRow>
+                        <MiniRowerRow ><h2>Time Remaining: {formatTime(timeRemaining)}</h2></MiniRowerRow>
+                        </LowRower>
+                    ): (expandedIndex === index && pred.status !== "Pending") ? (
                         <LowRower>
                             <MiniRowerRow ><h2>Bet Amount: {pred.amount} GPZ</h2></MiniRowerRow>
-                            <MiniRowerRow ><h2>Price: {pred.symbol}{pred.price}</h2></MiniRowerRow>
-                            <MiniRowerRow ><h2>Time Remaining: {formatTime(timeRemaining)}</h2></MiniRowerRow>
+                            <MiniRowerRow ><h2>From: {pred.startDate} - {pred.symbol}{pred.price}</h2></MiniRowerRow>
+                            <MiniRowerRow ><h2>To: {pred.endDate} - {pred.symbol}{pred.finalPrice}</h2></MiniRowerRow>
                         </LowRower>
+                    ) : (
+                        ""
                     )}
                       </TeamBetsHolder>
                     )
