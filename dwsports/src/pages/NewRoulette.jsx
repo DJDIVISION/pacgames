@@ -68,12 +68,13 @@ import youWin from '../assets/sounds/youWin.ogg'
 import youLose from '../assets/sounds/youLose.ogg'
 import placeYourBet from '../assets/sounds/placeYourBet.ogg'
 import back20 from '../assets/backs/back20.jpg'
+import back21 from '../assets/backs/back21.avif'
 import { useNavigate } from 'react-router-dom';
 import { DisplayHolder, SmallIconHolder } from './indexTwo.jsx';
 import { message as ANTDmessage } from 'antd';
 import { ArrowLeftRelative, StyledButton } from './index.jsx';
 
-const socket = io.connect("http://localhost:8080")
+const socket = io.connect("https://pacgames-roulette-server.onrender.com")
 
 const Roulete = () => {
 
@@ -114,6 +115,13 @@ const Roulete = () => {
     const {droppedColumnChips, setDroppedColumnChips} = RouletteState();
     const {droppedBorderLeftChips, setDroppedBorderLeftChips} = RouletteState();
     const {droppedBorderTopChips, setDroppedBorderTopChips} = RouletteState();
+    const {droppedChipsLast, setDroppedChipsLast} = RouletteState();
+    const {droppedCornerChipsLast, setDroppedCornerChipsLast} = RouletteState();
+    const {droppedRowChipsLast, setDroppedRowChipsLast} = RouletteState();
+    const {droppedLastRowChipsLast, setDroppedLastRowChipsLast} = RouletteState();
+    const {droppedColumnChipsLast, setDroppedColumnChipsLast} = RouletteState();
+    const {droppedBorderLeftChipsLast, setDroppedBorderLeftChipsLast} = RouletteState();
+    const {droppedBorderTopChipsLast, setDroppedBorderTopChipsLast} = RouletteState();
     const [playerAvatar, setPlayerAvatar] = useState("https://lh3.googleusercontent.com/a/ACg8ocLECQcSdS5Tc1zKpfviRv5Mr7cY4IeOunMK0Z9-dpbtJUvGsdgf=s96-c");
     const [playerName, setPlayerName] = useState("Victor Ramirez");
     const [placeBets, setPlaceBets] = useState(false)
@@ -125,6 +133,7 @@ const Roulete = () => {
     const [spinning, setSpinning] = useState(false);
     const totalNumbers = americanRouletteNumbers.length;
     const {showMotionDiv, setShowMotionDiv} = RouletteState();
+    const [lastBetAmount,setLastBetAmount] = useState(null)
 
     useEffect(() => {
         if(playerFolds){
@@ -711,12 +720,84 @@ const Roulete = () => {
             setWinningNumber(winningNumber)
             //startRoulette();
         });
+        socket.on('message-sent', (data) => {
+            const { message, dealer, dealer_avatar, sendedBy } = data;
+            /* const messageToUpdate = {
+                message: message,
+                playerName: dealer,
+                user_avatar: dealer_avatar,
+                sendedBy: sendedBy,
+                room_id: activeRoom
+            }
+            sendAdminMessage(messageToUpdate) */
+            ANTDmessage.success(message)
+        });
+        socket.on('player-lost', (data) => {
+            setLatestNumbers(prevElements => [...prevElements, data.number]);
+            //playEffect(41)
+            setGameStarted(false)
+            setSpinning(false)
+            setAllBets({})
+            setPlacedBet(null)
+            //setWinningNumber(null)
+            setAllDroppedChips({})
+            setAllDroppedCornerChips({})
+            setAllDroppedRowChips({})
+            setAllDroppedLastRowChips({})
+            setAllDroppedColumnChips({})
+            setAllDroppedBorderLeftChips({})
+            setAllDroppedBorderTopChips({})
+            setActiveNumbers([])
+            setDroppedChips({})
+            setDroppedCornerChips({})
+            setDroppedRowChips({})
+            setDroppedLastRowChips({})
+            setDroppedColumnChips({})
+            setDroppedBorderLeftChips({})
+            setDroppedBorderTopChips({})
+            setTimeout(() => {
+                playEffect(41)
+            }, 3000)
+        });
+        socket.on('player-wins', (data) => {
+            const winnings = data.winnings
+            setWinnings((prevWinnings) => prevWinnings + winnings);
+            setLatestNumbers(prevElements => [...prevElements, data.number]);
+            setBalance((prevBalance) => prevBalance + winnings);
+            setGameStarted(false)
+            setSpinning(false)
+            setAllBets({})
+            setPlacedBet(null)
+            //setWinningNumber(null)
+            setAllDroppedChips({})
+            setAllDroppedCornerChips({})
+            setAllDroppedRowChips({})
+            setAllDroppedLastRowChips({})
+            setAllDroppedColumnChips({})
+            setAllDroppedBorderLeftChips({})
+            setAllDroppedBorderTopChips({})
+            setDroppedChips({})
+            setDroppedCornerChips({})
+            setDroppedRowChips({})
+            setDroppedLastRowChips({})
+            setDroppedColumnChips({})
+            setDroppedBorderLeftChips({})
+            setDroppedBorderTopChips({})
+            setActiveNumbers([])
+            setTimeout(() => {
+                playEffect(40)
+                openTable();
+            }, 3000)
+        });
         return () => {
             socket.off('thisIsYourId');
             socket.off('update_players');
             socket.off('timeoutStarting');
             socket.off('close-betting-table');
             socket.off('winning-number');
+            socket.off('message-sent');
+            socket.off('player-wins');
+            socket.off('player-lost');
         }
     }, [socket]);
 
@@ -766,6 +847,41 @@ const Roulete = () => {
             playEffect(38)
         } 
     }, [winningNumber])
+
+    const sendBet =  () => {
+        if (placedBet > 0) {
+          const allChips = {
+              droppedChips,
+              droppedCornerChips,
+              droppedRowChips,
+              droppedLastRowChips,
+              droppedColumnChips,
+              droppedBorderLeftChips,
+              droppedBorderTopChips
+          };
+          setDroppedChipsLast(droppedChips)
+          setDroppedCornerChipsLast(droppedCornerChips)
+          setDroppedRowChipsLast(droppedRowChips)
+          setDroppedLastRowChipsLast(droppedLastRowChips)
+          setDroppedColumnChipsLast(droppedColumnChips)
+          setDroppedBorderLeftChipsLast(droppedBorderLeftChips)
+          setDroppedBorderTopChipsLast(droppedBorderTopChips)
+          setLastBet(allBets)
+          setLastBetAmount(placedBet)
+          socket?.emit("placeBet", {
+              allChips: allChips,
+              roomId: activeRoom,
+              playerId: myId,
+              placedBet: placedBet,
+              
+          });
+          closeTable();
+          setActiveContainer(null)
+          
+          } else {
+            message.error("There is no bet placed!")
+          }
+      }
     
 
 
@@ -783,7 +899,7 @@ const Roulete = () => {
                 style={{backgroundImage: `url(${back20})`, backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
                     <DndContext onDragEnd={handleDragEnd} sensors={sensors} onDragOver={handleDragOver} onDragStart={handleDragStart}>
                         <SendBetContainer>
-                            <motion.div whileTap={{scale: 0.95}}><StyledButton style={{fontSize: '18px'}}>PLACE BET</StyledButton></motion.div>
+                            <motion.div whileTap={{scale: 0.95}}><StyledButton style={{fontSize: '18px'}} onClick={sendBet}>PLACE BET</StyledButton></motion.div>
                         </SendBetContainer>
                     <ZeroRowBets key="#7">
                         <HalfZeroRowBets style={{height: '60%'}} key="#8"></HalfZeroRowBets>
@@ -899,8 +1015,9 @@ const Roulete = () => {
                       initial="initial" key="#2"
                       animate="animate"
                       exit="exit"
-                      transition={{ type: "spring", stiffness: 300, damping: 40,duration: 0.5 }}>
-                      <WheelContainer key="#25">
+                      transition={{ type: "spring", stiffness: 300, damping: 40,duration: 0.5 }}
+                      >
+                      <WheelContainer key="#25" style={{background: 'black'}}>
                           <RouletteContainer key="#26">
                               <Wheel animate={{ rotate: rotationDegrees }} key="#27"// Framer Motion animation
                                   transition={{
@@ -924,7 +1041,7 @@ const Roulete = () => {
                               </Wheel>
                           </RouletteContainer>
                       </WheelContainer>
-                      <TableContainer key="#30">
+                      <TableContainer key="#30" style={{backgroundImage: `url(${back21})`, backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
                           <BallHolder key="#31">
                               {latestNumbers?.map((el,index) => {
                                   return (

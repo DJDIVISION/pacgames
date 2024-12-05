@@ -138,6 +138,8 @@ export const BetHolder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
 `;
 
 export const BetNumberHolder = styled.div`
@@ -393,7 +395,7 @@ export const Span = styled.span`
   left: calc(50% - 1px);
   width: 2px;
   height: 100%;
-  background: aqua;
+  background: ${props => props.theme.MainAccent};
   transform: rotate(calc(9.4736deg * var(--i)));
 `;
 
@@ -413,7 +415,7 @@ export const NumberSpan = styled.div`
   transform: rotate(calc(9.4736deg * var(--i)));
   text-align: center;
   font-size: 16px;
-  text-shadow: white 0px 0px,  white 1px 1px;
+  //text-shadow: white 0px 0px,  white 1px 1px;
 
   //color:${props => props.theme.MainAccent}; 
   //filter: drop-shadow(0 0 5px aqua);
@@ -425,7 +427,7 @@ export const NumberSpan = styled.div`
 
 export const SpinButton = styled.div`
   position: absolute;
-  inset: 100px;
+  inset: 120px;
   background: ${props => props.theme.MainAccent};
   border-radius: 50%;
   filter: drop-shadow(0 0 5px aqua);
@@ -434,12 +436,12 @@ export const SpinButton = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  @media(max-width: 968px){
+  /* @media(max-width: 968px){
     inset: 80px;
-  }
+  } */
   img{
     transform: rotate(4.67deg) translateY(-3px);
-    width: 50%;
+    width: 100%;
   }
 `;
 
@@ -447,9 +449,10 @@ export const Wheel = styled(motion.div)`
   position: absolute; 
   width: 100%;
   height: 100%;
-  border: 3px solid aqua;
-  filter: drop-shadow(0 0 5px aqua);
+  border: 5px solid ${props => props.theme.card};
+  //filter: drop-shadow(0 0 5px white);
   border-radius: 50%;
+  background: linear-gradient(180deg, rgba(9,9,121,1) 0%, rgba(0,212,255,1) 50%, rgba(9,9,121,1) 100%);
   overflow: hidden;
   //transform: rotate(-4.7368deg);
 `;
