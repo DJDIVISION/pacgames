@@ -85,6 +85,28 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Roulette Game!');
 });
 
+app.get('/api/cryptocurrency/:id/chart', async (req, res) => {
+  const { id } = req.params;
+  const { days, currency } = req.query;
+ 
+  try {
+    const response = await axios.get(
+      `https://api.coingecko.com/api/v3/coins/${id}/market_chart`,
+      {
+        params: {
+          vs_currency: currency,
+          days,
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching CoinGecko data:', error);
+    res.status(500).json({ error: 'Failed to fetch data from CoinGecko' });
+  }
+});
+
 const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
@@ -165,7 +187,7 @@ app.post('/send-notification', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://pactongamingzone.vercel.app",
     methods: ["GET", "POST"]  // Client URL
   },
  });
