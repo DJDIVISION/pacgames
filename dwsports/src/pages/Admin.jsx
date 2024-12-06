@@ -24,8 +24,76 @@ const Admin = () => {
     const [endDate, setEndDate] = useState('2024-12-01 23:00:00')
     /* console.log(leagues) */
   
-
+    const getDataTwo = async () => {
+      const allIds = [];
+      const { data: firstData, error: firstError } = await supabase
+          .from('footballPlayers')
+          .select('id')
+          .eq("leagueName", "Bundesliga");
+  
+      if (firstError) {
+          console.log("firstError", firstError);
+      } else {
+          firstData.forEach((el) => {
+              allIds.push(el.id);
+          });
+      }
+  
+      console.log(allIds);
+      await writeDataTwo(allIds);
+    };
+  
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     
+    const writeDataTwo = async (allIds) => {
+      for (const id of allIds) {
+        const options = {
+          method: 'GET',
+          url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+          params: {
+            id: id,
+            season: '2024'
+          },
+          headers: {
+            'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+          }
+        };
+        try {
+          const response = await axios.request(options);
+          console.log(response.data.response);
+          for(const player of response.data.response){
+            for(const stat of player.statistics){
+              let parsed
+              if(stat.league.name === "Bundesliga"){
+                const rating = stat.games.rating
+                console.log("rating", rating)
+                if(rating === null){
+                  parsed = 0
+                } else {
+                  parsed = parseFloat(rating).toFixed(2)
+                
+                }
+                console.log(parsed)
+                const { data: firstData, error: firstError } = await supabase
+                .from('footballPlayers')
+                .update({rating: parsed})
+                .eq("id", response.data.response[0].player.id);
+    
+              if (firstError) {
+                console.log("firstError", firstError);
+              } else {
+                console.log(`updated data for ${player.player.name}`)
+              }
+              }
+            }
+          }
+        } catch (error) {
+          console.error(error);
+        }
+        await delay(1000);
+      }
+    }
 
     
 
@@ -33,7 +101,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={fetchQuestions} */ onClick={() => navigate('/newroulette')}>FETCH</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={getDataTwo} /* onClick={() => navigate('/newroulette')} */>Bundesliga</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
