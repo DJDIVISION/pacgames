@@ -29,7 +29,7 @@ const Admin = () => {
       const { data: firstData, error: firstError } = await supabase
           .from('footballPlayers')
           .select('id')
-          .eq("leagueName", "Bundesliga");
+          .eq("leagueName", "Serie A");
   
       if (firstError) {
           console.log("firstError", firstError);
@@ -65,7 +65,7 @@ const Admin = () => {
           for(const player of response.data.response){
             for(const stat of player.statistics){
               let parsed
-              if(stat.league.name === "Bundesliga"){
+              if(stat.league.name === "Serie A"){
                 const rating = stat.games.rating
                 console.log("rating", rating)
                 if(rating === null){
@@ -101,7 +101,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={getDataTwo} /* onClick={() => navigate('/newroulette')} */>Bundesliga</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={getDataTwo} /* onClick={() => navigate('/newroulette')} */>Serie A</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
