@@ -183,13 +183,36 @@ const Hero = () => {
           });
     };
 
+    const writeAddress = async (userFriendlyAddress) => {
+        const updatedData = {
+            name: currentUser.user_metadata.name,
+            avatar: currentUser.user_metadata.avatar_url,
+            email: currentUser.email,
+            walletAddress: userFriendlyAddress,
+            user_id: currentUser.id
+          }
+        const { data, error } = await supabase
+            .from('user_wallets')
+            .insert([updatedData])
+            if (error) {
+              console.error('Error inserting/updating user session data:', error.message)
+            } else {
+              console.log('User session data saved:', data)
+              Swal.fire({
+                title: "Wallet Connected!",
+                text: "Your Wallet is now connected",
+                icon: "success"
+              });
+            }
+    }
     
     
-    /* useEffect(() => {
+    useEffect(() => {
         if (userFriendlyAddress) {
             setTonWalletAddress(userFriendlyAddress);
+            writeAddress(userFriendlyAddress);
         }
-    }, [userFriendlyAddress]); */
+    }, [userFriendlyAddress]);
 
     const expandDiv = () => {
         setIsExpanded((prev) => !prev);
