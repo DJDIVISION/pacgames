@@ -61,7 +61,7 @@ if ('serviceWorker' in navigator) {
 
 createRoot(document.getElementById('root')).render(
   <>
-    <TonConnectUIProvider manifestUrl={`https://pactongamingzone.onrender.com/tonconnect-manifest.json`}>
+    <TonConnectUIProvider manifestUrl={`https://pactongamingzone.vercel.app/tonconnect-manifest.json`}>
     <I18nextProvider i18n={i18next}>
     <FantasyContext>
     <BetsContext>
