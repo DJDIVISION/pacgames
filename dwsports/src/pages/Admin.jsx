@@ -29,7 +29,7 @@ const Admin = () => {
       const { data: firstData, error: firstError } = await supabase
           .from('footballPlayers')
           .select('*')
-          .gt('rating', 7.5)
+          .gt('rating', 7)
           .lt('value', 40);
   
       if (firstError) {

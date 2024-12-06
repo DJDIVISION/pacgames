@@ -406,11 +406,20 @@ const closePlayers = () => {
                 message.error("This user does not exist in our database");
             } else {
                 let rate = 0
-                console.log(data)
-                console.log(data[0].players)
+                console.log(data[0].players.players);
+                for(const player of data[0].players.players){
+                    rate += player.rating
+                }
+                const final = (rate + activePlayer.rating) / (data[0].players.players.length + 1)
+                
+                const parsed = parseFloat(parseFloat(final).toFixed(2))
+                console.log(parsed)
                 const userPlayersData = data[0].players || {}; 
+                
+                // Initialize referrals array if it doesn't exist
                 userPlayersData.players = userPlayersData.players || []; 
                 
+                // Prepare the updated data structure to add
                 const updatedData = {
                     name: activePlayer.name,
                     photo: activePlayer.photo,
@@ -422,44 +431,6 @@ const closePlayers = () => {
                     teamName: activePlayer.team,
                     leagueName: activePlayer.leagueName
                 };
-                userPlayersData.players.push(updatedData);
-                console.log(userPlayersData)
-                if(data[0].players === null){
-                    const { error: updateError } = await supabase
-                    .from('fantasyFootball')
-                    .update({ players: userPlayersData, balanceRemaining: parsedBalance, teamRating: parsedRating }) 
-                    .eq('id', user.id); // Identify which user to update
-    
-                if (updateError) {
-                    console.error('Error updating user data:', updateError.message);
-                } else {
-                    console.log('User data updated successfully:', updatedData);
-                    setOpenConfirmMenu(false)
-                    setActivePlayer(null)
-                    setActiveTeam(null)
-                    setBalance((prev) => prev - activePlayer.value)
-                    
-                    setTimeout(() => {
-                        message.success("Player added to your team!!!");
-                        setOpenLeagueMenu(true)
-                    }, 300)
-                }
-                } else {
-                    console.log(data[0].players.players);
-                for(const player of data[0].players.players){
-                    rate += player.rating
-                }
-                const final = (rate + activePlayer.rating) / (data[0].players.players.length + 1)
-                
-                const parsed = parseFloat(parseFloat(final).toFixed(2))
-                console.log(parsed)
-                
-                
-                // Initialize referrals array if it doesn't exist
-                userPlayersData.players = userPlayersData.players || []; 
-                
-                // Prepare the updated data structure to add
-                
     
                 // Add the updated data to the referrals array
                 userPlayersData.players.push(updatedData);
@@ -484,8 +455,6 @@ const closePlayers = () => {
                         setOpenLeagueMenu(true)
                     }, 300)
                 }
-                }
-                
             }
         }
     }
