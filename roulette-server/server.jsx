@@ -85,6 +85,24 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Roulette Game!');
 });
 
+app.get('/api/toncoin-price', async (req, res) => {
+  
+  const options = {
+    method: 'GET',
+    headers: {accept: 'application/json', 'x-cg-demo-api-key': 'CG-3qkmGTgTWXenAouD9JshQYt6'}
+  };
+  try {
+    const response = await axios.get(
+      'https://api.coingecko.com/api/v3/coins/the-open-network', options,
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching CoinGecko data:', error);
+    res.status(500).json({ error: 'Failed to fetch data from CoinGecko' });
+  }
+});
+
 app.get('/api/cryptocurrency/:id/chart', async (req, res) => {
   const { id } = req.params;
   const { days, currency } = req.query;

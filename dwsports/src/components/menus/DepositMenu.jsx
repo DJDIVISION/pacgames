@@ -33,28 +33,15 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
 
 
 
-  const getTONPrice = () => {
-    const tonPrice = localStorage.getItem("tonPrice")
-    console.log(tonPrice)
-    if(tonPrice === null){
-      const options = {
-        method: 'GET',
-        headers: {accept: 'application/json', 'x-cg-demo-api-key': 'CG-3qkmGTgTWXenAouD9JshQYt6'}
-      };
-      
-      fetch('https://api.coingecko.com/api/v3/coins/the-open-network', options)
-        .then(res => res.json())
-        .then(res => {
-          setTonPrice(res.market_data.current_price.usd)
-          localStorage.setItem("tonPrice", JSON.stringify(res.market_data.current_price.usd))
-          console.log("coming from api")
-        })
-        .catch(err => console.error(err));
-    } else {
-      setTonPrice(JSON.parse(tonPrice))
-      console.log("coming from local")
-    }
+  const getTONPrice = async () => {
     
+    const response = await fetch(
+      /* `https://temp-server-pi.vercel.app/api/toncoin-price` */
+      `http://localhost:8080/api/toncoin-price`
+    );
+    const data = await response.json();
+    console.log("data", data.market_data.current_price.usd)
+    setTonPrice(data.market_data.current_price.usd)
   }
 
   useEffect(() => {
@@ -156,7 +143,8 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
               console.log("Transaction confirmed:", receipt);
               setBalance((prevBal) => prevBal + amount);
               closeDepositMenu()
-              writeData((1000 * amount / (1/shoPrice)),amount,"SHO",metaMaskWalletAddress,shoPrice);
+              const imageUrl = "https://i.imghippo.com/files/CyST5354uLE.png"
+              writeData((1000 * amount / (1/shoPrice)),amount,"SHO",metaMaskWalletAddress,shoPrice,imageUrl);
               return Swal.fire({
                 title: "Transaction Confirmed",
                 text: "Your balance has been updated.",
@@ -317,7 +305,20 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
         
     }
 
-    const writeData = async (balance,amount,token,address,price) => {
+    const writeData = async (balance,amount,token,address,price,imageUrl) => {
+      console.log(imageUrl)
+      const messageToSend = `\n${user.user_metadata.name} has made a deposit!\n\nTOKEN: ${token}\nAmount: ${amount}\nCurrent ${token} price: $${price}\n\nGPZ RECEIVED: ${balance} GPZ`;
+      console.log(messageToSend)
+          try {
+            const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrl });
+            if (response.data.success) {
+                console.log('Message sent successfully!');
+            } else {
+                console.log('Failed to send message');
+            }
+        } catch (error) {
+            console.log('Error sending message:', error);
+        }
         const newBalance = balance
         const gpz = (1000 * amount / (1/price))
         const { data, error } = await supabase
@@ -379,10 +380,12 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
           ],
       };
       try {
+        const imageUrl = "https://i.imghippo.com/files/TxCm1351EDE.png"
+        //writeData((1000 * tonAmount / (1/tonPrice)),tonAmount,"TON",tonWalletAddress,tonPrice,imageUrl);
           tonConnectUI.sendTransaction(myTransaction)
               .then(() => {
                   setTransactionStatus('Transaction sent successfully.');
-                  writeData((1000 * tonAmount / (1/tonPrice)),tonAmount,"TON",tonWalletAddress,tonPrice);
+                  writeData((1000 * tonAmount / (1/tonPrice)),tonAmount,"TON",tonWalletAddress,tonPrice,imageUrl);
                   return Swal.fire({
                     title: "Transaction Confirmed",
                     text: "Your balance has been updated.",
