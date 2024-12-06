@@ -307,7 +307,8 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
 
     const writeData = async (balance,amount,token,address,price,imageUrl) => {
       console.log(imageUrl)
-      const messageToSend = `\n${user.user_metadata.name} has made a deposit!\n\nTOKEN: ${token}\nAmount: ${amount}\nCurrent ${token} price: $${price}\n\nGPZ RECEIVED: ${balance} GPZ`;
+      const parsed = parseFloat(parseFloat(balance).toFixed(2))
+      const messageToSend = `\n${user.user_metadata.name} has made a deposit!\n\nTOKEN: ${token}\nAmount: ${amount} ${token}\nCurrent ${token} price: $${price}\n\nGPZ RECEIVED: ${parsed} GPZ`;
       console.log(messageToSend)
           try {
             const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrl });
@@ -319,7 +320,7 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
         } catch (error) {
             console.log('Error sending message:', error);
         }
-        const newBalance = balance
+        const newBalance = parsed
         const gpz = (1000 * amount / (1/price))
         const { data, error } = await supabase
           .from('users')
