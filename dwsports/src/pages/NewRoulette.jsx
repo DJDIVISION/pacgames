@@ -74,7 +74,7 @@ import { DisplayHolder, SmallIconHolder } from './indexTwo.jsx';
 import { message as ANTDmessage } from 'antd';
 import { ArrowLeftRelative, StyledButton } from './index.jsx';
 
-/* const socket = io.connect("https://pacgames-roulette-server.onrender.com") */
+const socket = io.connect("http://localhost:8080")
 
 const Roulete = () => {
 
