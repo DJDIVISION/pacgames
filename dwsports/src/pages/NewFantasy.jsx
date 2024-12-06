@@ -427,7 +427,7 @@ const closePlayers = () => {
                 if(data[0].players === null){
                     const { error: updateError } = await supabase
                     .from('fantasyFootball')
-                    .update({ players: updatedData, balanceRemaining: parsedBalance, teamRating: parsedRating }) 
+                    .update({ players: userPlayersData, balanceRemaining: parsedBalance, teamRating: parsedRating }) 
                     .eq('id', user.id); // Identify which user to update
     
                 if (updateError) {
