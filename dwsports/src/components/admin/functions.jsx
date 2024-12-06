@@ -217,22 +217,22 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
                 console.log(event)
                 const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
                 if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    const messageToSend = `\n${league} GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}\n\n${match.goals.home} - ${match.goals.away}'`;
                     await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 if((event.detail === "Penalty" && event.type === "Goal") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} PENALTY GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    const messageToSend = `\n${league} PENALTY GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}\n\n${match.goals.home} - ${match.goals.away}'`;
                     await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 if((event.detail === "Red Card") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} RED CARD!!! 🟥 \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.comments} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    const messageToSend = `\n${league} RED CARD!!! 🟥 \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.comments} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}\n\n${match.goals.home} - ${match.goals.away}'`;
                     await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} GOAL DISALLOWED!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+                    const messageToSend = `\n${league} GOAL DISALLOWED!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}\n\n${match.goals.home} - ${match.goals.away}'`;
                     await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
@@ -245,7 +245,7 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
                     //const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
 
                     // Send message to Telegram with a delay between each call
-                    await sendTelegramMessage(messageToSend,imageUrl);
+                    //await sendTelegramMessage(messageToSend,imageUrl);
                     await delay(3000); // 1-second delay to avoid flooding the endpoint
 
                     // Mark this event as processed
