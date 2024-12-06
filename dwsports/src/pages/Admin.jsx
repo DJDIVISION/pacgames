@@ -23,34 +23,16 @@ const Admin = () => {
     const [startDate, setStartDate] = useState("2024-11-15 20:30:00")
     const [endDate, setEndDate] = useState('2024-12-01 23:00:00')
     /* console.log(leagues) */
-  
-    const getDataTwo = async () => {
-      const allIds = [];
-      const { data: firstData, error: firstError } = await supabase
-          .from('footballPlayers')
-          .select('*')
-          .gt('rating', 7)
-          .lt('value', 40);
-  
-      if (firstError) {
-          console.log("firstError", firstError);
-      } else {
-          firstData.forEach((el) => {
-              allIds.push(el.name,el.rating,el.value);
-          });
-      }
-  
-      console.log(allIds);
-      //await writeDataTwo(allIds);
-    };
-  
+
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     
 
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={getDataTwo} /* onClick={() => navigate('/newroulette')} */>FUCK</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={thisFunction} */ onClick={() => navigate('/newroulette')}>ROULETTE</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

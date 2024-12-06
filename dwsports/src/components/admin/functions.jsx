@@ -158,6 +158,25 @@ const getDataTwo = async () => {
   }
 
 
+  /// GET BEST PLAYERS 
+
+  const allIds = [];
+      const { data: firstData, error: firstError } = await supabase
+          .from('footballPlayers')
+          .select('*')
+          .gt('rating', 7)
+          .lt('value', 40);
+  
+      if (firstError) {
+          console.log("firstError", firstError);
+      } else {
+          firstData.forEach((el) => {
+              allIds.push(el.name,el.rating,el.value);
+          });
+      }
+  
+      console.log(allIds);
+
 
 
 //SEND LIVE MATCHES GOALS TO TELEGRAM
@@ -808,3 +827,64 @@ const fetchTopPlayers = async () => {
       processData();
     }
   }, [matchesProcessed, allPlayers]);
+
+
+
+  /// UPDATE FANTASY FOOTBALL TEAMS RATING
+
+  const readFantasyRatings = async (player) => {
+    console.log("player",player)
+    let rate = 0
+    const userPlayersData = player.players || {}; 
+    userPlayersData.players = userPlayersData.players || []; 
+    console.log("before",userPlayersData)
+    for (const player of userPlayersData.players){
+      const { data: firstData, error: firstError } = await supabase
+        .from('footballPlayers')
+        .select('rating')
+        .eq('id', player.id)
+      if (firstError) {
+          console.log("firstError", firstError);
+      } else {
+        console.log("firstData",firstData[0].rating)
+        rate += firstData[0].rating
+        player.rating = firstData[0].rating
+        await delay(1000)
+      }
+    }
+    const rating = rate / userPlayersData.players.length
+    const parsed = parseFloat(parseFloat(rating).toFixed(2))
+    console.log("after",userPlayersData)
+    const { data: firstData, error: firstError } = await supabase
+        .from('fantasyFootball')
+        .update({players: userPlayersData, teamRating: parsed})
+        .eq('id', player.id)
+      if (firstError) {
+          console.log("firstError", firstError);
+      } else {
+        console.log(`data updated for ${player.id}`)
+      }
+    await delay(1000);
+  }
+
+  const getFantasyRatings = async () => {
+    const allIds = [];
+    const { data: firstData, error: firstError } = await supabase
+        .from('fantasyFootball')
+        .select('*')
+        
+
+    if (firstError) {
+        console.log("firstError", firstError);
+    } else {
+      console.log(firstData)
+        for (const player of firstData){
+          if(player.players !== null){
+            allIds.push(player)
+            await readFantasyRatings(player);
+          }
+        }
+    }
+    
+  };
+
