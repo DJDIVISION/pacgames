@@ -36,8 +36,8 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
   const getTONPrice = async () => {
     
     const response = await fetch(
-      /* `https://temp-server-pi.vercel.app/api/toncoin-price` */
-      `http://localhost:8080/api/toncoin-price`
+      `https://temp-server-pi.vercel.app/api/toncoin-price`
+      /* `http://localhost:8080/api/toncoin-price` */
     );
     const data = await response.json();
     console.log("data", data.market_data.current_price.usd)
