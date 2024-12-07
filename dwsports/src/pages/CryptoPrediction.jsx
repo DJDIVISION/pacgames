@@ -257,7 +257,7 @@ const CryptoPrediction = () => {
             message.error("The amount can not be 0!")
             return
         }
-        const messageToSend = `📈 ${user.user_metadata.name} has placed a prediction on PredicTON!!! 📈\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \n`;
+        const messageToSend = `📈 ${user.user_metadata.name} has placed a prediction on PredicTON!!! 📈\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \nAmount: ${amount} GPZ`;
         console.log(messageToSend)
         const updatedData = {
             userId: user.id,
