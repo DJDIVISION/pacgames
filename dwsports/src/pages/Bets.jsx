@@ -118,7 +118,7 @@ const Bets = () => {
           logo: premierlogo,
           name: "England",
           id: 39,
-          currentRound: 13
+          currentRound: 15
         },
         {
           league: "Championship",
@@ -146,7 +146,7 @@ const Bets = () => {
           logo: laliga,
           name: "Spain",
           id: 140,
-          currentRound: 15
+          currentRound: 16
         },
         {
           league: "La Liga 2",
@@ -174,7 +174,7 @@ const Bets = () => {
           logo: bundes,
           name: "Germany",
           id: 78,
-          currentRound: 12
+          currentRound: 13
         },
         {
           league: "2 Bundesliga",
@@ -202,7 +202,7 @@ const Bets = () => {
           logo: seriea,
           name: "Italy",
           id: 135,
-          currentRound: 14
+          currentRound: 15
         },
         {
           league: "Serie B",
@@ -230,7 +230,7 @@ const Bets = () => {
           logo: ligueuno,
           name: "France",
           id: 61,
-          currentRound: 13
+          currentRound: 14
         },
         {
           league: "Ligue 2",
