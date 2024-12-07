@@ -381,11 +381,11 @@ const CryptoPrediction = () => {
             console.log(roundedNumber)
             try {
                 const response = await fetch(
-                    `https://api.coingecko.com/api/v3/coins/${token}/market_chart?vs_currency=${currency}&days=${roundedNumber}`
+                    `https://api.coingecko.com/api/v3/coins/${token}/market_chart?vs_currency=${currency}&days=${30}`
                     
                 );
                 const data = await response.json();
-                
+                console.log("data", data)
                 const result = data.prices.find(item => 
                     finishDate >= item[0] && finishDate <= item[0] + 86400000
                   );
@@ -439,6 +439,7 @@ const CryptoPrediction = () => {
                             }
                         }
                     } else {
+                        console.log("This go up bet loses");
                         message.error(`You have lost the ${name} prediction!`)
                         const { data: firstData, error: firstError } = await supabase
                         .from('predictions')
@@ -537,6 +538,7 @@ const CryptoPrediction = () => {
         if(firstData.length > 0){
             console.log("firstData", firstData) 
             for (const bet of firstData){
+                console.log(bet)
                 await writeBet(bet)
             }
         } else {

@@ -75,7 +75,7 @@ const DepositMenu = ({isDepositExpanded,setIsDepositExpanded}) => {
     const [provider, setProvider] = useState(null);
     const isDesktop = useMediaQuery({ query: '(min-width: 1100px)' });
     const [tonPrice, setTonPrice] = useState(null)
-    const [shoPrice, setShoPrice] = useState(0.0001408)
+    const [shoPrice, setShoPrice] = useState(0.000075)
     const [tonculaPrice, setTonculaPrice] = useState(0.0002357)
     const [senderWalletAddress, setSenderWalletAddress] = useState(null)
     const [recipientWalletAddress, setRecipientWalletAddress] = useState(null)

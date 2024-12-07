@@ -547,6 +547,23 @@ export const ArrowUp = styled(ArrowCircleLeftIcon)`
     }
 `;
 
+export const NewsTicker = styled.div`
+    width: 100%;
+    height: 50%;
+    border: 1px solid red;
+    overflow: hidden;
+    white-space: nowrap;
+    background: #000; /* Black background */
+    color: #fff; /* White text */
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    position: relative;
+`;
+
+export const TickerItem = styled.div`
+    
+`;
+
 export const Title = styled(motion.div)`
 width: 100%;
 height: 15vh;

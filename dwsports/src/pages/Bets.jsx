@@ -44,7 +44,8 @@ import {Section,BottomRow,IconHolder,LeagueRowBets,Container,item,LeagueHolder,A
   AddIcon,
   LiveBetIcon,
   CurrentBetRow,
-  TeamBetsHolderBlur
+  TeamBetsHolderBlur,
+  NewsTicker
 } from './indexThree' 
 import { FantasyState } from '../context/FantasyContext';
 import axios from 'axios';
@@ -302,6 +303,8 @@ const Bets = () => {
   const {activeLeague, setActiveLeague} = FantasyState();
   const {activeRound,setActiveRound} = FantasyState();
   const {balance, setBalance} = FantasyState();
+  const [news, setNews] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const {activeLeagueId, setActiveLeagueId} = FantasyState();
   const [activeBall, setActiveBall] = useState(1)
   const [currentLiveMaches, setCurrentLiveMatches] = useState([])
@@ -1332,6 +1335,33 @@ const getWinnings = (el) => {
     getOddsFromBooker();
   }, [fixtureId])
 
+  const fetchNews = async () => {
+    const { data, error } = await supabase
+          .from('news')
+          .select('*')
+        if (error) {
+          console.error('Error retrieving data from Supabase:', error.message);
+        }
+        if(data){
+          setNews(data[0].news)
+          console.log(data[0].news)
+        }
+  }
+
+  useEffect(() => {
+    if(isDateExpanded){
+      fetchNews();
+    }
+  },[isDateExpanded])
+
+  useEffect(() => {
+    if (news.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % news.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [news]);
+
 
   return (
     <Section>
@@ -1341,6 +1371,11 @@ const getWinnings = (el) => {
         variants={variants}
         transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
             <h2>YOUR BALANCE: {parseFloat(balance?.toFixed(2))} PGZ</h2>
+            <NewsTicker>
+            {news.length > 0 && (
+              <div className="ticker-item">{news[currentIndex]?.text}</div>
+            )}
+          </NewsTicker>
         </Title>
         <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
       <AnimatePresence>

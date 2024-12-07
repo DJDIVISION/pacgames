@@ -129,24 +129,52 @@ const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
 app.post('/send-message', async (req, res) => {
-  const { messageToSend } = req.body;  // The message will be sent from the React app
+  const { messageToSend, imageUrl, imageUrls } = req.body; // Add imageUrls to support multiple images
 
-  if (!messageToSend) {
-    return res.status(400).send('Message content is required');
+  // Validate inputs
+  if (!messageToSend && !imageUrl && (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length === 0)) {
+    return res.status(400).send('Either message content, a single image URL, or multiple image URLs are required');
   }
 
-  console.log(messageToSend)
-
   try {
-    // Send a message to Telegram group via the bot
-    const response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      chat_id: CHAT_ID,
-      text: messageToSend,
-    });
-    console.log("Message sent succesfully!")
+    let response;
+
+    if (imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0) {
+      // Ensure no more than 10 images
+      if (imageUrls.length > 10) {
+        return res.status(400).send('A maximum of 10 images are allowed');
+      }
+
+      // Send multiple images as a media group
+      const mediaGroup = imageUrls.map((url, index) => ({
+        type: 'photo',
+        media: url,
+        caption: index === 0 && messageToSend ? messageToSend : undefined, // Add caption only to the first image
+      }));
+
+      response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`, {
+        chat_id: CHAT_ID,
+        media: mediaGroup,
+      });
+    } else if (imageUrl) {
+      // Send a single image with an optional caption
+      response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+        chat_id: CHAT_ID,
+        photo: imageUrl,
+        caption: messageToSend, // Caption is optional
+      });
+    } else {
+      // Send a text message only
+      response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        chat_id: CHAT_ID,
+        text: messageToSend,
+      });
+    }
+
+    console.log('Message sent successfully!');
     res.status(200).json({ success: true, response: response.data });
   } catch (error) {
-    console.error('Error sending message to Telegram:', error);
+    console.error('Error sending message to Telegram:', error.response?.data || error.message);
     res.status(500).json({ success: false, error: 'Failed to send message' });
   }
 });
