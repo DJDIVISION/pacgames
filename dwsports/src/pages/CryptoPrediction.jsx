@@ -52,6 +52,7 @@ const CryptoPrediction = () => {
     const navigate = useNavigate()
     const {user} = useAuth();
     const [disabled, setDisabled] = useState(false)
+    const imageUrl = "https://i.postimg.cc/1zGGy6wv/upOrDown.png"
 
     useEffect(() => {
         // Function to calculate remaining time for all predictions
@@ -242,6 +243,7 @@ const CryptoPrediction = () => {
         console.log(name)
         console.log(price)
         const now = new Date().getTime();
+        const startDate = new Date(now).toLocaleString();
         console.log(now)
         if(!amount){
             message.error("You must enter the amount for your prediction!")
@@ -255,6 +257,8 @@ const CryptoPrediction = () => {
             message.error("The amount can not be 0!")
             return
         }
+        const messageToSend = `📈 ${user.user_metadata.name} has placed a prediction on PredicTON!!! 📈\n\nTOKEN: ${name} \nStart date: ${startDate} \nPrice: ${symbol}${price} \n\nPrediction: ${name} ${type} \n`;
+        console.log(messageToSend)
         const updatedData = {
             userId: user.id,
             date: now,
@@ -298,6 +302,17 @@ const CryptoPrediction = () => {
                             text: `Token: ${name}\nPrediction: ${type}\nAmount: ${amount} GPZ`,
                             icon: "success"
                         });
+                        try {
+                            const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
+                            
+                            if (response.data.success) {
+                              console.log('Message sent successfully!');
+                            } else {
+                              console.log('Failed to send message');
+                            }
+                          } catch (error) {
+                            console.log('Error sending message', error);
+                          }
                         closePredictions()
                     }
                 }
@@ -377,7 +392,7 @@ const CryptoPrediction = () => {
                 const finalPrice = parseFloat(parseFloat(result[1]).toFixed(2))
                 console.log("initial price", price)
                 console.log("final price", finalPrice)
-                const imageUrl = "https://i.postimg.cc/1zGGy6wv/upOrDown.png"
+                
                 if (type === "WILL GO UP") {
                     if (finalPrice > price) {
                         console.log("This go up bet wins");
