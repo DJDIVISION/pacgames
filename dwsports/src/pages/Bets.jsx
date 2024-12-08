@@ -778,7 +778,7 @@ const proceedWithPostponedBet = async (bet,activeMatches) => {
         setBalance((prev) => prev + bet.possibleWinnings)
         const { error: firstError } = await supabase
           .from('bets')
-          .update({ status: 'Won', bet: bet.bet })
+          .update({ status: 'Won', bet: bet.bet, possibleWinnings: bet.possibleWinnings })
           .eq('id', bet.id)
           if (firstError) {
             console.error('Error inserting/updating user session data:', error.message)
@@ -1478,7 +1478,7 @@ const getWinnings = (el) => {
             )}
           </NewsTicker>
         </Title>
-        <AbsoluteIconButtonLeft onClick={/* checkBets */() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
+        <AbsoluteIconButtonLeft onClick={checkBets/* () => navigate('/') */}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
       <AnimatePresence>
         {openLeagueMenu && (
           <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"}
@@ -1860,6 +1860,7 @@ const getWinnings = (el) => {
                       {expandedIndex === index && (
                         <LowRower >
                           {bet.bet.map((match) => {
+                            console.log(match)
                             const url = getURL(match.betType, match.match);
                             const homeLogo = getURL("home", match.match);
                             const awayLogo = getURL("away", match.match);
@@ -1867,11 +1868,17 @@ const getWinnings = (el) => {
                             const winnings = getWinnings(match)
                             return(
                               <RowerRowBets>
+                                <RowerRowEvent style={{backgroundImage: `url(${homeLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}></RowerRowEvent>
                                 <RowerFirstEvent><h2>{match.name} - {match.value}</h2></RowerFirstEvent>
-                                <RowerRowEvent style={{backgroundImage: `url(${homeLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.home.winner === true ? '#2cff02' : match.match.teams.home.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.home}</h2></AbsoluteScore></RowerRowEvent>
-                                <RowerTeamEvent><h2>-</h2></RowerTeamEvent>
-                                <RowerRowEvent style={{backgroundImage: `url(${awayLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.away.winner === true ? '#2cff02' : match.match.teams.away.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.away}</h2></AbsoluteScore></RowerRowEvent>
-                                <RowerRowEvent><h2 style={{fontSize: '22px'}}>{winnings}</h2></RowerRowEvent>
+                                <RowerRowEvent style={{backgroundImage: `url(${awayLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}></RowerRowEvent>
+                                {match.isPostponed ? <h2>MATCH POSTPONED</h2> : (
+                                  <>
+                                  <RowerRowEvent><AbsoluteScore><h2 style={{color: match.match.teams.home.winner === true ? '#2cff02' : match.match.teams.home.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.home}</h2></AbsoluteScore></RowerRowEvent>
+                                  <RowerTeamEvent><h2>-</h2></RowerTeamEvent>
+                                  <RowerRowEvent><AbsoluteScore><h2 style={{color: match.match.teams.away.winner === true ? '#2cff02' : match.match.teams.away.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.away}</h2></AbsoluteScore></RowerRowEvent>
+                                  </>
+                                )}
+                                <RowerRowEvent><h2 style={{fontSize: '22px'}}>{match.isPostponed ? "" : winnings}</h2></RowerRowEvent>
                               </RowerRowBets>
                             )
                           })}
@@ -1924,7 +1931,7 @@ const getWinnings = (el) => {
                       {expandedIndex === index && (
                         <LowRower >
                           {bet.bet.map((match) => {
-                           
+                           console.log(match)
                             const url = getURL(match.betType, match.match);
                             const homeLogo = getURL("home", match.match);
                             const awayLogo = getURL("away", match.match);
@@ -1933,11 +1940,17 @@ const getWinnings = (el) => {
                             
                             return(
                               <RowerRowBets>
+                                <RowerRowEvent style={{backgroundImage: `url(${homeLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}></RowerRowEvent>
                                 <RowerFirstEvent><h2>{match.name} - {match.value}</h2></RowerFirstEvent>
-                                <RowerRowEvent style={{backgroundImage: `url(${homeLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.home.winner === true ? '#2cff02' : match.match.teams.home.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.home}</h2></AbsoluteScore></RowerRowEvent>
-                                <RowerTeamEvent><h2>-</h2></RowerTeamEvent>
-                                <RowerRowEvent style={{backgroundImage: `url(${awayLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}><AbsoluteScore><h2 style={{color: match.match.teams.away.winner === true ? '#2cff02' : match.match.teams.away.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.away}</h2></AbsoluteScore></RowerRowEvent>
-                                <RowerRowEvent><h2 style={{fontSize: '22px'}}>{winnings}</h2></RowerRowEvent>
+                                <RowerRowEvent style={{backgroundImage: `url(${awayLogo})`, backgroundSize: '70%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}></RowerRowEvent>
+                                {match.isPostponed ? <h2>MATCH POSTPONED</h2> : (
+                                  <>
+                                  <RowerRowEvent><AbsoluteScore><h2 style={{color: match.match.teams.home.winner === true ? '#2cff02' : match.match.teams.home.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.home}</h2></AbsoluteScore></RowerRowEvent>
+                                  <RowerTeamEvent><h2>-</h2></RowerTeamEvent>
+                                  <RowerRowEvent><AbsoluteScore><h2 style={{color: match.match.teams.away.winner === true ? '#2cff02' : match.match.teams.away.winner === false ? '#ff2802' : '#eeff00'}}>{match.match.goals.away}</h2></AbsoluteScore></RowerRowEvent>
+                                  </>
+                                )}
+                                <RowerRowEvent><h2 style={{fontSize: '22px'}}>{match.isPostponed ? "" : winnings}</h2></RowerRowEvent>
                               </RowerRowBets>
                             )
                           })}

@@ -1071,6 +1071,7 @@ export const RowerRowBets = styled.div`
     min-height: 50px;
     ${props => props.theme.displayFlex};
     margin: 5px 0;
+    
     h2{
         font-size: 12px;
         color: ${props => props.theme.text};

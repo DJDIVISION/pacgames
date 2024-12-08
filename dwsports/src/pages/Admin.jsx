@@ -118,19 +118,38 @@ const Admin = () => {
             }
         }
     
-        async function sendTelegramMessage(messageToSend,imageUrl) {
-            console.log(`Sending to Telegram: ${messageToSend}`);
-            try {
-                const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrl });
-                if (response.data.success) {
-                    console.log('Message sent successfully!');
-                } else {
-                    console.log('Failed to send message');
-                }
-            } catch (error) {
-                console.log('Error sending message:', error);
-            }
-        }
+        async function sendTelegramMessage(messageToSend, imageUrl, delayToDelete = 60000) { // Default 60 seconds
+          console.log(`Sending to Telegram: ${messageToSend}`);
+          try {
+              const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
+              if (response.data.success && response.data.message_id) {
+                  console.log('Message sent successfully!');
+      
+                  // Schedule message deletion
+                  const messageId = response.data.message_id; // Assuming the API returns message_id
+                  setTimeout(async () => {
+                      await deleteTelegramMessage(messageId);
+                  }, delayToDelete);
+              } else {
+                  console.log('Failed to send message');
+              }
+          } catch (error) {
+              console.log('Error sending message:', error);
+          }
+      }
+      
+      async function deleteTelegramMessage(messageId) {
+          try {
+              const response = await axios.post('https://temp-server-pi.vercel.app/api/delete-message', { messageId });
+              if (response.data.success) {
+                  console.log(`Message ${messageId} deleted successfully!`);
+              } else {
+                  console.log(`Failed to delete message ${messageId}`);
+              }
+          } catch (error) {
+              console.log(`Error deleting message ${messageId}:`, error);
+          }
+      }
     
         async function fetchLiveMatches() {
             const options = {
