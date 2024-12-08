@@ -194,7 +194,6 @@ const Fantasy = () => {
     }
 
     const toggleExpand = (index) => {
-        alert("now")
         setExpandedIndex(expandedIndex === index ? null : index);
     };
 

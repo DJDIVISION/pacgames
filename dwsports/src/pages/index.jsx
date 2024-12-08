@@ -979,6 +979,7 @@ export const SmallArrowDown = styled(KeyboardArrowDownIcon)`
         position: absolute;
         top: 20px;
         left: 20px;
+        z-index: 9999;
         @media(max-width: 968px){
             top: 10px;
             left: 10px; 
