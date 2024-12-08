@@ -122,6 +122,7 @@ const Admin = () => {
           console.log(`Sending to Telegram: ${messageToSend}`);
           try {
               const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
+              console.log("response.data.message_id",response.data.message_id)
               if (response.data.success && response.data.message_id) {
                   console.log('Message sent successfully!');
       
