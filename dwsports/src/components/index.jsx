@@ -897,11 +897,28 @@ export const SmallRower = styled.div`
     ${props => props.theme.displayFlex};
 `;
 
+export const PlayerTeamLogo = styled.div`
+width: 30px;
+height: 30px;
+border-radius: 50%;
+position: absolute;
+top: 0px;
+left: 0px;
+z-index: 10;
+@media(max-width: 490px){
+    width: 25px;
+    height: 25px;
+    top: -5px;
+    left: -5px;
+}
+`;
+
 export const SmallAvatar = styled.div`
     width: 20%;
     height: 100%;
     ${props => props.theme.displayFlexCenter};
     text-align: center;
+    position: relative;
     h2{
         font-size: 10px;
         color: white;

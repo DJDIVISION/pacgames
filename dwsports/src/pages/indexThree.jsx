@@ -227,10 +227,10 @@ top: 0px;
 left: 0px;
 z-index: 10;
 @media(max-width: 490px){
-    width: 25px;
-    height: 25px;
-    top: -5px;
-    left: -5px;
+    width: 20px;
+    height: 20px;
+    top: 0px;
+    left: 5px;
 }
 `;
 

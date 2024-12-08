@@ -44,149 +44,167 @@ const Admin = () => {
         
     } */
 
-        let processedEvents = {}; // Global dictionary to track processed events per match
-
-        function delay(ms) {
-            return new Promise((resolve) => setTimeout(resolve, ms));
-        }
-    
-        async function processMatchEvents(matches, sendTelegramMessage) {
-            for (const match of matches) { // Use `for...of` to handle async operations
-                const matchId = match.fixture.id;
-                const events = match.events;
-                console.log(match)
-                let league
-                if(match.league.name === "Premier League"){
-                    league = "🇬🇧"
-                }
-                if(match.league.name === "La Liga"){
-                    league = "🇪🇸"
-                }
-                if(match.league.name === "Serie A"){
-                    league = "🇮🇹"
-                }
-                if(match.league.name === "Bundesliga"){
-                    league = "🇩🇪"
-                }
-                if(match.league.name === "Ligue 1"){
-                    league = "🇫🇷"
-                }
-                // Initialize processed events for this match if not already done
-                if (!processedEvents[matchId]) {
-                    processedEvents[matchId] = new Set();
-                }
-    
-                for (const event of events) {
-                    console.log(event)
-                    const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
-                    if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                        const messageToSend = `\n${league} GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
-                        await sendTelegramMessage(messageToSend,event.team.logo);
-                        processedEvents[matchId].add(eventId);
-                    }
-                    if((event.detail === "Penalty" && event.type === "Goal") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                        const messageToSend = `\n${league} PENALTY GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
-                        await sendTelegramMessage(messageToSend,event.team.logo);
-                        processedEvents[matchId].add(eventId);
-                    }
-                    if((event.detail === "Red Card") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                        const messageToSend = `\n${league} RED CARD!!! 🟥 \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.comments} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
-                        await sendTelegramMessage(messageToSend,event.team.logo);
-                        processedEvents[matchId].add(eventId);
-                    }
-                    if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                        const messageToSend = `\n${league} GOAL DISALLOWED!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
-                        await sendTelegramMessage(messageToSend,event.team.logo);
-                        processedEvents[matchId].add(eventId);
-                    }
-                    // Generate a unique identifier for the event
-                    //const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
-    
-                    // Check if the event has already been processed for this match
-                    if (!processedEvents[matchId].has(eventId)) {
-                        // Prepare the message
-                        //const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-    
-                        // Send message to Telegram with a delay between each call
-                        //await sendTelegramMessage(messageToSend,imageUrl);
-                        await delay(3000); // 1-second delay to avoid flooding the endpoint
-    
-                        // Mark this event as processed
-                        processedEvents[matchId].add(eventId);
-                    }
-                }
-            }
-        }
-    
-        async function sendTelegramMessage(messageToSend, imageUrl) { // Default 60 seconds
-          console.log(`Sending to Telegram: ${messageToSend}`);
-          try {
-              const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
-              console.log("response.data.message_id",response.data.message_id)
-              if (response.data.success && response.data.message_id) {
-                  console.log('Message sent successfully!');
-      
-                  // Schedule message deletion
-                  const messageId = response.data.message_id; // Assuming the API returns message_id
-                  console.log("messageID", messageId)
-                  setTimeout(async () => {
-                      await deleteTelegramMessage(messageId);
-                  }, 3600000);
-              } else {
-                  console.log('Failed to send message');
-              }
-          } catch (error) {
-              console.log('Error sending message:', error);
+        const fetchTeamsTwo = async () => {
+          const { data: firstData, error: firstError } = await supabase
+              .from('fantasyFootball')
+              .select('nextMatch')
+              
+        
+          if (firstError) {
+              console.log("error", firstError);
+          } else {
+              const teams = []
+              firstData.forEach((player) => {
+                  if(player.nextMatch !== null){
+                      
+                      console.log(player)
+                      const start = new Date(startDate)
+                      const end = new Date(endDate)
+                      const now = new Date(player.nextMatch.date);
+                      if(now >= start && now <= end){
+                          teams.push(player)
+                      }
+                  }
+              })
+              fetchRatingTwo(teams)
+              console.log(teams)
           }
-      }
-      
-      async function deleteTelegramMessage(messageId) {
-          try {
-              const response = await axios.post('https://temp-server-pi.vercel.app/api/delete-message', { messageId });
-              if (response.data.success) {
-                  console.log(`Message ${messageId} deleted successfully!`);
-              } else {
-                  console.log(`Failed to delete message ${messageId}`);
-              }
-          } catch (error) {
-              console.log(`Error deleting message ${messageId}:`, error);
-          }
-      }
-    
-        async function fetchLiveMatches() {
-            const options = {
-                method: 'GET',
-                url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-                params: { live: 'all' },
-                headers: {
-                    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-                    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
-                },
-            };
-    
-            try {
-                const response = await axios.request(options);
-                console.log(response.data.response);
-    
-                const matches = [];
-                response.data.response.forEach((match) => {
-                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
-                        matches.push(match);
-                    }
-                });
-    
-                // Process events from the fetched matches
-                await processMatchEvents(matches, sendTelegramMessage);
-            } catch (error) {
-                console.error('Error fetching live matches:', error);
-            }
         }
-    
-        // Fetch live matches every 15 seconds
-        React.useEffect(() => {
-            const intervalId = setInterval(fetchLiveMatches, 60000); // Set interval for fetching matches
-            return () => clearInterval(intervalId); // Cleanup interval on component unmount
-        }, []);
+        
+        console.log(leagues)
+        
+        const fetchRatingTwo = async (teams) => {
+          const allFetchPromises = []; // To track all fetchFixtureData calls
+          
+          for (const team of teams) {
+            const areas = Object.values(team.nextMatch.players);
+            console.log("areas", areas)
+            for (const area of areas) {
+              for (const player of area) {
+                  console.log("player", player)
+                let currentRound;
+                const filter = leagues.filter((el) => el.league === player.leagueName);
+                console.log("filter", filter)
+                currentRound = filter[0]?.currentRound;
+                const id = player.leagueName === "Premier League" ? 39 : player.leagueName === "La Liga" ? 140 : player.leagueName === "Serie A" ? 135
+                : player.leagueName === "Bundesliga" ? 78 : 61
+                if (currentRound) {
+                  const options = {
+                    method: 'GET',
+                    url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+                    params: {
+                      league: id,
+                      season: '2024',
+                      round: `Regular Season - ${currentRound}`
+                    },
+                    headers: {
+                      'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+                      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+                    }
+                  };
+                  
+                  try {
+                    const response = await axios.request(options);
+                    console.log(response.data.response);
+                    response.data.response.forEach((match) => {
+                      // Collect the Promise from fetchFixtureData
+                      const fetchPromise = fetchFixtureData(
+                        match.fixture.id,
+                        player.id,
+                        player.teamName,
+                        teams
+                      );
+                      allFetchPromises.push(fetchPromise); // Add the Promise to the array
+                    })
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }
+        
+                // Add delay here to avoid overwhelming the server with requests
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+              }
+            }
+            await Promise.allSettled(allFetchPromises);
+            console.log("All fetchFixtureData tasks completed!");
+          
+            // Update the state after all tasks finish
+            setAllTeams(teams)
+            console.log(teams);
+            for (const team of teams) {
+                const areas = Object.values(team.nextMatch.players);
+                for (const area of areas) {
+                    for (const player of area){
+                        if(player.lastMatchRating === null){
+                            player.lastMatchRating = null
+                        }
+                    } 
+                }
+                const { error: updateError } = await supabase
+                        .from('fantasyFootball')
+                        .update({ nextMatch: team.nextMatch}) 
+                        .eq('id', team.nextMatch.userId); // Identify which user to update
+                        if (updateError) {
+                            console.error('Error updating user data:', updateError.message);
+                        } else {
+                            console.log("All teams have been saved!")
+                        }
+                    }
+                  }
+                }
+        
+                async function fetchFixtureData(fixtureId, playerId, teamName, teams) {
+                  const options = {
+                    method: "GET",
+                    url: "https://api-football-v1.p.rapidapi.com/v3/fixtures",
+                    params: { id: fixtureId },
+                    headers: {
+                      "x-rapidapi-key": "5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2",
+                      "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
+                    },
+                  };
+                
+                  try {
+                    const response = await axios.request(options);
+                
+                    // Check if the fixture status is "FT" (Full Time)
+                    if (response.data.response[0].fixture.status.short === "FT") {
+                      response.data.response[0].players.forEach((el) => {
+                        if (el.team.name === teamName) {
+                          // Check if player matches and update rating
+                          el.players.forEach((player) => {
+                            if (player.player.id === playerId) {
+                              console.log("Found player:", player);
+                
+                              const playerRating = player.statistics[0].games.rating;
+                              
+                              console.log("Player rating:", playerRating);
+                
+                              // Now, let's ensure the teams data gets updated
+                              const areas = Object.values(teams);
+                              areas.forEach((team) => {
+                                const players = team.nextMatch.players;
+                                Object.keys(players).forEach((area) => {
+                                  players[area].forEach((p) => {
+                                    if (p.id === playerId) {
+                                      console.log(`Updating player: ${p.name}`);
+                                      p.lastMatchRating = playerRating ? parseFloat(parseFloat(playerRating).toFixed(2)) : null;
+                                    }
+                                  });
+                                });
+                              });
+                            }
+                          });
+                        }
+                      });
+                    }
+                  } catch (error) {
+                    console.error(`Error fetching fixture ${fixtureId}:`, error);
+                  }
+                
+                  // Adding delay to throttle the requests
+                  await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay
+                }
     
     
 
@@ -196,7 +214,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={fetchTeamsTwo} */ /* onClick={() => navigate('/newroulette')} */>TELEGRAM</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={fetchTeamsTwo} /* onClick={() => navigate('/newroulette')} */>teams</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

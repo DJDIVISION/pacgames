@@ -194,6 +194,7 @@ const Fantasy = () => {
     }
 
     const toggleExpand = (index) => {
+        alert("now")
         setExpandedIndex(expandedIndex === index ? null : index);
     };
 
@@ -652,7 +653,7 @@ const Fantasy = () => {
                         {allFantasyTeams?.length > 0 ? (
                             <>
                                 {allFantasyTeams?.map((team, index) => {
-                            
+                                    console.log(team)
                             return(
                                 <TeamBetsHolder key={index}
                                 initial={{ height: '100px' }}
@@ -665,6 +666,7 @@ const Fantasy = () => {
                                         width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
                                         height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
                                         }} />
+                                        
                                         </SmallAvatar> 
                                         <SmallPlayerName><h2>{team.playerName}</h2></SmallPlayerName>
                                         <SmallAvatar><h2>TRAININGS: <br/><span>{team.trainingsNumber}</span></h2></SmallAvatar>
@@ -684,6 +686,7 @@ const Fantasy = () => {
                                                                 width: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
                                                                 height: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
                                                                 }} />
+                                                                <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>
                                                                 </SmallAvatar> 
                                                                 <SmallPlayerName><h2>{player.name}</h2></SmallPlayerName>
                                                                 <SmallAvatarTwo><h2>{player.position.charAt(0)}</h2></SmallAvatarTwo>
