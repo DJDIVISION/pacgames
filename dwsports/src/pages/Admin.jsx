@@ -131,7 +131,7 @@ const Admin = () => {
                   console.log("messageID", messageId)
                   setTimeout(async () => {
                       await deleteTelegramMessage(messageId);
-                  }, 60000);
+                  }, 3600000);
               } else {
                   console.log('Failed to send message');
               }
