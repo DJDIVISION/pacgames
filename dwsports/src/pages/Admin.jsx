@@ -127,6 +127,7 @@ const Admin = () => {
       
                   // Schedule message deletion
                   const messageId = response.data.message_id; // Assuming the API returns message_id
+                  console.log("messageID", messageId)
                   setTimeout(async () => {
                       await deleteTelegramMessage(messageId);
                   }, 60000);
