@@ -718,16 +718,83 @@ const handlePostponedBet = async (bet) => {
 
   // Filter out postponed matches
   const activeMatches = bet.bet.filter((match) => !match.isPostponed);
-  console.log(`activeMatches for bet ${bet.id}:`, activeMatches);
+  
   // Recalculate odds based on remaining matches
   const recalculatedOdds = activeMatches.reduce((acc, match) => acc * match.odd, 1);
   bet.possibleWinnings = recalculatedOdds * bet.amount;
   
   console.log('bet:', bet);
   if (activeMatches.length > 0) {
-    proceedWithBet(bet);
+    proceedWithPostponedBet(bet,activeMatches);
   } else {
     console.log(`No active matches left for bet ${bet.id}, skipping calculation.`);
+  }
+}
+
+const proceedWithPostponedBet = async (bet,activeMatches) => {
+  
+  activeMatches.map((el) => {
+    const isFulfilled = isBetFulfilled(el);
+      el.isWinningBet = isFulfilled;
+  })
+  console.log(`activeMatches2 for bet ${bet.id}:`, activeMatches);
+  console.log(` bet ${bet.id}:`, bet);
+  const allBetsFulfilled = bet.bet.every((el) => el.isWinningBet === true);
+  if (allBetsFulfilled) {
+    console.log(bet)
+    const winnings = bet.possibleWinnings
+    const amount = bet.amount
+    let result = bet.bet.map((match, index) => {
+      console.log(match)
+      return `\n${match.match.teams.home.name} vs ${match.match.teams.away.name}\nOdds: ${match.odd}\nResult: ${match.name} - ${match.value} ${match.isPostponed === true ? `\n(MATCH POSTPONED - Skipped from bet)` : "✅"}`;
+  }).join("\n");
+  
+  const messageToSend = `${user.user_metadata.name} has won a bet! 🎉🎉🎉 \n ${result} \n\nAmount: ${amount} PGZ \nWinnings: ${winnings} PGZ !!!`
+  console.log(messageToSend)
+  const imageUrl = "https://i.postimg.cc/xd1JfnGL/Apuestas-de-Futbol-1220x600.webp"
+  try {
+      
+    const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
+    
+    if (response.data.success) {
+      console.log('Message sent successfully!');
+    } else {
+      console.log('Failed to send message');
+    }
+  } catch (error) {
+    console.log('Error sending message', error);
+  }
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      if (error) {
+        console.error('Error inserting/updating user session data:', error.message)
+      } else {
+        console.log(data[0])
+        console.log(bet)
+        const newBalance = data[0].appBalance + bet.possibleWinnings
+        console.log(newBalance)
+        setBalance((prev) => prev + bet.possibleWinnings)
+        const { error: firstError } = await supabase
+          .from('bets')
+          .update({ status: 'Won', bet: bet.bet })
+          .eq('id', bet.id)
+          if (firstError) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            const { error: secondError } = await supabase
+              .from('users')
+              .update({ appBalance: newBalance })
+              .eq('id', user.id)
+              if (secondError) {
+                console.error('Error inserting/updating user session data:', error.message)
+              } else {
+                message.success("You have won one bet 🤑")
+            }
+            
+          }
+       }
   }
 }
 
