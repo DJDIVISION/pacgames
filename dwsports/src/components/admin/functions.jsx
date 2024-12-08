@@ -217,22 +217,22 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
                 console.log(event)
                 const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
                 if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}\n\n${match.goals.home} - ${match.goals.away}'`;
+                    const messageToSend = `\n${league} GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
                     await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 if((event.detail === "Penalty" && event.type === "Goal") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} PENALTY GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}\n\n${match.goals.home} - ${match.goals.away}'`;
+                    const messageToSend = `\n${league} PENALTY GOAL!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
                     await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 if((event.detail === "Red Card") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} RED CARD!!! 🟥 \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.comments} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}\n\n${match.goals.home} - ${match.goals.away}'`;
+                    const messageToSend = `\n${league} RED CARD!!! 🟥 \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.comments} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
                     await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
                 if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
-                    const messageToSend = `\n${league} GOAL DISALLOWED!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}\n\n${match.goals.home} - ${match.goals.away}'`;
+                    const messageToSend = `\n${league} GOAL DISALLOWED!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} (${event.team.name}) at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
                     await sendTelegramMessage(messageToSend,event.team.logo);
                     processedEvents[matchId].add(eventId);
                 }
@@ -304,176 +304,6 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
         return () => clearInterval(intervalId); // Cleanup interval on component unmount
     }, []);
 
-
-
-
-//////// FANTASY FOOTBALL FETCH
-
-const fetchTeams = async () => {
-    const teams = []
-    const { data: firstData, error: firstError } = await supabase
-        .from('fantasyFootball')
-        .select('nextMatch')
-        
-
-    if (firstError) {
-        console.log("error", firstError);
-    } else {
-        const teams = []
-        firstData.forEach((player) => {
-            if(player.nextMatch !== null){
-                
-                console.log(player)
-                const start = new Date(startDate)
-                const end = new Date(endDate)
-                const now = new Date(player.nextMatch.date);
-                if(now >= start && now <= end){
-                    teams.push(player)
-                }
-            }
-        })
-        setAllTeams(teams)
-    }
-}
-
-async function fetchFixtureData(fixtureId,playerId,teamName) {
-    const options = {
-        method: 'GET',
-        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-        params: {id: fixtureId},
-        headers: {
-          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-        }
-      };
-
-    try {
-        const response = await axios.request(options);
-        /* console.log(response.data.response) */
-        response.data.response[0].players.forEach((el) => {
-            /* console.log(el) */
-            if(el.team.name === teamName && response.data.response[0].fixture.status.short === "FT"){
-                el.players.forEach((player) => {
-                    if(player.player.id === playerId){
-                        console.log("player", player)
-                        const areas = Object.values(allTeams)
-                        console.log(areas)
-                        for (const area of areas){
-                            for (const man of area.nextMatch){
-                                if(man.id === playerId){
-                                    if(player.statistics[0].games.rating === null){
-                                        man.lastMatchRating = 0  
-                                    } else {
-                                        //localStorage.setItem(`${player.player.name}`, `${player.statistics[0].games.rating}`)
-                                        man.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
-                                    }
-                                    
-                                }
-                                
-                            }
-                        }
-                        /* const areas = Object.values(allTeams)
-                        for (const area of areas){
-                            for (const man of area){
-                                if(man.id === playerId){
-                                    if(player.statistics[0].games.rating === null){
-                                        man.lastMatchRating = 0  
-                                    } else {
-                                        //localStorage.setItem(`${player.player.name}`, `${player.statistics[0].games.rating}`)
-                                        man.lastMatchRating = parseFloat(parseFloat(player.statistics[0].games.rating).toFixed(2))
-                                    }
-                                    
-                                }
-                                
-                            }
-                            console.log(man)
-                        } */
-                        
-                    }
-                    
-                })
-            }
-        })
-
-    } catch (error) {
-        console.error(`Error fetching fixture ${fixtureId}:`, error);
-        return null;
-    }
-}
-
-useEffect(()=> {
-    if(allTeams){
-        fetchRating(allTeams)
-    }
-}, [allTeams])
-
-const fetchRating = async () => {
-    for(const team of allTeams){
-        console.log(team)
-        const areas = Object.values(team.nextMatch.players)
-            for (const area of areas) {
-                for (const player of area){
-                    let currentRound
-                    const filter = leagues.filter((el) => el.league === player.leagueName)
-                    
-                    currentRound = filter[0].currentRound
-                    
-                    if(currentRound){
-                        const {data, error} = await supabase
-                        .from("fixtures")
-                        .select(`${currentRound}`)
-                        .eq("leagueName", player.leagueName);
-                        if (error) {
-                            console.error(`Error fetching data for ${leagueName}:`, response.error);
-                            return null;
-                        } else {
-                            console.log(data)
-                            data[0][currentRound].forEach(async (match) => {
-                                
-                                await fetchFixtureData(match.fixture.id,player.id,player.teamName)
-                            })
-                        }
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 1000)); 
-                }
-            }
-        /* const start = new Date(startDate)
-        const end = new Date(endDate)
-        const now = new Date(team.date);
-        console.log(now)
-        const isBetween = now >= start && now <= end;
-        if(isBetween){
-            console.log(team.players)
-            const areas = Object.values(team.players)
-            for (const area of areas) {
-                for (const player of area){
-                    let currentRound
-                    const filter = leagues.filter((el) => el.league === player.leagueName)
-                    
-                    currentRound = filter[0].currentRound
-                    
-                    if(currentRound){
-                        const {data, error} = await supabase
-                        .from("fixtures")
-                        .select(`${currentRound}`)
-                        .eq("leagueName", player.leagueName);
-                        if (error) {
-                            console.error(`Error fetching data for ${leagueName}:`, response.error);
-                            return null;
-                        } else {
-                            console.log(data)
-                            data[0][currentRound].forEach(async (match) => {
-                                
-                                await fetchFixtureData(match.fixture.id,player.id,player.teamName)
-                            })
-                        }
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 1000)); 
-                }
-            }
-        } */
-    }
-}
 
 
 //////// SEND INJURIES

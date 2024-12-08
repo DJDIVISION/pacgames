@@ -643,12 +643,14 @@ const checkBets = async () => {
   if (myBets) {
     // Iterate over each bet
     for (const bet of myBets) {
-      let allMatchesStarted = true; // Flag to check if all matches in this bet have started
       
+      let allMatchesStarted = true; // Flag to check if all matches in this bet have started
+      let hasPostponedMatch = false;
       // Iterate over each match in the bet
       for (const matchBet of bet.bet) {
         const matchId = matchBet.match.fixture.id;
-
+        
+        
         // Fetch the match data
         const options = {
           method: 'GET',
@@ -668,17 +670,22 @@ const checkBets = async () => {
 
           // Extract the relevant match data to update
           const { goals, fixture, score, events } = matchData;
-
+          
+          
           // Update the matchBet object with the fetched data
           matchBet.match.goals = goals;
           matchBet.match.fixture = fixture;
           matchBet.match.score = score;
-          matchBet.events = events;  // Add the events field
-
+          //matchBet.events = events;  // Add the events field
+          
           // Check if the match has started
-          if (fixture.status.short !== 'FT') {
-            allMatchesStarted = false; // If the match hasn't started, set the flag to false
-            break; // Exit the loop and skip this bet
+          if (fixture.status.short === 'PST') {
+            hasPostponedMatch = true;
+            matchBet.isPostponed = true; // Mark the match as postponed
+            matchBet.isWinningBet = true
+          } else if (fixture.status.short !== 'FT') {
+            allMatchesStarted = false;
+            break;
           }
         } catch (error) {
           console.error('Error fetching match data:', error);
@@ -688,8 +695,11 @@ const checkBets = async () => {
       }
 
       // If all matches have started, proceed with the next function
-      if (allMatchesStarted) {
-        
+      if (hasPostponedMatch) {
+        // Handle postponed matches in the bet
+        console.log(bet)
+        await handlePostponedBet(bet);
+      } else if (allMatchesStarted) {
         proceedWithBet(bet);
       } else {
         console.log('Skipping bet because not all matches have started');
@@ -698,9 +708,33 @@ const checkBets = async () => {
   }
 };
 
+console.log(myBets)
+
+const handlePostponedBet = async (bet) => {
+  console.log('Handling postponed matches for bet:', bet.id);
+  console.log('myBets1:', myBets);
+  const postponedMatches = bet.bet.filter((match) => match.isPostponed);
+  console.log(`Postponed matches for bet ${bet.id}:`, postponedMatches);
+
+  // Filter out postponed matches
+  const activeMatches = bet.bet.filter((match) => !match.isPostponed);
+  console.log(`activeMatches for bet ${bet.id}:`, activeMatches);
+  // Recalculate odds based on remaining matches
+  const recalculatedOdds = activeMatches.reduce((acc, match) => acc * match.odd, 1);
+  bet.possibleWinnings = recalculatedOdds * bet.amount;
+  
+  console.log('bet:', bet);
+  if (activeMatches.length > 0) {
+    proceedWithBet(bet);
+  } else {
+    console.log(`No active matches left for bet ${bet.id}, skipping calculation.`);
+  }
+}
+
 // Example of the function to proceed with the bet
 const proceedWithBet = async (bet) => {
-  message.warning("Some of your bets are being calculated ⏳")
+  console.log('All matches have started for this bet:', bet);
+  //message.warning("Some of your bets are being calculated ⏳")
   console.log('All matches have started for this bet:', bet);
   bet.bet.map((el) => {
         const isFulfilled = isBetFulfilled(el);
@@ -743,7 +777,6 @@ const proceedWithBet = async (bet) => {
         const newBalance = data[0].appBalance + bet.possibleWinnings
         console.log(newBalance)
         setBalance((prev) => prev + bet.possibleWinnings)
-        const messageToSend = `${user.user_metadata.name} has placed a bet! \n ${result} \n\nAmount: ${amount} PGZ \nPossible Winnings: ${winnings} PGZ`
         const { error: firstError } = await supabase
           .from('bets')
           .update({ status: 'Won', bet: bet.bet })
@@ -795,12 +828,12 @@ const proceedWithBet = async (bet) => {
     }
   }, [openWonBetsMenu])
 
-  useEffect(() => {
+  /* useEffect(() => {
     if(myBets){
       checkBets();
       console.log(myBets)
     }
-  }, [myBets])
+  }, [myBets]) */
 
 
   const toggleExpand = (index) => {
@@ -1263,6 +1296,7 @@ const getWinnings = (el) => {
         setOpenCurrentMenu(false)
         setTimeout(() => {
           setOpenLeagueMenu(true)
+          setChecked(false)
         }, 500)
       }
   };
@@ -1377,7 +1411,7 @@ const getWinnings = (el) => {
             )}
           </NewsTicker>
         </Title>
-        <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
+        <AbsoluteIconButtonLeft onClick={checkBets/* () => navigate('/') */}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
       <AnimatePresence>
         {openLeagueMenu && (
           <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"}
