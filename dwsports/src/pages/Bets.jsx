@@ -895,12 +895,12 @@ const proceedWithBet = async (bet) => {
     }
   }, [openWonBetsMenu])
 
-  /* useEffect(() => {
+  useEffect(() => {
     if(myBets){
       checkBets();
       console.log(myBets)
     }
-  }, [myBets]) */
+  }, [myBets])
 
 
   const toggleExpand = (index) => {
