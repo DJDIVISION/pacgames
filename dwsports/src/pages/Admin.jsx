@@ -118,7 +118,7 @@ const Admin = () => {
             }
         }
     
-        async function sendTelegramMessage(messageToSend, imageUrl, delayToDelete = 60000) { // Default 60 seconds
+        async function sendTelegramMessage(messageToSend, imageUrl) { // Default 60 seconds
           console.log(`Sending to Telegram: ${messageToSend}`);
           try {
               const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
@@ -129,7 +129,7 @@ const Admin = () => {
                   const messageId = response.data.message_id; // Assuming the API returns message_id
                   setTimeout(async () => {
                       await deleteTelegramMessage(messageId);
-                  }, delayToDelete);
+                  }, 60000);
               } else {
                   console.log('Failed to send message');
               }
