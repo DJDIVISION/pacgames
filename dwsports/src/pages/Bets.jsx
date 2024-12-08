@@ -1478,7 +1478,7 @@ const getWinnings = (el) => {
             )}
           </NewsTicker>
         </Title>
-        <AbsoluteIconButtonLeft onClick={checkBets/* () => navigate('/') */}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
+        <AbsoluteIconButtonLeft onClick={/* checkBets */() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
       <AnimatePresence>
         {openLeagueMenu && (
           <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"}
