@@ -728,6 +728,39 @@ const handlePostponedBet = async (bet) => {
     proceedWithPostponedBet(bet,activeMatches);
   } else {
     console.log(`No active matches left for bet ${bet.id}, skipping calculation.`);
+    console.log(bet)
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      if (error) {
+        console.error('Error inserting/updating user session data:', error.message)
+      } else {
+        console.log(data[0])
+        console.log(bet)
+        const newBalance = data[0].appBalance + bet.amount
+        console.log(newBalance)
+        setBalance((prev) => prev + bet.amount)
+        const { error: firstError } = await supabase
+          .from('bets')
+          .update({ status: 'Cancelled', bet: bet.bet })
+          .eq('id', bet.id)
+          if (firstError) {
+            console.error('Error inserting/updating user session data:', error.message)
+          } else {
+            const { error: secondError } = await supabase
+              .from('users')
+              .update({ appBalance: newBalance })
+              .eq('id', user.id)
+              if (secondError) {
+                console.error('Error inserting/updating user session data:', error.message)
+              } else {
+                message.success("Your bet has been returned!")
+            }
+            
+          }
+       }
+    
   }
 }
 
@@ -1478,7 +1511,7 @@ const getWinnings = (el) => {
             )}
           </NewsTicker>
         </Title>
-        <AbsoluteIconButtonLeft onClick={checkBets/* () => navigate('/') */}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
+        <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
       <AnimatePresence>
         {openLeagueMenu && (
           <Container initial="collapsed" animate={isDateExpanded ? "collapsed" : "expanded"}
