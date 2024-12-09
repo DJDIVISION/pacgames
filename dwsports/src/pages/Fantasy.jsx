@@ -419,6 +419,7 @@ const Fantasy = () => {
             for (const team of allFantasyTeams){
                 console.log(team)
                 const allPlayers = Object.values(team.nextMatch.players).flat();
+                console.log("allPlayers",allPlayers)
                 if (allPlayers.length > 0) {
                     team.nextMatch.teamAverage = getAveragePlayerRating(allPlayers)
                     console.log(team)
@@ -652,7 +653,7 @@ const Fantasy = () => {
                         {allFantasyTeams?.length > 0 ? (
                             <>
                                 {allFantasyTeams?.map((team, index) => {
-                                    console.log(team)
+                            
                             return(
                                 <TeamBetsHolder key={index}
                                 initial={{ height: '100px' }}
@@ -665,7 +666,6 @@ const Fantasy = () => {
                                         width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
                                         height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
                                         }} />
-                                        
                                         </SmallAvatar> 
                                         <SmallPlayerName><h2>{team.playerName}</h2></SmallPlayerName>
                                         <SmallAvatar><h2>TRAININGS: <br/><span>{team.trainingsNumber}</span></h2></SmallAvatar>
@@ -687,7 +687,7 @@ const Fantasy = () => {
                                                                 }} />
                                                                 <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>
                                                                 </SmallAvatar> 
-                                                                <SmallPlayerName><h2>{player.name}</h2></SmallPlayerName>
+                                                                <SmallPlayerName><h2>{player.name}</h2>{player.isMatchCancelled === true ? <h2>MATCH CANCELLED</h2> : ''}</SmallPlayerName>
                                                                 <SmallAvatarTwo><h2>{player.position.charAt(0)}</h2></SmallAvatarTwo>
                                                                 <SmallAvatarTwo>{gameStarted ? <h2 style={{color: getBackgroundColor(player.lastMatchRating)}}>{player.lastMatchRating !== null ? player.lastMatchRating : ''}</h2>
                                                                 : <h2 style={{color: getBackgroundColor(player.rating)}}>{player.rating !== null ? player.rating : 0}</h2>}</SmallAvatarTwo>
@@ -758,8 +758,9 @@ const Fantasy = () => {
                                                                 width: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
                                                                 height: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
                                                                 }} />
+                                                                <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>
                                                                 </SmallAvatar> 
-                                                                <SmallPlayerName><h2>{player.name}</h2></SmallPlayerName>
+                                                                <SmallPlayerName><h2>{player.name}</h2>{player.isMatchCancelled === true ? <h2>MATCH CANCELLED</h2> : ''}</SmallPlayerName>
                                                                 <SmallAvatarTwo><h2>{player.position.charAt(0)}</h2></SmallAvatarTwo>
                                                                 <SmallAvatarTwo><h2 style={{color: getBackgroundColor(player.lastMatchRating)}}>{player.lastMatchRating !== null ? player.lastMatchRating : ''}</h2></SmallAvatarTwo>
                                                             </RowerRow>

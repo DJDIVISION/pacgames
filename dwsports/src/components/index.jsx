@@ -946,7 +946,7 @@ export const SmallPlayerName = styled.div`
     width: 40%;
     height: 100%;
     text-align: center;
-    ${props => props.theme.displayFlexCenter};
+    ${props => props.theme.displayFlexColumnCenter};
     h2{
         font-size: 14px !important;
         color: white;
