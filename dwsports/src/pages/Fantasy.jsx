@@ -17,6 +17,10 @@ import { message } from 'antd';
 import axios from 'axios'
 const Fantasy = () => {
 
+    const rounds = [
+        "firstRound", "secondRound"
+    ]
+    
     const [isDateExpanded, setIsDateExpanded] = useState(false)
     const [startDate, setStartDate] = useState("2024-12-06 20:00:00")
     const [endDate, setEndDate] = useState('2024-12-09 23:00:00')
@@ -24,7 +28,7 @@ const Fantasy = () => {
     const [allFantasyTeams, setAllFantasyTeams] = useState([])
     const [allFantasyPastTeams, setAllFantasyPastTeams] = useState([])
     const [droppedPlayers, setDroppedPlayers] = useState([])
-    const [currentRound, setCurrentRound] = useState("firstRound")
+    const [currentRound, setCurrentRound] = useState(rounds[0])
     const [openTeamsNextRound, setOpenTeamsNextRound] = useState(true)
     const [openTeamsPastRound, setOpenTeamsPastRound] = useState(false)
     const [openPlayersMenu, setOpenPlayersMenu] = useState(false)
@@ -66,6 +70,8 @@ const Fantasy = () => {
         area10: [],
         area11: []
     });
+
+    
 
     const sensors = useSensors(
         useSensor(MouseSensor),
@@ -245,6 +251,7 @@ const Fantasy = () => {
           if (firstError) {
               console.log("error", firstError);
           } else {
+            console.log("rows", rows)
             //setAllFantasyPastTeams(rows)
             console.log(currentRound)
             const teams = []
@@ -255,6 +262,9 @@ const Fantasy = () => {
           }
         setLoadingFantasyTeams(false)
     }
+
+    console.log(allFantasyPastTeams)
+    
 
     const fetchUserData = async () => {
         const { data, error } = await supabase
@@ -312,7 +322,7 @@ const Fantasy = () => {
         return parseFloat(averageRating.toFixed(2));
     }
 
-    console.log(teamAverage)
+    
 
     const confirmPlayerSell = async () => {
         const newBalance = balance + (activePlayerSell.value * 75/100)
@@ -449,11 +459,25 @@ const Fantasy = () => {
         getAllFantasyTeams(); // Always fetch data when the component mounts
     }, []);
 
+    const raiseRound = () => {
+        setAllFantasyPastTeams([])
+        const currentIndex = rounds.indexOf(currentRound);
+        const nextIndex = (currentIndex + 1) % rounds.length; // Cycle to the first round if at the end
+        setCurrentRound(rounds[nextIndex]);
+    };
+    
+    const lowRound = () => {
+        setAllFantasyPastTeams([])
+        const currentIndex = rounds.indexOf(currentRound);
+        const prevIndex = (currentIndex - 1 + rounds.length) % rounds.length; // Cycle to the last round if at the start
+        setCurrentRound(rounds[prevIndex]);
+    };
+
     useEffect(() => {
         if(openTeamsPastRound){
             getPastFantasyTeams();
         }
-    }, [openTeamsPastRound])
+    }, [openTeamsPastRound,currentRound])
 
     useEffect(() => {
         if(openPlayersMenu){
@@ -861,14 +885,18 @@ const Fantasy = () => {
               exit="exit"
               transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                 <ArrowsHolder>
-                    <ArrowIconHolder><ArrowLeftRelative /* onClick={lowRound} */ style={{transform: 'translateX(15px) rotate(90deg)'}}></ArrowLeftRelative></ArrowIconHolder>
-                    <RoundNameHolder><h2>Round: {currentRound === "firstRound" ? 1 : ""}</h2></RoundNameHolder>
-                    <ArrowIconHolder><ArrowRightRelative /* onClick={raiseRound} */ style={{transform: 'translateX(-15px) rotate(270deg)'}}></ArrowRightRelative></ArrowIconHolder>
+                    <ArrowIconHolder><ArrowLeftRelative onClick={lowRound} style={{transform: 'translateX(15px) rotate(90deg)'}}></ArrowLeftRelative></ArrowIconHolder>
+                    <RoundNameHolder><h2>Round: {currentRound === "firstRound" ? 1 : currentRound === "secondRound" ? 2 : ''}</h2></RoundNameHolder>
+                    <ArrowIconHolder><ArrowRightRelative onClick={raiseRound} style={{transform: 'translateX(-15px) rotate(270deg)'}}></ArrowRightRelative></ArrowIconHolder>
                   </ArrowsHolder>
                         {allFantasyPastTeams?.length > 0 ? (
                             <>
-                                {allFantasyPastTeams?.sort((a, b) => b.finalAverage - a.finalAverage).map((team, index) => {
-                                    console.log(team)
+                                {allFantasyPastTeams?.sort((a, b) => {
+                                    const finalA = a[currentRound]?.finalAverage ?? 0;
+                                    const finalB = b[currentRound]?.finalAverage ?? 0;
+                                    return finalB - finalA; // Sort in descending order
+                                }).map((team, index) => {
+                                 console.log(team)
                             return(
                                 <TeamBetsHolder key={index}
                                 initial={{ height: '100px' }}
@@ -884,13 +912,13 @@ const Fantasy = () => {
                                         }} />
                                         </SmallAvatar> 
                                         <SmallSmallPlayerName><h2>{team.playerName}</h2></SmallSmallPlayerName>
-                                        <SmallAvatar><h2>FIXTURE RATING: <br/><span style={{color: getBackgroundColor(team.firstRound.teamAverage)}}>{team.firstRound.teamAverage}</span></h2></SmallAvatar>
-                                        <SmallAvatar><h2>PUSH FOR TRAININGS: <br/><span style={{color: team.firstRound.addedAverage > 0 ? "green" : "white"}}>{team.firstRound.addedAverage > 0 && "+"} {team.firstRound.addedAverage}</span></h2></SmallAvatar>
-                                        <SmallAvatar><h2>FINAL RATING: <br/><span style={{color: getBackgroundColor(team.firstRound.finalAverage)}}>{team.firstRound.finalAverage}</span></h2></SmallAvatar>
+                                        <SmallAvatar><h2>FIXTURE RATING: <br/><span style={{color: getBackgroundColor(team[currentRound]?.teamAverage)}}>{team[currentRound]?.teamAverage}</span></h2></SmallAvatar>
+                                        <SmallAvatar><h2>PUSH FOR TRAININGS: <br/><span style={{color: team[currentRound]?.addedAverage > 0 ? "green" : "white"}}>{team[currentRound]?.addedAverage > 0 && "+"} {team[currentRound]?.addedAverage}</span></h2></SmallAvatar>
+                                        <SmallAvatar><h2>FINAL RATING: <br/><span style={{color: getBackgroundColor(team[currentRound]?.finalAverage)}}>{team[currentRound]?.finalAverage}</span></h2></SmallAvatar>
                                     </SmallRower>
                                     {expandedIndex === index && (
                                         <LowRower>
-                                            {Object.entries(team.firstRound.players).map(([area, players]) => {
+                                            {Object.entries(team[currentRound]?.players).map(([area, players]) => {
                                                 return(
                                                     <>
                                                     {players.map((player, playerIndex) => {
@@ -919,7 +947,7 @@ const Fantasy = () => {
                         })}
                             </>
                         ) : (
-                            <h2>THERE ARE <br/>NO PAST TEAMS YET</h2>
+                            <CircularProgress sx={{width: 50, height: 50}} />
                         )}
                 </LeagueRowBets>
         </Container>

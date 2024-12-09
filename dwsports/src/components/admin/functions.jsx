@@ -419,7 +419,7 @@ const fetchRatingTwo = async (teams) => {
     console.log("areas", areas)
     for (const area of areas) {
       for (const player of area) {
-          console.log("player", player)
+          
         let currentRound;
         const filter = leagues.filter((el) => el.league === player.leagueName);
         console.log("filter", filter)
@@ -506,17 +506,18 @@ const fetchRatingTwo = async (teams) => {
             const response = await axios.request(options);
         
             // Check if the fixture status is "FT" (Full Time)
+            
             if (response.data.response[0].fixture.status.short === "FT") {
               response.data.response[0].players.forEach((el) => {
                 if (el.team.name === teamName) {
                   // Check if player matches and update rating
                   el.players.forEach((player) => {
                     if (player.player.id === playerId) {
-                      console.log("Found player:", player);
+                      //console.log("Found player:", player);
         
                       const playerRating = player.statistics[0].games.rating;
                       
-                      console.log("Player rating:", playerRating);
+                      //console.log("Player rating:", playerRating);
         
                       // Now, let's ensure the teams data gets updated
                       const areas = Object.values(teams);
@@ -525,8 +526,39 @@ const fetchRatingTwo = async (teams) => {
                         Object.keys(players).forEach((area) => {
                           players[area].forEach((p) => {
                             if (p.id === playerId) {
-                              console.log(`Updating player: ${p.name}`);
+                              //console.log(`Updating player: ${p.name}`);
                               p.lastMatchRating = playerRating ? parseFloat(parseFloat(playerRating).toFixed(2)) : null;
+                              p.isMatchCancelled = false
+                            }
+                          });
+                        });
+                      });
+                    }
+                  });
+                }
+              });
+            } else if(response.data.response[0].fixture.status.short === "PST"){
+              response.data.response[0].players.forEach((el) => {
+                if (el.team.name === teamName) {
+                  // Check if player matches and update rating
+                  el.players.forEach((player) => {
+                    if (player.player.id === playerId) {
+                      //console.log("Found player:", player);
+        
+                      const playerRating = player.rating
+                      
+                      //console.log("Player rating:", playerRating);
+        
+                      // Now, let's ensure the teams data gets updated
+                      const areas = Object.values(teams);
+                      areas.forEach((team) => {
+                        const players = team.nextMatch.players;
+                        Object.keys(players).forEach((area) => {
+                          players[area].forEach((p) => {
+                            if (p.id === playerId) {
+                              //console.log(`Updating player: ${p.name}`);
+                              p.lastMatchRating = playerRating ? parseFloat(parseFloat(playerRating).toFixed(2)) : null;
+                              p.isMatchCancelled = true
                             }
                           });
                         });
