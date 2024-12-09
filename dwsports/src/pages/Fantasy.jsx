@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatePresence,motion } from 'framer-motion';
 import {Link as LinkR} from 'react-router-dom'
 import { LowRower, RowerRow, SmallAvatar, SmallAvatarTwo, SmallPlayerName, SmallRower, SmallSmallPlayerName, StyledButton } from '../components';
-import { Avatar } from '@mui/material';
+import { Avatar, CircularProgress } from '@mui/material';
 import { supabase } from '../supabase/client';
 import { getBackgroundColor, startCountdown, useAuth } from './functions';
 import { DndContext,useDraggable,useDroppable,DragOverlay } from '@dnd-kit/core';
@@ -214,19 +214,26 @@ const Fantasy = () => {
     }
 
     const getAllFantasyTeams = async () => {
-        setLoadingFantasyTeams(true)
-          const { data: rows, error: firstError } = await supabase
-              .from('fantasyFootball')
-              .select('*')
-              .not('nextMatch', 'is', null);
-  
-          if (firstError) {
-              console.log("error", firstError);
-          } else {
-            return rows
-          }
-        setLoadingFantasyTeams(false)
-    }
+        setLoadingFantasyTeams(true); // Show the loader
+        try {
+            const { data: rows, error } = await supabase
+                .from('fantasyFootball')
+                .select('*')
+                .not('nextMatch', 'is', null);
+
+            if (error) {
+                console.error("Error fetching teams:", error);
+                return;
+            }
+
+            setAllFantasyTeams(rows); // Update state with fetched data
+            console.log("Fetched teams:", rows);
+        } catch (err) {
+            console.error("Unexpected error:", err);
+        } finally {
+            setLoadingFantasyTeams(false); // Hide the loader
+        }
+    };
 
     const getPastFantasyTeams = async () => {
         setLoadingFantasyTeams(true)
@@ -417,12 +424,12 @@ const Fantasy = () => {
         }
         if(allFantasyTeams && gameStarted){
             for (const team of allFantasyTeams){
-                console.log(team)
+                
                 const allPlayers = Object.values(team.nextMatch.players).flat();
-                console.log("allPlayers",allPlayers)
+                
                 if (allPlayers.length > 0) {
                     team.nextMatch.teamAverage = getAveragePlayerRating(allPlayers)
-                    console.log(team)
+                    
                 } else {
                     setTeamAverage(0)
                 }
@@ -436,11 +443,12 @@ const Fantasy = () => {
         }
     }, [droppedPlayers]);
 
+    
+    
     useEffect(() => {
-        if(openTeamsNextRound){
-            getAllFantasyTeams().then(() => setAllFantasyTeams(rows));
-        }
-    }, [openTeamsNextRound])
+        getAllFantasyTeams(); // Always fetch data when the component mounts
+    }, []);
+
     useEffect(() => {
         if(openTeamsPastRound){
             getPastFantasyTeams();
@@ -642,73 +650,208 @@ const Fantasy = () => {
         </Title>
         <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
         <AnimatePresence>
+       
         {openTeamsNextRound && (
-        <Container initial="expanded" animate={isDateExpanded ? "collapsed" : "expanded"} 
-            variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
-                 <LeagueRowBets variants={item}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
+        <Container
+            initial="expanded"
+            animate={isDateExpanded ? "collapsed" : "expanded"}
+            variants={variantsTwo}
+            transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}
+        >
+            <LeagueRowBets
+                variants={item}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}
+            >
+                {loadingFantasyTeams ? (
+                    <CircularProgress sx={{ width: 40, height: 40 }} />
+                ) : (
+                    <>
                         {allFantasyTeams?.length > 0 ? (
                             <>
-                                {allFantasyTeams?.map((team, index) => {
-                            
-                            return(
-                                <TeamBetsHolder key={index}
-                                initial={{ height: '100px' }}
-                                animate={{ height: expandedIndex === index ? '330px' : '100px' }}
-                                transition={{ duration: 0.5 }}>
-                                {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
-                                    <SmallRower>
-                                       <SmallAvatar>
-                                       <Avatar alt="Home Team Logo" src={team.avatar} sx={{
-                                        width: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 },
-                                        height: { xs: 50, sm: 50, md: 70, lg: 70, xl: 70 }, transform: 'translateY(5px)'
-                                        }} />
-                                        </SmallAvatar> 
-                                        <SmallPlayerName><h2>{team.playerName}</h2></SmallPlayerName>
-                                        <SmallAvatar><h2>TRAININGS: <br/><span>{team.trainingsNumber}</span></h2></SmallAvatar>
-                                        <SmallAvatar><h2>TEAM RATING: <br/>{gameStarted ? <span style={{color: getBackgroundColor(team.nextMatch.teamAverage)}}>{team.nextMatch.teamAverage}</span> : 
-                                        <span style={{color: getBackgroundColor(team.teamRating)}}>{team.nextMatch.teamRating}</span>}</h2></SmallAvatar>
-                                    </SmallRower>
-                                    {expandedIndex === index && (
-                                        <LowRower>
-                                            {Object.entries(team.nextMatch.players).map(([area, players]) => {
-                                                return(
-                                                    <>
-                                                    {players.map((player, playerIndex) => {
-                                                        return(
-                                                            <RowerRow key={playerIndex}>
-                                                                <SmallAvatar>
-                                                            <Avatar alt="Home Team Logo" src={player.image} sx={{
-                                                                width: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
-                                                                height: { xs: 40, sm: 40, md: 70, lg: 70, xl: 70 },
-                                                                }} />
-                                                                <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>
-                                                                </SmallAvatar> 
-                                                                <SmallPlayerName><h2>{player.name}</h2>{player.isMatchCancelled === true ? <h2>MATCH CANCELLED</h2> : ''}</SmallPlayerName>
-                                                                <SmallAvatarTwo><h2>{player.position.charAt(0)}</h2></SmallAvatarTwo>
-                                                                <SmallAvatarTwo>{gameStarted ? <h2 style={{color: getBackgroundColor(player.lastMatchRating)}}>{player.lastMatchRating !== null ? player.lastMatchRating : ''}</h2>
-                                                                : <h2 style={{color: getBackgroundColor(player.rating)}}>{player.rating !== null ? player.rating : 0}</h2>}</SmallAvatarTwo>
-                                                            </RowerRow>
-                                                        )
-                                                    })}
-                                                    </>
-                                                )
-                                            })}
-                                        </LowRower>
-                                    )}
-                                </TeamBetsHolder>
-                            )
-                        })}
+                                {allFantasyTeams.map((team, index) => (
+                                    <TeamBetsHolder
+                                        key={index}
+                                        initial={{ height: '100px' }}
+                                        animate={{
+                                            height:
+                                                expandedIndex === index
+                                                    ? '330px'
+                                                    : '100px',
+                                        }}
+                                        transition={{ duration: 0.5 }}
+                                    >
+                                        {expandedIndex === index ? (
+                                            <SmallArrowDown
+                                                style={{ transform: 'rotate(180deg)' }}
+                                                onClick={() => toggleExpand(index)}
+                                            />
+                                        ) : (
+                                            <SmallArrowDown onClick={() => toggleExpand(index)} />
+                                        )}
+                                        <SmallRower>
+                                            <SmallAvatar>
+                                                <Avatar
+                                                    alt="Home Team Logo"
+                                                    src={team.avatar}
+                                                    sx={{
+                                                        width: {
+                                                            xs: 50,
+                                                            sm: 50,
+                                                            md: 70,
+                                                            lg: 70,
+                                                            xl: 70,
+                                                        },
+                                                        height: {
+                                                            xs: 50,
+                                                            sm: 50,
+                                                            md: 70,
+                                                            lg: 70,
+                                                            xl: 70,
+                                                        },
+                                                        transform: 'translateY(5px)',
+                                                    }}
+                                                />
+                                            </SmallAvatar>
+                                            <SmallPlayerName>
+                                                <h2>{team.playerName}</h2>
+                                            </SmallPlayerName>
+                                            <SmallAvatar>
+                                                <h2>
+                                                    TRAININGS: <br />
+                                                    <span>{team.trainingsNumber}</span>
+                                                </h2>
+                                            </SmallAvatar>
+                                            <SmallAvatar>
+                                                <h2>
+                                                    TEAM RATING: <br />
+                                                    {gameStarted ? (
+                                                        <span
+                                                            style={{
+                                                                color: getBackgroundColor(
+                                                                    team.nextMatch.teamAverage
+                                                                ),
+                                                            }}
+                                                        >
+                                                            {team.nextMatch.teamAverage}
+                                                        </span>
+                                                    ) : (
+                                                        <span
+                                                            style={{
+                                                                color: getBackgroundColor(
+                                                                    team.teamRating
+                                                                ),
+                                                            }}
+                                                        >
+                                                            {team.nextMatch.teamRating}
+                                                        </span>
+                                                    )}
+                                                </h2>
+                                            </SmallAvatar>
+                                        </SmallRower>
+                                        {expandedIndex === index && (
+                                            <LowRower>
+                                                {Object.entries(team.nextMatch.players).map(
+                                                    ([area, players]) => {
+                                                        return (
+                                                            <>
+                                                                {players.map(
+                                                                    (player, playerIndex) => {
+                                                                        return (
+                                                                            <RowerRow key={playerIndex}>
+                                                                                <SmallAvatar>
+                                                                                    <Avatar
+                                                                                        alt="Home Team Logo"
+                                                                                        src={player.image}
+                                                                                        sx={{
+                                                                                            width: {
+                                                                                                xs: 40,
+                                                                                                sm: 40,
+                                                                                                md: 70,
+                                                                                                lg: 70,
+                                                                                                xl: 70,
+                                                                                            },
+                                                                                            height: {
+                                                                                                xs: 40,
+                                                                                                sm: 40,
+                                                                                                md: 70,
+                                                                                                lg: 70,
+                                                                                                xl: 70,
+                                                                                            },
+                                                                                        }}
+                                                                                    />
+                                                                                    <PlayerTeamLogo>
+                                                                                        <img
+                                                                                            src={
+                                                                                                player.teamLogo
+                                                                                            }
+                                                                                            alt="logo"
+                                                                                        />
+                                                                                    </PlayerTeamLogo>
+                                                                                </SmallAvatar>
+                                                                                <SmallPlayerName>
+                                                                                    <h2>{player.name}</h2>
+                                                                                    {player.isMatchCancelled === true && (
+                                                                                        <h2>
+                                                                                            MATCH CANCELLED
+                                                                                        </h2>
+                                                                                    )}
+                                                                                </SmallPlayerName>
+                                                                                <SmallAvatarTwo>
+                                                                                    <h2>
+                                                                                        {player.position.charAt(0)}
+                                                                                    </h2>
+                                                                                </SmallAvatarTwo>
+                                                                                <SmallAvatarTwo>
+                                                                                    {gameStarted ? (
+                                                                                        <h2
+                                                                                            style={{
+                                                                                                color: getBackgroundColor(
+                                                                                                    player.lastMatchRating
+                                                                                                ),
+                                                                                            }}
+                                                                                        >
+                                                                                            {player.lastMatchRating !== null
+                                                                                                ? player.lastMatchRating
+                                                                                                : ''}
+                                                                                        </h2>
+                                                                                    ) : (
+                                                                                        <h2
+                                                                                            style={{
+                                                                                                color: getBackgroundColor(
+                                                                                                    player.rating
+                                                                                                ),
+                                                                                            }}
+                                                                                        >
+                                                                                            {player.rating !== null
+                                                                                                ? player.rating
+                                                                                                : 0}
+                                                                                        </h2>
+                                                                                    )}
+                                                                                </SmallAvatarTwo>
+                                                                            </RowerRow>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </>
+                                                        );
+                                                    }
+                                                )}
+                                            </LowRower>
+                                        )}
+                                    </TeamBetsHolder>
+                                ))}
                             </>
                         ) : (
-                            <h2>THERE ARE <br/>NO TEAMS YET</h2>
+                            <h2>THERE ARE <br />NO TEAMS YET</h2>
                         )}
-                </LeagueRowBets>
+                    </>
+                )}
+            </LeagueRowBets>
         </Container>
-        )}
+    )}
         {openTeamsPastRound && (
         <Container initial="expanded" animate={isDateExpanded ? "collapsed" : "expanded"} 
             variants={variantsTwo} transition={{ type: 'tween', ease: 'linear', duration: 0.5 }}>
