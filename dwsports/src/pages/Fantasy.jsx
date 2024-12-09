@@ -223,7 +223,7 @@ const Fantasy = () => {
           if (firstError) {
               console.log("error", firstError);
           } else {
-            setAllFantasyTeams(rows)
+            return rows
           }
         setLoadingFantasyTeams(false)
     }
@@ -438,7 +438,7 @@ const Fantasy = () => {
 
     useEffect(() => {
         if(openTeamsNextRound){
-            getAllFantasyTeams();
+            getAllFantasyTeams().then(() => setAllFantasyTeams(rows));
         }
     }, [openTeamsNextRound])
     useEffect(() => {
