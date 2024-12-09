@@ -580,32 +580,51 @@ const fetchRatingTwo = async (teams) => {
 ////FETCH 10 TOP PLAYERS ////////////////////////
 
 const fetchTopPlayers = async () => {
-    const options = {
-      method: 'GET',
-      url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-      params: {date: '2024-12-01'},
-      headers: {
-        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+  const dates = ["2024-12-06", "2024-12-07", "2024-12-08"]; // Add your desired dates here.
+  const options = (date) => ({
+    method: 'GET',
+    url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+    params: { date },
+    headers: {
+      'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+    },
+  });
+
+  try {
+    let matches = [];
+
+    // Fetch data for all dates concurrently
+    const responses = await Promise.all(
+      dates.map((date) => axios.request(options(date)))
+    );
+
+    // Process each response to extract fixture IDs
+    responses.forEach((response) => {
+      for (const match of response.data.response) {
+        if (
+          match.league.id === 39 || // Example league IDs
+          match.league.id === 61 ||
+          match.league.id === 78 ||
+          match.league.id === 135 ||
+          match.league.id === 140
+        ) {
+          matches.push(match.fixture.id);
+        }
       }
-    };
-    
-    try {
-      let matches = []
-      const response = await axios.request(options);
-      console.log(response.data.response);
-      for (const match of response.data.response){
-        if(match.league.id === 39 || match.league.id === 61 || match.league.id === 78 ||
-          match.league.id === 135 ||match.league.id === 140){
-            matches.push(match.fixture.id)
-          }
-      }
-      await fetchPlayerRating(matches)
-      await delay(1000);
-    } catch (error) {
-      console.error(error);
-    }
+    });
+
+    console.log("Collected Matches:", matches);
+
+    // Call fetchPlayerRating with all matches
+    await fetchPlayerRating(matches);
+
+    // Optional: Delay if needed
+    await delay(500);
+  } catch (error) {
+    console.error("Error fetching top players:", error);
   }
+};
 
   const fetchPlayerRating = async (matches) => {
     for (const match of matches){
@@ -721,6 +740,134 @@ const fetchTopPlayers = async () => {
       processData();
     }
   }, [matchesProcessed, allPlayers]);
+
+
+  /// SEND TOP FANTASY TEAMS TO TELEGRAM
+
+  const fetchTopFantasyTeams = async () => {
+    const teams = []
+    const { data: firstData, error: firstError } = await supabase
+    .from('fantasyFootball')
+    .select('secondRound')
+    .not('secondRound', 'is', null)
+    if (firstError) {
+      console.error('Error inserting/updating user session data:', firstError.message)
+    } else {
+      console.log(firstData)
+      for (const team of firstData){
+        teams.push(team.secondRound)
+      }
+      const sorted = teams.sort((a, b) => b.finalAverage - a.finalAverage)
+      console.log(sorted)
+      let result = sorted.map((player, index) => {
+        console.log(index)
+        let rank
+        if (index === 0){
+          rank = "1st"
+        } else if (index === 1){
+          rank = "2nd"
+        } else if (index === 2){
+          rank = "3rd"
+        } else {
+          rank = `${index + 1}th`
+        }
+        return `\n${rank} - ${player.userName}\n\nTeam Rating: ${player.teamAverage}\nPush for trainings: +${player.addedAverage}\nFinal Rating: ${player.finalAverage}`
+      }).join("\n")
+      const imageUrl = "https://i.imghippo.com/files/cyeP4327wmw.png"
+      const messageToSend = `🏆 Ranking of the last round of Fantasy Football 🏆 \n ${result} \n\nCongratulations to the winners!!! 🎉🎉🎉`
+      console.log(messageToSend)
+      try {
+
+        const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
+        
+        if (response.data.success) {
+          console.log('Message sent successfully!');
+        } else {
+          console.log('Failed to send message');
+        }
+      } catch (error) {
+        console.log('Error sending message', error);
+      }
+    }
+  }
+
+
+  ///SEND GREATEST COMEBACKS
+
+  const getFixture = async () => {
+    const { data, error } = await supabase
+      .from("fixtures").select('fixtures').eq('leagueName', "Bundesliga")
+      if(error){
+        console.log(error)
+      }
+      if(data){
+        console.log(data)
+        data[0].fixtures.forEach(async(el) => {
+          if(el.teams.home.name === "VfL Wolfsburg" && el.teams.away.name === "FSV Mainz 05"){
+            console.log(el.fixture.id)
+            const options = {
+              method: 'GET',
+              url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+              params: {id: el.fixture.id},
+              headers: {
+                'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+              }
+            };
+            const goals = []
+            try {
+              const response = await axios.request(options);
+              console.log(response.data.response[0].events);
+              for(const event of response.data.response[0].events){
+                if(event.type === "Goal"){
+                  goals.push(event)
+                }
+              }
+              setGoals(goals)
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        })
+      }
+  }
+
+const sendComebackMessage = async (messageToSend, imageUrl) =>{
+  try {
+
+    const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
+    
+    if (response.data.success) {
+      console.log('Message sent successfully!');
+    } else {
+      console.log('Failed to send message');
+    }
+  } catch (error) {
+    console.log('Error sending message', error);
+  }
+}
+
+useEffect(() => {
+  if(goals){
+    console.log(goals)
+    let homeGoals = 1
+    let awayGoals = 2
+    
+    let result = goals.filter((goal) => goal.time.elapsed > 55).map((goal, index) => {
+      if(goal.team.name === "VfL Wolfsburg"){
+        homeGoals++
+      } else if(goal.team.name === "FSV Mainz 05"){
+        awayGoals++
+      }
+      return `\n${goal.team.name}\n${goal.time.elapsed}' - ${goal.player.name}\n${homeGoals} - ${awayGoals}`
+    }).join("\n")
+    console.log(result)
+    const messageToSend = `😲 PAST WEEKEND GREATEST COMEBACKS 😲\n\nVfL Wolfsburg vs FSV Mainz 05\n ${result}`
+    console.log(messageToSend)
+    const imageUrl = "https://i.imghippo.com/files/UVF9972hNE.webp"
+    //sendComebackMessage(messageToSend, imageUrl)
+  }
+}, [goals])
 
 
 

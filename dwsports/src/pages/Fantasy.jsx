@@ -315,6 +315,8 @@ const Fantasy = () => {
                 }
     }
 
+    console.log(droppedPlayers)
+
     const getTeamRating = () => {
         const allPlayers = Object.values(droppedTeamPlayers).flat(); 
         const totalRating = allPlayers.reduce((sum, player) => sum + player.rating, 0);
@@ -608,11 +610,13 @@ const Fantasy = () => {
           );
     };
 
+    console.log(droppedTeamPlayers)
+
     const handleDragEnd = (event) => {
         const { over, active } = event;
         
         if (over) {
-          const { value, image, position, name, teamLogo, rating, id } = active.data.current;
+          const { value, image, position, name, teamLogo, rating, id, leagueName, teamName } = active.data.current;
           
           if (value && image) {
             
@@ -620,7 +624,7 @@ const Fantasy = () => {
             
             setDroppedTeamPlayers((prev) => ({
               ...prev,
-              [over.id]: [{ id: id, value, image, teamLogo, overId: over.id, rating: rating, isDropped: true, name: name, lastMatchRating: null, position: position }], // Replace the existing player
+              [over.id]: [{ id: id, value, image, teamLogo, overId: over.id, rating: rating, isDropped: true, name: name, lastMatchRating: null, position: position, leagueName: leagueName, teamName: teamName }], // Replace the existing player
             }));
             setActivePlayerDrag(null);
           } 
@@ -642,7 +646,7 @@ const Fantasy = () => {
         const { attributes, listeners, setNodeRef, transform, isDragging  } = useDraggable({
           id: `${player.id}`,
           disabled: playerIsDropped || playerIsInjured,  
-          data: { value: player.value, image: player.photo, position: player.position, name: player.name, teamLogo: player.teamLogo, rating: player.rating, id: player.id },  // Passing chip value through drag data
+          data: { value: player.value, image: player.photo, position: player.position, name: player.name, teamLogo: player.teamLogo, rating: player.rating, id: player.id, leagueName: player.leagueName, teamName: player.teamName },  // Passing chip value through drag data
         });
       
         // Apply transform styles during drag

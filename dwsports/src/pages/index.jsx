@@ -1258,6 +1258,11 @@ export const TeamLogoWrapper = styled.div`
     width: 100%;
     height: 70%;
     ${props => props.theme.displayFlexCenter};
+    img{
+        width: 100%;
+        display: block;
+        object-fit: cover;
+    }
 `;
 export const TeamLogoText = styled.div`
     width: 100%;

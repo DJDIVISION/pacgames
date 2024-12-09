@@ -109,6 +109,34 @@ const Bets = () => {
 
   const countries = [
     {
+      name: "EUROPE",
+      logo: europe,
+      id: 6,
+      leagues: [
+        {
+          league: "Champions League",
+          logo: champions,
+          name: "UEFA",
+          id: 2,
+          currentRound: 6
+        },
+        {
+          league: "Europa League",
+          logo: europa,
+          name: "UEFA",
+          id: 3,
+          currentRound: 6
+        },
+        {
+          league: "Conference League",
+          logo: conference,
+          name: "UEFA",
+          id: 848,
+          currentRound: 5
+        }
+      ]
+    },
+    {
       name: "ENGLAND",
       logo: england,
       id: 1,
@@ -240,36 +268,7 @@ const Bets = () => {
           currentRound: 15
         }
       ]
-    },
-    {
-      name: "EUROPE",
-      logo: europe,
-      id: 6,
-      leagues: [
-        {
-          league: "Champions League",
-          logo: champions,
-          name: "UEFA",
-          id: 2,
-          currentRound: 6
-        },
-        {
-          league: "Europa League",
-          logo: europa,
-          name: "UEFA",
-          id: 3,
-          currentRound: 6
-        },
-        {
-          league: "Conference League",
-          logo: conference,
-          name: "UEFA",
-          id: 848,
-          currentRound: 5
-        }
-      ]
     }
-
   ]
   const theme = useTheme();
   const [checkedMultiple, setCheckedMultiple] = useState(false);
@@ -1238,21 +1237,7 @@ const getWinnings = (el) => {
   return ''
   }
 
-  const getFixture = async () => {
-    const { data, error } = await supabase
-      .from("fixtures").select('fixtures').eq('leagueName', "Ligue 1")
-      if(error){
-        console.log(error)
-      }
-      if(data){
-        console.log(data)
-        data[0].fixtures.forEach((el) => {
-          if(el.teams.home.name === "Nice" && el.teams.away.name === "Strasbourg"){
-            console.log(el)
-          }
-        })
-      }
-  }
+  
 
   const handleBetClick = (match, name, value, odd, filter) => {
     console.log(match)
