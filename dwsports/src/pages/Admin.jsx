@@ -60,7 +60,7 @@ const Admin = () => {
         const messageToSend = `\n⚽️ TODAY'S CHAMPIONS LEAGUE MATCHES ⚽️\n${result}`;
         console.log(messageToSend)
         try {
-          const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrl, inlineButtons });
+          const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrl });
           if (response.data.success) {
               console.log('Message sent successfully!');
           } else {
