@@ -114,11 +114,12 @@ export const PlayerUser = styled.div`
 `;
 
 export const RoomAvailable = styled.div`
-    width: 15%;
+    min-width: 33.3%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     color: ${props => props.theme.text};
     font-size: 18px;
     border-left: 0.5px solid ${props => props.theme.MainAccent};
@@ -128,11 +129,12 @@ export const RoomAvailable = styled.div`
 `;
 
 export const RoomNumber = styled.div`
-    width: 7.5%;
+    width: 25%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid blue;
 `;
 
 export const NumberWrapper = styled.div`
@@ -158,11 +160,11 @@ export const RoomWrapper = styled(motion.div)`
 `;
 
 export const Tab = styled.div`
-    width: 30%;
+    width: 33.3%;
     height: 100%;
     border: 1px solid aqua;
     color: ${props => props.theme.text};
-    font-size: 18px;
+    font-size: 12px;
     background: ${({ activeBackground }) => (activeBackground ? "orange" : "transparent")};
     display: flex;
     align-items: center;
@@ -174,9 +176,7 @@ export const TabWrapper = styled.div`
     height: 10%;
     display: flex;
     align-items: center;
-    @media(max-width:498px){
-        width: 180%;
-    }
+    border: 1px solid aqua;
 `;
 
 export const FilterContainer = styled(motion.div)`
@@ -189,14 +189,12 @@ export const FilterContainer = styled(motion.div)`
     padding: 20px 0;
     border: 1px solid aqua;
     overflow-y: scroll;
-    @media(max-width:498px){
-        width: 180%;
-    }
+    
 `;
 
 export const BlackSection = styled.div`
     width: 100vw;
-    min-height: 100vh;
+    height: 100vh;
     background: ${props => props.theme.body};
     display: flex;
     flex-direction: column;
@@ -226,7 +224,7 @@ export const WelcomeTitle = styled.div`
     font-size: 64px;
     @media screen and (max-width: 768px){
         height: 10vh;
-        font-size: 34px;
+        font-size: 24px;
     }
 `;
 
@@ -235,26 +233,15 @@ export const Tabs = styled.div`
   height: 80vh;
   display: flex;
   align-items: center;
-  justify-content: center;
-    @media(max-width: 768px){
-            height: 90vh;
-    }
+  flex-direction: column;
+  border: 1px solid red;
     @media(max-width: 498px){
-        overflow-x: scroll;
         padding: 20px;
+        height: 90vh;
+
     }
 `;
 
-export const TabsContainer = styled.div`
-    width: 80%;
-    height: 90%;
-  @media screen and (max-width: 768px){
-    width: 90%;
-  }
-  @media(max-width: 498px){
-    width: 180%;
-}
-`;
 
 export const Disconnect = styled(ExitToAppIcon)`
     &&&{

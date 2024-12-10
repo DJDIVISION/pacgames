@@ -884,7 +884,7 @@ export const Rower = styled.div`
 `;
 export const LeagueRower = styled.div`
     width: 100%;
-    height: 60px;
+    min-height: 60px;
     ${props => props.theme.displayFlexCenter};
 `;
 export const LeagueWrapper = styled.div`
@@ -1075,6 +1075,14 @@ export const RowerRow = styled.div`
     min-height: 50px;
     ${props => props.theme.displayFlexCenter};
     margin: 5px 0;
+    position: relative;
+`;
+export const RowerRowScroll = styled.div`
+    width: 100%;
+    min-height: 50px;
+    ${props => props.theme.displayFlexCenter};
+    margin: 5px 0;
+    overflow-x: auto;
     position: relative;
 `;
 export const MiniRowerRow = styled.div`

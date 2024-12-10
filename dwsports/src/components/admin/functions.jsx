@@ -268,7 +268,7 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
                   console.log("messageID", messageId)
                   setTimeout(async () => {
                       await deleteTelegramMessage(messageId);
-                  }, 6000000);
+                  }, 9000000);
               } else {
                   console.log('Failed to send message');
               }

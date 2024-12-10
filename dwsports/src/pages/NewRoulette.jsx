@@ -83,7 +83,8 @@ const Roulete = () => {
     const [playOnline, setPlayOnline] = useState(false)
     const [openChatMenu, setOpenChatMenu] = useState(false)
     const [openRouletteMenu, setOpenRouletteMenu] = useState(true)
-    const [isDateExpanded, setIsDateExpanded] = useState(true)
+    const [rooms, setRooms] = useState([]);
+    const [players, setPlayers] = useState([]);
     const [latestNumbers, setLatestNumbers] = useState(LatestNumbers)
     const [allDroppedChips, setAllDroppedChips] = useState({});
     const [allDroppedCornerChips, setAllDroppedCornerChips] = useState({});
@@ -125,7 +126,7 @@ const Roulete = () => {
     const {droppedBorderLeftChipsLast, setDroppedBorderLeftChipsLast} = RouletteState();
     const {droppedBorderTopChipsLast, setDroppedBorderTopChipsLast} = RouletteState();
     const [playerAvatar, setPlayerAvatar] = useState("https://lh3.googleusercontent.com/a/ACg8ocLECQcSdS5Tc1zKpfviRv5Mr7cY4IeOunMK0Z9-dpbtJUvGsdgf=s96-c");
-    const [playerName, setPlayerName] = useState("Victor Ramirez");
+    const [playerName, setPlayerName] = useState(null);
     const [placeBets, setPlaceBets] = useState(false)
     const [timeOutStarted, setTimeOutStarted] = useState(false)
     const [gameStarted, setGameStarted] = useState(false)
@@ -659,13 +660,19 @@ const Roulete = () => {
     }
 
     useEffect(() => {
-        /* const fetchInitialData = () => {
+        const fetchInitialData = () => {
             socket.emit('getRooms');
             socket.emit('getAllPlayers');
         };
-        fetchInitialData(); */
+        fetchInitialData();
         
-        
+        socket.on('roomsUpdate', (rooms) => {
+            setRooms(rooms);
+        });
+        socket.on('allPlayersUpdate', (allPlayers) => {
+            const flattenedPlayers = allPlayers.flatMap(room => room.players);
+            setPlayers(flattenedPlayers);
+        });
         socket?.on('thisIsYourId', (data) => {
             setMyId(data.playerId)
             setActiveRoom(data.room)
@@ -793,6 +800,8 @@ const Roulete = () => {
             }, 3000)
         });
         return () => {
+            socket.off('allPlayersUpdate');
+            socket.off('roomsUpdate');
             socket.off('thisIsYourId');
             socket.off('update_players');
             socket.off('timeoutStarting');
@@ -803,6 +812,8 @@ const Roulete = () => {
             socket.off('player-lost');
         }
     }, [socket]);
+
+    console.log(rooms)
 
     const joinRoom = async (room) => {
         socket?.emit("join-room", {

@@ -1,10 +1,10 @@
 import React, {useState,useEffect} from 'react'
-import {BlackSection,WelcomeTitle,Tabs,TabsContainer,TabWrapper,Tab,FilterContainer,RoomWrapper,
+import {BlackSection,WelcomeTitle,Tabs,TabWrapper,Tab,FilterContainer,RoomWrapper,
   RoomNumber,NumberWrapper,RoomAvailable,PlayersOnline,GridItem,JoinButton,PlayerHolder,PlayerAvatar,PlayerUser,
   GameProgressText,GameProgressRound,GameProgressCircle,VolumeIcon,ButtonHoverAbsolute,BlackSectionSmart
 } from '../blackjack/index'
 import { motion, useAnimate, stagger } from "framer-motion";
-import { ArrowLeft, StyledButton } from '../../pages';
+import { ArrowLeft, ArrowLeftRelative, SmallArrowDown, StyledButton } from '../../pages';
 import { BetState } from '../../context/BetsContext';
 import Swal from "sweetalert2";
 import io from 'socket.io-client';
@@ -13,6 +13,8 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../pages/functions';
 import { animationFive, transition } from '../../animations';
 import {Link as LinkR} from 'react-router-dom'
+import { AbsoluteIconButtonLeft, TeamBetsHolderBlur } from '../../pages/indexThree';
+import { LeagueRower, LowRower, RowerRow, RowerRowScroll } from '../../components/index';
 
 
 const takePlayerName = async () => {
@@ -48,6 +50,7 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
   const [playerAvatar, setPlayerAvatar] = useState(null);
   const [myId, setMyId] = useState("");
   const navigate = useNavigate();
+  const [expandedIndex, setExpandedIndex] = useState(null);
 
   useEffect(() => {
     
@@ -78,13 +81,61 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
     });
   }
 
+  const toggleExpand = (index) => {
+    setExpandedIndex(expandedIndex === index ? null : index);
+  };
+
   return (
     <motion.div initial="out" animate="in" variants={animationFive} transition={transition}>
     <BlackSection>
-      <LinkR to="/"><ArrowLeft></ArrowLeft></LinkR>
+    <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
       <WelcomeTitle>American Roulette</WelcomeTitle>
       <Tabs>
-        <TabsContainer>
+      <TabWrapper>
+            <Tab className={`box ${activeBackground === 1 ? 'active' : ''}`} onClick={() => handleClick(1)}>ROOMS</Tab>
+            <Tab className={`box ${activeBackground === 2 ? 'active' : ''}`} onClick={() => handleClick(2)}>TOURNAMENT</Tab>
+            <Tab className={`box ${activeBackground === 3 ? 'active' : ''}`} onClick={() => handleClick(3)}>TOP PLAYERS</Tab>
+      </TabWrapper>
+      <FilterContainer initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.3 },
+                },
+              }}>
+                {rooms?.map((room, index) => {
+                  return(
+                    <TeamBetsHolderBlur key={index}
+                      initial={{ minHeight: '60px' }}
+                      animate={{ minHeight: expandedIndex === index ? '250px' : '60px' }}
+                      transition={{ duration: 0.5 }}>
+                        {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                        <LeagueRower style={{width: '90%'}}>
+                        <RoomAvailable>
+                        Room {room.id}
+                        </RoomAvailable>
+                        {room.players.filter(p => p.playerId !== "").length < 20 ? (
+                      <>
+                      <RoomAvailable>Available ✅</RoomAvailable>
+                      <RoomAvailable>PLAYERS: {room.players.filter(p => p.playerId !== "").length}/20</RoomAvailable>
+                      </>
+                    ) : (
+                      <>
+                      <RoomAvailable>PLAYERS: {room.players.filter(p => p.playerId !== "").length}/20</RoomAvailable>
+                      <RoomAvailable>Full ❌</RoomAvailable>
+                      </>
+                    )}
+                    
+                        </LeagueRower>
+                    </TeamBetsHolderBlur>
+                  )
+                })}
+      </FilterContainer>
+      </Tabs>
+      {/* <Tabs>
+        
             <TabWrapper>
               <Tab className={`box ${activeBackground === 1 ? 'active' : ''}`} onClick={() => handleClick(1)}>ROOMS</Tab>
               <Tab className={`box ${activeBackground === 2 ? 'active' : ''}`} onClick={() => handleClick(2)}>TOURNAMENT</Tab>
@@ -141,10 +192,9 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
               )
             })}
             </FilterContainer>
-        </TabsContainer>
-      </Tabs>
+       
+      </Tabs> */}
     </BlackSection>
-    <BlackSectionSmart>TURN YOUR DEVICE FOR A BETTER PLAY</BlackSectionSmart>
     </motion.div>
   )
 }
