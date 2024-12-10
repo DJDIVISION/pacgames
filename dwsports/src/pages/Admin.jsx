@@ -15,6 +15,7 @@ const Admin = () => {
     const navigate = useNavigate()
     const [allPlayers, setAllPlayers] = useState([])
     const [goals, setGoals] = useState([])
+    const [matches, setMatches] = useState([])
     const [allTeams, setAllTeams] = useState([])
     const [topPlayers, setTopPlayers] = useState([])
     const [matchesProcessed, setMatchesProcessed] = useState(false);
@@ -25,8 +26,78 @@ const Admin = () => {
     const [endDate, setEndDate] = useState('2024-12-09 10:00:00')
     /* console.log(leagues) */
 
+    function delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
 
+    /* const sendMatchesStarted = async (matches) => {
+      for(const match of matches){
+        console.log(match)
+        const imageUrls = [match.teams.home.logo, match.teams.away.logo]
+        
+        const messageToSend = `⏳ Match Started ⏳\n\n🇪🇺 UEFA CHAMPIONS LEAGUE\n\n${match.teams.home.name} vs ${match.teams.away.name}\n\nStadium: ${match.fixture.venue.name}\nCity: ${match.fixture.venue.city}`
+        console.log(messageToSend)
+        try {
     
+          const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrls });
+          
+          if (response.data.success) {
+            console.log('Message sent successfully!');
+          } else {
+            console.log('Failed to send message');
+          }
+        } catch (error) {
+          console.log('Error sending message', error);
+        }
+        await delay(1000)
+      }
+      
+    }
+    
+    const sendMatchStarted = async () => {
+      const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+        params: {date: '2024-12-10'},
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+      const matches = []
+      try {
+        const response = await axios.request(options);
+        console.log(response.data.response);
+        const now = new Date();
+
+        // Format date and time components
+        const year = now.getUTCFullYear();
+        const month = String(now.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(now.getUTCDate()).padStart(2, '0');
+        const hours = String(now.getUTCHours()).padStart(2, '0');
+        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+
+        // Construct the final ISO-like string
+        const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+00:00`;
+
+        console.log(formattedDate);
+        for (const match of response.data.response) {
+          if (match.league.id === 2 && match.fixture.date > formattedDate) {
+            matches.push(match)
+          }
+        }
+        setMatches(matches)
+        await sendMatchesStarted(matches)
+        
+      } catch (error) {
+        console.error(error);
+      }
+    }
+        
+        
+    console.log(matches)    */ 
+
     let processedEvents = {}; // Global dictionary to track processed events per match
 
         function delay(ms) {
@@ -54,7 +125,7 @@ const Admin = () => {
                 if(match.league.name === "Ligue 1"){
                     league = "🇫🇷"
                 }
-                if(match.match.league.name === "UEFA Champions League"){
+                if(match.league.name === "UEFA Champions League"){
                   league = "🇪🇺"
               }
                 // Initialize processed events for this match if not already done
@@ -156,7 +227,7 @@ const Admin = () => {
     
                 const matches = [];
                 response.data.response.forEach((match) => {
-                    if ([2].includes(match.league.id)) { // Filter relevant leagues
+                    if ([39, 140, 135, 61, 78, 2].includes(match.league.id)) { // Filter relevant leagues
                         matches.push(match);
                     }
                 });
@@ -174,18 +245,11 @@ const Admin = () => {
             return () => clearInterval(intervalId); // Cleanup interval on component unmount
         }, []);
 
-    
-
-        
-        
-        
-        
-
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={writeSingleMessage} */ onClick={() => navigate('/newroulette')}>CHAMPIONS</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={sendMatchStarted} */ /* onClick={() => navigate('/newroulette')} */>CHAMPIONS</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
