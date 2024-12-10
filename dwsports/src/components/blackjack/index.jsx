@@ -128,6 +128,17 @@ export const RoomAvailable = styled.div`
     }
 `;
 
+export const TabsContainer = styled.div`
+    width: 80%;
+    height: 90%;
+  @media screen and (max-width: 768px){
+    width: 90%;
+  }
+  @media(max-width: 498px){
+    width: 90% !important;
+}
+`;
+
 export const RoomNumber = styled.div`
     width: 25%;
     height: 100%;
