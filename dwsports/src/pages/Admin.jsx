@@ -51,12 +51,12 @@ const Admin = () => {
         }).join("\n")
         console.log(result)
         const imageUrl = "https://i.imghippo.com/files/IZpi8698ZlA.webp"
-        const inlineButtons = [
+        /* const inlineButtons = [
           [
             { text: '👍 0', callback_data: 'like' },
             { text: '👎 0', callback_data: 'dislike' }
           ]
-        ]
+        ] */
         const messageToSend = `\n⚽️ TODAY'S CHAMPIONS LEAGUE MATCHES ⚽️\n${result}`;
         console.log(messageToSend)
         try {

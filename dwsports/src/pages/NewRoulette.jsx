@@ -73,12 +73,14 @@ import { useNavigate } from 'react-router-dom';
 import { DisplayHolder, SmallIconHolder } from './indexTwo.jsx';
 import { message as ANTDmessage } from 'antd';
 import { ArrowLeftRelative, StyledButton } from './index.jsx';
+import RouletteTabs from '../components/roulette/RouletteTabs.jsx';
 
-/* const socket = io.connect("http://localhost:8080") */
+const socket = io.connect("http://localhost:8080")
 
 const Roulete = () => {
 
     const [openTableMenu, setOpenTableMenu] = useState(false)
+    const [playOnline, setPlayOnline] = useState(false)
     const [openChatMenu, setOpenChatMenu] = useState(false)
     const [openRouletteMenu, setOpenRouletteMenu] = useState(true)
     const [isDateExpanded, setIsDateExpanded] = useState(true)
@@ -884,7 +886,11 @@ const Roulete = () => {
           }
       }
     
-
+    if (!playOnline) {
+        return (
+            <RouletteTabs socket={socket} rooms={rooms} players={players} playerName={playerName} setPlayerName={setPlayerName} />
+        )
+    }
 
   return (
     <Section>

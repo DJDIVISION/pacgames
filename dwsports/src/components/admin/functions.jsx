@@ -870,6 +870,56 @@ useEffect(() => {
 }, [goals])
 
 
+/// SEND TODAYS MATCHES WITH INLINE BUTTONS
+
+const writeSingleMessage = async () => {
+  const options = {
+    method: 'GET',
+    url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+    params: {date: '2024-12-10'},
+    headers: {
+      'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+      'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+    }
+  };
+  const matches = []
+  try {
+    const response = await axios.request(options);
+    console.log(response.data.response);
+    for (const match of response.data.response){
+      if(match.league.id === 2){
+        matches.push(match)
+      }
+    }
+    let result = matches.map((match, index) => {
+      return `\n${match.teams.home.name} vs ${match.teams.away.name}`
+    }).join("\n")
+    console.log(result)
+    const imageUrl = "https://i.imghippo.com/files/IZpi8698ZlA.webp"
+    const inlineButtons = [
+      [
+        { text: '👍 0', callback_data: 'like' },
+        { text: '👎 0', callback_data: 'dislike' }
+      ]
+    ]
+    const messageToSend = `\n⚽️ TODAY'S CHAMPIONS LEAGUE MATCHES ⚽️\n${result}`;
+    console.log(messageToSend)
+    try {
+      const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrl, inlineButtons });
+      if (response.data.success) {
+          console.log('Message sent successfully!');
+      } else {
+          console.log('Failed to send message');
+      }
+  } catch (error) {
+      console.log('Error sending message:', error);
+  }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
 
   /// UPDATE FANTASY FOOTBALL TEAMS RATING
 
