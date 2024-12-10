@@ -129,23 +129,32 @@ const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
 app.post('/send-message', async (req, res) => {
-  const { messageToSend, imageUrl, imageUrls } = req.body; // Add imageUrls to support multiple images
+  const { messageToSend, imageUrl, imageUrls, inlineButtons } = req.body;
 
   // Validate inputs
   if (!messageToSend && !imageUrl && (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length === 0)) {
     return res.status(400).send('Either message content, a single image URL, or multiple image URLs are required');
   }
 
+  // Validate inlineButtons format
+  if (inlineButtons && (!Array.isArray(inlineButtons) || !inlineButtons.every(row => Array.isArray(row)))) {
+    return res.status(400).send('Inline buttons must be a two-dimensional array of button objects');
+  }
+
+  // Construct reply markup for inline buttons
+  const replyMarkup = inlineButtons
+    ? { reply_markup: { inline_keyboard: inlineButtons } }
+    : {};
+
   try {
     let response;
 
+    // Send media group (multiple images)
     if (imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0) {
-      // Ensure no more than 10 images
       if (imageUrls.length > 10) {
         return res.status(400).send('A maximum of 10 images are allowed');
       }
 
-      // Send multiple images as a media group
       const mediaGroup = imageUrls.map((url, index) => ({
         type: 'photo',
         media: url,
@@ -155,23 +164,49 @@ app.post('/send-message', async (req, res) => {
       response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`, {
         chat_id: CHAT_ID,
         media: mediaGroup,
+        ...replyMarkup,
       });
     } else if (imageUrl) {
-      // Send a single image with an optional caption
+      // Send a single image
       response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
         chat_id: CHAT_ID,
         photo: imageUrl,
-        caption: messageToSend, // Caption is optional
+        caption: messageToSend,
+        ...replyMarkup,
       });
     } else {
-      // Send a text message only
+      // Send a text message
       response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
         chat_id: CHAT_ID,
         text: messageToSend,
+        ...replyMarkup,
       });
     }
 
-    console.log('Message sent successfully!');
+    // Store message data to Supabase, including like/dislike counts (set to 0 initially)
+    const messageId = response.data.result.message_id;
+    const chatId = CHAT_ID;
+
+    if (inlineButtons && inlineButtons.some(row => row.some(button => button.text.includes("👍") || button.text.includes("👎")))) {
+      // Check if inline buttons contain like/dislike buttons
+      const { error } = await supabase
+        .from('telegram_messages')
+        .insert([
+          {
+            message_id: parseInt(messageId), // Ensure it's parsed as an integer
+            chat_id: parseInt(chatId),         // Ensure it's parsed as an integer
+            likes: 0,  // Initialize like count to 0
+            dislikes: 0,  // Initialize dislike count to 0
+          }
+        ]);
+
+      if (error) {
+        console.error('Error inserting message data into Supabase:', error.message);
+        return res.status(500).json({ success: false, error: 'Failed to save message data' });
+      }
+    }
+
+    console.log('Message sent and data saved successfully!');
     res.status(200).json({ success: true, response: response.data });
   } catch (error) {
     console.error('Error sending message to Telegram:', error.response?.data || error.message);
@@ -179,6 +214,76 @@ app.post('/send-message', async (req, res) => {
   }
 });
 
+app.post('/webhook', async (req, res) => {
+  const update = req.body;
+
+  if (update.callback_query) {
+    const { data: action, message } = update.callback_query;
+    const messageId = message.message_id;
+    const chatId = message.chat.id;
+
+    try {
+      // Fetch current counts from Supabase
+      const { data, error } = await supabase
+        .from('telegram_messages')
+        .select('likes, dislikes')
+        .eq('message_id', messageId)
+        .eq('chat_id', chatId)
+        .single();
+
+      if (error || !data) {
+        console.error('Error fetching message data:', error?.message || 'Not found');
+        return res.status(500).json({ success: false, error: 'Failed to fetch message data' });
+      }
+
+      // Update likes or dislikes based on the action
+      const updatedCounts = {
+        likes: action === "like" ? data.likes + 1 : data.likes,
+        dislikes: action === "dislike" ? data.dislikes + 1 : data.dislikes,
+      };
+
+      const { error: updateError } = await supabase
+        .from('telegram_messages')
+        .update(updatedCounts)
+        .eq('message_id', messageId)
+        .eq('chat_id', chatId);
+
+      if (updateError) {
+        console.error('Error updating message data:', updateError.message);
+        return res.status(500).json({ success: false, error: 'Failed to update message data' });
+      }
+
+      // Update the message's inline keyboard
+      const updatedKeyboard = [
+        [
+          { text: `👍 ${updatedCounts.likes}`, callback_data: "like" },
+          { text: `👎 ${updatedCounts.dislikes}`, callback_data: "dislike" }
+        ]
+      ];
+
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
+        chat_id: chatId,
+        message_id: messageId,
+        reply_markup: { inline_keyboard: updatedKeyboard }
+      });
+
+      // Acknowledge the callback query
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+        callback_query_id: update.callback_query.id,
+        text: action === "like" ? "You liked this!" : "You disliked this!",
+        show_alert: false
+      });
+
+      console.log('Like/dislike counts updated successfully!');
+      res.sendStatus(200);
+    } catch (error) {
+      console.error('Error handling callback query:', error.message);
+      res.status(500).json({ success: false, error: 'Failed to process callback query' });
+    }
+  } else {
+    res.sendStatus(200);
+  }
+});
 
 
 

@@ -27,27 +27,54 @@ const Admin = () => {
 
 
     
-    /* const writeSingleMessage = async () => {
-      const imageUrl = "https://media.api-sports.io/football/teams/541.png"
-      
-      const messageToSend = `\n🗞 LATEST NEWS 🗞\n\nEverton vs. Liverpool has been officially postponed upon advice from authorities due to adverse weather conditions.`;
-      console.log(messageToSend)
-          try {
-            const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
-            if (response.data.success) {
-                console.log('Message sent successfully!');
-            } else {
-                console.log('Failed to send message');
-            }
-        } catch (error) {
-            console.log('Error sending message:', error);
+    const writeSingleMessage = async () => {
+      const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+        params: {date: '2024-12-10'},
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
         }
-        
-    } */
+      };
+      const matches = []
+      try {
+        const response = await axios.request(options);
+        console.log(response.data.response);
+        for (const match of response.data.response){
+          if(match.league.id === 2){
+            matches.push(match)
+          }
+        }
+        let result = matches.map((match, index) => {
+          return `\n${match.teams.home.name} vs ${match.teams.away.name}`
+        }).join("\n")
+        console.log(result)
+        const imageUrl = "https://i.imghippo.com/files/IZpi8698ZlA.webp"
+        const inlineButtons = [
+          [
+            { text: '👍 0', callback_data: 'like' },
+            { text: '👎 0', callback_data: 'dislike' }
+          ]
+        ]
+        const messageToSend = `\n⚽️ TODAY'S CHAMPIONS LEAGUE MATCHES ⚽️\n${result}`;
+        console.log(messageToSend)
+        try {
+          const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrl, inlineButtons });
+          if (response.data.success) {
+              console.log('Message sent successfully!');
+          } else {
+              console.log('Failed to send message');
+          }
+      } catch (error) {
+          console.log('Error sending message:', error);
+      }
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
-        function delay(ms) {
-          return new Promise((resolve) => setTimeout(resolve, ms));
-        }
+    
 
         
         
@@ -58,7 +85,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={getFixture} */ onClick={() => navigate('/newroulette')}>getFixture</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={writeSingleMessage} /* onClick={() => navigate('/newroulette')} */>writeSingleMessage</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
