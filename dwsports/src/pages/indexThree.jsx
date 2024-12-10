@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from 'styled-components';
 import { motion } from "framer-motion";
 import { IconButton } from "@mui/material";
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
@@ -560,15 +560,32 @@ export const NewsTicker = styled.div`
     position: relative;
 `;
 
-export const TickerItem = styled.div`
-    
+const slide = keyframes`
+  0% {
+    transform: translateX(100%);
+  }
+  70% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 `;
+
+export const TickerItem = styled.div`
+    display: inline-block;
+    animation: ${slide} 15s linear infinite;
+`;
+
+
+
+
 
 export const Title = styled(motion.div)`
 width: 100%;
 height: 15vh;
 
-${props => props.theme.displayFlexCenter}
+${props => props.theme.displayFlexColumnCenter}
 justify-content: space-around;
 text-align: center;
 position: relative;

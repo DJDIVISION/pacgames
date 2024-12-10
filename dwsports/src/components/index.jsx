@@ -1178,7 +1178,7 @@ export const RowerFirstEvent = styled.div`
     text-align: center;
     color: ${props => props.theme.text};
     h2{
-        font-size: 12px;
+        font-size: 12px !important;
         color: ${props => props.theme.text};
     }
     img{
