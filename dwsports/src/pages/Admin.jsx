@@ -27,7 +27,152 @@ const Admin = () => {
 
 
     
+    let processedEvents = {}; // Global dictionary to track processed events per match
+
+        function delay(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+        }
     
+        async function processMatchEvents(matches, sendTelegramMessage) {
+            for (const match of matches) { // Use `for...of` to handle async operations
+                const matchId = match.fixture.id;
+                const events = match.events;
+                console.log(match)
+                let league
+                if(match.league.name === "Premier League"){
+                    league = "🇬🇧"
+                }
+                if(match.league.name === "La Liga"){
+                    league = "🇪🇸"
+                }
+                if(match.league.name === "Serie A"){
+                    league = "🇮🇹"
+                }
+                if(match.league.name === "Bundesliga"){
+                    league = "🇩🇪"
+                }
+                if(match.league.name === "Ligue 1"){
+                    league = "🇫🇷"
+                }
+                if(match.match.league.name === "UEFA Champions League"){
+                  league = "🇪🇺"
+              }
+                // Initialize processed events for this match if not already done
+                if (!processedEvents[matchId]) {
+                    processedEvents[matchId] = new Set();
+                }
+    
+                for (const event of events) {
+                    console.log(event)
+                    const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
+                    if(event.detail === "Normal Goal" && !processedEvents[matchId].has(eventId) && event.player.name !== null){
+                        const messageToSend = `\n${league} ${event.team.name} SCORES!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
+                        await sendTelegramMessage(messageToSend,event.team.logo);
+                        processedEvents[matchId].add(eventId);
+                    }
+                    if((event.detail === "Penalty" && event.type === "Goal") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
+                        const messageToSend = `\n${league} ${event.team.name} PENALTY SCORES!!! ⚽️ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
+                        await sendTelegramMessage(messageToSend,event.team.logo);
+                        processedEvents[matchId].add(eventId);
+                    }
+                    if((event.detail === "Red Card") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
+                        const messageToSend = `\n${league} RED CARD FOR ${event.team.name}!!! 🟥 \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.comments} - ${event.player.name} at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
+                        await sendTelegramMessage(messageToSend,event.team.logo);
+                        processedEvents[matchId].add(eventId);
+                    }
+                    if(event.detail.startsWith("Goal Disallowed") && !processedEvents[matchId].has(eventId) && event.player.name !== null){
+                        const messageToSend = `\n${league} GOAL DISALLOWED FOR ${event.team.name}!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
+                        await sendTelegramMessage(messageToSend,event.team.logo);
+                        processedEvents[matchId].add(eventId);
+                    }
+                    // Generate a unique identifier for the event
+                    //const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
+    
+                    // Check if the event has already been processed for this match
+                    if (!processedEvents[matchId].has(eventId)) {
+                        // Prepare the message
+                        //const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
+    
+                        // Send message to Telegram with a delay between each call
+                        //await sendTelegramMessage(messageToSend,imageUrl);
+                        await delay(3000); // 1-second delay to avoid flooding the endpoint
+    
+                        // Mark this event as processed
+                        processedEvents[matchId].add(eventId);
+                    }
+                }
+            }
+        }
+    
+        async function sendTelegramMessage(messageToSend, imageUrl) { // Default 60 seconds
+          console.log(`Sending to Telegram: ${messageToSend}`);
+          try {
+              const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
+              console.log("response.data.message_id",response.data.message_id)
+              if (response.data.success && response.data.message_id) {
+                  console.log('Message sent successfully!');
+      
+                  // Schedule message deletion
+                  const messageId = response.data.message_id; // Assuming the API returns message_id
+                  console.log("messageID", messageId)
+                  setTimeout(async () => {
+                      await deleteTelegramMessage(messageId);
+                  }, 9000000);
+              } else {
+                  console.log('Failed to send message');
+              }
+          } catch (error) {
+              console.log('Error sending message:', error);
+          }
+      }
+      
+      async function deleteTelegramMessage(messageId) {
+          try {
+              const response = await axios.post('https://temp-server-pi.vercel.app/api/delete-message', { messageId });
+              if (response.data.success) {
+                  console.log(`Message ${messageId} deleted successfully!`);
+              } else {
+                  console.log(`Failed to delete message ${messageId}`);
+              }
+          } catch (error) {
+              console.log(`Error deleting message ${messageId}:`, error);
+          }
+      }
+    
+        async function fetchLiveMatches() {
+            const options = {
+                method: 'GET',
+                url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+                params: { live: 'all' },
+                headers: {
+                    'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+                    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+                },
+            };
+    
+            try {
+                const response = await axios.request(options);
+                console.log(response.data.response);
+    
+                const matches = [];
+                response.data.response.forEach((match) => {
+                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
+                        matches.push(match);
+                    }
+                });
+    
+                // Process events from the fetched matches
+                await processMatchEvents(matches, sendTelegramMessage);
+            } catch (error) {
+                console.error('Error fetching live matches:', error);
+            }
+        }
+    
+        // Fetch live matches every 15 seconds
+        React.useEffect(() => {
+            const intervalId = setInterval(fetchLiveMatches, 60000); // Set interval for fetching matches
+            return () => clearInterval(intervalId); // Cleanup interval on component unmount
+        }, []);
 
     
 
@@ -40,7 +185,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={writeSingleMessage} */ onClick={() => navigate('/newroulette')}>newroulette</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={writeSingleMessage} */ onClick={() => navigate('/newroulette')}>CHAMPIONS</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
