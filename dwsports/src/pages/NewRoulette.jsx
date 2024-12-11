@@ -76,7 +76,7 @@ import { ArrowLeftRelative, StyledButton } from './index.jsx';
 import RouletteTabs from '../components/roulette/RouletteTabs.jsx';
 import { supabase } from '../supabase/client.jsx';
 
-const socket = io.connect("http://localhost:8080")
+/* const socket = io.connect("http://localhost:8080") */
 
 const Roulete = () => {
 
