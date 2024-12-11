@@ -228,7 +228,7 @@ const Admin = () => {
     
                 const matches = [];
                 response.data.response.forEach((match) => {
-                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
+                    if ([39, 140, 135, 61, 78, 2].includes(match.league.id)) { // Filter relevant leagues
                         matches.push(match);
                     }
                 });
