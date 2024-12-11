@@ -75,7 +75,7 @@ import { message as ANTDmessage } from 'antd';
 import { ArrowLeftRelative, StyledButton } from './index.jsx';
 import RouletteTabs from '../components/roulette/RouletteTabs.jsx';
 
-const socket = io.connect("http://localhost:8080")
+const socket = io.connect("https://pactongamingzone.vercel.app")
 
 const Roulete = () => {
 

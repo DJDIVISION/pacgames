@@ -77,7 +77,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://pactongamingzone.vercel.app",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -338,7 +338,7 @@ app.post('/send-notification', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://pactongamingzone.vercel.app",
     methods: ["GET", "POST"]  // Client URL
   },
  });
