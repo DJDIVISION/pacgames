@@ -87,10 +87,14 @@ export const PlayersOnline = styled.div`
 `;
 
 export const PlayerHolder = styled.div`
-    width: 20%;
+    min-width: 50px;
     height: 100%;
     display: flex;
     flex-direction: column;
+    border: 1px solid ${props => props.theme.card};
+    margin: 0 10px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px ${props => props.theme.text};
 `;
 
 export const PlayerAvatar = styled.div`
@@ -108,7 +112,7 @@ export const PlayerUser = styled.div`
     align-items: center;
     justify-content: center;
     color: ${props => props.theme.text};
-    font-size: 14px;
+    font-size: 12px;
     font-weight: bold;
     transform: translateY(-50%);
 `;
@@ -122,7 +126,7 @@ export const RoomAvailable = styled.div`
     text-align: center;
     color: ${props => props.theme.text};
     font-size: 18px;
-    border-left: 0.5px solid ${props => props.theme.MainAccent};
+    
     @media(max-width:698px){
         font-size: 14px;
     }

@@ -887,6 +887,12 @@ export const LeagueRower = styled.div`
     min-height: 60px;
     ${props => props.theme.displayFlexCenter};
 `;
+export const LeagueRowerScroll = styled.div`
+    width: 100%;
+    min-height: 60px;
+    overflow-x: auto;
+    ${props => props.theme.displayFlexCenter};
+`;
 export const LeagueWrapper = styled.div`
     height: 60px;
     ${props => props.theme.displayFlexCenter};

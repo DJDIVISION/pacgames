@@ -4,6 +4,7 @@ const { Server } = require("socket.io");
 const { createClient } = require('@supabase/supabase-js');
 const cors = require('cors')
 const axios = require('axios');
+const { v4: uuidv4 } = require('uuid');
 const bodyParser = require('body-parser');
 const webPush = require('web-push');
 const supabaseUrl = 'https://qfywnsvevkeuiuxtiqko.supabase.co';
@@ -77,7 +78,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "https://pactongamingzone.vercel.app",
+  origin: "http://localhost:5173",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -338,7 +339,7 @@ app.post('/send-notification', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "https://pactongamingzone.vercel.app",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]  // Client URL
   },
  });
@@ -382,7 +383,7 @@ const bettingTimeouts = {};
 
 
     
-const sendAllBetsToPlayers = (roomId) => {
+const sendAllBetsToPlayers = (roomId,uniqueId) => {
   const room = rooms.find((r) => r.id === roomId);
 
   if (room) {
@@ -459,12 +460,15 @@ const sendAllBetsToPlayers = (roomId) => {
           allDroppedLastRowChips,
           allDroppedColumnChips,
           allDroppedBorderLeftChips,
-          allDroppedBorderTopChips
+          allDroppedBorderTopChips,
+          uniqueId
       });
   }
 };
 
 function startBettingTimeout(roomId) {
+    const uniqueId = uuidv4(); // Generate a unique ID
+    console.log('Generated Unique ID:', uniqueId);
   console.log("betting time started")
   const room = rooms.find((room) => room.id === roomId);
   io.emit('roomsUpdate', rooms);
@@ -510,7 +514,7 @@ function startBettingTimeout(roomId) {
         dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
         sendedBy: 'ADMIN',
       });
-        sendAllBetsToPlayers(roomId)
+        sendAllBetsToPlayers(roomId,uniqueId)
         declareWinningNumber(roomId);
       }
     

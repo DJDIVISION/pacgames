@@ -12,7 +12,7 @@ import withdraw from '../assets/logos/withdraw.png'
 import partners from '../assets/logos/partners.png'
 import googleDark from '../assets/logos/googleDark.png'
 import googleLight from '../assets/logos/googleLight.png'
-import {Link as LinkR} from 'react-router-dom'
+import {Link as LinkR, useNavigate} from 'react-router-dom'
 import { useAuth, useFetchMessages } from './functions'
 import { Avatar, Button, IconButton } from '@mui/material'
 import { message } from 'antd'
@@ -62,6 +62,7 @@ const Home = ({toggleTheme}) => {
   const [password, setPassword] = useState(null)
   const [profileImage, setProfileImage] = useState(null)
   const images = [back1, back2];
+  const navigate = useNavigate();
   
   useEffect(() => {
     if(session === null){
@@ -239,7 +240,7 @@ const Home = ({toggleTheme}) => {
                     <StaggerImageHolder><img src={deposit} alt="wallet" /></StaggerImageHolder>
                     <StaggerAvatarName>{t("navbar.deposit")}</StaggerAvatarName>
                   </StaggerRow>
-                  <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => { setIsWithdrawExpanded(true); setIsExpanded(false); }}
+                  <StaggerRow initial={{ opacity: 0, y: 40 }} onClick={() => {navigate('/newroulette') /* setIsWithdrawExpanded(true); setIsExpanded(false); */ }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.1 }} >
                     <StaggerImageHolder><img src={withdraw} alt="wallet" /></StaggerImageHolder>

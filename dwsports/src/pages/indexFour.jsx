@@ -215,9 +215,9 @@ export const BigNumberContainer = styled.div`
     align-items: center;
     justify-content: center;
     position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translate(-50%,0%);
+    top: 10px !important;
+    left: 50% !important;
+    transform: translate(-50%,0%) !important;
 `;
 export const SendBetContainer = styled.div`
     width: 140px;

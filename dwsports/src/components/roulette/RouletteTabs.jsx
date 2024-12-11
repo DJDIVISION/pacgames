@@ -14,7 +14,7 @@ import { useAuth } from '../../pages/functions';
 import { animationFive, transition } from '../../animations';
 import {Link as LinkR} from 'react-router-dom'
 import { AbsoluteIconButtonLeft, TeamBetsHolderBlur } from '../../pages/indexThree';
-import { LeagueRower, LowRower, RowerRow, RowerRowScroll } from '../../components/index';
+import { LeagueRower, LeagueRowerScroll, LowRower, RowerRow, RowerRowScroll } from '../../components/index';
 
 
 const takePlayerName = async () => {
@@ -66,6 +66,9 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
   };
 
   const joinRoom = async (room) => {
+    if(!user){
+      navigate('/')
+    }
     setPlayerAvatar(user.user_metadata.avatar_url)
     const result = await takePlayerName();
     if (!result.isConfirmed) {
@@ -109,7 +112,7 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
                   return(
                     <TeamBetsHolderBlur key={index}
                       initial={{ minHeight: '60px' }}
-                      animate={{ minHeight: expandedIndex === index ? '250px' : '60px' }}
+                      animate={{ minHeight: expandedIndex === index ? '220px' : '60px' }}
                       transition={{ duration: 0.5 }}>
                         {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
                         <LeagueRower style={{width: '90%'}}>
@@ -128,7 +131,27 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
                       </>
                     )}
                     
+                    </LeagueRower>
+                    {expandedIndex === index && (
+                      <>
+                        <LeagueRowerScroll style={{width: '90%'}}>
+                          {room.players.filter(player => player.playerId !== "").map((player,index) => {
+                            console.log(player)
+                            return(
+                              <PlayerHolder key={room.id}>
+                              <PlayerAvatar>
+                              <Avatar alt="Image" src={player?.avatar} sx={{ width: 30, height: 30 }} />
+                              </PlayerAvatar>
+                              <PlayerUser>{player.playerName}</PlayerUser> 
+                      </PlayerHolder>
+                            )
+                          })}
+                        </LeagueRowerScroll>
+                        <LeagueRower style={{width: '90%', transform: 'translateY(10px)'}}>
+                        <StyledButton onClick={() => joinRoom(room)}>JOIN ROOM</StyledButton>
                         </LeagueRower>
+                      </>
+                      )}
                     </TeamBetsHolderBlur>
                   )
                 })}
