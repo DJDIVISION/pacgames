@@ -126,7 +126,7 @@ const Admin = () => {
                 if(match.league.name === "Ligue 1"){
                     league = "🇫🇷"
                 }
-                if(match.match.league.name === "UEFA Champions League"){
+                if(match.league.name === "UEFA Champions League"){
                   league = "🇪🇺"
               }
                 // Initialize processed events for this match if not already done
