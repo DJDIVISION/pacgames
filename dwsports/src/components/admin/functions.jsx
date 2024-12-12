@@ -98,7 +98,7 @@ const getDataTwo = async () => {
     const { data: firstData, error: firstError } = await supabase
         .from('footballPlayers')
         .select('id')
-        .eq("leagueName", "Ligue 1");
+        .eq("leagueName", "Serie A");
 
     if (firstError) {
         console.log("firstError", firstError);
@@ -133,8 +133,8 @@ const getDataTwo = async () => {
         console.log(response.data.response);
         for(const player of response.data.response){
           for(const stat of player.statistics){
-            if(stat.league.name === "Ligue 1"){
-              const rating = stat.games.rating
+            if(stat.league.name === "Serie A"){
+              const rating = stat?.games?.rating || 0
               const parsed = parseFloat(rating).toFixed(2)
               console.log(parsed)
               const { data: firstData, error: firstError } = await supabase
@@ -208,7 +208,7 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
                 if(match.league.name === "Ligue 1"){
                     league = "🇫🇷"
                 }
-                if(match.match.league.name === "UEFA Champions League"){
+                if(match.league.name === "UEFA Champions League"){
                   league = "🇪🇺"
               }
                 // Initialize processed events for this match if not already done
@@ -310,7 +310,7 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
     
                 const matches = [];
                 response.data.response.forEach((match) => {
-                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
+                    if ([39, 140, 135, 61, 78, 2].includes(match.league.id)) { // Filter relevant leagues
                         matches.push(match);
                     }
                 });

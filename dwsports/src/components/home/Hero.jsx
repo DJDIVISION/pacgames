@@ -282,20 +282,21 @@ const Hero = () => {
         
     }, [currentUser])
 
-    const startAnimationSequence = () => {
-        controls.start({
-            rotateY: [0, 720, 0],
-            transition: {
-                duration: 6,
-                ease: "easeInOut",
-            },
-        }).then(() => {
-            // Pause for 3 seconds after the rotation
-            setTimeout(startAnimationSequence, 3000); // Restart after 3 seconds
-        });
-    };
+    
 
     useEffect(() => {
+        const startAnimationSequence = () => {
+            controls.start({
+                rotateY: [0, 720, 0],
+                transition: {
+                    duration: 6,
+                    ease: "easeInOut",
+                },
+            }).then(() => {
+                // Pause for 3 seconds after the rotation
+                setTimeout(startAnimationSequence, 3000); // Restart after 3 seconds
+            });
+        };
         startAnimationSequence();
     }, []);
 
