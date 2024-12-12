@@ -1313,15 +1313,13 @@ const getWinnings = (el) => {
             if(match.match.league.name === "Ligue 1"){
                 league = "🇫🇷"
             }
-            if(match.league.name === "UEFA Champions League" || match.league.name === "UEFA Europa League"){
+            if(match.league.name === "UEFA Champions League" || match.league.name === "UEFA Europa League" || match.league.name === "UEFA Europa Conference League"){
                 league = "🇪🇺"
             }
       return `\n${league} ${match.match.teams.home.name} vs ${match.match.teams.away.name}\nOdds: ${match.odd}\nResult: ${match.name} - ${match.value}`;
   }).join("\n");
   const imageUrl = "https://i.postimg.cc/4x16yPYt/bet.jpg"
   const messageToSend = `${user.user_metadata.name} has placed a bet! \n ${result} \n\nAmount: ${amount} PGZ \nPossible Winnings: ${winnings} PGZ`
-  console.log(messageToSend)
-  console.log(messageToSend);
     if(amount === null){
       message.error("You must enter the amount of the bet!")
       return
