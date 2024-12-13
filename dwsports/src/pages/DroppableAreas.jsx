@@ -9,9 +9,9 @@ export const CornerDropArea = ({ card, droppedCornerChips,setDroppedCornerChips,
     const { isOver, setNodeRef } = useDroppable({
         id: `corner-${card.number}`, // Unique ID for the corner area
     });
-    if(isOver){
+    /* if(isOver){
        console.log(`corner-${card.number}`) 
-    }
+    } */
     const cornerLeft = card.cornerLeft;
     
     return (
@@ -41,9 +41,9 @@ export const BorderLeftArea = ({ card,droppedBorderLeftChips,setDroppedBorderLef
       id: `split-${card.number}`, // Unique ID for the corner area
     });
     
-    if(isOver){
+    /* if(isOver){
         console.log(card.borderLeftId) 
-     }
+     } */
     return (
         <BorderLeft ref={setNodeRef} id={`split-${card.number}`}>
         {/* Display chips if there are any */}

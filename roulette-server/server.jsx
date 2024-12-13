@@ -385,7 +385,7 @@ const getAllPlayers = () => {
 };
 
 const bettingTimeouts = {};
-
+const roomTimeouts = {};
 
     
 const sendAllBetsToPlayers = (roomId) => {
@@ -470,22 +470,41 @@ const sendAllBetsToPlayers = (roomId) => {
   }
 };
 
+function resetRoomTimeout(roomId) {
+  const room = rooms.find((room) => room.id === roomId);
+  if (roomTimeouts[room]) {
+    clearTimeout(roomTimeouts[room]);
+  }
+
+  // Set new timeout to start the game if no one joins in 10 seconds
+  roomTimeouts[room] = setTimeout(() => {
+    if (room.players.length > 0 && !room.gameStarted) {
+      io.to(roomId).emit('timeoutExpired')
+      startBettingTimeout(roomId)
+    }
+  }, 10000);
+}
+
 function startBettingTimeout(roomId) {
-    const uniqueId = uuidv4(); // Generate a unique ID
-    console.log('Generated Unique ID:', uniqueId);
-    io.to(roomId).emit('uniqueId', {
-      uniqueId,roomId
-    });
+    
+    
   console.log("betting time started")
   const room = rooms.find((room) => room.id === roomId);
-  room.matchId = uniqueId
+  const uniqueId = uuidv4(); // Generate a unique ID
+      console.log('Generated Unique ID:', uniqueId);
+      room.matchId = uniqueId
+      io.to(roomId).emit('uniqueId', {
+        uniqueId,roomId
+      });
+  room.gameStarted = true
+  
   io.emit('roomsUpdate', rooms);
   bettingTimeouts[room] = setTimeout(() => {
   
 
     // Check which players haven't placed their bets and disconnect them
     room.players.forEach(player => {
-      console.log("playeeer", player)
+      
       if (player.bet === 0) {
         console.log(`${player.playerName} has not placed any bet`)
         io.to(player.playerId).emit('close-betting-table',{
@@ -494,23 +513,9 @@ function startBettingTimeout(roomId) {
           dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
           sendedBy: 'ADMIN',
         });
-        declareWinningNumber(roomId);
-        /* console.log(`Disconnecting player ${player.name} for not betting in time`);
-        io.to(player.playerId).emit('disconnected-for-no-bet');
-        const socket = io.sockets.sockets.get(player.playerId); // Fetch socket by playerId
-        if (socket) {
-          socket.disconnect();  // Disconnect the socket
-          console.log(`Player ${player.name} has been disconnected`);
-        }
-        room.players = room.players.filter(p => p.playerId === player.playerId)
-        console.log("this",room.players.length)
-        if(room.players.length === 0){
-          room.gameStarted = false
-          io.emit('roomsUpdate', rooms);
-          //io.emit('allPlayersUpdate', getAllPlayers()); 
-        } */
+        //declareWinningNumber(roomId);
       }
-    });
+    })
     // Proceed to start the game with players who placed their bets
     if (room.players.every(player => player.bets)) {
         // If all players have placed bets, emit the bets back to all players in the room
@@ -525,8 +530,8 @@ function startBettingTimeout(roomId) {
         sendAllBetsToPlayers(roomId)
         declareWinningNumber(roomId);
       }
-    
-  }, 30000);
+      
+  }, 20000);
 }
 
 io.on("connection", (socket) => {
@@ -534,7 +539,7 @@ io.on("connection", (socket) => {
 
     socket.on('getAllPlayers', () => {
       const allPlayers = getAllPlayers();
-      console.log("payrs requested")
+      console.log("players requested")
       socket.emit('allPlayersUpdate', allPlayers);
     });
 
@@ -569,27 +574,19 @@ io.on("connection", (socket) => {
             playerId: socket.id,
             room: roomId
           });
-          if(room.players.length === 1){
-            io.to(roomId).emit('update_players', {
-              message: `${playerName} has joined the room. You have 30 seconds to place your bet.`,
-              dealer: 'Jack',
-              dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
-              sendedBy: 'ADMIN'
-            });
-          } else {
-            io.to(roomId).emit('update_players', {
-              message: `${playerName} has joined the room.`,
-              dealer: 'Jack',
-              dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
-              sendedBy: 'ADMIN'
-            });
-          }
+          io.to(roomId).emit('update_players', {
+            message: `${playerName} has joined the room all alone.`,
+            dealer: 'Jack',
+            dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
+            sendedBy: 'ADMIN'
+          });
           // Update all clients about the room and players
           io.emit('roomsUpdate', rooms);
           io.emit('allPlayersUpdate', getAllPlayers()); // Emit all players after a change
           if (!room.gameStarted) {
+            console.log("requesting match")
             io.to(roomId).emit('timeoutStarting')
-            startBettingTimeout(roomId)
+            resetRoomTimeout(roomId)
           }
         } else {
           console.log(`Room ${roomId} is full.`);
@@ -622,7 +619,7 @@ io.on("connection", (socket) => {
         });
     });
     socket.on('game-finished', ({activeRoom, myId, allBets}) => {
-      console.log("allBetsssssssssss", allBets)
+      console.log("gameFinished")
       const roomId = activeRoom
       const playerId = myId
       console.log(roomId)
@@ -670,6 +667,7 @@ io.on("connection", (socket) => {
         const number = room.winningNumber
         const id = player.googleId
         console.log("Player wins with winnings:", winnings);
+        console.log("Player:", player);
         io.to(player.playerId).emit("player-wins", { winnings,number,matchId,id });
         io.to(roomId).emit('message-sent', {
           message: `${player.playerName} wins $${winnings}.`,
@@ -701,22 +699,29 @@ io.on("connection", (socket) => {
       });
       if (!room.gameStarted) {
         io.to(roomId).emit('timeoutStarting')
-        startBettingTimeout(roomId)
+        resetRoomTimeout(roomId)
       }
       
       
     });
     socket.on('disconnect', () => {
-      rooms.forEach((room) => {
-        // Remove player from room if they were in one
-        const playerIndex = room.players.findIndex(p => p.playerId === socket.id);
-        console.log(`removed player ${playerIndex} from the room ${room}`)
-        if (playerIndex !== -1) { // Ensure player is in the room
-          // Remove player from room's players array
-          room.players.splice(playerIndex, 1);
-          console.log(`Removed player with ID ${socket.id} from room ${room.roomId}`);
-        }
-      });
+      console.log("requesting disconnect")
+      console.log('A user disconnected:', socket.id);
+    rooms.forEach((room) => {
+      // Remove player from room if they were in one
+      const playerIndex = room.players.findIndex(p => p.playerId === socket.id);
+      if (playerIndex !== -1) { // Ensure player is in the room
+        // Remove player from room's players array
+        room.players.splice(playerIndex, 1);
+        console.log(`Removed player with ID ${socket.id} from room ${room.id}`);
+      }
+      if(room.players.length === 0){
+        room.gameStarted = false
+      }
+    });
+    // Update the clients about the new room status
+    io.emit('roomsUpdate', rooms);
+    io.emit('allPlayersUpdate', getAllPlayers());
     })
 })
 

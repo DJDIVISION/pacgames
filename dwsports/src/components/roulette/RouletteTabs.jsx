@@ -109,6 +109,7 @@ const RouletteTabs = ({players,socket,rooms,setPlayerName,playerName}) => {
                 },
               }}>
                 {rooms?.map((room, index) => {
+                  console.log(room)
                   return(
                     <TeamBetsHolderBlur key={index}
                       initial={{ minHeight: '60px' }}

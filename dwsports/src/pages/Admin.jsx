@@ -29,139 +29,28 @@ const Admin = () => {
     function delay(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));
     }
-
-    const sendMatchesStarted = async (matches) => {
-      for(const match of matches){
-        console.log(match)
-        const imageUrls = [match.teams.home.logo, match.teams.away.logo]
-        
-        const messageToSend = `⏳ Match Started ⏳\n\n🇪🇺 UEFA CHAMPIONS LEAGUE\n\n${match.teams.home.name} vs ${match.teams.away.name}\n\nStadium: ${match.fixture.venue.name}\nCity: ${match.fixture.venue.city}`
-        console.log(messageToSend)
-        try {
     
-          const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrls });
-          
-          if (response.data.success) {
-            console.log('Message sent successfully!');
-          } else {
-            console.log('Failed to send message');
-          }
-        } catch (error) {
-          console.log('Error sending message', error);
-        }
-        await delay(1000)
-      }
-      
-    }
-    
-    const sendMatchStarted = async () => {
-      const options = {
-        method: 'GET',
-        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-        params: {date: '2024-12-11'},
-        headers: {
-          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-        }
-      };
-      const matches = []
+    const sendSingleMessage = async () => {
+      const messageToSend = `\🗞 LATEST NEWS 🗞\n\nKylian Mbappé medical report\n\nFollowing tests carried out on Kylian Mbappé yesterday by the Real Madrid medical department, the player has been diagnosed with a thigh injury in his left leg. The Frenchman is a serious doubt for the FIFA Intercontinental Cup final on Dec. 18.`;
+      console.log(messageToSend)
+      const imageUrl = "https://i.imghippo.com/files/MfI4023QZU.webp"
       try {
-        const response = await axios.request(options);
-        console.log(response.data.response);
-        const now = new Date();
-
-        // Format date and time components
-        const year = now.getUTCFullYear();
-        const month = String(now.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-        const day = String(now.getUTCDate()).padStart(2, '0');
-        const hours = String(now.getUTCHours()).padStart(2, '0');
-        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-        const seconds = String(now.getUTCSeconds()).padStart(2, '0');
-
-        // Construct the final ISO-like string
-        const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+00:00`;
-
-        console.log(formattedDate);
-        for (const match of response.data.response) {
-          if (match.league.id === 2 && match.fixture.date > formattedDate) {
-            matches.push(match)
-          }
-        }
-        console.log(matches)
-        setMatches(matches)
-        await sendMatchesStarted(matches)
-        
-      } catch (error) {
-        console.error(error);
-      }
-    }
-        
-        
-    console.log(matches)    
-
-    
-
-    const readFantasyRatings = async (player) => {
-      console.log("player",player)
-      let rate = 0
-      const userPlayersData = player.players || {}; 
-      userPlayersData.players = userPlayersData.players || []; 
-      console.log("before",userPlayersData)
-      for (const player of userPlayersData.players){
-        const { data: firstData, error: firstError } = await supabase
-          .from('footballPlayers')
-          .select('rating')
-          .eq('id', player.id)
-        if (firstError) {
-            console.log("firstError", firstError);
+        const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
+        if (response.data.success) {
+            console.log('Message sent successfully!');
         } else {
-          console.log("firstData",firstData[0].rating)
-          rate += firstData[0].rating
-          player.rating = firstData[0].rating
-          await delay(1000)
+            console.log('Failed to send message');
         }
-      }
-      const rating = rate / userPlayersData.players.length
-      const parsed = parseFloat(parseFloat(rating).toFixed(2))
-      console.log("after",userPlayersData)
-      const { data: firstData, error: firstError } = await supabase
-          .from('fantasyFootball')
-          .update({players: userPlayersData, teamRating: parsed})
-          .eq('id', player.id)
-        if (firstError) {
-            console.log("firstError", firstError);
-        } else {
-          console.log(`data updated for ${player.id}`)
+        } catch (error) {
+            console.log('Error sending message:', error);
         }
-      await delay(1000);
     }
-  
-    const getFantasyRatings = async () => {
-      const allIds = [];
-      const { data: firstData, error: firstError } = await supabase
-          .from('fantasyFootball')
-          .select('*')
-          
-  
-      if (firstError) {
-          console.log("firstError", firstError);
-      } else {
-        console.log(firstData)
-          for (const player of firstData){
-            if(player.players !== null){
-              allIds.push(player)
-              await readFantasyRatings(player);
-            }
-          }
-      }
-      
-    };
 
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={getFantasyRatings} */ onClick={() => navigate('/newroulette')}>newroulette</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={sendSingleMessage} /* onClick={() => navigate('/newroulette')} */>sendSingleMessage</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

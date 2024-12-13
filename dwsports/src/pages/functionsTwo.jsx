@@ -73,9 +73,9 @@ export const BetNumbersArea = ({ card,droppedChips,setDroppedChips,droppedCorner
       id: card.number,
   });
 
-  if(isOver){
+  /* if(isOver){
     console.log(card.number)
-  }
+  } */
   
   const number = card.number;
 

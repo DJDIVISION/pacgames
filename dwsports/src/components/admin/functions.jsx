@@ -982,3 +982,137 @@ const writeSingleMessage = async () => {
     
   };
 
+
+  ///SEND MATCHES STARTED
+
+  const sendMatchesStarted = async (matches) => {
+    for(const match of matches){
+      console.log(match)
+      const imageUrls = [match.teams.home.logo, match.teams.away.logo]
+      
+      const messageToSend = `⏳ Match Started ⏳\n\n🇪🇺 UEFA CHAMPIONS LEAGUE\n\n${match.teams.home.name} vs ${match.teams.away.name}\n\nStadium: ${match.fixture.venue.name}\nCity: ${match.fixture.venue.city}`
+      console.log(messageToSend)
+      try {
+  
+        const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrls });
+        
+        if (response.data.success) {
+          console.log('Message sent successfully!');
+        } else {
+          console.log('Failed to send message');
+        }
+      } catch (error) {
+        console.log('Error sending message', error);
+      }
+      await delay(1000)
+    }
+    
+  }
+  
+  const sendMatchStarted = async () => {
+    const options = {
+      method: 'GET',
+      url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+      params: {date: '2024-12-11'},
+      headers: {
+        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+      }
+    };
+    const matches = []
+    try {
+      const response = await axios.request(options);
+      console.log(response.data.response);
+      const now = new Date();
+
+      // Format date and time components
+      const year = now.getUTCFullYear();
+      const month = String(now.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const day = String(now.getUTCDate()).padStart(2, '0');
+      const hours = String(now.getUTCHours()).padStart(2, '0');
+      const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+      const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+
+      // Construct the final ISO-like string
+      const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+00:00`;
+
+      console.log(formattedDate);
+      for (const match of response.data.response) {
+        if (match.league.id === 2 && match.fixture.date > formattedDate) {
+          matches.push(match)
+        }
+      }
+      console.log(matches)
+      setMatches(matches)
+      await sendMatchesStarted(matches)
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
+  ///SEND TODAY'S MATCHES
+
+
+  const sendTodaysMatches = async () => {
+    const options = {
+      method: 'GET',
+      url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+      params: {date: '2024-12-13'},
+      headers: {
+        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+      }
+    };
+    const matches = []
+    try {
+      const response = await axios.request(options);
+      console.log(response.data.response);
+      for (const match of response.data.response){
+        if(match.league.id === 39 || match.league.id === 61 || match.league.id === 135 || match.league.id === 140 || match.league.id === 78){
+          matches.push(match)
+        }
+      }
+      let result = matches.map((match, index) => {
+        const now = new Date(match.fixture.date).toLocaleString();
+        console.log(now);
+        let league
+          if(match.league.name === "Premier League"){
+              league = "🇬🇧"
+          }
+          if(match.league.name === "La Liga"){
+              league = "🇪🇸"
+          }
+          if(match.league.name === "Serie A"){
+              league = "🇮🇹"
+          }
+          if(match.league.name === "Bundesliga"){
+              league = "🇩🇪"
+          }
+          if(match.league.name === "Ligue 1"){
+              league = "🇫🇷"
+          }
+        return `\n${now}\n${league} ${match.teams.home.name} vs ${match.teams.away.name}`
+      }).join("\n")
+      console.log(result)
+      
+      
+      const messageToSend = `\n⚽️ TODAY'S MATCHES ⚽️\n${result}`;
+      console.log(messageToSend)
+      const imageUrl = "https://i.imghippo.com/files/EeSP9352uAE.png"
+      try {
+        const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
+        if (response.data.success) {
+            console.log('Message sent successfully!');
+        } else {
+            console.log('Failed to send message');
+        }
+        } catch (error) {
+            console.log('Error sending message:', error);
+        }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
