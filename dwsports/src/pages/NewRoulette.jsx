@@ -67,6 +67,8 @@ import S36 from '../assets/sounds/36.ogg'
 import S00 from '../assets/sounds/00.ogg'
 import youWin from '../assets/sounds/youWin.ogg'
 import youLose from '../assets/sounds/youLose.ogg'
+import betPlaced from '../assets/sounds/betPlaced.ogg'
+import notBetPlaced from '../assets/sounds/notBetPlaced.ogg'
 import placeYourBet from '../assets/sounds/placeYourBet.ogg'
 import back20 from '../assets/backs/back20.jpg'
 import back21 from '../assets/backs/back21.avif'
@@ -77,7 +79,7 @@ import { ArrowLeftRelative, StyledButton } from './index.jsx';
 import RouletteTabs from '../components/roulette/RouletteTabs.jsx';
 import { supabase } from '../supabase/client.jsx';
 
-const socket = io.connect("http://localhost:8080")
+/* const socket = io.connect("http://localhost:8080") */
 
 const Roulete = () => {
 
@@ -322,7 +324,9 @@ const Roulete = () => {
           new Audio(youLose),
           new Audio(placeYourBet),
           new Audio(S00),
-          new Audio(welcomeR)
+          new Audio(welcomeR),
+          new Audio(betPlaced),
+          new Audio(notBetPlaced)
         ];
         
         // Apply the initial volume
@@ -401,7 +405,7 @@ const Roulete = () => {
     }
 
     const startCountdown = () => {
-        let countdownTime = 20;
+        let countdownTime = 19;
         setSeconds(countdownTime);
 
         // Store the interval ID in intervalRef
@@ -671,7 +675,7 @@ const Roulete = () => {
         // Handle socket disconnect
         socket.on('disconnect', () => {
             console.log('Disconnected');
-            window.location.reload();
+            //window.location.reload();
         });
 
         return () => {
@@ -739,7 +743,7 @@ const Roulete = () => {
                 room_id: activeRoom
             } */
             //(messageToUpdate)
-            ANTDmessage.success(message, [2])
+            playEffect(46)
             setGameStarted((prev) => !prev)
             setTimeOutStarted(false)
             setPlayerFolds(true)
@@ -785,8 +789,13 @@ const Roulete = () => {
                 console.log("new winning number:", winningNumber)
             }) */
         });
+        socket.on('bet-placed', (data) => {
+            playEffect(45)
+        });
         socket.on('player-wins', (data) => {
-            console.log("data",data)
+            console.log("data.bets",data.bets)
+            const allChips = { droppedChips,droppedCornerChips,droppedRowChips,droppedLastRowChips,droppedColumnChips,droppedBorderLeftChips,droppedBorderTopChips };
+            console.log("allChips: ", allChips)
             /* const saveDataToSupabase = async () => {
                 try {
                     const { data: savedData, error } = await supabase
@@ -897,6 +906,34 @@ const Roulete = () => {
                 playEffect(41)
             }, 3000)
         });
+        socket.on('uniqueId', (data) => {
+            const {uniqueId, roomId} = data
+            console.log(uniqueId)
+            setMatchId(uniqueId)
+            /* const saveDataToSupabase = async () => {
+                try {
+                    const { data: savedData, error } = await supabase
+                        .from('roulette') // Replace with your Supabase table name
+                        .insert([
+                            {
+                                id: uniqueId, 
+                                room: roomId
+                            }
+                        ]);
+        
+                    if (error) {
+                        console.error('Error saving data to Supabase:', error);
+                    } else {
+                        console.log('Data successfully saved:', savedData);
+                    }
+                } catch (err) {
+                    console.error('Unexpected error saving data:', err);
+                }
+            }
+            saveDataToSupabase().then(() => {
+                console.log("finished")
+            }) */
+        });
         return () => {
             socket.off('update_players-again');
             socket.off('allPlayersUpdate');
@@ -939,7 +976,7 @@ const Roulete = () => {
 
     useEffect(() => {
         if(showMotionDiv){
-            socket.emit("game-finished", { activeRoom, myId, allBets });
+            socket.emit("game-finished", { activeRoom, myId, allBets, matchId });
                 const sound = (winningNumber.number)
                 if (sound > 0 && sound <= 36) {
                     playEffect(sound)
@@ -1225,12 +1262,27 @@ const Roulete = () => {
                       </WheelContainer>
                       <TableContainer key="#30" style={{backgroundImage: `url(${back21})`, backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
                           <BallHolder key="#31">
-                              {latestNumbers?.map((el,index) => {
+                            {seconds ? (
+                                <motion.div key="#11" variants={itemTwo}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit">
+                                    <BigNumberContainer key="#12" style={{ background: seconds > 3 ? '#71f53dd6' : '#fa0606da' }}>
+                                    {seconds} 
+                                    </BigNumberContainer>
+                                </motion.div>
+
+                            ) : (
+                                <>
+                                    {latestNumbers?.map((el,index) => {
                                   return (
                                       <SmallNumberWrapper key={index} style={{ background: `${el.color}` }}>{el.number}</SmallNumberWrapper>
                                   )
                               })}
                               <div ref={scrollableDivRef}></div>
+                                </>
+                            )}
+                              
                           </BallHolder>
                           <BetsHolder key="#32">
                               {allBets && Object.entries(allBets).map(([key, valueArray]) => {

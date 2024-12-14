@@ -491,11 +491,13 @@ function startBettingTimeout(roomId) {
   console.log("betting time started")
   const room = rooms.find((room) => room.id === roomId);
   const uniqueId = uuidv4(); // Generate a unique ID
-      console.log('Generated Unique ID:', uniqueId);
-      room.matchId = uniqueId
-      io.to(roomId).emit('uniqueId', {
-        uniqueId,roomId
-      });
+  console.log('Generated Unique ID:', uniqueId);
+  if(!room.matchId){
+    room.matchId = uniqueId
+  }
+  io.to(roomId).emit('uniqueId', {
+    uniqueId,roomId
+  });
   room.gameStarted = true
   
   io.emit('roomsUpdate', rooms);
@@ -617,15 +619,16 @@ io.on("connection", (socket) => {
           dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
           sendedBy: 'ADMIN',
         });
+        io.to(playerId).emit('bet-placed');
     });
-    socket.on('game-finished', ({activeRoom, myId, allBets}) => {
+    socket.on('game-finished', ({activeRoom, myId, allBets, matchId}) => {
       console.log("gameFinished")
       const roomId = activeRoom
       const playerId = myId
       console.log(roomId)
       console.log(playerId)
       const room = rooms.find((room) => room.id === roomId);
-      const matchId = room.matchId
+      
       const player = room.players.find(p => p.playerId === playerId)
       const number = room.winningNumber.number
       const playerBets = allBets;
@@ -666,9 +669,10 @@ io.on("connection", (socket) => {
       if (playerWon) {
         const number = room.winningNumber
         const id = player.googleId
+        const bets = player.bets
         console.log("Player wins with winnings:", winnings);
         console.log("Player:", player);
-        io.to(player.playerId).emit("player-wins", { winnings,number,matchId,id });
+        io.to(player.playerId).emit("player-wins", { winnings,number,matchId,id,bets });
         io.to(roomId).emit('message-sent', {
           message: `${player.playerName} wins $${winnings}.`,
           dealer: 'Jack',

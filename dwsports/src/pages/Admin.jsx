@@ -22,31 +22,12 @@ const Admin = () => {
     const [imagesProcessed, setImagesProcessed] = useState(false);
     const [imageUrls, setImageUrls] = useState([])
     const [newTeams, setNewTeams] = useState([])
-    const [startDate, setStartDate] = useState("2024-12-03 20:30:00")
-    const [endDate, setEndDate] = useState('2024-12-09 10:00:00')
+    const [startDate, setStartDate] = useState("2024-12-12 20:30:00")
+    const [endDate, setEndDate] = useState('2024-12-14 10:00:00')
     /* console.log(leagues) */
 
-    function delay(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
     
-    /* const sendSingleMessage = async () => {
-      const messageToSend = `\🗞 LATEST NEWS 🗞\n\nKylian Mbappé medical report\n\nFollowing tests carried out on Kylian Mbappé yesterday by the Real Madrid medical department, the player has been diagnosed with a thigh injury in his left leg. The Frenchman is a serious doubt for the FIFA Intercontinental Cup final on Dec. 18.`;
-      console.log(messageToSend)
-      const imageUrl = "https://i.imghippo.com/files/MfI4023QZU.webp"
-      try {
-        const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
-        if (response.data.success) {
-            console.log('Message sent successfully!');
-        } else {
-            console.log('Failed to send message');
-        }
-        } catch (error) {
-            console.log('Error sending message:', error);
-        }
-    } */
-
-        let processedEvents = {}; // Global dictionary to track processed events per match
+    let processedEvents = {}; // Global dictionary to track processed events per match
 
         function delay(ms) {
             return new Promise((resolve) => setTimeout(resolve, ms));
@@ -104,18 +85,8 @@ const Admin = () => {
                         await sendTelegramMessage(messageToSend,event.team.logo);
                         processedEvents[matchId].add(eventId);
                     }
-                    // Generate a unique identifier for the event
-                    //const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
-    
-                    // Check if the event has already been processed for this match
                     if (!processedEvents[matchId].has(eventId)) {
-                        // Prepare the message
-                        //const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-    
-                        // Send message to Telegram with a delay between each call
-                        //await sendTelegramMessage(messageToSend,imageUrl);
-                        await delay(3000); // 1-second delay to avoid flooding the endpoint
-    
+                        await delay(3000); 
                         // Mark this event as processed
                         processedEvents[matchId].add(eventId);
                     }
@@ -175,7 +146,7 @@ const Admin = () => {
     
                 const matches = [];
                 response.data.response.forEach((match) => {
-                    if ([39, 140, 135, 61, 78, 2].includes(match.league.id)) { // Filter relevant leagues
+                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
                         matches.push(match);
                     }
                 });
@@ -193,11 +164,12 @@ const Admin = () => {
             return () => clearInterval(intervalId); // Cleanup interval on component unmount
         }, []);
 
+
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={sendSingleMessage} */ /* onClick={() => navigate('/newroulette')} */>LIVE MATCHES</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={sendTodaysMatches} */ /* onClick={() => navigate('/newroulette')} */>LIVE MATCHES</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

@@ -239,18 +239,8 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
                         await sendTelegramMessage(messageToSend,event.team.logo);
                         processedEvents[matchId].add(eventId);
                     }
-                    // Generate a unique identifier for the event
-                    //const eventId = `${matchId}-${event.time.elapsed}-${event.team.id}-${event.player.id}-${event.type}`;
-    
-                    // Check if the event has already been processed for this match
                     if (!processedEvents[matchId].has(eventId)) {
-                        // Prepare the message
-                        //const messageToSend = `Match ${match.teams.home.name} vs ${match.teams.away.name}:\n${event.detail} - ${event.player.name} (${event.team.name}) at ${event.time.elapsed}'`;
-    
-                        // Send message to Telegram with a delay between each call
-                        //await sendTelegramMessage(messageToSend,imageUrl);
-                        await delay(3000); // 1-second delay to avoid flooding the endpoint
-    
+                        await delay(3000); 
                         // Mark this event as processed
                         processedEvents[matchId].add(eventId);
                     }
@@ -310,7 +300,7 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
     
                 const matches = [];
                 response.data.response.forEach((match) => {
-                    if ([39, 140, 135, 61, 78, 2].includes(match.league.id)) { // Filter relevant leagues
+                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
                         matches.push(match);
                     }
                 });
@@ -583,7 +573,7 @@ const fetchRatingTwo = async (teams) => {
 ////FETCH 10 TOP PLAYERS ////////////////////////
 
 const fetchTopPlayers = async () => {
-  const dates = ["2024-12-06", "2024-12-07", "2024-12-08"]; // Add your desired dates here.
+  const dates = ["2024-12-13"]; // Add your desired dates here.
   const options = (date) => ({
     method: 'GET',
     url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
@@ -629,39 +619,72 @@ const fetchTopPlayers = async () => {
   }
 };
 
-  const fetchPlayerRating = async (matches) => {
-    for (const match of matches){
-      const options = {
-        method: 'GET',
-        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-        params: {id: match},
-        headers: {
-          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
-          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-        }
-      };
-      try {
-        const response = await axios.request(options);
-        console.log(response.data.response);
-        const players = []
-        response.data.response[0].players.forEach((team) => {
-          for(const player of team.players){
-            //console.log(player)
-            const rating = player.statistics[0].games.rating
-            const parsed = parseFloat(parseFloat(rating).toFixed(2))
-            player.player.rating = parsed
-            players.push(player.player)
-          }
-          
-        })
-        setAllPlayers((prevPlayers) => [...prevPlayers, ...players]);
-      } catch (error) {
-        console.error(error);
+const fetchPlayerRating = async (matches) => {
+  for (const match of matches) {
+    const options = {
+      method: 'GET',
+      url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+      params: { id: match },
+      headers: {
+        'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+        'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
       }
-      await delay(1000);
+    };
+
+    try {
+      const response = await axios.request(options);
+      const players = [];
+      let matchMVP = null; // Track the MVP player for the match
+      let highestMatchRating = -1; // Track the highest rating in the match
+      const leagueId = response.data.response[0].league.id; // Get the league ID for this match
+
+      // Process players from both teams
+      response.data.response[0].players.forEach((team) => {
+        console.log(team)
+        let teamName = team.team.name
+        team.players.forEach((player) => {
+          console.log(player)
+          const rating = player.statistics[0]?.games?.rating;
+          const parsedRating = parseFloat(parseFloat(rating || 0).toFixed(2)); // Ensure valid float rating
+          const playerName = player.player.name; // Extract player name
+          const photo = player.player.photo;
+          // Add player to the array with additional fields
+          players.push({
+            id: player.player.id,
+            photo: photo,
+            name: playerName,
+            rating: parsedRating,
+            teamName: teamName,
+            leagueId: leagueId, // Include league ID
+            isMVP: false // Default MVP flag
+          });
+
+          // Check if this player is the MVP of the match
+          if (parsedRating > highestMatchRating) {
+            highestMatchRating = parsedRating;
+            matchMVP = { ...player.player, rating: parsedRating, leagueId, photo: photo, teamName: teamName }; // Track the MVP player
+          }
+        });
+      });
+
+      // Mark the match MVP
+      if (matchMVP) {
+        const mvpIndex = players.findIndex(p => p.id === matchMVP.id);
+        if (mvpIndex !== -1) players[mvpIndex].isMVP = true;
+      }
+
+      // Add all players (with MVP marking) to the global state
+      setAllPlayers((prevPlayers) => [...prevPlayers, ...players]);
+    } catch (error) {
+      console.error(error);
     }
-    setMatchesProcessed(true);
+
+    await delay(1000); // Delay to avoid hitting rate limits
   }
+
+  setMatchesProcessed(true); // Signal completion
+};
+
 
   const processData = () => {
     //console.log('All players:', allPlayers);
@@ -671,6 +694,7 @@ const fetchTopPlayers = async () => {
     .slice(0, 10);                          // Take the first 10 players
 
     setTopPlayers(topTenPlayers);
+    console.log(topTenPlayers)
     const images = []
     for (const player of topTenPlayers){
       images.push(player.photo)
@@ -681,6 +705,7 @@ const fetchTopPlayers = async () => {
 
   const processImages = async () => {
     console.log(imageUrls)
+    const imageUrl = "https://i.imghippo.com/files/TALn1630cEc.png"
     let result = topPlayers.map((player, index) => {
           let icon
           if(index === 0){
@@ -713,13 +738,29 @@ const fetchTopPlayers = async () => {
           if(index === 9){
             icon = "🔟"
           }
-      return `\n${icon} ${player.name} - ${player.rating}`
+          let iconTwo
+          if(player.leagueId === 39){
+            iconTwo = "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+          }
+          if(player.leagueId === 140){
+            iconTwo = "🇪🇸"
+          }
+          if(player.leagueId === 135){
+            iconTwo = "🇮🇹"
+          }
+          if(player.leagueId === 78){
+            iconTwo = "🇩🇪"
+          }
+          if(player.leagueId === 61){
+            iconTwo = "🇫🇷"
+          }
+      return `\n${icon} ${player.name} - ${player.rating}\n${iconTwo} ${player.teamName} ${player.isMVP ? `\n🏆 MVP OF THE MATCH ` : ``}` 
     }).join("\n")
-    const messageToSend = `📊 Top 10 players of 2024/12/01 📊 \n ${result}`
+    const messageToSend = `📊 Top 10 players of 2024/12/13 📊 \n ${result}`
     console.log(messageToSend)
     try {
     
-      const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend,imageUrls });
+      const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
       
       if (response.data.success) {
         console.log('Message sent successfully!');
