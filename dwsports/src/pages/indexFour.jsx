@@ -157,7 +157,6 @@ export const BetAmount = styled.div`
   align-items: center;
   justify-content: center;
   color: white;
-  border: 1px solid grey;
   text-shadow: ${props => props.theme.textShadowTwo};
 `;
 

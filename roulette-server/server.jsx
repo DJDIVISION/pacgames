@@ -472,15 +472,15 @@ const sendAllBetsToPlayers = (roomId) => {
 
 function resetRoomTimeout(roomId) {
   const room = rooms.find((room) => room.id === roomId);
-  if (roomTimeouts[room]) {
-    clearTimeout(roomTimeouts[room]);
+  console.log("room.gameStarted: ", room.gameStarted)
+  if (roomTimeouts[roomId]) {
+    clearTimeout(roomTimeouts[roomId]);
   }
-
-  // Set new timeout to start the game if no one joins in 10 seconds
-  roomTimeouts[room] = setTimeout(() => {
+  
+  roomTimeouts[roomId] = setTimeout(() => {
     if (room.players.length > 0 && !room.gameStarted) {
-      io.to(roomId).emit('timeoutExpired')
-      startBettingTimeout(roomId)
+      io.to(roomId).emit('timeoutExpired');
+      startBettingTimeout(roomId);
     }
   }, 10000);
 }
@@ -492,14 +492,12 @@ function startBettingTimeout(roomId) {
   const room = rooms.find((room) => room.id === roomId);
   const uniqueId = uuidv4(); // Generate a unique ID
   console.log('Generated Unique ID:', uniqueId);
-  if(!room.matchId){
-    room.matchId = uniqueId
-  }
+  room.matchId = uniqueId; 
   io.to(roomId).emit('uniqueId', {
     uniqueId,roomId
   });
   room.gameStarted = true
-  
+  console.log("room.gameStarted: ", room.gameStarted)
   io.emit('roomsUpdate', rooms);
   bettingTimeouts[room] = setTimeout(() => {
   
@@ -622,88 +620,113 @@ io.on("connection", (socket) => {
         io.to(playerId).emit('bet-placed');
     });
     socket.on('game-finished', ({activeRoom, myId, allBets, matchId}) => {
-      console.log("gameFinished")
-      const roomId = activeRoom
-      const playerId = myId
-      console.log(roomId)
-      console.log(playerId)
+      console.log("gameFinished");
+      const roomId = activeRoom;
+      const playerId = myId;
+      console.log(roomId);
+      console.log(playerId);
+
       const room = rooms.find((room) => room.id === roomId);
-      
-      const player = room.players.find(p => p.playerId === playerId)
-      const number = room.winningNumber.number
+      const player = room.players.find((p) => p.playerId === playerId);
+      const number = room.winningNumber.number; // Winning number
       const playerBets = allBets;
+
       let playerWon = false;
-      let winnings
-      //console.log("object entriessssssssss",Object.entries(playerBets))
+      let winnings = 0;
+      let winningBetDetails = null; // To store the array of bets for the winning number
+
+      // Iterate through all bets to determine winnings
       Object.entries(playerBets).forEach(([betNumber, valueArray]) => {
-        // Check if the bet number matches the winning number
-        if (betNumber == number) {
+        if (betNumber == number) { // Check if the bet matches the winning number
           playerWon = true;
-          const amount = valueArray[0].amount; 
-          console.log("betNumber", betNumber)
-          console.log("amounttttt", amount)
-          const typeofBet = valueArray[0].typeofBet; 
-          console.log("typeofBet", typeofBet)
-          if(typeofBet === "Straight"){
-            winnings = amount * 35
-          } else if(typeofBet === "Corner"){
-            winnings = amount * 8
-          } else if(typeofBet === "Six Line"){
-            winnings = amount * 5
-          } else if(typeofBet === "Split"){
-            winnings = amount * 17
-          } else if(typeofBet === "Street"){
-            winnings = amount * 11
-          } else if(typeofBet === "Dozen"){
-            winnings = amount * 2
-          } else if(typeofBet === "Low (1-18)" || typeofBet === "High (19-36)" || typeofBet === "Even" 
-            || typeofBet === "Odd" || typeofBet === "Blacks" || typeofBet === "Reds"){
-            winnings = amount * 2
-          } else if(typeofBet === "Column"){
-            winnings = amount * 2
+
+          const amount = valueArray[0].amount; // First bet's amount
+          const typeofBet = valueArray[0].typeofBet; // Type of bet
+
+          console.log("Winning Bet Found -> Bet Array:", valueArray);
+
+          // Calculate winnings based on the type of bet
+          if (typeofBet === "Straight") {
+            winnings = amount * 35;
+          } else if (typeofBet === "Corner") {
+            winnings = amount * 8;
+          } else if (typeofBet === "Six Line") {
+            winnings = amount * 5;
+          } else if (typeofBet === "Split") {
+            winnings = amount * 17;
+          } else if (typeofBet === "Street") {
+            winnings = amount * 11;
+          } else if (typeofBet === "Dozen") {
+            winnings = amount * 2;
+          } else if (["Low (1-18)", "High (19-36)", "Even", "Odd", "Blacks", "Reds"].includes(typeofBet)) {
+            winnings = amount * 2;
+          } else if (typeofBet === "Column") {
+            winnings = amount * 2;
           }
+
+          // Assign the valueArray (array of bets for the winning number)
+          winningBetDetails = {
+            [betNumber]: valueArray, // Format: { 20: Array(1) }
+          };
         }
       });
-      const latest = room.latestNumbers
-      // If no winning bet was found, emit the loss result
+
+      const latest = room.latestNumbers;
+
       if (playerWon) {
-        const number = room.winningNumber
-        const id = player.googleId
-        const bets = player.bets
+        const id = player.googleId;
+        const bets = player.bets;
+
         console.log("Player wins with winnings:", winnings);
-        console.log("Player:", player);
-        io.to(player.playerId).emit("player-wins", { winnings,number,matchId,id,bets });
+        console.log("Winning Bet Details:", winningBetDetails);
+
+        // Emit the win result with the winning bet details
+        io.to(player.playerId).emit("player-wins", {
+          winnings,
+          number: room.winningNumber,
+          matchId,
+          id,
+          bets,
+          winningBetDetails, // Send the detailed bet array
+        });
+
         io.to(roomId).emit('message-sent', {
           message: `${player.playerName} wins $${winnings}.`,
           dealer: 'Jack',
           dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
           sendedBy: 'ADMIN'
         });
-        
       } else {
-        const number = room.winningNumber
         console.log("Player has lost");
-        io.to(player.playerId).emit("player-lost", {number});
+
+        // Emit the loss result
+        io.to(player.playerId).emit("player-lost", { number: room.winningNumber });
+
         io.to(roomId).emit('message-sent', {
           message: `${player.playerName} has lost this round.`,
           dealer: 'Jack',
           dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
           sendedBy: 'ADMIN'
         });
-        
       }
       room.gameStarted = false
+      console.log("room.gameStarted: ", room.gameStarted)
+      room.matchId = null
+      player.bets = {}; 
       player.playerBets = []
       player.bet = 0
       io.to(roomId).emit('update_players-again', {
-        message: `Next game starts in 30 seconds!.`,
+        message: `Next game starts in 10 seconds!.`,
         dealer: 'Jack',
         dealer_avatar: 'https://i.postimg.cc/zGGx0q0n/dealer1.jpg',
         sendedBy: 'ADMIN'
       });
       if (!room.gameStarted) {
-        io.to(roomId).emit('timeoutStarting')
-        resetRoomTimeout(roomId)
+        setTimeout(() => {
+          console.log("requesting match")
+          io.to(roomId).emit('timeoutStarting')
+          resetRoomTimeout(roomId)
+        }, 10000)
       }
       
       

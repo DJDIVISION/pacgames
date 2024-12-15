@@ -610,7 +610,7 @@ const Fantasy = () => {
           );
     };
 
-    console.log(droppedTeamPlayers)
+    
 
     const handleDragEnd = (event) => {
         const { over, active } = event;
@@ -787,6 +787,7 @@ const Fantasy = () => {
                                                             <>
                                                                 {players.map(
                                                                     (player, playerIndex) => {
+                                                                        console.log(player)
                                                                         return (
                                                                             <RowerRow key={playerIndex}>
                                                                                 <SmallAvatar>
@@ -824,6 +825,11 @@ const Fantasy = () => {
                                                                                     {player.isMatchCancelled === true && (
                                                                                         <h2>
                                                                                             MATCH CANCELLED
+                                                                                        </h2>
+                                                                                    )}
+                                                                                    {player.isMVP === true && (
+                                                                                        <h2>
+                                                                                            🏆 MVP
                                                                                         </h2>
                                                                                     )}
                                                                                 </SmallPlayerName>

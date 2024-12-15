@@ -1299,7 +1299,7 @@ const getWinnings = (el) => {
     let result = selectedBet.map((match, index) => {
       let league
             if(match.match.league.name === "Premier League"){
-                league = "🇬🇧"
+                league = "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
             }
             if(match.match.league.name === "La Liga"){
                 league = "🇪🇸"

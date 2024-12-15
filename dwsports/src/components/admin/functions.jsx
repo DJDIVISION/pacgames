@@ -194,7 +194,7 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
                 console.log(match)
                 let league
                 if(match.league.name === "Premier League"){
-                    league = "🇬🇧"
+                    league = "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
                 }
                 if(match.league.name === "La Liga"){
                     league = "🇪🇸"
@@ -1100,7 +1100,7 @@ const writeSingleMessage = async () => {
     const options = {
       method: 'GET',
       url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-      params: {date: '2024-12-13'},
+      params: {date: '2024-12-15'},
       headers: {
         'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
         'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
@@ -1111,16 +1111,16 @@ const writeSingleMessage = async () => {
       const response = await axios.request(options);
       console.log(response.data.response);
       for (const match of response.data.response){
-        if(match.league.id === 39 || match.league.id === 61 || match.league.id === 135 || match.league.id === 140 || match.league.id === 78){
+        if(match.league.id === 61){
           matches.push(match)
         }
       }
       let result = matches.map((match, index) => {
-        const now = new Date(match.fixture.date).toLocaleString();
+        const now = new Date(match.fixture.date).toUTCString();
         console.log(now);
         let league
           if(match.league.name === "Premier League"){
-              league = "🇬🇧"
+              league = "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
           }
           if(match.league.name === "La Liga"){
               league = "🇪🇸"
@@ -1139,9 +1139,9 @@ const writeSingleMessage = async () => {
       console.log(result)
       
       
-      const messageToSend = `\n⚽️ TODAY'S MATCHES ⚽️\n${result}`;
+      const messageToSend = `\n⚽️ TODAY'S LIGUE 1 MATCHES ⚽️\n${result}`;
       console.log(messageToSend)
-      const imageUrl = "https://i.imghippo.com/files/EeSP9352uAE.png"
+      const imageUrl = "https://media.api-sports.io/football/leagues/61.png"
       try {
         const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
         if (response.data.success) {

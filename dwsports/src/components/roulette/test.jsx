@@ -1,779 +1,1346 @@
-/* {
-  "date": "2024-12-06T18:21:02.392Z",
-  "userId": "3500e55b-9df7-4213-961f-4afde3a2b9ed",
-  "players": {
-    "area1": [
-      {
-        "id": 1139,
-        "name": "Péter Gulácsi",
-        "image": "https://media.api-sports.io/football/players/1139.png",
-        "value": 2.9,
-        "overId": "area1",
-        "rating": 7.33,
-        "position": "Goalkeeper",
-        "teamLogo": "https://media.api-sports.io/football/teams/173.png",
-        "teamName": "RB Leipzig",
-        "isDropped": true,
-        "leagueName": "Bundesliga",
-        "lastMatchRating": 7.9,
-        "isMatchCancelled": false
+import React, {useState,useRef,useEffect} from 'react'
+import styled from 'styled-components'
+import { motion,AnimatePresence } from 'framer-motion'
+import { IconButton } from '@mui/material'
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import Ton from '../assets/logos/ton.png'
+import {LatestNumbers,LeagueRowBets,ArrowDown,ArrowUp,AbsoluteIconButton,Title,Section,Container,SmallNumberWrapper,FirstColumn,ChipsHolder,ZeroRowBets,
+    ColumnBets,EmptySpace,ColumnHolder,HalfZeroRowBets,WheelContainer,TableContainer,RouletteContainer,Wheel,SpinButton,Span,Number,NumberSpan,BallHolder,
+    BigNumberContainer,BetsHolder,BetHolder,BetNumberHolder,NumberWrapper,BetAmount,AbsoluteIconButtonLeft,ChatRoomIcon,MessagesWrapper,ChatInputWrapper,BalanceHolder,
+    ZeroHolder,
+    BalanceColumn,
+    RouletteBalance,
+    SendBetContainer} from './indexFour'
+import { FirstRowNoZeroes, SecondRowNoZeroes, ThirdRow, BetPerRows, LastRow, Zeroes, BetPerColumns, americanRouletteNumbers, SecondRow, FirstRow } from './fakeData'
+import { BetNumbersArea, BetPerColumnsArea, BetPerRowsArea, LastRowArea, ZeroesArea } from './functionsTwo';
+import ChipsTwo from '../components/roulette/ChipsTwo.jsx';
+import { io } from "socket.io-client";
+import { DndContext } from '@dnd-kit/core';
+import { TouchSensor, MouseSensor, useSensor, useSensors, useDroppable } from '@dnd-kit/core';
+import { RouletteState } from '../context/RouletteContext.jsx';
+import { FantasyState } from '../context/FantasyContext.jsx';
+import { BalanceDisplay, NumbersBetDisplay, PlacedBetDisplay, useAuth } from './functions.jsx';
+import spin1 from '../assets/sounds/spin2.ogg'
+import balanceIcon from '../assets/chips/balance-bag.png'
+import chips from '../assets/chips/poker-chips.png'
+import roulette from '../assets/chips/roulette.png'
+import noMoreBets from '../assets/sounds/noMoreBets.ogg'
+import chipSound from '../assets/sounds/chipSound.ogg'
+import S0 from '../assets/sounds/0.ogg'
+import S1 from '../assets/sounds/1.ogg'
+import S2 from '../assets/sounds/2.ogg'
+import S3 from '../assets/sounds/3.ogg'
+import S4 from '../assets/sounds/4.ogg'
+import S5 from '../assets/sounds/5.ogg'
+import S6 from '../assets/sounds/6.ogg'
+import S7 from '../assets/sounds/7.ogg'
+import S8 from '../assets/sounds/8.ogg'
+import S9 from '../assets/sounds/9.ogg'
+import S10 from '../assets/sounds/10.ogg'
+import S11 from '../assets/sounds/11.ogg'
+import S12 from '../assets/sounds/12.ogg'
+import S13 from '../assets/sounds/13.ogg'
+import S14 from '../assets/sounds/14.ogg'
+import S15 from '../assets/sounds/15.ogg'
+import S16 from '../assets/sounds/16.ogg'
+import S17 from '../assets/sounds/17.ogg'
+import S18 from '../assets/sounds/18.ogg'
+import S19 from '../assets/sounds/19.ogg'
+import S20 from '../assets/sounds/20.ogg'
+import S21 from '../assets/sounds/21.ogg'
+import S22 from '../assets/sounds/22.ogg'
+import S23 from '../assets/sounds/23.ogg'
+import S24 from '../assets/sounds/24.ogg'
+import S25 from '../assets/sounds/25.ogg'
+import S26 from '../assets/sounds/26.ogg'
+import S27 from '../assets/sounds/27.ogg'
+import S28 from '../assets/sounds/28.ogg'
+import S29 from '../assets/sounds/29.ogg'
+import S30 from '../assets/sounds/30.ogg'
+import S31 from '../assets/sounds/31.ogg'
+import S32 from '../assets/sounds/32.ogg'
+import S33 from '../assets/sounds/33.ogg'
+import S34 from '../assets/sounds/34.ogg'
+import S35 from '../assets/sounds/35.ogg'
+import S36 from '../assets/sounds/36.ogg'
+import S00 from '../assets/sounds/00.ogg'
+import youWin from '../assets/sounds/youWin.ogg'
+import youLose from '../assets/sounds/youLose.ogg'
+import placeYourBet from '../assets/sounds/placeYourBet.ogg'
+import back20 from '../assets/backs/back20.jpg'
+import back21 from '../assets/backs/back21.avif'
+import { useNavigate } from 'react-router-dom';
+import { DisplayHolder, SmallIconHolder } from './indexTwo.jsx';
+import { message as ANTDmessage } from 'antd';
+import { ArrowLeftRelative, StyledButton } from './index.jsx';
+import RouletteTabs from '../components/roulette/RouletteTabs.jsx';
+import { supabase } from '../supabase/client.jsx';
+
+const socket = io.connect("http://localhost:8080")
+
+const Roulete = () => {
+
+    const [openTableMenu, setOpenTableMenu] = useState(false)
+    const [playOnline, setPlayOnline] = useState(false)
+    const [openChatMenu, setOpenChatMenu] = useState(false)
+    const [openRouletteMenu, setOpenRouletteMenu] = useState(true)
+    const [rooms, setRooms] = useState([]);
+    const [players, setPlayers] = useState([]);
+    const [latestNumbers, setLatestNumbers] = useState(LatestNumbers)
+    const [allDroppedChips, setAllDroppedChips] = useState({});
+    const [allDroppedCornerChips, setAllDroppedCornerChips] = useState({});
+    const [allDroppedRowChips, setAllDroppedRowChips] = useState({});
+    const [allDroppedLastRowChips, setAllDroppedLastRowChips] = useState({});
+    const [allDroppedColumnChips, setAllDroppedColumnChips] = useState({});
+    const [allDroppedBorderLeftChips, setAllDroppedBorderLeftChips] = useState({});
+    const [allDroppedBorderTopChips, setAllDroppedBorderTopChips] = useState({});
+    const [activeNumbers, setActiveNumbers] = useState([]);
+    const [rotationDegrees, setRotationDegrees] = useState(0);
+    const scrollableDivRef = useRef(null);
+    const navigate = useNavigate();
+    const intervalRef = useRef(null);
+    const [seconds, setSeconds] = useState(null);
+    const [allBets, setAllBets] = useState({})
+    const [activeRoom, setActiveRoom] = useState(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [activeContainer, setActiveContainer] = useState(null)
+    const {placedBet, setPlacedBet} = RouletteState();
+    const {lastBet, setLastBet} = RouletteState();
+    const {myId, setMyId} = RouletteState();
+    const {balance, setBalance} = FantasyState();
+    const { user } = useAuth(); 
+    const [allowEffects, setAllowEffects] = useState(true);
+    const [effectsVolume, setEffectsVolume] = useState(0.8);
+    const soundEffectsRef = useRef([]);
+    const {droppedChips, setDroppedChips} = RouletteState();
+    const {droppedCornerChips, setDroppedCornerChips} = RouletteState();
+    const {droppedRowChips, setDroppedRowChips} = RouletteState();
+    const {droppedLastRowChips, setDroppedLastRowChips} = RouletteState();
+    const {droppedColumnChips, setDroppedColumnChips} = RouletteState();
+    const {droppedBorderLeftChips, setDroppedBorderLeftChips} = RouletteState();
+    const {droppedBorderTopChips, setDroppedBorderTopChips} = RouletteState();
+    const {droppedChipsLast, setDroppedChipsLast} = RouletteState();
+    const {droppedCornerChipsLast, setDroppedCornerChipsLast} = RouletteState();
+    const {droppedRowChipsLast, setDroppedRowChipsLast} = RouletteState();
+    const {droppedLastRowChipsLast, setDroppedLastRowChipsLast} = RouletteState();
+    const {droppedColumnChipsLast, setDroppedColumnChipsLast} = RouletteState();
+    const {droppedBorderLeftChipsLast, setDroppedBorderLeftChipsLast} = RouletteState();
+    const {droppedBorderTopChipsLast, setDroppedBorderTopChipsLast} = RouletteState();
+    const [playerAvatar, setPlayerAvatar] = useState("https://lh3.googleusercontent.com/a/ACg8ocLECQcSdS5Tc1zKpfviRv5Mr7cY4IeOunMK0Z9-dpbtJUvGsdgf=s96-c");
+    const [playerName, setPlayerName] = useState(null);
+    const [placeBets, setPlaceBets] = useState(false)
+    const [timeOutStarted, setTimeOutStarted] = useState(false)
+    const [gameStarted, setGameStarted] = useState(false)
+    const [playerFolds, setPlayerFolds] = useState(false)
+    const {winningNumber, setWinningNumber} = RouletteState();
+    const {winnings, setWinnings} = RouletteState();
+    const [spinning, setSpinning] = useState(false);
+    const totalNumbers = americanRouletteNumbers.length;
+    const {showMotionDiv, setShowMotionDiv} = RouletteState();
+    const [lastBetAmount,setLastBetAmount] = useState(null)
+    const [matchId, setMatchId] = useState(null)
+
+    
+
+    useEffect(() => {
+        if(playerFolds){
+            setAllBets([])
+            setBalance((prevBalance) => prevBalance + placedBet);
+            setPlacedBet(null)
+            setDroppedChips({})
+            setDroppedCornerChips({})
+            setDroppedRowChips({})
+            setDroppedLastRowChips({})
+            setDroppedColumnChips({})
+            setDroppedBorderLeftChips({})
+            setDroppedBorderTopChips({})
+            setAllDroppedChips({})
+            setAllDroppedCornerChips({})
+            setAllDroppedRowChips({})
+            setAllDroppedLastRowChips({})
+            setAllDroppedColumnChips({})
+            setAllDroppedBorderLeftChips({})
+            setAllDroppedBorderTopChips({})
+        }
+    }, [playerFolds])
+    
+    
+
+    useEffect(() => {
+        if (droppedChips) {
+            const droppedChipsKeys = Object.keys(droppedChips);
+            droppedChipsKeys.forEach((chip) => {
+                const number = parseInt(chip)
+                setActiveNumbers((prevActiveNumbers) => [
+                    ...new Set([...prevActiveNumbers, number]),
+                ]);
+
+            })
+        }
+        if (droppedCornerChips) {
+            const droppedChipsValues = Object.values(droppedCornerChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedRowChips) {
+            const droppedChipsValues = Object.values(droppedRowChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedLastRowChips) {
+            const droppedChipsValues = Object.values(droppedLastRowChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedColumnChips) {
+            const droppedChipsValues = Object.values(droppedColumnChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedBorderLeftChips) {
+            const droppedChipsValues = Object.values(droppedBorderLeftChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+        if (droppedBorderTopChips) {
+            const droppedChipsValues = Object.values(droppedBorderTopChips);
+            droppedChipsValues.forEach((value) => {
+                value.forEach((number) => {
+                    setActiveNumbers((prevActiveNumbers) => [
+                        ...new Set([...prevActiveNumbers, number.numberId]),
+                    ]);
+                })
+            })
+        }
+
+    }, [droppedChips, droppedCornerChips, droppedRowChips, droppedLastRowChips, droppedColumnChips, droppedBorderLeftChips, droppedBorderTopChips])
+
+    useEffect(() => {
+        const allRows = FirstRowNoZeroes.concat(SecondRowNoZeroes).concat(ThirdRow).concat(Zeroes)
+        if(activeContainer !== null){
+            if(typeof activeContainer === 'string' && ['first', 'last', 'EVEN', 'ODD', 'black', 'red'].some(prefix => activeContainer.startsWith(prefix))){
+                const filter = LastRow.filter(el => el.id === activeContainer);
+                const numbers = filter[0]?.numbers || [];
+                setActiveNumbers(numbers); 
+            } else if(typeof activeContainer === 'string' && activeContainer.startsWith('column')){
+                const filter = BetPerColumns.filter(el => el.id === activeContainer);
+                const numbers = filter[0]?.numbers || [];
+                setActiveNumbers(numbers); 
+            } else if(typeof activeContainer === 'string' && ['1', '2', '3'].some(prefix => activeContainer.startsWith(prefix))){
+                const filter = BetPerRows.filter(el => el.name === activeContainer);
+                const numbers = filter[0]?.numbers || [];
+                setActiveNumbers(numbers); 
+            }  else if(typeof activeContainer === 'string' && activeContainer.startsWith('border')){
+                const filter = allRows.filter(el => el.borderTopId === activeContainer);
+                const numbers = filter[0]?.borderTop || [];
+                setActiveNumbers(numbers); 
+            }  else if(typeof activeContainer === 'string' && activeContainer.startsWith('split')){
+                const filter = allRows.filter(el => el.borderLeftId === activeContainer);
+                console.log("filter",filter)
+                const numbers = filter[0]?.borderLeft || [];
+                setActiveNumbers(numbers); 
+            }  else if(typeof activeContainer === 'string' && activeContainer.startsWith('corner')){
+                const filter = allRows.filter(el => el.cornerLeftId === activeContainer);
+                const numbers = filter[0]?.cornerLeft || [];
+                setActiveNumbers(numbers); 
+            } 
+        } else {
+            setActiveNumbers([])
+        }
+    }, [activeContainer])
+
+    
+
+    useEffect(() => {
+        soundEffectsRef.current = [
+          new Audio(S0), 
+          new Audio(S1),
+          new Audio(S2),
+          new Audio(S3),
+          new Audio(S4),
+          new Audio(S5),
+          new Audio(S6),
+          new Audio(S7),
+          new Audio(S8),
+          new Audio(S9),
+          new Audio(S10),
+          new Audio(S11),
+          new Audio(S12),
+          new Audio(S13),
+          new Audio(S14),
+          new Audio(S15),
+          new Audio(S16),
+          new Audio(S17),
+          new Audio(S18),
+          new Audio(S19),
+          new Audio(S20),
+          new Audio(S21),
+          new Audio(S22),
+          new Audio(S23),
+          new Audio(S24),
+          new Audio(S25),
+          new Audio(S26),
+          new Audio(S27),
+          new Audio(S28),
+          new Audio(S29),
+          new Audio(S30),
+          new Audio(S31),
+          new Audio(S32),
+          new Audio(S33),
+          new Audio(S34),
+          new Audio(S35),
+          new Audio(S36),
+          new Audio(noMoreBets),
+          new Audio(spin1),
+          new Audio(chipSound),
+          new Audio(youWin),
+          new Audio(youLose),
+          new Audio(placeYourBet),
+          new Audio(S00),
+        ];
+        
+        // Apply the initial volume
+        soundEffectsRef.current.forEach((sound) => {
+          sound.volume = effectsVolume;
+        });
+      }, []);
+
+    useEffect(() => {
+        soundEffectsRef.current.forEach((sound) => {
+          sound.volume = effectsVolume;
+        });
+      }, [effectsVolume]);
+
+    const playEffect = (effectIndex) => {
+        if (allowEffects) {
+          soundEffectsRef.current[effectIndex].play();
+        }
+      };
+
+    const sensors = useSensors(
+        useSensor(MouseSensor),
+        useSensor(TouchSensor, {
+          activationConstraint: {
+            distance: 10, // Start dragging after 10px of movement
+          },
+        })
+    );
+
+    /* useEffect(() => {
+        startCountdown();
+    }, []) */
+
+    useEffect(() => {
+        scrollableDivRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [latestNumbers]);
+
+    const item = {
+        initial: { opacity: 0, y: '-100vh' },
+        animate: { opacity: 1, y: 0},
+        exit: { opacity: 0,y: '-100vh'}
+    }
+    const itemTwo = {
+        initial: { opacity: 0, scale: 0 },
+        animate: { opacity: 1, scale: 1},
+        exit: { opacity: 0,scale: 0 }
+    }
+
+    const openTable = () => {
+        setOpenRouletteMenu(false)
+        setOpenChatMenu(false)
+        setTimeout(() => {
+            setOpenTableMenu(true)
+        }, 750)
+    }
+    const closeTable = () => {
+        setOpenTableMenu(false)
+        setOpenChatMenu(false)
+        setTimeout(() => {
+            setOpenRouletteMenu(true)
+        }, 750)
+    }
+    const openChat = () => {
+        setOpenTableMenu(false)
+        setOpenRouletteMenu(false)
+        setTimeout(() => {
+            setOpenChatMenu(true)
+        }, 750)
+    }
+    const closeChat = () => {
+        setOpenChatMenu(false)
+        setOpenRouletteMenu(false)
+        setTimeout(() => {
+            setOpenTableMenu(true) 
+        }, 750)
+    }
+
+    const startCountdown = () => {
+        let countdownTime = 20;
+        setSeconds(countdownTime);
+
+        // Store the interval ID in intervalRef
+        intervalRef.current = setInterval(() => {
+            countdownTime -= 1;
+            setSeconds(countdownTime);
+
+            // Stop the timer when it reaches 0
+            if (countdownTime <= 0) {
+                clearInterval(intervalRef.current);
+            }
+        }, 1000); // Every 1 second
+    };
+
+    const handleDragStart = () => {
+        setIsDragging(true);
+    };
+
+    const handleDragOver = (event) => {
+        if (isDragging) {
+            const { over } = event;
+            if (over && over.id !== activeContainer) {
+                setActiveContainer(over.id);
+            }
+        }
+    };
+    
+    const handleDragEnd = (event) => {
+        const { over, active } = event;
+        /* if(active){
+            console.log(active)
+        } */
+        const chipValue = active.data.current.chipValue;
+        const chipImage = active.data.current.chipImage;
+        const avatar = user.user_metadata.avatar_url
+        let droppedNumberId = over?.id;
+        const allRows = FirstRowNoZeroes.concat(SecondRowNoZeroes).concat(ThirdRow).concat(Zeroes);
+        if(over){
+            const newBalance = balance - chipValue;
+            setBalance(newBalance)
+            /* playEffect(39) */
+        }
+        // Function to update the chips and placed bets
+        const updateChipsAndBets = (numberId,droppedNumberId, updateChipsFn, updateBetFn, betType) => {
+            updateChipsFn((prevChips) => ({
+                ...prevChips,
+                [droppedNumberId]: [...(prevChips[droppedNumberId] || []), { chipValue, chipImage, betType, numberId, droppedNumberId, avatar }],
+            }));
+            const oldValue = placedBet;
+            setPlacedBet(oldValue + chipValue);
+            //setPlacedBet((prevBet) => prevBet + chipValue);
+            updateBetFn(numberId, betType, droppedNumberId);
+        };
+    
+        const updateAllBets = (numberId, betType, color) => {
+            setAllBets((prevBets) => {
+                const existingBets = prevBets[numberId] || [];
+                const existingBetIndex = existingBets.findIndex((bet) => bet.typeofBet === betType);
+                let updatedBets;
+                if (existingBetIndex !== -1) {
+                    updatedBets = existingBets.map((bet, index) =>
+                        index === existingBetIndex ? { ...bet, amount: bet.amount + chipValue, number: droppedNumberId, color: color } : bet
+                    );
+                } else {
+                    updatedBets = [...existingBets, { amount: chipValue, typeofBet: betType, number: droppedNumberId, color: color }];
+                }
+    
+                return {
+                    ...prevBets,
+                    [numberId]: updatedBets,
+                };
+            });
+        };
+        //console.log("droppedNumberId",droppedNumberId)
+        if (!isNaN(droppedNumberId)) {
+            const item = allRows.find(el => el.number === droppedNumberId);
+            const color = item.color
+            updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
+        } /* else if (droppedNumberId === 100 || droppedNumberId === 101) {
+            const item = allRows.find(el => el.id === droppedNumberId);
+            console.log("item", item)
+            const color = item.color
+            updateChipsAndBets(droppedNumberId, droppedNumberId, setDroppedChips, (id) => updateAllBets(id, 'Straight', color), 'Straight');
+        } */ else if (droppedNumberId.startsWith('corner')) {
+            const item = allRows.find(el => el.cornerLeftId === droppedNumberId);
+            const numbers = item?.cornerLeft || [];
+            if(numbers.length === 4){
+                numbers.forEach((numberId) => {
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Corner`, color), `Corner`);
+                })
+            } else if(numbers.length === 6){
+                numbers.forEach((numberId) => {
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Six Line`, color), `Six Line`);
+                })
+            } else if(numbers.length === 5){
+                numbers.forEach((numberId) => {
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Basket`, color), `Basket`);
+                })
+            } else if(numbers.length === 3){
+                numbers.forEach((numberId) => {
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedCornerChips, (id) => updateAllBets(id, `Street`, color), `Street`);
+                })
+            }
+        } else if (droppedNumberId.startsWith('split')) {
+            const item = allRows.find(el => el.borderLeftId === droppedNumberId);
+            const numbers = item?.borderLeft || [];
+            numbers.forEach((numberId) => {
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderLeftChips, (id) => updateAllBets(id, `Split`, color), `Split`);
+            })
+        } else if (droppedNumberId.startsWith('borderTop')) {
+            const item = allRows.find(el => el.borderTopId === droppedNumberId);
+            const numbers = item?.borderTop || [];
+            if(numbers.length === 2){
+                numbers.forEach((numberId) => {
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderTopChips, (id) => updateAllBets(id, `Split`, color), `Split`);
+                }) 
+            } else if(numbers.length === 3){
+                numbers.forEach((numberId) => {
+                    const item = allRows.find(el => el.number === numberId);
+                    const color = item.color
+                    updateChipsAndBets(numberId,droppedNumberId, setDroppedBorderTopChips, (id) => updateAllBets(id, `Street`, color), `Street`);
+                }) 
+            }
+        } else if (droppedNumberId.startsWith('1') || droppedNumberId.startsWith('2') || droppedNumberId.startsWith('3')) {
+            const item = BetPerRows.find(el => el.name === droppedNumberId);
+            const numbers = item?.numbers || [];
+            numbers.forEach((numberId) => {
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedRowChips, (id) => updateAllBets(id, `Dozen`, color), `Dozen`);
+            })
+        } else if (droppedNumberId === "first-18") {
+            const item = LastRow.find(el => el.id === droppedNumberId);
+            const numbers = item?.numbers || [];
+            numbers.forEach((numberId) => {
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Low (1-18)`, color), `Low (1-18)`);
+            })
+        } else if (droppedNumberId === "last-18") {
+            const item = LastRow.find(el => el.id === droppedNumberId);
+            const numbers = item?.numbers || [];
+            numbers.forEach((numberId) => {
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `High (19-36)`, color), `High (19-36)`);
+            })
+        } else if (droppedNumberId === "EVEN") {
+            const item = LastRow.find(el => el.id === droppedNumberId);
+            const numbers = item?.numbers || [];
+            numbers.forEach((numberId) => {
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Even`, color), `Even`);
+            })
+        } else if (droppedNumberId === "ODD") {
+            const item = LastRow.find(el => el.id === droppedNumberId);
+            const numbers = item?.numbers || [];
+            numbers.forEach((numberId) => {
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Odd`, color), `Odd`);
+            })
+        } else if (droppedNumberId === "blacks") {
+            const item = LastRow.find(el => el.id === droppedNumberId);
+            const numbers = item?.numbers || [];
+            numbers.forEach((numberId) => {
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Blacks`, color), `Blacks`);
+            })
+        } else if (droppedNumberId === "reds") {
+            const item = LastRow.find(el => el.id === droppedNumberId);
+            const numbers = item?.numbers || [];
+            numbers.forEach((numberId) => {
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedLastRowChips, (id) => updateAllBets(id, `Reds`, color), `Reds`);
+            })
+        } else if (droppedNumberId.startsWith('column')) {
+            const item = BetPerColumns.find(el => el.id === droppedNumberId);
+            const numbers = item?.numbers || [];
+            numbers.forEach((numberId) => {
+                const item = allRows.find(el => el.number === numberId);
+                const color = item.color
+                updateChipsAndBets(numberId,droppedNumberId, setDroppedColumnChips, (id) => updateAllBets(id, `Column`, color), `Column`);
+            })
+        }
+    }; 
+
+    const handleLeave = (id) => {
+        if (activeContainer === id) {
+          setActiveContainer(null); 
+        }
+    };
+
+    const removeBet = (chip,elements,updateChipsFn) => {
+    
+        const id = chip.droppedNumberId
+        const value = chip.chipValue
+        
+        const { [id]: removed, ...updatedElements } = elements;
+    
+        // Check if the element was found and removed
+        if (removed) {
+            console.log(removed)
+            const totalValue = removed.reduce((sum, chip) => sum + chip.chipValue, 0);
+            console.log("Total Chip Value:", totalValue);
+            let toReduce
+            if(removed[0].betType === "Split"){
+                toReduce = totalValue / 2
+            } else if (removed[0].betType === "Corner"){
+                toReduce = totalValue / 4
+            } else if (removed[0].betType === "Street"){
+                toReduce = totalValue / 3
+            } else if (removed[0].betType === "Basket"){
+                toReduce = totalValue / 5
+            } else if (removed[0].betType === "Six Line"){
+                toReduce = totalValue / 6
+            } else if (removed[0].betType === "Dozen"){
+                toReduce = totalValue / 12
+            } else if (removed[0].betType === "Low (1-18)" || removed[0].betType === "High (19-36)" || removed[0].betType === "Even"
+                || removed[0].betType === "Odd" || removed[0].betType === "Blacks" || removed[0].betType === "Reds"){
+                toReduce = totalValue / 18
+            } else if (removed[0].betType === "Straight"){
+                toReduce = totalValue 
+            }
+            setBalance((prev) => prev + toReduce)
+            setPlacedBet((prev) => prev - toReduce)
+            for (let key in allBets) {
+                console.log(key)
+                console.log(allBets[key])
+                allBets[key] = allBets[key].filter(
+                  (bet) => !(bet.number === id)
+                );
+                
+                // Remove the key if the array is empty
+                if (allBets[key].length === 0) {
+                  delete allBets[key];
+                }
+              }
+            
+        } else {
+            console.log(`No element found with id: ${id}`);
+        }
+        updateChipsFn(updatedElements)
+    
+    }
+
+    useEffect(() => {
+        socket.on('connect', () => {
+            console.log(`Connected with socket ID: ${socket.id}`);
+        });
+
+        // Handle socket disconnect
+        socket.on('disconnect', () => {
+            console.log('Disconnected');
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+    useEffect(() => {
+        const fetchInitialData = () => {
+            socket.emit('getRooms');
+            socket.emit('getAllPlayers');
+        };
+        fetchInitialData();
+        
+        socket.on('roomsUpdate', (rooms) => {
+            setRooms(rooms);
+        });
+        socket.on('allPlayersUpdate', (allPlayers) => {
+            const flattenedPlayers = allPlayers.flatMap(room => room.players);
+            setPlayers(flattenedPlayers);
+        });
+        socket?.on('thisIsYourId', (data) => {
+            setMyId(data.playerId)
+            setActiveRoom(data.room)
+            ANTDmessage.success(data.playerId, [2])
+            setPlayOnline(true)
+            //waitingtToStarttNotify('Waiting for other players to join the room... ⌛')
+        });
+        socket?.on('update_players', (data) => {
+            const { message, dealer, dealer_avatar, sendedBy } = data;
+            console.log(message)
+            /* const messageToUpdate = {
+                message: message,
+                playerName: dealer,
+                user_avatar: dealer_avatar,
+                sendedBy: sendedBy,
+                room_id: activeRoom
+            } */
+            ANTDmessage.success(message, [2])
+            setTimeout(() => {
+                setPlaceBets(true)
+                playEffect(42)
+                setTimeOutStarted(true)
+                setOpenRouletteMenu(false)
+                setTimeout(() => {
+                    setOpenTableMenu(true)
+                }, 750)
+            }, 10000)
+        });
+        socket?.on('timeoutStarting', () => {
+            setTimeout(() => {
+                startCountdown();
+            }, 10000)
+        });
+        socket?.on('game-started', (data) => {
+            setGameStarted((prev) => !prev)
+            setTimeOutStarted(false)
+            setPlaceBets(false)
+            const { allDroppedChips, allDroppedCornerChips, allDroppedRowChips, allDroppedLastRowChips, allDroppedColumnChips,
+                allDroppedBorderLeftChips, allDroppedBorderTopChips } = data;
+            setAllDroppedChips(allDroppedChips)
+            setAllDroppedCornerChips(allDroppedCornerChips)
+            setAllDroppedRowChips(allDroppedRowChips)
+            setAllDroppedLastRowChips(allDroppedLastRowChips)
+            setAllDroppedColumnChips(allDroppedColumnChips)
+            setAllDroppedBorderLeftChips(allDroppedBorderLeftChips)
+            setAllDroppedBorderTopChips(allDroppedBorderTopChips)
+
+        });
+        socket?.on('close-betting-table', (data) => {
+            const { message, dealer, dealer_avatar, sendedBy } = data;
+            /* const messageToUpdate = {
+                message: message,
+                playerName: dealer,
+                user_avatar: dealer_avatar,
+                sendedBy: sendedBy,
+                room_id: activeRoom
+            } */
+            //(messageToUpdate)
+            ANTDmessage.success(message, [2])
+            setGameStarted((prev) => !prev)
+            setTimeOutStarted(false)
+            setPlayerFolds(true)
+            setOpenTableMenu(false)
+            setTimeout(() => {
+                setOpenRouletteMenu(true)
+            }, 750)
+        });
+        socket.on('winning-number', (data) => {
+            const {winningNumber, matchId} = data
+            
+            const saveDataToSupabase = async () => {
+                
+                try {
+                    const { data: savedData, error } = await supabase
+                        .from('roulette') // Replace with your Supabase table name
+                        .update({winningNumber: winningNumber.number})
+                        .eq('id', matchId)
+        
+                    if (error) {
+                        console.error('Error saving data to Supabase:', error);
+                    } else {
+                        console.log('Data successfully saved:', savedData);
+                    }
+                } catch (err) {
+                    console.error('Unexpected error saving data:', err);
+                }
+            }
+            saveDataToSupabase().then(() => {
+                setWinningNumber(winningNumber)
+                console.log("new winning number:", winningNumber)
+            })
+        });
+        socket.on('uniqueId', (data) => {
+            const {uniqueId, roomId} = data
+            console.log(uniqueId)
+            setMatchId(uniqueId)
+            const saveDataToSupabase = async () => {
+                try {
+                    const { data: savedData, error } = await supabase
+                        .from('roulette') // Replace with your Supabase table name
+                        .insert([
+                            {
+                                id: uniqueId, 
+                                room: roomId
+                            }
+                        ]);
+        
+                    if (error) {
+                        console.error('Error saving data to Supabase:', error);
+                    } else {
+                        console.log('Data successfully saved:', savedData);
+                    }
+                } catch (err) {
+                    console.error('Unexpected error saving data:', err);
+                }
+            }
+            saveDataToSupabase().then(() => {
+                console.log("finished")
+            })
+        });
+        socket.on('message-sent', (data) => {
+            const { message, dealer, dealer_avatar, sendedBy } = data;
+            /* const messageToUpdate = {
+                message: message,
+                playerName: dealer,
+                user_avatar: dealer_avatar,
+                sendedBy: sendedBy,
+                room_id: activeRoom
+            }
+            sendAdminMessage(messageToUpdate) */
+            ANTDmessage.success(message, [2])
+        });
+        socket.on('player-lost', (data) => {
+            setLatestNumbers(prevElements => [...prevElements, data.number]);
+            setGameStarted((prev) => !prev)
+            setSpinning(false)
+            setAllBets({})
+            setPlacedBet(null)
+            setWinningNumber(null)
+            setAllDroppedChips({})
+            setAllDroppedCornerChips({})
+            setAllDroppedRowChips({})
+            setAllDroppedLastRowChips({})
+            setAllDroppedColumnChips({})
+            setAllDroppedBorderLeftChips({})
+            setAllDroppedBorderTopChips({})
+            setActiveNumbers([])
+            setDroppedChips({})
+            setDroppedCornerChips({})
+            setDroppedRowChips({})
+            setDroppedLastRowChips({})
+            setDroppedColumnChips({})
+            setDroppedBorderLeftChips({})
+            setDroppedBorderTopChips({})
+            setTimeout(() => {
+                playEffect(41)
+                openTable();
+            }, 3000)
+        });
+        socket.on('player-wins', (data) => {
+            const winnings = data.winnings
+            const matchId = data.matchId
+            const userId = data.id
+            console.log(userId)
+            const saveDataToSupabase = async () => {
+                try {
+                    const { data: savedData, error } = await supabase
+                        .from('roulette') // Replace with your Supabase table name
+                        .select('players')
+                        .eq('id', matchId)
+        
+                    if (error) {
+                        console.error('Error saving data to Supabase:', error);
+                    } else {
+                        const userJsonData = savedData[0].players || {}; 
+                        userJsonData.players = userJsonData.players || []; 
+                       for(const player of userJsonData.players){
+                        if(player.playerId === userId){
+                            player.winnings = winnings
+                        }
+                       }
+                       
+                       console.log("userJsonData",userJsonData)
+                        const { data: sendData, error: sendError } = await supabase
+                            .from('users') // Replace with your Supabase table name
+                            .select('*')
+                            .eq('id', userId)
+            
+                        if (sendError) {
+                            console.error('Error saving data to Supabase:', sendError);
+                        } else {
+                            const oldBalance = sendData[0].appBalance
+                            const newBalance = oldBalance + winnings
+                            const { data: sendDataTwo, error: sendErrorTwo } = await supabase
+                            .from('users') // Replace with your Supabase table name
+                            .update({appBalance: newBalance})
+                            .eq('id', userId)
+            
+                            if (sendErrorTwo) {
+                                console.error('Error saving data to Supabase:', sendErrorTwo);
+                            } else {
+                                const { data: sendDataThree, error: sendErrorThree } = await supabase
+                                .from('roulette') // Replace with your Supabase table name
+                                .update({players: userJsonData})
+                                .eq('id', matchId)
+                
+                                if (sendErrorThree) {
+                                    console.error('Error saving data to Supabase:', sendErrorThree);
+                                } else {
+                                    console.log("data succesfully inserted with my dick", sendDataThree)
+                                }
+                            }
+                        }
+                     }
+                } catch (err) {
+                    console.error('Unexpected error saving data:', err);
+                }
+            }
+            saveDataToSupabase().then(() => {
+                console.log("last one finished")
+            })
+            setWinnings((prevWinnings) => prevWinnings + winnings);
+            setLatestNumbers(prevElements => [...prevElements, data.number]);
+            setBalance((prevBalance) => prevBalance + winnings);
+            setGameStarted((prev) => !prev)
+            setSpinning(false)
+            setAllBets({})
+            setPlacedBet(null)
+            setWinningNumber(null)
+            setAllDroppedChips({})
+            setAllDroppedCornerChips({})
+            setAllDroppedRowChips({})
+            setAllDroppedLastRowChips({})
+            setAllDroppedColumnChips({})
+            setAllDroppedBorderLeftChips({})
+            setAllDroppedBorderTopChips({})
+            setDroppedChips({})
+            setDroppedCornerChips({})
+            setDroppedRowChips({})
+            setDroppedLastRowChips({})
+            setDroppedColumnChips({})
+            setDroppedBorderLeftChips({})
+            setDroppedBorderTopChips({})
+            setActiveNumbers([])
+            setTimeout(() => {
+                playEffect(40)
+                openTable();
+            }, 3000)
+        });
+        socket?.on('update_players-again', (data) => {
+            const { message, dealer, dealer_avatar, sendedBy } = data;
+            ANTDmessage.success(message, [2])
+            /* const messageToUpdate = {
+                message: message,
+                playerName: dealer,
+                user_avatar: dealer_avatar,
+                sendedBy: sendedBy,
+                room_id: activeRoom
+            }
+            sendAdminMessage(messageToUpdate) */
+            setTimeout(() => {
+                setPlaceBets(true)
+                setTimeOutStarted(true)
+            }, 10000)
+        });
+        return () => {
+            socket.off('update_players-again');
+            socket.off('allPlayersUpdate');
+            socket.off('roomsUpdate');
+            socket.off('uniqueId');
+            socket.off('thisIsYourId');
+            socket.off('update_players');
+            socket.off('timeoutStarting');
+            socket.off('close-betting-table');
+            socket.off('winning-number');
+            socket.off('message-sent');
+            socket.off('player-wins');
+            socket.off('player-lost');
+        }
+    }, [socket]);
+
+
+    useEffect(() => {
+        console.log("game has started: ",gameStarted)
+    },[gameStarted])
+
+    const getRotationForNumber = (winningNumber) => {
+        const targetIndex = americanRouletteNumbers.findIndex(num => num.number === winningNumber.number);
+        const degreesPerNumber = 360 / totalNumbers;
+        const targetRotation = targetIndex * degreesPerNumber;
+        const fullRotations = 8 * 360; // 3 full spins
+        const finalRotation = fullRotations + (360 - targetRotation);
+        return finalRotation;
+    };
+
+    const spinRoulette = () => {
+        setSpinning(true);
+        const finalRotation = getRotationForNumber(winningNumber);
+        setRotationDegrees(finalRotation);
+        setTimeout(() => { setSpinning(false); setRotationDegrees(0);setShowMotionDiv(true)}, 10000); 
+    };
+
+    useEffect(() => {
+        if(showMotionDiv){
+            socket.emit("game-finished", { activeRoom, myId, allBets });
+                const sound = (winningNumber.number)
+                if (sound > 0 && sound <= 36) {
+                    playEffect(sound)
+                }else if (sound === "00") {
+                    playEffect(43)
+                }
+        } 
+    }, [showMotionDiv])
+
+    useEffect(() => {
+        if(winningNumber){
+            spinRoulette();
+            setWinnings(null)
+            playEffect(37)
+            playEffect(38)
+        } 
+    }, [winningNumber])
+
+    
+
+    const sendBet =  () => {
+        if (placedBet > 0) {
+          const allChips = {
+              droppedChips,
+              droppedCornerChips,
+              droppedRowChips,
+              droppedLastRowChips,
+              droppedColumnChips,
+              droppedBorderLeftChips,
+              droppedBorderTopChips
+          };
+          setDroppedChipsLast(droppedChips)
+          setDroppedCornerChipsLast(droppedCornerChips)
+          setDroppedRowChipsLast(droppedRowChips)
+          setDroppedLastRowChipsLast(droppedLastRowChips)
+          setDroppedColumnChipsLast(droppedColumnChips)
+          setDroppedBorderLeftChipsLast(droppedBorderLeftChips)
+          setDroppedBorderTopChipsLast(droppedBorderTopChips)
+          setLastBet(allBets)
+          setLastBetAmount(placedBet)
+          /* console.log("allBets",allBets)
+          console.log("allChips",allChips)
+          console.log("placedBet",placedBet) */
+          const updatedData = {
+            allBets: allBets,
+            playerId: user.id,
+            placedBet: placedBet,
+            balance: balance
+          }
+          
+          const saveDataToSupabase = async () => {
+            try {
+                const { data: savedData, error } = await supabase
+                    .from('roulette') // Replace with your Supabase table name
+                    .select('players')
+                    .eq('id', matchId)
+    
+                if (error) {
+                    console.error('Error saving data to Supabase:', error);
+                } else {
+                    console.log('Data successfully fetched:', savedData);
+                    const userJsonData = savedData[0].players || {}; 
+                    userJsonData.players = userJsonData.players || []; 
+                    userJsonData.players.push(updatedData)
+                    
+                    const { data: sendData, error: sendError } = await supabase
+                        .from('users') // Replace with your Supabase table name
+                        .select('*')
+                        .eq('id', user.id)
+        
+                    if (sendError) {
+                        console.error('Error saving data to Supabase:', sendError);
+                    } else {
+                        const oldBalance = sendData[0].appBalance
+                        const oldWager = sendData[0].wagerBalance
+                        
+                        const newBalance = oldBalance - placedBet
+                        const newWager = oldWager + placedBet
+                        const { data: sendDataTwo, error: sendErrorTwo } = await supabase
+                        .from('users') // Replace with your Supabase table name
+                        .update({appBalance: newBalance, wagerBalance: newWager})
+                        .eq('id', user.id)
+        
+                        if (sendErrorTwo) {
+                            console.error('Error saving data to Supabase:', sendErrorTwo);
+                        } else {
+                            const { data: sendDataThree, error: sendErrorThree } = await supabase
+                            .from('roulette') // Replace with your Supabase table name
+                            .update({players: userJsonData})
+                            .eq('id', matchId)
+            
+                            if (sendErrorThree) {
+                                console.error('Error saving data to Supabase:', sendErrorThree);
+                            } else {
+                                console.log("data succesfully inserted with my dick", sendDataThree)
+                            }
+                        }
+                    }
+                 }
+            } catch (err) {
+                console.error('Unexpected error saving data:', err);
+            }
+        }
+        saveDataToSupabase().then(() => {
+            socket?.emit("placeBet", {
+                allChips: allChips,
+                roomId: activeRoom,
+                playerId: myId,
+                placedBet: placedBet,
+                
+            });
+            closeTable();
+            setActiveContainer(null)
+        })
+          
+          
+          } else {
+            message.error("There is no bet placed!")
+          }
       }
-    ],
-    "area2": [
-      {
-        "id": 290,
-        "name": "Virgil van Dijk",
-        "image": "https://media.api-sports.io/football/players/290.png",
-        "value": 31,
-        "overId": "area2",
-        "rating": 7.32,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/40.png",
-        "teamName": "Liverpool",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 7.32,
-        "isMatchCancelled": true
-      }
-    ],
-    "area3": [
-      {
-        "id": 1148,
-        "name": "Willi Orbán",
-        "image": "https://media.api-sports.io/football/players/1148.png",
-        "value": 10.9,
-        "overId": "area3",
-        "rating": 7.54,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/173.png",
-        "teamName": "RB Leipzig",
-        "isDropped": true,
-        "leagueName": "Bundesliga",
-        "lastMatchRating": 7.3,
-        "isMatchCancelled": false
-      }
-    ],
-    "area4": [
-      {
-        "id": 31042,
-        "name": "Giovanni Di Lorenzo",
-        "image": "https://media.api-sports.io/football/players/31042.png",
-        "value": 13.6,
-        "overId": "area4",
-        "rating": 7.36,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/492.png",
-        "teamName": "Napoli",
-        "isDropped": true,
-        "leagueName": "Serie A",
-        "lastMatchRating": 6.9,
-        "isMatchCancelled": false
-      }
-    ],
-    "area5": [
-      {
-        "id": 261,
-        "name": "Thilo Kehrer",
-        "image": "https://media.api-sports.io/football/players/261.png",
-        "value": 10.3,
-        "overId": "area5",
-        "rating": 7.33,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/91.png",
-        "teamName": "Monaco",
-        "isDropped": true,
-        "leagueName": "Ligue 1",
-        "lastMatchRating": 7.3,
-        "isMatchCancelled": false
-      }
-    ],
-    "area6": [
-      {
-        "id": 1464,
-        "name": "Granit Xhaka",
-        "image": "https://media.api-sports.io/football/players/1464.png",
-        "value": 21,
-        "overId": "area6",
-        "rating": 7.63,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/168.png",
-        "teamName": "Bayer Leverkusen",
-        "isDropped": true,
-        "leagueName": "Bundesliga",
-        "lastMatchRating": 7.5,
-        "isMatchCancelled": false
-      }
-    ],
-    "area7": [
-      {
-        "id": 26248,
-        "name": "Vincenzo Grifo",
-        "image": "https://media.api-sports.io/football/players/26248.png",
-        "value": 8.4,
-        "overId": "area7",
-        "rating": 7.46,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/160.png",
-        "teamName": "SC Freiburg",
-        "isDropped": true,
-        "leagueName": "Bundesliga",
-        "lastMatchRating": 7.2,
-        "isMatchCancelled": false
-      }
-    ],
-    "area8": [
-      {
-        "id": 897,
-        "name": "Mason Greenwood",
-        "image": "https://media.api-sports.io/football/players/897.png",
-        "value": 24,
-        "overId": "area8",
-        "rating": 7.57,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/81.png",
-        "teamName": "Marseille",
-        "isDropped": true,
-        "leagueName": "Ligue 1",
-        "lastMatchRating": 8.7,
-        "isMatchCancelled": false
-      }
-    ],
-    "area9": [
-      {
-        "id": 81573,
-        "name": "Omar Marmoush",
-        "image": "https://media.api-sports.io/football/players/81573.png",
-        "value": 24,
-        "overId": "area9",
-        "rating": 8.4,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/169.png",
-        "teamName": "Eintracht Frankfurt",
-        "isDropped": true,
-        "leagueName": "Bundesliga",
-        "lastMatchRating": 7.6,
-        "isMatchCancelled": false
-      }
-    ],
-    "area10": [
-      {
-        "id": 1496,
-        "name": "Raphinha",
-        "image": "https://media.api-sports.io/football/players/1496.png",
-        "value": 45,
-        "overId": "area10",
-        "rating": 8.07,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/529.png",
-        "teamName": "Barcelona",
-        "isDropped": true,
-        "leagueName": "La Liga",
-        "lastMatchRating": 7.3,
-        "isMatchCancelled": false
-      }
-    ],
-    "area11": [
-      {
-        "id": 521,
-        "name": "Robert Lewandowski",
-        "image": "https://media.api-sports.io/football/players/521.png",
-        "value": 14,
-        "overId": "area11",
-        "rating": 7.6,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/529.png",
-        "teamName": "Barcelona",
-        "isDropped": true,
-        "leagueName": "La Liga",
-        "lastMatchRating": 7.2,
-        "isMatchCancelled": false
-      }
-    ]
-  },
-  "teamRating": 7.57
+    
+    if (!playOnline) {
+        return (
+            <RouletteTabs socket={socket} rooms={rooms} players={players} playerName={playerName} setPlayerName={setPlayerName} />
+        )
+    }
+
+  return (
+    <Section>
+        <AnimatePresence>
+            <AbsoluteIconButton key="#4">{openTableMenu ? <ArrowDown onClick={closeTable}/> : <ArrowUp onClick={openTable}/>}</AbsoluteIconButton>
+            {(openRouletteMenu && !gameStarted) && <AbsoluteIconButtonLeft key="#5"><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}} onClick={() => navigate('/')}/></AbsoluteIconButtonLeft>}
+            {openTableMenu && (
+                <Container key="#1" variants={item}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ type: "spring", stiffness: 300, damping: 40,duration: 0.5 }}
+                style={{backgroundImage: `url(${back20})`, backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
+                    <DndContext onDragEnd={handleDragEnd} sensors={sensors} onDragOver={handleDragOver} onDragStart={handleDragStart}>
+                        <SendBetContainer>
+                            <motion.div whileTap={{scale: 0.95}}><StyledButton style={{fontSize: '18px'}} onClick={sendBet}>PLACE BET</StyledButton></motion.div>
+                        </SendBetContainer>
+                    <ZeroRowBets key="#7">
+                        <HalfZeroRowBets style={{height: '60%'}} key="#8"></HalfZeroRowBets>
+                        <HalfZeroRowBets style={{height: '40%'}} key="#9">
+                        <EmptySpace key="#10">
+                        {seconds && (
+                            <>
+                                <motion.div key="#11" variants={item}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit">
+                                    <BigNumberContainer key="#12" style={{ background: seconds > 3 ? '#71f53dd6' : '#fa0606da' }}>
+                                    {seconds} 
+                                    </BigNumberContainer>
+                                </motion.div>
+                                
+                            </>
+                        )}    
+                        </EmptySpace>   
+                        <ColumnHolder key="#13">
+                            {Zeroes.map((card, index) => {
+                                return (
+                                    <ZeroesArea activeNumbers={activeNumbers} card={card} key={index} droppedChips={droppedChips} setDroppedChips={setDroppedChips} activeContainer={activeContainer}
+                                   removeBet={removeBet} droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips}/>
+                                )
+                            })}
+                        </ColumnHolder>
+                        </HalfZeroRowBets>
+                    </ZeroRowBets>
+                    <LeagueRowBets key="#14">
+                
+                <FirstColumn key="#15">
+                            {LastRow.map((card, index) => {
+                                return (
+                                    <LastRowArea card={card} key={index} droppedLastRowChips={droppedLastRowChips} setDroppedLastRowChips={setDroppedLastRowChips} removeBet={removeBet}/>
+                                )
+                            })}
+                </FirstColumn>
+                <FirstColumn key="#16">
+                            {BetPerRows.map((card, index) => {
+                                return (
+                                    <BetPerRowsArea card={card} key={index} droppedRowChips={droppedRowChips} setDroppedRowChips={setDroppedRowChips} removeBet={removeBet}/>
+                                )
+                            })}
+                </FirstColumn>
+                <FirstColumn key="#17">
+                            {ThirdRow.map((card, index) => {
+                                return (
+                                    <BetNumbersArea key={index} activeContainer={activeContainer} 
+                                    card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
+                                    droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} 
+                                    removeBet={removeBet} activeNumbers={activeNumbers}
+                                    />
+                                )
+                            })}
+                </FirstColumn>
+                <FirstColumn key="#18">
+                            {SecondRowNoZeroes.map((card, index) => {
+                                return (
+                                    <BetNumbersArea key={index} activeContainer={activeContainer} 
+                                    card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
+                                    droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} 
+                                    removeBet={removeBet} activeNumbers={activeNumbers}
+                                    />
+                                )
+                            })}
+                </FirstColumn>
+                <FirstColumn key="#19">
+                            {FirstRowNoZeroes.map((card, index) => {
+                                return (
+                                    <BetNumbersArea key={index} activeContainer={activeContainer} 
+                                    card={card} onLeave={handleLeave} droppedChips={droppedChips} setDroppedChips={setDroppedChips} droppedCornerChips={droppedCornerChips} setDroppedCornerChips={setDroppedCornerChips} 
+                                    droppedBorderLeftChips={droppedBorderLeftChips} setDroppedBorderLeftChips={setDroppedBorderLeftChips} droppedBorderTopChips={droppedBorderTopChips} setDroppedBorderTopChips={setDroppedBorderTopChips} 
+                                    removeBet={removeBet} activeNumbers={activeNumbers}
+                                    />
+                                )
+                            })}
+                </FirstColumn>
+              </LeagueRowBets>
+              <ColumnBets key="#20">
+                        <EmptySpace key="#21"></EmptySpace>
+                        <ColumnHolder key="#22">
+                            {BetPerColumns.map((card, index) => {
+                                return (
+                                    <BetPerColumnsArea card={card} key={index} droppedColumnChips={droppedColumnChips} setDroppedColumnChips={setDroppedColumnChips} removeBet={removeBet}/>
+                                )
+                            })}
+                        </ColumnHolder>
+                        </ColumnBets>
+
+                        <ChipsHolder key="#23">
+                                <ChipsTwo key="#24"/>
+                        </ChipsHolder>
+                        <RouletteBalance>
+                        <BalanceColumn>
+                                    <SmallIconHolder><img src={balanceIcon} alt="balance" /></SmallIconHolder>
+                                    <DisplayHolder><BalanceDisplay balance={balance} /></DisplayHolder>
+                              </BalanceColumn>
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={chips} alt="chips" /></SmallIconHolder>
+                                    <DisplayHolder><PlacedBetDisplay placedBet={placedBet} /></DisplayHolder>
+                              </BalanceColumn>
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={roulette} alt="balance" /></SmallIconHolder>
+                                    <DisplayHolder><NumbersBetDisplay allBets={allBets} /></DisplayHolder>
+                              </BalanceColumn>  
+                        </RouletteBalance>
+                        </DndContext>
+                            </Container>
+                        )}
+              {openRouletteMenu && (
+                  <Container variants={item}
+                      initial="initial" key="#2"
+                      animate="animate"
+                      exit="exit"
+                      transition={{ type: "spring", stiffness: 300, damping: 40,duration: 0.5 }}
+                      >
+                      <WheelContainer key="#25" style={{background: 'black'}}>
+                          <RouletteContainer key="#26">
+                              <Wheel animate={{ rotate: rotationDegrees }} key="#27"// Framer Motion animation
+                                  transition={{
+                                      duration: 10, // 10-second spin duration
+                                      ease: [0.22, 1, 0.36, 1], // easeOutCubic to slow down
+                                  }}>
+                                  <SpinButton key="#28"><img src={Ton} alt="logo" /></SpinButton>
+                                  {[...Array(19)].map((_, index) => (
+                                      <Span key={index} index={index} />
+                                  ))}
+                                  <Number key="#29">
+                                      {americanRouletteNumbers.map((item, index) => (
+                                          <NumberSpan key={index} index={index} style={{
+                                              color: `${item.color}`, filter: `drop-shadow(0 0 10px aqua)`,
+                                              fontWeight: 'bold'
+                                          }}>
+                                              {item.number}
+                                          </NumberSpan>
+                                      ))}
+                                  </Number>
+                              </Wheel>
+                          </RouletteContainer>
+                      </WheelContainer>
+                      <TableContainer key="#30" style={{backgroundImage: `url(${back21})`, backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover'}}>
+                          <BallHolder key="#31">
+                              {latestNumbers?.map((el,index) => {
+                                  return (
+                                      <SmallNumberWrapper key={index} style={{ background: `${el.color}` }}>{el.number}</SmallNumberWrapper>
+                                  )
+                              })}
+                              <div ref={scrollableDivRef}></div>
+                          </BallHolder>
+                          <BetsHolder key="#32">
+                              {allBets && Object.entries(allBets).map(([key, valueArray]) => {
+                                const value = key === "100" ? 0 : key === "101" ? "00" : key
+                                  return valueArray.map((bet, index) => (
+                                      <BetHolder key={index}>
+                                          <BetNumberHolder>
+                                              <NumberWrapper style={{ background: `${bet.color}` }}>{value}</NumberWrapper>
+                                          </BetNumberHolder>
+                                          <BetAmount>{bet.amount} GPZ</BetAmount>
+                                          <BetAmount>{bet.typeofBet}</BetAmount>
+                                      </BetHolder>
+                                  ));
+                              })}
+                          </BetsHolder>
+                          <BalanceHolder>
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={balanceIcon} alt="balance" /></SmallIconHolder>
+                                    <DisplayHolder><BalanceDisplay balance={balance} /></DisplayHolder>
+                              </BalanceColumn>
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={chips} alt="chips" /></SmallIconHolder>
+                                    <DisplayHolder><PlacedBetDisplay placedBet={placedBet} /></DisplayHolder>
+                              </BalanceColumn>
+                              <BalanceColumn>
+                                    <SmallIconHolder><img src={roulette} alt="balance" /></SmallIconHolder>
+                                    <DisplayHolder><NumbersBetDisplay allBets={allBets} /></DisplayHolder>
+                              </BalanceColumn>
+                          </BalanceHolder>
+                      </TableContainer>
+                  </Container>
+              )}
+              {openChatMenu && (
+                  <Container variants={item}
+                      initial="initial" key="#3"
+                      animate="animate"
+                      exit="exit"
+                      transition={{ type: "spring", stiffness: 300, damping: 40,duration: 0.5 }}>
+                        <MessagesWrapper key="#34">
+
+                        </MessagesWrapper>
+                        <ChatInputWrapper key="#35">
+                        {/* <ChatInput activeRoom={activeRoom} playerName={playerName} playerId={playerId}
+                        actionMenuOpen={actionMenuOpen} setActionMenuOpen={setActionMenuOpen} showEmojiPicker={showEmojiPicker}
+                        setShowEmojiPicker={setShowEmojiPicker} message={message} setMessage={setMessage} selectedFile={selectedFile} setSelectedFile={setSelectedFile}/> */}
+                        </ChatInputWrapper>
+                  </Container>
+              )}
+      </AnimatePresence>
+    </Section>
+  )
 }
 
-{
-  "date": "2024-12-06T18:23:04.503Z",
-  "userId": "0a8b8033-e921-47cc-9fa7-35311aa6cec1",
-  "players": {
-    "area1": [
-      {
-        "id": 882,
-        "name": "David de Gea",
-        "image": "https://media.api-sports.io/football/players/882.png",
-        "value": 4.8,
-        "overId": "area1",
-        "rating": 7.61,
-        "position": "Goalkeeper",
-        "teamLogo": "https://media.api-sports.io/football/teams/502.png",
-        "teamName": "Fiorentina",
-        "isDropped": true,
-        "leagueName": "Serie A",
-        "lastMatchRating": 6.9,
-        "isMatchCancelled": false
-      }
-    ],
-    "area2": [
-      {
-        "id": 8,
-        "name": "Raphaël Guerreiro",
-        "image": "https://media.api-sports.io/football/players/8.png",
-        "value": 12.7,
-        "overId": "area2",
-        "rating": 7.22,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/157.png",
-        "teamName": "Bayern München",
-        "isDropped": true,
-        "leagueName": "Bundesliga",
-        "lastMatchRating": 8.2,
-        "isMatchCancelled": false
-      }
-    ],
-    "area3": [
-      {
-        "id": 2670,
-        "name": "Íñigo Martínez",
-        "image": "https://media.api-sports.io/football/players/2670.png",
-        "value": 5.2,
-        "overId": "area3",
-        "rating": 7.2,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/529.png",
-        "teamName": "Barcelona",
-        "isDropped": true,
-        "leagueName": "La Liga",
-        "lastMatchRating": 6.6,
-        "isMatchCancelled": false
-      }
-    ],
-    "area4": [
-      {
-        "id": 227,
-        "name": "Angeliño",
-        "image": "https://media.api-sports.io/football/players/227.png",
-        "value": 7.4,
-        "overId": "area4",
-        "rating": 7.07,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/497.png",
-        "teamName": "AS Roma",
-        "isDropped": true,
-        "leagueName": "Serie A",
-        "lastMatchRating": 6.6,
-        "isMatchCancelled": false
-      }
-    ],
-    "area5": [
-      {
-        "id": 31042,
-        "name": "Giovanni Di Lorenzo",
-        "image": "https://media.api-sports.io/football/players/31042.png",
-        "value": 13.6,
-        "overId": "area5",
-        "rating": 7.36,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/492.png",
-        "teamName": "Napoli",
-        "isDropped": true,
-        "leagueName": "Serie A",
-        "lastMatchRating": 6.9,
-        "isMatchCancelled": false
-      }
-    ],
-    "area6": [
-      {
-        "id": 285909,
-        "name": "Pablo Torre",
-        "image": "https://media.api-sports.io/football/players/285909.png",
-        "value": 2.9,
-        "overId": "area6",
-        "rating": 7.32,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/529.png",
-        "teamName": "Barcelona",
-        "isDropped": true,
-        "leagueName": "La Liga",
-        "lastMatchRating": null,
-        "isMatchCancelled": false
-      }
-    ],
-    "area7": [
-      {
-        "id": 18929,
-        "name": "Dwight McNeil",
-        "image": "https://media.api-sports.io/football/players/18929.png",
-        "value": 23,
-        "overId": "area7",
-        "rating": 7.42,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/45.png",
-        "teamName": "Everton",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 7.42,
-        "isMatchCancelled": true
-      }
-    ],
-    "area8": [
-      {
-        "id": 2926,
-        "name": "Youri Tielemans",
-        "image": "https://media.api-sports.io/football/players/2926.png",
-        "value": 27,
-        "overId": "area8",
-        "rating": 7.4,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/66.png",
-        "teamName": "Aston Villa",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 6.7,
-        "isMatchCancelled": false
-      }
-    ],
-    "area9": [
-      {
-        "id": 56,
-        "name": "Antoine Griezmann",
-        "image": "https://media.api-sports.io/football/players/56.png",
-        "value": 24,
-        "overId": "area9",
-        "rating": 7.43,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/530.png",
-        "teamName": "Atletico Madrid",
-        "isDropped": true,
-        "leagueName": "La Liga",
-        "lastMatchRating": 9.2,
-        "isMatchCancelled": false
-      }
-    ],
-    "area10": [
-      {
-        "id": 1496,
-        "name": "Raphinha",
-        "image": "https://media.api-sports.io/football/players/1496.png",
-        "value": 45,
-        "overId": "area10",
-        "rating": 8.07,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/529.png",
-        "teamName": "Barcelona",
-        "isDropped": true,
-        "leagueName": "La Liga",
-        "lastMatchRating": 7.3,
-        "isMatchCancelled": false
-      }
-    ],
-    "area11": [
-      {
-        "id": 521,
-        "name": "Robert Lewandowski",
-        "image": "https://media.api-sports.io/football/players/521.png",
-        "value": 14,
-        "overId": "area11",
-        "rating": 7.6,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/529.png",
-        "teamName": "Barcelona",
-        "isDropped": true,
-        "leagueName": "La Liga",
-        "lastMatchRating": 7.2,
-        "isMatchCancelled": false
-      }
-    ]
-  },
-  "teamRating": 7.39
-}
+export default Roulete
 
-{
-  "date": "2024-12-06T16:14:19.930Z",
-  "userId": "2e5234f5-cd39-42dd-9289-02a0416ae425",
-  "players": {
-    "area1": [
-      {
-        "id": 31156,
-        "name": "Vanja Milinković-Savić",
-        "image": "https://media.api-sports.io/football/players/31156.png",
-        "value": 4.6,
-        "overId": "area1",
-        "rating": 7.35,
-        "position": "Goalkeeper",
-        "teamLogo": "https://media.api-sports.io/football/teams/503.png",
-        "teamName": "Torino",
-        "isDropped": true,
-        "leagueName": "Serie A",
-        "lastMatchRating": 7.3,
-        "isMatchCancelled": false
-      }
-    ],
-    "area2": [
-      {
-        "id": 529,
-        "name": "Nicolás Tagliafico",
-        "image": "https://media.api-sports.io/football/players/529.png",
-        "value": 7.7,
-        "overId": "area2",
-        "rating": 7.62,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/80.png",
-        "teamName": "Lyon",
-        "isDropped": true,
-        "leagueName": "Ligue 1",
-        "lastMatchRating": 8,
-        "isMatchCancelled": false
-      }
-    ],
-    "area3": [
-      {
-        "id": 162712,
-        "name": "Óscar Mingueza",
-        "image": "https://media.api-sports.io/football/players/162712.png",
-        "value": 8.3,
-        "overId": "area3",
-        "rating": 7.32,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/538.png",
-        "teamName": "Celta Vigo",
-        "isDropped": true,
-        "leagueName": "La Liga",
-        "lastMatchRating": 7,
-        "isMatchCancelled": false
-      }
-    ],
-    "area4": [
-      {
-        "id": 1314,
-        "name": "Amir Rrahmani",
-        "image": "https://media.api-sports.io/football/players/1314.png",
-        "value": 15.9,
-        "overId": "area4",
-        "rating": 7.27,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/492.png",
-        "teamName": "Napoli",
-        "isDropped": true,
-        "leagueName": "Serie A",
-        "lastMatchRating": 6.9,
-        "isMatchCancelled": false
-      }
-    ],
-    "area5": [
-      {
-        "id": 1291,
-        "name": "Denis Vavro",
-        "image": "https://media.api-sports.io/football/players/1291.png",
-        "value": 4.7,
-        "overId": "area5",
-        "rating": 7.21,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/161.png",
-        "teamName": "VfL Wolfsburg",
-        "isDropped": true,
-        "leagueName": "Bundesliga",
-        "lastMatchRating": 6.9,
-        "isMatchCancelled": false
-      }
-    ],
-    "area6": [
-      {
-        "id": 927,
-        "name": "Kang-in Lee",
-        "image": "https://media.api-sports.io/football/players/927.png",
-        "value": 27,
-        "overId": "area6",
-        "rating": 7.75,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/85.png",
-        "teamName": "Paris Saint Germain",
-        "isDropped": true,
-        "leagueName": "Ligue 1",
-        "lastMatchRating": 7.9,
-        "isMatchCancelled": false
-      }
-    ],
-    "area7": [
-      {
-        "id": 714,
-        "name": "Nadiem Amiri",
-        "image": "https://media.api-sports.io/football/players/714.png",
-        "value": 6.4,
-        "overId": "area7",
-        "rating": 7.58,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/164.png",
-        "teamName": "FSV Mainz 05",
-        "isDropped": true,
-        "leagueName": "Bundesliga",
-        "lastMatchRating": 7.5,
-        "isMatchCancelled": false
-      }
-    ],
-    "area8": [
-      {
-        "id": 138908,
-        "name": "Elliot Anderson",
-        "image": "https://media.api-sports.io/football/players/138908.png",
-        "value": 19.9,
-        "overId": "area8",
-        "rating": 7.28,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/65.png",
-        "teamName": "Nottingham Forest",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 6.9,
-        "isMatchCancelled": false
-      }
-    ],
-    "area9": [
-      {
-        "id": 18767,
-        "name": "Ademola Lookman",
-        "image": "https://media.api-sports.io/football/players/18767.png",
-        "value": 44,
-        "overId": "area9",
-        "rating": 7.85,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/499.png",
-        "teamName": "Atalanta",
-        "isDropped": true,
-        "leagueName": "Serie A",
-        "lastMatchRating": 7.6,
-        "isMatchCancelled": false
-      }
-    ],
-    "area10": [
-      {
-        "id": 30937,
-        "name": "Mattia Zaccagni",
-        "image": "https://media.api-sports.io/football/players/30937.png",
-        "value": 18,
-        "overId": "area10",
-        "rating": 7.34,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/487.png",
-        "teamName": "Lazio",
-        "isDropped": true,
-        "leagueName": "Serie A",
-        "lastMatchRating": 6.5,
-        "isMatchCancelled": false
-      }
-    ],
-    "area11": [
-      {
-        "id": 26256,
-        "name": "Tim Kleindienst",
-        "image": "https://media.api-sports.io/football/players/26256.png",
-        "value": 5.8,
-        "overId": "area11",
-        "rating": 7.44,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/163.png",
-        "teamName": "Borussia Mönchengladbach",
-        "isDropped": true,
-        "leagueName": "Bundesliga",
-        "lastMatchRating": 6.9,
-        "isMatchCancelled": false
-      }
-    ]
-  },
-  "teamRating": 7.45
-}
 
-{
-  "date": "2024-12-07T12:10:15.504Z",
-  "userId": "ba2c4af8-14a1-430a-8baf-f6fed425e3a7",
-  "players": {
-    "area1": [
-      {
-        "id": 26232,
-        "name": "Mark Flekken",
-        "image": "https://media.api-sports.io/football/players/26232.png",
-        "value": 12.8,
-        "overId": "area1",
-        "rating": 7.54,
-        "position": "Goalkeeper",
-        "teamLogo": "https://media.api-sports.io/football/teams/55.png",
-        "teamName": "Brentford",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 7.3,
-        "isMatchCancelled": false
-      }
-    ],
-    "area2": [
-      {
-        "id": 22090,
-        "name": "William Saliba",
-        "image": "https://media.api-sports.io/football/players/22090.png",
-        "value": 75,
-        "overId": "area2",
-        "rating": 6.82,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/42.png",
-        "teamName": "Arsenal",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 7.3,
-        "isMatchCancelled": false
-      }
-    ],
-    "area3": [
-      {
-        "id": 2806,
-        "name": "Fabian Schär",
-        "image": "https://media.api-sports.io/football/players/2806.png",
-        "value": 9.7,
-        "overId": "area3",
-        "rating": 6.92,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/34.png",
-        "teamName": "Newcastle",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 6.3,
-        "isMatchCancelled": false
-      }
-    ],
-    "area4": [
-      {
-        "id": 290,
-        "name": "Virgil van Dijk",
-        "image": "https://media.api-sports.io/football/players/290.png",
-        "value": 31,
-        "overId": "area4",
-        "rating": 7.32,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/40.png",
-        "teamName": "Liverpool",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 7.32,
-        "isMatchCancelled": true
-      }
-    ],
-    "area5": [
-      {
-        "id": 18943,
-        "name": "Jannik Vestergaard",
-        "image": "https://media.api-sports.io/football/players/18943.png",
-        "value": 2.9,
-        "overId": "area5",
-        "rating": 6.72,
-        "position": "Defender",
-        "teamLogo": "https://media.api-sports.io/football/teams/46.png",
-        "teamName": "Leicester",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 6.9,
-        "isMatchCancelled": false
-      }
-    ],
-    "area6": [
-      {
-        "id": 636,
-        "name": "Bernardo Silva",
-        "image": "https://media.api-sports.io/football/players/636.png",
-        "value": 67,
-        "overId": "area6",
-        "rating": 7.22,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/50.png",
-        "teamName": "Manchester City",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 7.2,
-        "isMatchCancelled": false
-      }
-    ],
-    "area7": [
-      {
-        "id": 49,
-        "name": "Thomas Partey",
-        "image": "https://media.api-sports.io/football/players/49.png",
-        "value": 17.4,
-        "overId": "area7",
-        "rating": 7.13,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/42.png",
-        "teamName": "Arsenal",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 6.7,
-        "isMatchCancelled": false
-      }
-    ],
-    "area8": [
-      {
-        "id": 19245,
-        "name": "Marcus Tavernier",
-        "image": "https://media.api-sports.io/football/players/19245.png",
-        "value": 18.2,
-        "overId": "area8",
-        "rating": 7.02,
-        "position": "Midfielder",
-        "teamLogo": "https://media.api-sports.io/football/teams/35.png",
-        "teamName": "Bournemouth",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 6.7,
-        "isMatchCancelled": false
-      }
-    ],
-    "area9": [
-      {
-        "id": 792,
-        "name": "Justin Kluivert",
-        "image": "https://media.api-sports.io/football/players/792.png",
-        "value": 13.6,
-        "overId": "area9",
-        "rating": 7.13,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/35.png",
-        "teamName": "Bournemouth",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 7,
-        "isMatchCancelled": false
-      }
-    ],
-    "area10": [
-      {
-        "id": 283058,
-        "name": "Nicolas Jackson",
-        "image": "https://media.api-sports.io/football/players/283058.png",
-        "value": 39,
-        "overId": "area10",
-        "rating": 7.28,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/49.png",
-        "teamName": "Chelsea",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 6.3,
-        "isMatchCancelled": false
-      }
-    ],
-    "area11": [
-      {
-        "id": 1469,
-        "name": "Danny Welbeck",
-        "image": "https://media.api-sports.io/football/players/1469.png",
-        "value": 5.2,
-        "overId": "area11",
-        "rating": 7.05,
-        "position": "Attacker",
-        "teamLogo": "https://media.api-sports.io/football/teams/51.png",
-        "teamName": "Brighton",
-        "isDropped": true,
-        "leagueName": "Premier League",
-        "lastMatchRating": 6.9,
-        "isMatchCancelled": false
-      }
-    ]
-  },
-  "teamRating": 7.1
-} */
+

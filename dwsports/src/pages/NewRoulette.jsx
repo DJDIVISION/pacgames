@@ -79,7 +79,7 @@ import { ArrowLeftRelative, StyledButton } from './index.jsx';
 import RouletteTabs from '../components/roulette/RouletteTabs.jsx';
 import { supabase } from '../supabase/client.jsx';
 
-/* const socket = io.connect("http://localhost:8080") */
+const socket = io.connect("http://localhost:8080")
 
 const Roulete = () => {
 
@@ -675,7 +675,7 @@ const Roulete = () => {
         // Handle socket disconnect
         socket.on('disconnect', () => {
             console.log('Disconnected');
-            //window.location.reload();
+            window.location.reload();
         });
 
         return () => {
@@ -710,13 +710,6 @@ const Roulete = () => {
         socket?.on('update_players', (data) => {
             const { message, dealer, dealer_avatar, sendedBy } = data;
             console.log(message)
-            /* const messageToUpdate = {
-                message: message,
-                playerName: dealer,
-                user_avatar: dealer_avatar,
-                sendedBy: sendedBy,
-                room_id: activeRoom
-            } */
             ANTDmessage.success(message, [2])
         });
         socket?.on('timeoutStarting', () => {
@@ -725,9 +718,11 @@ const Roulete = () => {
         socket?.on('timeoutExpired', () => {
             console.log("time out expired, place your bet")
             setPlaceBets(true)
+            setGameStarted((prev) => !prev)
             playEffect(42)
             setTimeOutStarted(true)
             setOpenRouletteMenu(false)
+            setAllBets({})
             setTimeout(() => {
                 setOpenTableMenu(true)
                 startCountdown();
@@ -735,14 +730,7 @@ const Roulete = () => {
         });
         socket?.on('close-betting-table', (data) => {
             const { message, dealer, dealer_avatar, sendedBy } = data;
-            /* const messageToUpdate = {
-                message: message,
-                playerName: dealer,
-                user_avatar: dealer_avatar,
-                sendedBy: sendedBy,
-                room_id: activeRoom
-            } */
-            //(messageToUpdate)
+            
             playEffect(46)
             setGameStarted((prev) => !prev)
             setTimeOutStarted(false)
@@ -766,93 +754,15 @@ const Roulete = () => {
         });
         socket.on('winning-number', (data) => {
             const {winningNumber, matchId} = data
+            console.log("winningNumber: ",winningNumber)
             setWinningNumber(winningNumber)
-            /* const saveDataToSupabase = async () => {
-                
-                try {
-                    const { data: savedData, error } = await supabase
-                        .from('roulette') // Replace with your Supabase table name
-                        .update({winningNumber: winningNumber.number})
-                        .eq('id', matchId)
-        
-                    if (error) {
-                        console.error('Error saving data to Supabase:', error);
-                    } else {
-                        console.log('Data successfully saved:', savedData);
-                    }
-                } catch (err) {
-                    console.error('Unexpected error saving data:', err);
-                }
-            }
-            saveDataToSupabase().then(() => {
-                setWinningNumber(winningNumber)
-                console.log("new winning number:", winningNumber)
-            }) */
         });
         socket.on('bet-placed', (data) => {
             playEffect(45)
         });
         socket.on('player-wins', (data) => {
-            console.log("data.bets",data.bets)
-            const allChips = { droppedChips,droppedCornerChips,droppedRowChips,droppedLastRowChips,droppedColumnChips,droppedBorderLeftChips,droppedBorderTopChips };
-            console.log("allChips: ", allChips)
-            /* const saveDataToSupabase = async () => {
-                try {
-                    const { data: savedData, error } = await supabase
-                        .from('roulette') // Replace with your Supabase table name
-                        .select('players')
-                        .eq('id', matchId)
-        
-                    if (error) {
-                        console.error('Error saving data to Supabase:', error);
-                    } else {
-                        const userJsonData = savedData[0].players || {}; 
-                        userJsonData.players = userJsonData.players || []; 
-                       for(const player of userJsonData.players){
-                        if(player.playerId === userId){
-                            player.winnings = winnings
-                        }
-                       }
-                       
-                       console.log("userJsonData",userJsonData)
-                        const { data: sendData, error: sendError } = await supabase
-                            .from('users') // Replace with your Supabase table name
-                            .select('*')
-                            .eq('id', userId)
-            
-                        if (sendError) {
-                            console.error('Error saving data to Supabase:', sendError);
-                        } else {
-                            const oldBalance = sendData[0].appBalance
-                            const newBalance = oldBalance + winnings
-                            const { data: sendDataTwo, error: sendErrorTwo } = await supabase
-                            .from('users') // Replace with your Supabase table name
-                            .update({appBalance: newBalance})
-                            .eq('id', userId)
-            
-                            if (sendErrorTwo) {
-                                console.error('Error saving data to Supabase:', sendErrorTwo);
-                            } else {
-                                const { data: sendDataThree, error: sendErrorThree } = await supabase
-                                .from('roulette') // Replace with your Supabase table name
-                                .update({players: userJsonData})
-                                .eq('id', matchId)
-                
-                                if (sendErrorThree) {
-                                    console.error('Error saving data to Supabase:', sendErrorThree);
-                                } else {
-                                    console.log("data succesfully inserted with my dick", sendDataThree)
-                                }
-                            }
-                        }
-                     }
-                } catch (err) {
-                    console.error('Unexpected error saving data:', err);
-                }
-            }
-            saveDataToSupabase().then(() => {
-                console.log("last one finished")
-            })*/
+            console.log("data.winningBetDetails when player wins",data.winningBetDetails)
+            setAllBets(data.winningBetDetails)
             setWinnings((prevWinnings) => prevWinnings + winnings);
             setLatestNumbers(prevElements => [...prevElements, data.number]);
             setBalance((prevBalance) => prevBalance + winnings);
@@ -860,7 +770,7 @@ const Roulete = () => {
             setSpinning(false)
             
             setPlacedBet(null)
-            setWinningNumber(null)
+            //setWinningNumber(null)
             setAllDroppedChips({})
             setAllDroppedCornerChips({})
             setAllDroppedRowChips({})
@@ -881,12 +791,13 @@ const Roulete = () => {
             }, 3000)
         });
         socket.on('player-lost', (data) => {
+            console.log("player lost",data)
             setLatestNumbers(prevElements => [...prevElements, data.number]);
             setGameStarted((prev) => !prev)
             setSpinning(false)
             setAllBets({})
             setPlacedBet(null)
-            setWinningNumber(null)
+            //setWinningNumber(null)
             setAllDroppedChips({})
             setAllDroppedCornerChips({})
             setAllDroppedRowChips({})
@@ -906,33 +817,15 @@ const Roulete = () => {
                 playEffect(41)
             }, 3000)
         });
+        socket?.on('update_players-again', (data) => {
+            const { message, dealer, dealer_avatar, sendedBy } = data;
+            ANTDmessage.success(message, [2])
+        });
         socket.on('uniqueId', (data) => {
             const {uniqueId, roomId} = data
             console.log(uniqueId)
             setMatchId(uniqueId)
-            /* const saveDataToSupabase = async () => {
-                try {
-                    const { data: savedData, error } = await supabase
-                        .from('roulette') // Replace with your Supabase table name
-                        .insert([
-                            {
-                                id: uniqueId, 
-                                room: roomId
-                            }
-                        ]);
-        
-                    if (error) {
-                        console.error('Error saving data to Supabase:', error);
-                    } else {
-                        console.log('Data successfully saved:', savedData);
-                    }
-                } catch (err) {
-                    console.error('Unexpected error saving data:', err);
-                }
-            }
-            saveDataToSupabase().then(() => {
-                console.log("finished")
-            }) */
+            
         });
         return () => {
             socket.off('update_players-again');
@@ -957,6 +850,9 @@ const Roulete = () => {
     useEffect(() => {
         console.log("game has started: ",gameStarted)
     },[gameStarted])
+    useEffect(() => {
+        console.log(allBets)
+    },[allBets])
 
     const getRotationForNumber = (winningNumber) => {
         const targetIndex = americanRouletteNumbers.findIndex(num => num.number === winningNumber.number);
@@ -1288,12 +1184,12 @@ const Roulete = () => {
                               {allBets && Object.entries(allBets).map(([key, valueArray]) => {
                                 const value = key === "100" ? 0 : key === "101" ? "00" : key
                                   return valueArray.map((bet, index) => (
-                                      <BetHolder key={index}>
+                                      <BetHolder key={index} style={{border: gameStarted ? "" : '1px solid gold'}}>
                                           <BetNumberHolder>
                                               <NumberWrapper style={{ background: `${bet.color}` }}>{value}</NumberWrapper>
                                           </BetNumberHolder>
-                                          <BetAmount>{bet.amount} GPZ</BetAmount>
-                                          <BetAmount>{bet.typeofBet}</BetAmount>
+                                          <BetAmount style={{borderLeft: gameStarted ? '1px solid grey' : '1px solid gold'}}>{bet.amount} GPZ</BetAmount>
+                                          <BetAmount style={{borderLeft: gameStarted ? '1px solid grey' : '1px solid gold'}}>{bet.typeofBet}</BetAmount>
                                       </BetHolder>
                                   ));
                               })}
