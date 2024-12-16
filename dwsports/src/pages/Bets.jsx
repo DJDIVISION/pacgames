@@ -119,21 +119,21 @@ const Bets = () => {
           logo: champions,
           name: "UEFA",
           id: 2,
-          currentRound: 6
+          currentRound: 7
         },
         {
           league: "Europa League",
           logo: europa,
           name: "UEFA",
           id: 3,
-          currentRound: 6
+          currentRound: 7
         },
         {
           league: "Conference League",
           logo: conference,
           name: "UEFA",
           id: 848,
-          currentRound: 5
+          currentRound: 6
         }
       ]
     },
@@ -147,21 +147,21 @@ const Bets = () => {
           logo: premierlogo,
           name: "England",
           id: 39,
-          currentRound: 15
+          currentRound: 17
         },
         {
           league: "Championship",
           logo: championship,
           name: "England",
           id: 40,
-          currentRound: 19
+          currentRound: 20
         },
         {
           league: "FA Cup",
           logo: FACup,
           name: "England",
           id: 45,
-          currentRound: 3
+          currentRound: 4
         }
       ]
     },
@@ -175,14 +175,14 @@ const Bets = () => {
           logo: laliga,
           name: "Spain",
           id: 140,
-          currentRound: 16
+          currentRound: 18
         },
         {
           league: "La Liga 2",
           logo: laliga2,
           name: "Spain",
           id: 141,
-          currentRound: 18
+          currentRound: 19
         },
         {
           league: "Copa del Rey",
@@ -203,21 +203,21 @@ const Bets = () => {
           logo: bundes,
           name: "Germany",
           id: 78,
-          currentRound: 13
+          currentRound: 15
         },
         {
           league: "2 Bundesliga",
           logo: bundesdos,
           name: "Germany",
           id: 79,
-          currentRound: 15
+          currentRound: 16
         },
         {
           league: "DFB Pokal",
           logo: dfb,
           name: "Germany",
           id: 81,
-          currentRound: 16
+          currentRound: 17
         }
       ]
     },
@@ -231,14 +231,14 @@ const Bets = () => {
           logo: seriea,
           name: "Italy",
           id: 135,
-          currentRound: 15
+          currentRound: 17
         },
         {
           league: "Serie B",
           logo: serieb,
           name: "Italy",
           id: 136,
-          currentRound: 16
+          currentRound: 17
         },
         {
           league: "Coppa Italia",
@@ -259,14 +259,14 @@ const Bets = () => {
           logo: ligueuno,
           name: "France",
           id: 61,
-          currentRound: 14
+          currentRound: 16
         },
         {
           league: "Ligue 2",
           logo: liguedos,
           name: "France",
           id: 62,
-          currentRound: 15
+          currentRound: 16
         }
       ]
     }
@@ -951,7 +951,7 @@ const proceedWithBet = async (bet) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
   
-  
+  console.log(liveOdds)
 
   const variants = {
     expanded: {
@@ -1664,13 +1664,14 @@ const getWinnings = (el) => {
                 {currentLiveMaches.length > 0 ? (
                     <>
                       {currentLiveMaches?.map((match, index) => {
+                        console.log(match)
                   const date = new Date(match.fixture.date).toLocaleString();
                   return (
                     <TeamBetsHolder key={index}
                       initial={{ height: '130px' }}
                       animate={{ height: expandedIndex === index ? '330px' : '130px' }}
                       transition={{ duration: 0.5 }}>
-                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => toggleExpand(index)} /> : <SmallArrowDown onClick={() => toggleExpand(index)} />}
+                      {expandedIndex === index ? <SmallArrowDown style={{ transform: 'rotate(180deg)' }} onClick={() => {toggleExpand(index);setFixtureId(null)}} /> : <SmallArrowDown onClick={() => {toggleExpand(index);setFixtureId(match.fixture.id)}} />}
                       <Rower>
                         <TeamsLogo>
                           <TeamLogoWrapper>
@@ -1684,7 +1685,7 @@ const getWinnings = (el) => {
                         <TeamsResult>
                           <DateRow>{date}</DateRow>
                           <ResultRow><h2 style={{ color: match.teams.home.winner === true ? "lime" : "white" }}>{match.goals.home}</h2> - <h2 style={{ color: match.teams.away.winner === true ? "lime" : "white" }}>{match.goals.away}</h2></ResultRow>
-                          <BigDateRow>{match.fixture.status.long}</BigDateRow>
+                          <BigDateRow>{match.fixture.status.long} - {match.fixture.status.elapsed}'</BigDateRow>
                           <VenueRow>{match.fixture.venue.name}, {match.fixture.venue.city}</VenueRow>
                         </TeamsResult>
                         <TeamsLogo>
@@ -1699,17 +1700,21 @@ const getWinnings = (el) => {
                       </Rower>
                       {expandedIndex === index && (
                         <LowRower >
-                          {match?.events?.map((event) => {
-                            console.log(event)
-                            return (
-                              <RowerRow>
-                                <RowerRowEvent><img src={event?.team?.logo} alt="owngoal" /></RowerRowEvent>
-                                <RowerFirstEvent>{event?.detail === "Own Goal" ? <img style={{ transform: 'rotate(180deg)' }} src={ownGoal} alt="owngoal" /> : event.detail === "Yellow Card" ? <img src={yellowCard} alt="owngoal" /> : event.detail === "Red Card" ? <img src={redCard} alt="owngoal" /> : event.detail === "Normal Goal" ? <img src={goal} alt="owngoal" /> :
-                                  event.detail.startsWith("Substitution") ? <h2>OUT: {event?.assist?.name}</h2> : event.detail.startsWith("Goal Disallowed") ? <img src={ownGoal} alt="owngoal" /> : event.detail === "Penalty" ? <img src={penalty} alt="owngoal" /> : event?.detail}</RowerFirstEvent>
-                                <RowerRowName><h2>{event?.player?.name}</h2></RowerRowName>
-                                <RowerRowEvent><h2>{event?.time?.elapsed}'</h2></RowerRowEvent>
-
-                              </RowerRow>
+                          {liveOdds?.map((odd) => {
+                            
+                            return(
+                              <BigRowBet>
+                                <TopRowBet><h2>{odd.name}</h2></TopRowBet>
+                                <BottomRowBet>
+                                  {odd.values.map((bet) => {
+                                    return(
+                                      <BetHolder isSelected={selectedBet.some(
+                                        (el) => el.match.fixture.id === match.fixture.id && el.value === bet.value && el.odd === bet.odd
+                                    )} onClick={() => handleBetClick(match, odd.name, bet.value, bet.odd, filter)}><h2>{bet.value} - {bet.odd}</h2></BetHolder>
+                                    )
+                                  })}
+                                </BottomRowBet>
+                              </BigRowBet>
                             )
                           })}
 
