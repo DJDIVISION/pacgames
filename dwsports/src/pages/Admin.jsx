@@ -40,13 +40,7 @@ const Admin = () => {
           firstData.forEach((player) => {
               if(player.nextMatch !== null){
                   
-                  console.log(player)
-                  const start = new Date(startDate)
-                  const end = new Date(endDate)
-                  const now = new Date(player.nextMatch.date);
-                  if(now >= start && now <= end){
-                      teams.push(player)
-                  }
+                teams.push(player)
               }
           })
           fetchRatingTwo(teams)
@@ -162,10 +156,12 @@ const Admin = () => {
                 // Check if the fixture status is "FT" (Full Time)
                 
                 if (response.data.response[0].fixture.status.short === "FT") {
+                  
                   response.data.response[0].players.forEach((el) => {
                     if (el.team.name === teamName) {
-                      console.log("team: ", el)
-                      const bestPlayer = el.players.reduce((highest, current) => {
+                      
+                      const allPlayers = response.data.response[0].players[0].players.concat(response.data.response[0].players[1].players)
+                      const bestPlayer = allPlayers.reduce((highest, current) => {
                         const currentRating = parseFloat(current.statistics[0]?.games?.rating || 0); // Convert rating to a float
                         const highestRating = parseFloat(highest.statistics[0]?.games?.rating || 0);
                       
@@ -181,7 +177,7 @@ const Admin = () => {
                         
                         if (player.player.id === playerId) {
                           //console.log("Found player:", player);
-                          console.log("Best Player IDs: ", bestPlayerIds);
+                          
                           const playerRating = player.statistics[0].games.rating;
                           
                           //console.log("Player rating:", playerRating);
@@ -319,7 +315,7 @@ for(const team of allTeams){
           team.nextMatch.addedAverage = addedAverage
           team.nextMatch.finalAverage = finalRating
           const updatedData = {
-            firstRound: team.nextMatch,
+            nextMatch: team.nextMatch,
             nextMatch: null,
             trainingsNumber: 0,
             lastTraining: null

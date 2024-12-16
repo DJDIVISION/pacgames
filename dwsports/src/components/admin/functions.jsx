@@ -388,13 +388,7 @@ const fetchTeamsTwo = async () => {
       firstData.forEach((player) => {
           if(player.nextMatch !== null){
               
-              console.log(player)
-              const start = new Date(startDate)
-              const end = new Date(endDate)
-              const now = new Date(player.nextMatch.date);
-              if(now >= start && now <= end){
-                  teams.push(player)
-              }
+            teams.push(player)
           }
       })
       fetchRatingTwo(teams)
@@ -402,20 +396,20 @@ const fetchTeamsTwo = async () => {
   }
 }
 
-console.log(leagues)
+
 
 const fetchRatingTwo = async (teams) => {
   const allFetchPromises = []; // To track all fetchFixtureData calls
   
   for (const team of teams) {
     const areas = Object.values(team.nextMatch.players);
-    console.log("areas", areas)
+    
     for (const area of areas) {
       for (const player of area) {
           
         let currentRound;
         const filter = leagues.filter((el) => el.league === player.leagueName);
-        console.log("filter", filter)
+        
         currentRound = filter[0]?.currentRound;
         const id = player.leagueName === "Premier League" ? 39 : player.leagueName === "La Liga" ? 140 : player.leagueName === "Serie A" ? 135
         : player.leagueName === "Bundesliga" ? 78 : 61
@@ -436,7 +430,7 @@ const fetchRatingTwo = async (teams) => {
           
           try {
             const response = await axios.request(options);
-            console.log(response.data.response);
+            
             response.data.response.forEach((match) => {
               // Collect the Promise from fetchFixtureData
               const fetchPromise = fetchFixtureData(
@@ -466,8 +460,15 @@ const fetchRatingTwo = async (teams) => {
         const areas = Object.values(team.nextMatch.players);
         for (const area of areas) {
             for (const player of area){
+              console.log("player: ", player)
+              console.log("bestPlayerIds:", bestPlayerIds)
                 if(player.lastMatchRating === null){
                     player.lastMatchRating = null
+                }
+                if(bestPlayerIds.includes(player.id)){
+                  player.isMVP = true
+                } else {
+                  player.isMVP = false
                 }
             } 
         }
@@ -483,6 +484,8 @@ const fetchRatingTwo = async (teams) => {
             }
           }
         }
+
+        const bestPlayerIds = [];
 
         async function fetchFixtureData(fixtureId, playerId, teamName, teams) {
           const options = {
@@ -501,13 +504,28 @@ const fetchRatingTwo = async (teams) => {
             // Check if the fixture status is "FT" (Full Time)
             
             if (response.data.response[0].fixture.status.short === "FT") {
+              
               response.data.response[0].players.forEach((el) => {
                 if (el.team.name === teamName) {
+                  
+                  const allPlayers = response.data.response[0].players[0].players.concat(response.data.response[0].players[1].players)
+                  const bestPlayer = allPlayers.reduce((highest, current) => {
+                    const currentRating = parseFloat(current.statistics[0]?.games?.rating || 0); // Convert rating to a float
+                    const highestRating = parseFloat(highest.statistics[0]?.games?.rating || 0);
+                  
+                    return currentRating > highestRating ? current : highest;
+                  });
+                  console.log(`Best Player ${bestPlayer.player.name} with id:`, bestPlayer.player.id);
+                  console.log("Rating:", bestPlayer.statistics[0].games.rating);
+                  if (!bestPlayerIds.includes(bestPlayer.player.id)) {
+                    bestPlayerIds.push(bestPlayer.player.id);
+                  }
                   // Check if player matches and update rating
                   el.players.forEach((player) => {
+                    
                     if (player.player.id === playerId) {
                       //console.log("Found player:", player);
-        
+                      
                       const playerRating = player.statistics[0].games.rating;
                       
                       //console.log("Player rating:", playerRating);
@@ -515,6 +533,7 @@ const fetchRatingTwo = async (teams) => {
                       // Now, let's ensure the teams data gets updated
                       const areas = Object.values(teams);
                       areas.forEach((team) => {
+                        
                         const players = team.nextMatch.players;
                         Object.keys(players).forEach((area) => {
                           players[area].forEach((p) => {

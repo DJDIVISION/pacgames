@@ -907,6 +907,12 @@ const Fantasy = () => {
                                     return finalB - finalA; // Sort in descending order
                                 }).map((team, index) => {
                                  console.log(team)
+                                 const totalMVPs = Object.values(team[currentRound]?.players) // Get all areas (arrays of players)
+                                    .flat() // Flatten all arrays into a single array
+                                    .filter((player) => player.isMVP) // Filter players where isMVP is true
+                                    .length; // Count the remaining players
+
+                                    console.log("Total MVP players:", totalMVPs);
                             return(
                                 <TeamBetsHolder key={index}
                                 initial={{ height: '100px' }}
@@ -922,12 +928,14 @@ const Fantasy = () => {
                                         }} />
                                         </SmallAvatar> 
                                         <SmallSmallPlayerName><h2>{team.playerName}</h2></SmallSmallPlayerName>
-                                        <SmallAvatar><h2>FIXTURE RATING: <br/><span style={{color: getBackgroundColor(team[currentRound]?.teamAverage)}}>{team[currentRound]?.teamAverage}</span></h2></SmallAvatar>
+                                        
                                         <SmallAvatar><h2>PUSH FOR TRAININGS: <br/><span style={{color: team[currentRound]?.addedAverage > 0 ? "green" : "white"}}>{team[currentRound]?.addedAverage > 0 && "+"} {team[currentRound]?.addedAverage}</span></h2></SmallAvatar>
+                                        <SmallAvatar><h2>PUSH FOR MVP'S: <br/><span style={{color: totalMVPs > 0 ? "green" : "white"}}>{totalMVPs > 0 && "+"} {totalMVPs * 0.33}</span></h2></SmallAvatar>
                                         <SmallAvatar><h2>FINAL RATING: <br/><span style={{color: getBackgroundColor(team[currentRound]?.finalAverage)}}>{team[currentRound]?.finalAverage}</span></h2></SmallAvatar>
                                     </SmallRower>
                                     {expandedIndex === index && (
                                         <LowRower>
+                                            <SmallAvatar style={{width: '75%'}}><h2>FIXTURE RATING: <br/><span style={{color: getBackgroundColor(team[currentRound]?.teamAverage)}}>{team[currentRound]?.teamAverage}</span></h2></SmallAvatar>
                                             {Object.entries(team[currentRound]?.players).map(([area, players]) => {
                                                 return(
                                                     <>
@@ -941,7 +949,11 @@ const Fantasy = () => {
                                                                 }} />
                                                                 <PlayerTeamLogo><img src={player.teamLogo} alt="logo" /></PlayerTeamLogo>
                                                                 </SmallAvatar> 
-                                                                <SmallPlayerName><h2>{player.name}</h2>{player.isMatchCancelled === true ? <h2>MATCH CANCELLED</h2> : ''}</SmallPlayerName>
+                                                                <SmallPlayerName><h2>{player.name}</h2>{player.isMatchCancelled === true ? <h2>MATCH CANCELLED</h2> : ''}{player.isMVP === true && (
+                                                                                        <h2>
+                                                                                            🏆 MVP
+                                                                                        </h2>
+                                                                                    )}</SmallPlayerName>
                                                                 <SmallAvatarTwo><h2>{player.position.charAt(0)}</h2></SmallAvatarTwo>
                                                                 <SmallAvatarTwo><h2 style={{color: getBackgroundColor(player.lastMatchRating)}}>{player.lastMatchRating !== null ? player.lastMatchRating : ''}</h2></SmallAvatarTwo>
                                                             </RowerRow>
