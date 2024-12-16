@@ -1248,7 +1248,7 @@ const Roulete = () => {
                                               color: `${item.color}`, filter: `drop-shadow(0 0 10px aqua)`,
                                               fontWeight: 'bold'
                                           }}>
-                                              {item.number}
+                                              {item.number === 100 ? "0" : item.number === 101 ? "00" : item.number}
                                           </NumberSpan>
                                       ))}
                                   </Number>
