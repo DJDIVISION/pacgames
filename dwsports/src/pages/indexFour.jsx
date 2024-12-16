@@ -489,3 +489,4 @@ export const SmallNumberWrapper = styled.div`
         height: 40px; 
     }
 `;
+

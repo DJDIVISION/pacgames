@@ -34,7 +34,7 @@ admin.initializeApp({
 
 
 const americanRouletteNumbers = [
-    { number: 0, color: "lime" },
+    { number: 100, color: "lime" },
     { number: 28, color: "black" },
     { number: 9, color: "red" },
     { number: 26, color: "black" },
@@ -53,7 +53,7 @@ const americanRouletteNumbers = [
     { number: 36, color: "red" },
     { number: 13, color: "black" },
     { number: 1, color: "red" },
-    { number: "00", color: "lime" },
+    { number: 101, color: "lime" },
     { number: 27, color: "red" },
     { number: 10, color: "black" },
     { number: 25, color: "red" },

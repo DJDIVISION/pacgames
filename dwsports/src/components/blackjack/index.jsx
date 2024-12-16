@@ -249,7 +249,6 @@ export const Tabs = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-  border: 1px solid red;
     @media(max-width: 498px){
         padding: 20px;
         height: 90vh;

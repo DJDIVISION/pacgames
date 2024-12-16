@@ -28,7 +28,23 @@ const Admin = () => {
     /* console.log(leagues) */
 
     
+    const sendMessage = async () => {
+      const imageUrl = "https://i.imghippo.com/files/qGj5714AY.jpg"
+      const messageToSend = `❌ 3 OF THE FIVE LEAGUE LEADERS HAVE NOT BEEN ABLE TO WIN THIS WEEKEND\n\n🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League\nLiverpool vs Fulham\n2-2\n\n🇪🇸 La Liga\nBarcelona vs Leganés\n0 - 1\n\n🇩🇪 Bundesliga\nMainz 05 vs Bayern München\n2 - 1`
+      console.log(messageToSend)
+    try {
     
+      const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
+      
+      if (response.data.success) {
+        console.log('Message sent successfully!');
+      } else {
+        console.log('Failed to send message');
+      }
+    } catch (error) {
+      console.log('Error sending message', error);
+    }
+    }
     
     
 
@@ -36,7 +52,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={fetchTeamsTwo} */ onClick={() => navigate('/newroulette')}>newroulette</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={sendMessage} */ onClick={() => navigate('/newroulette')}>newroulette</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
