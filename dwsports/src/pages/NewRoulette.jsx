@@ -79,7 +79,7 @@ import { ArrowLeftRelative, StyledButton } from './index.jsx';
 import RouletteTabs from '../components/roulette/RouletteTabs.jsx';
 import { supabase } from '../supabase/client.jsx';
 
-const socket = io.connect("http://localhost:8080")
+const socket = io.connect("https://pacgames-roulette-server.onrender.com")
 
 const Roulete = () => {
 
@@ -819,7 +819,8 @@ const Roulete = () => {
         });
         socket?.on('update_players-again', (data) => {
             const { message, dealer, dealer_avatar, sendedBy } = data;
-            ANTDmessage.success(message, [2])
+            //ANTDmessage.success(message, [2])
+            setShowMotionDiv(false)
         });
         socket.on('uniqueId', (data) => {
             const {uniqueId, roomId} = data

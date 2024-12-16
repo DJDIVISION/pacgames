@@ -78,7 +78,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://pactongamingzone.vercel.app",
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -339,7 +339,7 @@ app.post('/send-notification', (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://pactongamingzone.vercel.app",
     methods: ["GET", "POST"]  // Client URL
   },
  });
@@ -377,7 +377,7 @@ const getAllPlayers = () => {
     const room = rooms.find((room) => room.id === roomId);
     room.winningNumber = winningNumber
     const matchId = room.matchId
-    console.log("matchIDDDDDDDDDDDDDDDDDDDDDDDDD", matchId)
+    console.log("matchID", matchId)
     // Emit the result to all connected clients
     io.emit('winning-number', {
       winningNumber, matchId
@@ -474,7 +474,10 @@ function resetRoomTimeout(roomId) {
   const room = rooms.find((room) => room.id === roomId);
   console.log("room.gameStarted: ", room.gameStarted)
   if (roomTimeouts[roomId]) {
+    console.log("clearing time out now")
     clearTimeout(roomTimeouts[roomId]);
+  } else {
+    console.log("there is no timeout")
   }
   
   roomTimeouts[roomId] = setTimeout(() => {
@@ -599,6 +602,7 @@ io.on("connection", (socket) => {
 
     
     socket.on('placeBet', ({allChips,roomId,playerId,placedBet}) => {
+      console.log(`${playerId} has placed a bet of ${placedBet} GPZ`)
       const { droppedChips,droppedCornerChips,droppedRowChips,droppedLastRowChips,droppedColumnChips,droppedBorderLeftChips,droppedBorderTopChips } = allChips;
         const room = rooms.find((room) => room.id === roomId);
         const player = room.players.find(p => p.playerId === playerId);
@@ -623,8 +627,7 @@ io.on("connection", (socket) => {
       console.log("gameFinished");
       const roomId = activeRoom;
       const playerId = myId;
-      console.log(roomId);
-      console.log(playerId);
+      
 
       const room = rooms.find((room) => room.id === roomId);
       const player = room.players.find((p) => p.playerId === playerId);
@@ -710,11 +713,12 @@ io.on("connection", (socket) => {
         });
       }
       room.gameStarted = false
-      console.log("room.gameStarted: ", room.gameStarted)
+      
       room.matchId = null
       player.bets = {}; 
       player.playerBets = []
       player.bet = 0
+      console.log("room at the end: ", room)
       io.to(roomId).emit('update_players-again', {
         message: `Next game starts in 10 seconds!.`,
         dealer: 'Jack',
