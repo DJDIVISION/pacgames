@@ -79,7 +79,7 @@ import { ArrowLeftRelative, StyledButton } from './index.jsx';
 import RouletteTabs from '../components/roulette/RouletteTabs.jsx';
 import { supabase } from '../supabase/client.jsx';
 
-const socket = io.connect("https://pacgames-roulette-server.onrender.com")
+/* const socket = io.connect("https://pacgames-roulette-server.onrender.com") */
 
 const Roulete = () => {
 

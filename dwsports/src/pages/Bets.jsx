@@ -436,8 +436,29 @@ const Bets = () => {
   
   function isBetFulfilled(bet) {
     
-    const { name, value, match } = bet;
+    const { name, value, match, statistics, events } = bet;
     const { home, away } = match.goals;
+    let redCardHome
+    let redCardAway
+    let cornersHome
+    let cornersAway
+    const ownGoal = events.some(event => event.detail === "Own Goal");
+    for (const stat of statistics[0].statistics){
+      if(stat.type === "Corner Kicks"){
+        cornersHome = stat.value
+      }
+      if(stat.type === "Red Cards"){
+        redCardHome = stat.value
+      }
+    }
+    for (const stat of statistics[1].statistics){
+      if(stat.type === "Corner Kicks"){
+        cornersAway = stat.value
+      }
+      if(stat.type === "Red Cards"){
+        redCardAway = stat.value
+      }
+    }
     const halfHome = match.score.halftime.home
     const halfAway = match.score.halftime.away
     const secondHome = home - halfHome
@@ -533,6 +554,20 @@ const Bets = () => {
     return(halfHome > halfAway && secondHome > secondAway)
   } else if(name === "Win Both Halves" && value === "Away"){
     return(halfAway > halfHome && secondAway > secondHome)
+  } else if(name === "RCARD" && value === "Yes"){
+    return(redCardHome !== null || redCardAway !== null)
+  } else if(name === "RCARD" && value === "No"){
+    return(redCardHome === null && redCardAway === null)
+  } else if(name === "Corners 1x2" && value === "Home"){
+    return(cornersHome > cornersAway)
+  } else if(name === "Corners 1x2" && value === "Draw"){
+    return(cornersHome === cornersAway)
+  } else if(name === "Corners 1x2" && value === "Away"){
+    return(cornersHome < cornersAway)
+  } else if(name === "Own Goal" && value === "Yes"){
+    return(ownGoal === true)
+  } else if(name === "Own Goal" && value === "No"){
+    return(ownGoal === false)
   } else {
       return false;
   }
@@ -633,6 +668,13 @@ const Bets = () => {
     if(name === "Home team will score in both halves" && value === "No") return `${match.teams.home.name} does not score in both halves`
     if(name === "Away team will score in both halves" && value === "Yes") return `${match.teams.away.name} scores in both halves`
     if(name === "Away team will score in both halves" && value === "No") return `${match.teams.away.name} does not score in both halves`
+    if(name === "RCARD" && value === "Yes") return `Red card on the match - Yes`
+    if(name === "RCARD" && value === "No") return `Red card on the match - No`
+    if(name === "Corners 1x2" && value === "Home") return `${match.teams.home.name} kicks more corners`
+    if(name === "Corners 1x2" && value === "Draw") return `${match.teams.home.name} & ${match.teams.away.name} same corners`
+    if(name === "Corners 1x2" && value === "Away") return `${match.teams.away.name} kicks more corners`
+    if(name === "Own Goal" && value === "Yes") return `Own goal on the match - Yes`
+    if(name === "Own Goal" && value === "No") return `Own goal on the match - No`
     
     return ''
 };
@@ -667,16 +709,17 @@ const checkBets = async () => {
           const response = await axios.request(options);
           
           const matchData = response.data.response[0]; // Assuming the response structure
-
+          console.log("matchData: ",matchData)
           // Extract the relevant match data to update
-          const { goals, fixture, score, events } = matchData;
+          const { goals, fixture, score, events, statistics } = matchData;
           
           
           // Update the matchBet object with the fetched data
           matchBet.match.goals = goals;
           matchBet.match.fixture = fixture;
           matchBet.match.score = score;
-          //matchBet.events = events;  // Add the events field
+          matchBet.statistics = statistics;
+          matchBet.events = events;
           
           // Check if the match has started
           if (fixture.status.short === 'PST') {
@@ -700,6 +743,7 @@ const checkBets = async () => {
         console.log(bet)
         await handlePostponedBet(bet);
       } else if (allMatchesStarted) {
+        console.log("bethere:", bet)
         proceedWithBet(bet);
       } else {
         console.log('Skipping bet because not all matches have started');
@@ -1223,16 +1267,6 @@ useEffect(() => {
   const getURL = (betType, match) => {
     if(betType === "home") return match.teams.home.logo
     if(betType === "away") return match.teams.away.logo
-    if(betType === "awayOver2") return match.teams.away.logo
-    if(betType === "awayUnder2") return match.teams.away.logo
-    if(betType === "awayBTTS") return match.teams.away.logo
-    if(betType === "awayBTNTS") return match.teams.away.logo
-    if(betType === "awayMinus1") return match.teams.away.logo
-    if(betType === "homeOver2") return match.teams.home.logo
-    if(betType === "homeBTTS") return match.teams.home.logo
-    if(betType === "homeUnder2") return match.teams.home.logo
-    if(betType === "homeBTNTS") return match.teams.home.logo
-    if(betType === "homeMinus1") return match.teams.home.logo
     return ''
 };
 
