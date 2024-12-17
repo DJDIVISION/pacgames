@@ -23,7 +23,7 @@ const Fantasy = () => {
     
     const [isDateExpanded, setIsDateExpanded] = useState(false)
     const [startDate, setStartDate] = useState("2024-12-11 10:00:00")
-    const [endDate, setEndDate] = useState('2024-12-16 23:00:00')
+    const [endDate, setEndDate] = useState('2024-12-17 23:00:00')
     const [t, i18n] = useTranslation("global");
     const [allFantasyTeams, setAllFantasyTeams] = useState([])
     const [allFantasyPastTeams, setAllFantasyPastTeams] = useState([])
