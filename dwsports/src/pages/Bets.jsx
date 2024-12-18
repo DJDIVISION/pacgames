@@ -110,30 +110,16 @@ const Bets = () => {
 
   const countries = [
     {
-      name: "EUROPE",
-      logo: europe,
-      id: 6,
+      name: "FIFA",
+      logo: "https://media.api-sports.io/football/leagues/1168.png",
+      id: 1168,
       leagues: [
         {
-          league: "Champions League",
-          logo: champions,
-          name: "UEFA",
-          id: 2,
-          currentRound: 7
-        },
-        {
-          league: "Europa League",
-          logo: europa,
-          name: "UEFA",
-          id: 3,
-          currentRound: 7
-        },
-        {
-          league: "Conference League",
-          logo: conference,
-          name: "UEFA",
-          id: 848,
-          currentRound: 6
+          league: "FIFA Intercontinental Cup",
+          logo: "https://media.api-sports.io/football/leagues/1168.png",
+          name: "FIFA Intercontinental Cup",
+          id: 1168,
+          currentRound: 'Final'
         }
       ]
     },
@@ -157,11 +143,11 @@ const Bets = () => {
           currentRound: 20
         },
         {
-          league: "FA Cup",
-          logo: FACup,
+          league: "EFL Cup",
+          logo: "https://media.api-sports.io/football/leagues/48.png",
           name: "England",
-          id: 45,
-          currentRound: 4
+          id: 48,
+          currentRound: 'Quarter-finals'
         }
       ]
     },
@@ -175,7 +161,7 @@ const Bets = () => {
           logo: laliga,
           name: "Spain",
           id: 140,
-          currentRound: 18
+          currentRound: 12
         },
         {
           league: "La Liga 2",
@@ -267,6 +253,34 @@ const Bets = () => {
           name: "France",
           id: 62,
           currentRound: 16
+        }
+      ]
+    },
+    {
+      name: "EUROPE",
+      logo: europe,
+      id: 6,
+      leagues: [
+        {
+          league: "Champions League",
+          logo: champions,
+          name: "UEFA",
+          id: 2,
+          currentRound: 7
+        },
+        {
+          league: "Europa League",
+          logo: europa,
+          name: "UEFA",
+          id: 3,
+          currentRound: 7
+        },
+        {
+          league: "Conference League",
+          logo: conference,
+          name: "UEFA",
+          id: 848,
+          currentRound: 6
         }
       ]
     }
@@ -395,10 +409,13 @@ const Bets = () => {
                     ...matchBet.match,
                     goals: matchedGame.goals,
                     teams: matchedGame.teams,
-                    fixture: matchedGame.fixture
+                    fixture: matchedGame.fixture,
+                    events: matchedGame.events,
+                    statistics: matchedGame.statistics
                   },
                 };
               }
+              console.log(matchBet)
               return matchBet; // Return unchanged if no match found
             })
           }));
@@ -435,15 +452,17 @@ const Bets = () => {
   }
   
   function isBetFulfilled(bet) {
-    
+    console.log(bet)
     const { name, value, match, statistics, events } = bet;
     const { home, away } = match.goals;
     let redCardHome
     let redCardAway
     let cornersHome
     let cornersAway
+    
     const ownGoal = events.some(event => event.detail === "Own Goal");
     for (const stat of statistics[0].statistics){
+      
       if(stat.type === "Corner Kicks"){
         cornersHome = stat.value
       }
@@ -473,9 +492,9 @@ const Bets = () => {
   } else if (name === "Match Winner" && value === "Draw") {
       return home === away;
   } else if (name === "Home/Away" && value === "Home") {
-      return null;
+      return home > away;
   } else if (name === "Home/Away" && value === "Away") {
-      return null;
+      return away > home;
   } else if (name === "Second Half Winner" && value === "Home") {
       return secondHome > secondAway;
   } else if (name === "Second Half Winner" && value === "Away") {
@@ -752,7 +771,7 @@ const checkBets = async () => {
   }
 };
 
-console.log(myBets)
+
 
 const handlePostponedBet = async (bet) => {
   console.log('Handling postponed matches for bet:', bet.id);
@@ -986,7 +1005,6 @@ const proceedWithBet = async (bet) => {
   useEffect(() => {
     if(myBets){
       checkBets();
-      console.log(myBets)
     }
   }, [myBets])
 
@@ -995,7 +1013,7 @@ const proceedWithBet = async (bet) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
   
-  console.log(liveOdds)
+  
 
   const variants = {
     expanded: {
@@ -1194,7 +1212,11 @@ const proceedWithBet = async (bet) => {
         round = `${activeRound}nd Round`
     } else if (activeLeagueId === 137 || activeLeagueId === 81){
       round = `Round of ${activeRound}`
-  } else {
+  } else if (activeLeagueId === 48){
+    round = `Quarter-finals`
+} else if (activeLeagueId === 1168){
+  round = `Final`
+} else {
       round = `Regular Season - ${activeRound}`
     }
     const options = {
@@ -1231,7 +1253,7 @@ const proceedWithBet = async (bet) => {
     })
   };
 
-  console.log(activeRound)
+  
 
 useEffect(() => {
   if (activeRound) {

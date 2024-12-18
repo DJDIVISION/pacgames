@@ -28,14 +28,56 @@ const Admin = () => {
     /* console.log(leagues) */
 
       
-    
+    const writeSingleMessage = async () => {
+      const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
+        params: {date: '2024-12-18'},
+        headers: {
+          'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
+          'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+        }
+      };
+      const matches = []
+      try {
+        const response = await axios.request(options);
+        console.log(response.data.response);
+        for (const match of response.data.response){
+          if(match.league.id === 137){
+            
+            matches.push(match)
+          }
+        }
+        let result = matches.map((match, index) => {
+          const now = new Date(match.fixture.date).toUTCString();
+          return `\n${now}\n🇮🇹 ${match.teams.home.name} vs ${match.teams.away.name}`
+        }).join("\n")
+        console.log(result)
+        const imageUrl = "https://media.api-sports.io/football/leagues/137.png"
+        
+        const messageToSend = `\n⚽️ TODAY'S Coppa Italia MATCHES ⚽️\n${result}`;
+        console.log(messageToSend)
+        try {
+          const response = await axios.post('http://localhost:8080/send-message', { messageToSend,imageUrl });
+          if (response.data.success) {
+              console.log('Message sent successfully!');
+          } else {
+              console.log('Failed to send message');
+          }
+      } catch (error) {
+          console.log('Error sending message:', error);
+      }
+      } catch (error) {
+        console.error(error);
+      }
+    }
     
 
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={fetchTopFantasyTeams} /* onClick={() => navigate('/newroulette')} */>fetchTopFantasyTeams</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={writeSingleMessage} /* onClick={() => navigate('/newroulette')} */>writeSingleMessage</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

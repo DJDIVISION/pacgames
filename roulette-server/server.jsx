@@ -129,6 +129,8 @@ app.get('/api/cryptocurrency/:id/chart', async (req, res) => {
 const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
 const CHAT_ID = '-1002433451813';
 
+
+
 app.post('/send-message', async (req, res) => {
   const { messageToSend, imageUrl, imageUrls, inlineButtons } = req.body;
 
