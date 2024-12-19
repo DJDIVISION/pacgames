@@ -393,8 +393,11 @@ const Fantasy = () => {
     useEffect(() => {
         const start = new Date(startDate)
         const end = new Date(endDate)
+        console.log(start)
+        console.log(end)
         const now = new Date(); // Current date and time
-        const isBetween = now >= start && now <= end;
+        const isBetween = now <= start && now >= end;
+        console.log(isBetween)
         setGameStarted(isBetween)
     }, [])
 
