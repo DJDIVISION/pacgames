@@ -76,8 +76,8 @@ const NewFantasy = () => {
     const [t, i18n] = useTranslation("global");
     const { user } = useAuth(); 
     const navigate = useNavigate()
-    const [startDate, setStartDate] = useState("2024-12-17 10:00:00")
-    const [endDate, setEndDate] = useState('2024-12-22 14:00:00')
+    const [startDate, setStartDate] = useState("2024-12-16 10:00:00")
+    const [endDate, setEndDate] = useState('2024-12-21 14:00:00')
     const [gameStarted, setGameStarted] = useState(false)
     const [allLeagues, setAllLeagues] = useState(leagues)
     const [availableLeagues, setAvailableLeagues] = useState([])
