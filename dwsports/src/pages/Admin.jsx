@@ -27,7 +27,6 @@ const Admin = () => {
     const [endDate, setEndDate] = useState('2024-12-17 23:00:00')
     /* console.log(leagues) */
 
-      
     let processedEvents = {}; // Global dictionary to track processed events per match
 
         function delay(ms) {
@@ -40,23 +39,23 @@ const Admin = () => {
                 const events = match.events;
                 console.log(match)
                 let league
-                if(match.league.id === 48){
+                if(match.league.name === "Premier League"){
                     league = "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
                 }
-                if(match.league.id === 140){
+                if(match.league.name === "La Liga"){
                     league = "🇪🇸"
                 }
-                if(match.league.id === 137){
+                if(match.league.name === "Serie A"){
                     league = "🇮🇹"
                 }
                 if(match.league.name === "Bundesliga"){
                     league = "🇩🇪"
                 }
-                if(match.league.id === 61){
+                if(match.league.name === "Ligue 1"){
                     league = "🇫🇷"
                 }
-                if(match.league.id === 1168){
-                  league = "🌍"
+                if(match.league.name === "UEFA Champions League"){
+                  league = "🇪🇺"
               }
                 // Initialize processed events for this match if not already done
                 if (!processedEvents[matchId]) {
@@ -147,7 +146,7 @@ const Admin = () => {
     
                 const matches = [];
                 response.data.response.forEach((match) => {
-                    if ([1168, 140, 48, 61, 137].includes(match.league.id)) { // Filter relevant leagues
+                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
                         matches.push(match);
                     }
                 });
@@ -164,13 +163,12 @@ const Admin = () => {
             const intervalId = setInterval(fetchLiveMatches, 60000); // Set interval for fetching matches
             return () => clearInterval(intervalId); // Cleanup interval on component unmount
         }, []);
-    
 
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={writeSingleMessage} */ /* onClick={() => navigate('/newroulette')} */>fifa fetch</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={writeSingleMessage} */ /* onClick={() => navigate('/newroulette')} */>fetchLiveMatches</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
