@@ -110,20 +110,6 @@ const Bets = () => {
 
   const countries = [
     {
-      name: "FIFA",
-      logo: "https://media.api-sports.io/football/leagues/1168.png",
-      id: 1168,
-      leagues: [
-        {
-          league: "FIFA Intercontinental Cup",
-          logo: "https://media.api-sports.io/football/leagues/1168.png",
-          name: "FIFA Intercontinental Cup",
-          id: 1168,
-          currentRound: 'Final'
-        }
-      ]
-    },
-    {
       name: "ENGLAND",
       logo: england,
       id: 1,
