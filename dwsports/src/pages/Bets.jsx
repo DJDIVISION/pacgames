@@ -147,7 +147,7 @@ const Bets = () => {
           logo: laliga,
           name: "Spain",
           id: 140,
-          currentRound: 12
+          currentRound: 18
         },
         {
           league: "La Liga 2",
