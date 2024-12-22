@@ -25,6 +25,7 @@ const Admin = () => {
     const [MVPS, setMPVS] = useState([])
     const [startDate, setStartDate] = useState("2024-12-10 10:30:00")
     const [endDate, setEndDate] = useState('2024-12-17 23:00:00')
+    const [startedIds, setStartedIds] = useState([])
     /* console.log(leagues) */
 
     let processedEvents = {}; // Global dictionary to track processed events per match
@@ -164,11 +165,12 @@ const Admin = () => {
             return () => clearInterval(intervalId); // Cleanup interval on component unmount
         }, []);
 
+
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={writeSingleMessage} */ /* onClick={() => navigate('/newroulette')} */>fetchLiveMatches</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={fetchTodayMatches} */ /* onClick={() => navigate('/newroulette')} */>LIVE MATCHES</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

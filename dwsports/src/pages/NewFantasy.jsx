@@ -133,7 +133,7 @@ const NewFantasy = () => {
     useEffect(() => {
         const start = new Date(startDate)
         const end = new Date(endDate)
-        const now = new Date('2024-11-24 20:30:00'); // Current date and time
+        const now = new Date(); // Current date and time
         const isBetween = now >= start && now <= end;
         setGameStarted(isBetween)
     }, [])
