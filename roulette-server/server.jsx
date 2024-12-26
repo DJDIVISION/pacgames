@@ -126,7 +126,7 @@ app.get('/api/cryptocurrency/:id/chart', async (req, res) => {
   }
 });
 
-const TELEGRAM_BOT_TOKEN = '7529504868:AAFjZyVfPmiSlGxtoQ_gMhDcErmyMZnMrgs';
+const TELEGRAM_BOT_TOKEN = '7386389549:AAEr9tc4l7p5XdEOsL-0jcwiJ8XEp4HI-pI';
 const CHAT_ID = '-1002433451813';
 
 

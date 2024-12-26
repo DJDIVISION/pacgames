@@ -23,31 +23,31 @@ export const leagues = [
     {
         league: "Premier League",
         name: "England",
-        id: 1,
+        id: 39,
         currentRound: 16
     },
     {
         league: "La Liga",
         name: "Spain",
-        id: 2,
+        id: 140,
         currentRound: 17
     },
     {
         league: "Serie A",
         name: "Italy",
-        id: 3,
+        id: 135,
         currentRound: 16
     },
     {
         league: "Ligue 1",
         name: "France",
-        id: 4,
+        id: 61,
         currentRound: 15
     },
     {
         league: "Bundesliga",
         name: "Germany",
-        id: 5,
+        id: 78,
         currentRound: 14
     }
 ]
