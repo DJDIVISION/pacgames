@@ -18,12 +18,12 @@ import axios from 'axios'
 const Fantasy = () => {
 
     const rounds = [
-        "firstRound", "secondRound", "thirdRound"
+        "firstRound", "secondRound", "thirdRound", "fourthRound"
     ]
     
     const [isDateExpanded, setIsDateExpanded] = useState(false)
-    const [startDate, setStartDate] = useState("2024-12-16 10:00:00")
-    const [endDate, setEndDate] = useState('2024-12-21 14:00:00')
+    const [startDate, setStartDate] = useState("2024-12-29 10:00:00")
+    const [endDate, setEndDate] = useState('2024-12-31 14:00:00')
     const [t, i18n] = useTranslation("global");
     const [allFantasyTeams, setAllFantasyTeams] = useState([])
     const [allFantasyPastTeams, setAllFantasyPastTeams] = useState([])
@@ -899,7 +899,7 @@ const Fantasy = () => {
               transition={{ type: 'tween', ease: 'linear', duration: 0.2 }}>
                 <ArrowsHolder>
                     <ArrowIconHolder><ArrowLeftRelative onClick={lowRound} style={{transform: 'translateX(15px) rotate(90deg)'}}></ArrowLeftRelative></ArrowIconHolder>
-                    <RoundNameHolder><h2>Round: {currentRound === "firstRound" ? 1 : currentRound === "secondRound" ? 2 : currentRound === "thirdRound" ? 3 : ''}</h2></RoundNameHolder>
+                    <RoundNameHolder><h2>Round: {currentRound === "firstRound" ? 1 : currentRound === "secondRound" ? 2 : currentRound === "thirdRound" ? 3 : currentRound === "fourthRound" ? 4 : ''}</h2></RoundNameHolder>
                     <ArrowIconHolder><ArrowRightRelative onClick={raiseRound} style={{transform: 'translateX(-15px) rotate(270deg)'}}></ArrowRightRelative></ArrowIconHolder>
                   </ArrowsHolder>
                         {allFantasyPastTeams?.length > 0 ? (
