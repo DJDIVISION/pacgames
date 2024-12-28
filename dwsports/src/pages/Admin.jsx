@@ -87,6 +87,11 @@ const Admin = () => {
                         await sendTelegramMessage(messageToSend,event.team.logo);
                         processedEvents[matchId].add(eventId);
                     }
+                    if(event.detail === "Missed Penalty" && !processedEvents[matchId].has(eventId) && event.player.name !== null){
+                      const messageToSend = `\n${league} MISSED PENALTY FOR ${event.team.name}!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
+                      await sendTelegramMessage(messageToSend,event.team.logo);
+                      processedEvents[matchId].add(eventId);
+                    }
                     if (!processedEvents[matchId].has(eventId)) {
                         await delay(3000); 
                         // Mark this event as processed
@@ -170,7 +175,7 @@ const Admin = () => {
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={fetchTeamsTwo} */ /* onClick={() => navigate('/newroulette')} */>LIVE MATCHES</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={sendTodaysMatches} */ /* onClick={() => navigate('/newroulette')} */>LIVE MATCHES</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

@@ -239,6 +239,11 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
                         await sendTelegramMessage(messageToSend,event.team.logo);
                         processedEvents[matchId].add(eventId);
                     }
+                    if(event.detail === "Missed Penalty" && !processedEvents[matchId].has(eventId) && event.player.name !== null){
+                      const messageToSend = `\n${league} MISSED PENALTY FOR ${event.team.name}!!! ❌ \n${match.teams.home.name} vs ${match.teams.away.name}:\n${event.player.name} at ${event.time.elapsed}'\n\n${match.goals.home} - ${match.goals.away}`;
+                      await sendTelegramMessage(messageToSend,event.team.logo);
+                      processedEvents[matchId].add(eventId);
+                    }
                     if (!processedEvents[matchId].has(eventId)) {
                         await delay(3000); 
                         // Mark this event as processed
@@ -1050,7 +1055,7 @@ const writeSingleMessage = async () => {
       console.log(match)
       const imageUrls = [match.teams.home.logo, match.teams.away.logo]
       
-      const messageToSend = `⏳ Match Started ⏳\n\n🇪🇺 UEFA CHAMPIONS LEAGUE\n\n${match.teams.home.name} vs ${match.teams.away.name}\n\nStadium: ${match.fixture.venue.name}\nCity: ${match.fixture.venue.city}`
+      const messageToSend = `⏳ Match Started ⏳\n\n🏴󠁧󠁢󠁥󠁮󠁧󠁿 PREMIER LEAGUE\nRound 18\n\n${match.teams.home.name} vs ${match.teams.away.name}\n\nStadium: ${match.fixture.venue.name}\nCity: ${match.fixture.venue.city}`
       console.log(messageToSend)
       try {
   
@@ -1073,7 +1078,7 @@ const writeSingleMessage = async () => {
     const options = {
       method: 'GET',
       url: 'https://api-football-v1.p.rapidapi.com/v3/fixtures',
-      params: {date: '2024-12-11'},
+      params: {date: '2024-12-26'},
       headers: {
         'x-rapidapi-key': '5f83c32a37mshefe9d439246802bp166eb8jsn5575c8e3a6f2',
         'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
@@ -1083,22 +1088,9 @@ const writeSingleMessage = async () => {
     try {
       const response = await axios.request(options);
       console.log(response.data.response);
-      const now = new Date();
-
-      // Format date and time components
-      const year = now.getUTCFullYear();
-      const month = String(now.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-      const day = String(now.getUTCDate()).padStart(2, '0');
-      const hours = String(now.getUTCHours()).padStart(2, '0');
-      const minutes = String(now.getUTCMinutes()).padStart(2, '0');
-      const seconds = String(now.getUTCSeconds()).padStart(2, '0');
-
-      // Construct the final ISO-like string
-      const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}+00:00`;
-
-      console.log(formattedDate);
+      
       for (const match of response.data.response) {
-        if (match.league.id === 2 && match.fixture.date > formattedDate) {
+        if (match.league.id === 39 && match.fixture.id === 1208198) {
           matches.push(match)
         }
       }
