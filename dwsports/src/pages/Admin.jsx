@@ -40,6 +40,15 @@ const Admin = () => {
                 const matchId = match.fixture.id;
                 const events = match.events;
                 console.log(match)
+                if(!startedIds.includes(matchId)){
+                  console.log(`this match is new: `, matchId)
+                  const imageUrls = []
+                  imageUrls.push(match.teams.home.logo)
+                  imageUrls.push(match.teams.away.logo)
+                  console.log(imageUrls)
+                  await sendMatchStartedMessage(match,imageUrls)
+                  setStartedIds((prev) => [...prev, matchId])
+                }
                 let league
                 if(match.league.name === "Premier League"){
                     league = "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
@@ -122,6 +131,47 @@ const Admin = () => {
               console.log('Error sending message:', error);
           }
       }
+        async function sendMatchStartedMessage(match,imageUrls) { 
+          let league
+                if(match.league.name === "Premier League"){
+                    league = "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+                }
+                if(match.league.name === "La Liga"){
+                    league = "🇪🇸"
+                }
+                if(match.league.name === "Serie A"){
+                    league = "🇮🇹"
+                }
+                if(match.league.name === "Bundesliga"){
+                    league = "🇩🇪"
+                }
+                if(match.league.name === "Ligue 1"){
+                    league = "🇫🇷"
+                }
+                if(match.league.name === "UEFA Champions League"){
+                  league = "🇪🇺"
+              }
+          const messageToSend = `⌛️ MATCH STARTED!\n${league} ${match.league.name}\n${match.teams.home.name} Vs. ${match.teams.away.name}`;
+          console.log(`Sending to Telegram: ${messageToSend}`);
+          try {
+              const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrls });
+              console.log("response.data.message_id",response.data.message_id)
+              if (response.data.success && response.data.message_id) {
+                  console.log('Message sent successfully!');
+      
+                  // Schedule message deletion
+                  const messageId = response.data.message_id; // Assuming the API returns message_id
+                  console.log("messageID", messageId)
+                  setTimeout(async () => {
+                      await deleteTelegramMessage(messageId);
+                  }, 9000000);
+              } else {
+                  console.log('Failed to send message');
+              }
+          } catch (error) {
+              console.log('Error sending message:', error);
+          }
+      }
       
       async function deleteTelegramMessage(messageId) {
           try {
@@ -167,9 +217,13 @@ const Admin = () => {
     
         // Fetch live matches every 15 seconds
         React.useEffect(() => {
-            const intervalId = setInterval(fetchLiveMatches, 60000); // Set interval for fetching matches
+            const intervalId = setInterval(fetchLiveMatches, 20000); // Set interval for fetching matches
             return () => clearInterval(intervalId); // Cleanup interval on component unmount
         }, []);
+
+        useEffect(() => {
+          console.log("startedIds:", startedIds)
+        }, [startedIds])
 
   return (
     <>
