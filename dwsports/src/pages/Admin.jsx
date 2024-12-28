@@ -40,7 +40,7 @@ const Admin = () => {
                 const matchId = match.fixture.id;
                 const events = match.events;
                 console.log(match)
-                if(!startedIds.includes(matchId)){
+                /* if(!startedIds.includes(matchId)){
                   console.log(`this match is new: `, matchId)
                   const imageUrls = []
                   imageUrls.push(match.teams.home.logo)
@@ -48,7 +48,7 @@ const Admin = () => {
                   console.log(imageUrls)
                   await sendMatchStartedMessage(match,imageUrls)
                   setStartedIds((prev) => [...prev, matchId])
-                }
+                } */
                 let league
                 if(match.league.name === "Premier League"){
                     league = "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
@@ -217,7 +217,7 @@ const Admin = () => {
     
         // Fetch live matches every 15 seconds
         React.useEffect(() => {
-            const intervalId = setInterval(fetchLiveMatches, 20000); // Set interval for fetching matches
+            const intervalId = setInterval(fetchLiveMatches, 60000); // Set interval for fetching matches
             return () => clearInterval(intervalId); // Cleanup interval on component unmount
         }, []);
 
