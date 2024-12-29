@@ -182,35 +182,36 @@ const getDataTwo = async () => {
 //SEND LIVE MATCHES GOALS TO TELEGRAM
 
 let processedEvents = {}; // Global dictionary to track processed events per match
-
+    
         function delay(ms) {
             return new Promise((resolve) => setTimeout(resolve, ms));
         }
     
         async function processMatchEvents(matches, sendTelegramMessage) {
             for (const match of matches) { // Use `for...of` to handle async operations
-                const matchId = match.fixture.id;
+              const matchId = Number(match.fixture.id);
                 const events = match.events;
                 console.log(match)
-                let league
-                if(match.league.name === "Premier League"){
-                    league = "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+                if (!startedIds.includes(matchId)) {
+                  console.log(`Match ${matchId} is new. Current startedIds:`, startedIds);
+                
+                  startedIds.push(matchId); // Add matchId to the array
+                  console.log('Updated startedIds:', startedIds);
+                
+                  const imageUrls = [match.teams.home.logo, match.teams.away.logo];
+                  console.log('imageUrls:', imageUrls);
+                  await sendMatchStartedMessage(match, imageUrls);
                 }
-                if(match.league.name === "La Liga"){
-                    league = "🇪🇸"
-                }
-                if(match.league.name === "Serie A"){
-                    league = "🇮🇹"
-                }
-                if(match.league.name === "Bundesliga"){
-                    league = "🇩🇪"
-                }
-                if(match.league.name === "Ligue 1"){
-                    league = "🇫🇷"
-                }
-                if(match.league.name === "UEFA Champions League"){
-                  league = "🇪🇺"
-              }
+                const leagueFlags = {
+                  'Premier League': '🏴',
+                  'La Liga': '🇪🇸',
+                  'Serie A': '🇮🇹',
+                  'Bundesliga': '🇩🇪',
+                  'Ligue 1': '🇫🇷',
+                  'UEFA Champions League': '🇪🇺',
+                };
+                
+                const league = leagueFlags[match.league.name] || '';
                 // Initialize processed events for this match if not already done
                 if (!processedEvents[matchId]) {
                     processedEvents[matchId] = new Set();
@@ -257,6 +258,38 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
           console.log(`Sending to Telegram: ${messageToSend}`);
           try {
               const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrl });
+              console.log("response.data.message_id",response.data.message_id)
+              if (response.data.success && response.data.message_id) {
+                  console.log('Message sent successfully!');
+      
+                  // Schedule message deletion
+                  const messageId = response.data.message_id; // Assuming the API returns message_id
+                  console.log("messageID", messageId)
+                  setTimeout(async () => {
+                      await deleteTelegramMessage(messageId);
+                  }, 9000000);
+              } else {
+                  console.log('Failed to send message');
+              }
+          } catch (error) {
+              console.log('Error sending message:', error);
+          }
+      }
+        async function sendMatchStartedMessage(match,imageUrls) { 
+          const leagueFlags = {
+            'Premier League': '🏴',
+            'La Liga': '🇪🇸',
+            'Serie A': '🇮🇹',
+            'Bundesliga': '🇩🇪',
+            'Ligue 1': '🇫🇷',
+            'UEFA Champions League': '🇪🇺',
+          };
+          
+          const league = leagueFlags[match.league.name] || '';
+          const messageToSend = `⌛️ MATCH STARTED!\n${league} ${match.league.name}\n${match.teams.home.name} Vs. ${match.teams.away.name}`;
+          console.log(`Sending to Telegram: ${messageToSend}`);
+          try {
+              const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrls });
               console.log("response.data.message_id",response.data.message_id)
               if (response.data.success && response.data.message_id) {
                   console.log('Message sent successfully!');
