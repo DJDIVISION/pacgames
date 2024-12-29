@@ -1457,7 +1457,12 @@ const getWinnings = (el) => {
       try {
         const response = await axios.request(options);
         console.log(response)
-        setLiveOdds(response.data.response[0].bookmakers[3].bets);
+        //setLiveOdds(response.data.response[0].bookmakers[3].bets);
+        for (const maker of response.data.response[0].bookmakers){
+          if(maker.name === "William Hill"){
+            setLiveOdds(maker.bets)
+          }
+        }
       } catch (error) {
         console.error(error);
       }
