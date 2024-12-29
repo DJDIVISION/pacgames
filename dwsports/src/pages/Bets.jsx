@@ -1457,7 +1457,7 @@ const getWinnings = (el) => {
       try {
         const response = await axios.request(options);
         console.log(response)
-        setLiveOdds(response.data.response[0].bookmakers[3].bets);
+        setLiveOdds(response.data.response[0].bookmakers[2].bets);
       } catch (error) {
         console.error(error);
       }
