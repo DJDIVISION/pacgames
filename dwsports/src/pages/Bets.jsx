@@ -119,7 +119,7 @@ const Bets = () => {
           logo: premierlogo,
           name: "England",
           id: 39,
-          currentRound: 18
+          currentRound: 19
         },
         {
           league: "Championship",
@@ -203,7 +203,7 @@ const Bets = () => {
           logo: seriea,
           name: "Italy",
           id: 135,
-          currentRound: 17
+          currentRound: 18
         },
         {
           league: "Serie B",
