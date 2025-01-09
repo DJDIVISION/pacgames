@@ -28,7 +28,6 @@ const Admin = () => {
     const [startedIds, setStartedIds] = useState([])
     /* console.log(leagues) */
 
-
     let processedEvents = {}; // Global dictionary to track processed events per match
     
         function delay(ms) {
@@ -51,15 +50,15 @@ const Admin = () => {
                   await sendMatchStartedMessage(match, imageUrls);
                 }
                 const leagueFlags = {
-                  'Premier League': '🏴',
-                  'La Liga': '🇪🇸',
+                  45: '🏴',
+                  556: '🇪🇸',
                   'Serie A': '🇮🇹',
                   'Bundesliga': '🇩🇪',
                   'Ligue 1': '🇫🇷',
                   'UEFA Champions League': '🇪🇺',
                 };
                 
-                const league = leagueFlags[match.league.name] || '';
+                const league = leagueFlags[match.league.id] || '';
                 // Initialize processed events for this match if not already done
                 if (!processedEvents[matchId]) {
                     processedEvents[matchId] = new Set();
@@ -125,15 +124,15 @@ const Admin = () => {
       }
         async function sendMatchStartedMessage(match,imageUrls) { 
           const leagueFlags = {
-            'Premier League': '🏴',
-            'La Liga': '🇪🇸',
+            45: '🏴',
+            556: '🇪🇸',
             'Serie A': '🇮🇹',
             'Bundesliga': '🇩🇪',
             'Ligue 1': '🇫🇷',
             'UEFA Champions League': '🇪🇺',
           };
           
-          const league = leagueFlags[match.league.name] || '';
+          const league = leagueFlags[match.league.id] || '';
           const messageToSend = `⌛️ MATCH STARTED!\n${league} ${match.league.name}\n${match.teams.home.name} Vs. ${match.teams.away.name}`;
           console.log(`Sending to Telegram: ${messageToSend}`);
           try {
@@ -186,7 +185,7 @@ const Admin = () => {
     
                 const matches = [];
                 response.data.response.forEach((match) => {
-                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
+                    if ([45, 556, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
                         matches.push(match);
                     }
                 });
@@ -204,11 +203,13 @@ const Admin = () => {
             return () => clearInterval(intervalId); // Cleanup interval on component unmount
         }, []);
 
+    
+
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={sendTodaysMatches} */ /* onClick={() => navigate('/newroulette')} */>LIVE TODAY</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={sendTodaysMatches} */ /* onClick={() => navigate('/newroulette')} */>TODAY FUCK</StyledButton>
     </BetSection>
     <SendFantasy />
     </>
