@@ -52,7 +52,6 @@ const Admin = () => {
                 const leagueFlags = {
                   45: '🏴',
                   140: '🇪🇸',
-                  556: '🇪🇸',
                   135: '🇮🇹',
                   78: '🇩🇪',
                   61: '🇫🇷',
@@ -127,7 +126,6 @@ const Admin = () => {
           const leagueFlags = {
             45: '🏴',
             140: '🇪🇸',
-            556: '🇪🇸',
             135: '🇮🇹',
             78: '🇩🇪',
             61: '🇫🇷',
@@ -135,7 +133,7 @@ const Admin = () => {
           };
           
           const league = leagueFlags[match.league.id] || '';
-          const messageToSend = `⌛️ MATCH STARTED!\n${league} ${match.league.name}\n${match.teams.home.name} Vs. ${match.teams.away.name}`;
+          const messageToSend = `⌛️ MATCH STARTED!\n\n${league} ${match.league.name}\n\n${match.teams.home.name} Vs. ${match.teams.away.name}`;
           console.log(`Sending to Telegram: ${messageToSend}`);
           try {
               const response = await axios.post('https://temp-server-pi.vercel.app/api/send-message', { messageToSend, imageUrls });
@@ -187,7 +185,7 @@ const Admin = () => {
     
                 const matches = [];
                 response.data.response.forEach((match) => {
-                    if ([39, 140, 135, 61, 78, 45, 556].includes(match.league.id)) { // Filter relevant leagues
+                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
                         matches.push(match);
                     }
                 });
@@ -205,13 +203,12 @@ const Admin = () => {
             return () => clearInterval(intervalId); // Cleanup interval on component unmount
         }, []);
 
-    
 
   return (
     <>
     <BetSection style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
       <AbsoluteIconButtonLeft onClick={() => navigate('/')}><ArrowLeftRelative style={{transform: 'translateY(0) rotate(90deg)'}}/></AbsoluteIconButtonLeft>
-      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} /* onClick={sendTodaysMatches} */ /* onClick={() => navigate('/newroulette')} */>LIVE3</StyledButton>
+      <StyledButton style={{fontSize: '18px', margin: '20px 0'}} onClick={sendTodaysMatches} /* onClick={() => navigate('/newroulette')} */>sendTodaysMatches</StyledButton>
     </BetSection>
     <SendFantasy />
     </>

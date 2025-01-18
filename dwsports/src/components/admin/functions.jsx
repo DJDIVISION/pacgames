@@ -203,15 +203,16 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
                   await sendMatchStartedMessage(match, imageUrls);
                 }
                 const leagueFlags = {
-                  'Premier League': '🏴',
-                  'La Liga': '🇪🇸',
-                  'Serie A': '🇮🇹',
-                  'Bundesliga': '🇩🇪',
-                  'Ligue 1': '🇫🇷',
+                  45: '🏴',
+                  140: '🇪🇸',
+                  556: '🇪🇸',
+                  135: '🇮🇹',
+                  78: '🇩🇪',
+                  61: '🇫🇷',
                   'UEFA Champions League': '🇪🇺',
                 };
                 
-                const league = leagueFlags[match.league.name] || '';
+                const league = leagueFlags[match.league.id] || '';
                 // Initialize processed events for this match if not already done
                 if (!processedEvents[matchId]) {
                     processedEvents[matchId] = new Set();
@@ -277,15 +278,16 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
       }
         async function sendMatchStartedMessage(match,imageUrls) { 
           const leagueFlags = {
-            'Premier League': '🏴',
-            'La Liga': '🇪🇸',
-            'Serie A': '🇮🇹',
-            'Bundesliga': '🇩🇪',
-            'Ligue 1': '🇫🇷',
+            45: '🏴',
+            140: '🇪🇸',
+            556: '🇪🇸',
+            135: '🇮🇹',
+            78: '🇩🇪',
+            61: '🇫🇷',
             'UEFA Champions League': '🇪🇺',
           };
           
-          const league = leagueFlags[match.league.name] || '';
+          const league = leagueFlags[match.league.id] || '';
           const messageToSend = `⌛️ MATCH STARTED!\n${league} ${match.league.name}\n${match.teams.home.name} Vs. ${match.teams.away.name}`;
           console.log(`Sending to Telegram: ${messageToSend}`);
           try {
@@ -338,7 +340,7 @@ let processedEvents = {}; // Global dictionary to track processed events per mat
     
                 const matches = [];
                 response.data.response.forEach((match) => {
-                    if ([39, 140, 135, 61, 78].includes(match.league.id)) { // Filter relevant leagues
+                    if ([39, 140, 135, 61, 78, 45, 556].includes(match.league.id)) { // Filter relevant leagues
                         matches.push(match);
                     }
                 });
